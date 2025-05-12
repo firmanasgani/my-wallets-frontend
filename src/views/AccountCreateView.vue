@@ -172,7 +172,7 @@ const availableBanks = computed(() => bankStore.allBanks)
 // Reactive form data
 const formData = reactive<CreateAccountPayload>({
   accountName: '',
-  accountType: '' as FrontendAccountType | '',
+  accountType: FrontendAccountType.BANK,
   bankId: null,
   initialBalance: 0,
   currency: 'IDR',
