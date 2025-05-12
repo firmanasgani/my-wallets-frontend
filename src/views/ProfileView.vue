@@ -120,7 +120,7 @@
       </form>
     </section>
 
-    <section aria-labelledby="security-heading" class="bg-white shadow-lg rounded-xl p-6">
+    <!-- <section aria-labelledby="security-heading" class="bg-white shadow-lg rounded-xl p-6">
       <h2 id="security-heading" class="text-lg font-medium text-slate-900 mb-1">Keamanan</h2>
       <p class="text-sm text-slate-500 mb-6">Kelola pengaturan keamanan akun Anda.</p>
       <div>
@@ -132,7 +132,7 @@
           Ubah Password
         </button>
       </div>
-    </section>
+    </section> -->
   </div>
 </template>
 

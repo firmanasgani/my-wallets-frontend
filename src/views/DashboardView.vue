@@ -207,12 +207,12 @@
               <ul class="space-y-3">
                 <li
                   v-for="item in topSpendingCategories"
-                  :key="item.name"
+                  :key="item?.name"
                   class="flex justify-between items-center text-sm"
                 >
                   <div class="flex items-center">
-                    <span :class="['w-3 h-3 rounded-full mr-2', item.colorClass]"></span>
-                    <span class="text-slate-700">{{ item.name }}</span>
+                    <span :class="['w-3 h-3 rounded-full mr-2', item?.colorClass]"></span>
+                    <span class="text-slate-700">{{ item?.name }}</span>
                   </div>
                   <span class="font-medium text-slate-800">{{
                     formatCurrency(item.amount, 'IDR')
@@ -280,7 +280,7 @@ const overallNetBalance = ref(0)
 const monthlySummary = reactive({ income: 0, expense: 0, net: 0 })
 const recentTransactions = ref<Transaction[]>([])
 const isLoadingRecentTransactions = ref(true)
-const topSpendingCategories = ref([])
+const topSpendingCategories = ref([{ name: '', amount: 0, colorClass: '' }])
 const isLoadingSpendingCategories = ref(true)
 
 // --- Data dan Opsi untuk Grafik Saldo Akun ---
@@ -393,9 +393,9 @@ const calculateOverallNetBalance = () => {
   let total = 0
   accountStore.allAccounts.forEach((acc) => {
     if (acc.accountType === 'CREDIT_CARD') {
-      total -= acc.currentBalance // Asumsi saldo kartu kredit adalah utang (positif berarti tagihan)
+      total -= Number(acc.currentBalance) // Asumsi saldo kartu kredit adalah utang (positif berarti tagihan)
     } else {
-      total += acc.currentBalance
+      total += Number(acc.currentBalance)
     }
   })
   overallNetBalance.value = total
@@ -407,40 +407,24 @@ const fetchAndCalculateMonthlySummary = async () => {
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0] // Hari terakhir bulan ini
 
-  // Fetch transaksi hanya untuk bulan ini
-  // Ini bisa jadi duplikat fetch jika `WorkspaceTransactions` di atas juga mengambil semua
-  // Idealnya ada endpoint API khusus untuk summary
-  // Atau, jika transactionStore sudah punya semua transaksi, kita filter di frontend
-  // Untuk demo: asumsikan kita fetch lagi atau filter dari data yang sudah ada jika memungkinkan
-  // Kita akan filter dari `transactionStore.transactions` jika sudah ada data, atau fetch khusus.
-
-  // Untuk demo, kita akan hitung dari dummy recentTransactions atau semua transaksi jika sudah di-fetch
-  // Ini placeholder, seharusnya dari API atau store yang lebih terstruktur
   let incomeThisMonth = 0
   let expenseThisMonth = 0
 
-  // Jika kita sudah punya semua transaksi di store, kita bisa filter
-  // Jika tidak, kita perlu fetch khusus untuk rentang bulan ini
-  // const allTransactionsInStore = transactionStore.transactionList; // Anggap ini semua transaksi (belum tentu)
-
-  // Untuk demo, kita pakai recentTransactions saja, ini tidak akurat
-  // Seharusnya: await transactionStore.fetchTransactions({ startDate, endDate });
-  // lalu loop transactions.value dari store
   const tempTransactionsForSummary = transactionStore.transactionList // Ini hanya transaksi terbaru, bukan seluruh bulan
 
   tempTransactionsForSummary.forEach((tx) => {
     const txDate = new Date(tx.transactionDate)
     if (txDate >= new Date(startDate) && txDate <= new Date(endDate)) {
       if (tx.transactionType === 'INCOME') {
-        incomeThisMonth += tx.amount
+        incomeThisMonth += Number(tx.amount)
       } else if (tx.transactionType === 'EXPENSE') {
-        expenseThisMonth += tx.amount
+        expenseThisMonth += Number(tx.amount)
       }
     }
   })
   monthlySummary.income = incomeThisMonth
   monthlySummary.expense = expenseThisMonth
-  monthlySummary.net = incomeThisMonth - expenseThisMonth
+  monthlySummary.net = Number(incomeThisMonth) - Number(expenseThisMonth)
 }
 
 const fetchAndCalculateTopSpendingCategories = async () => {
