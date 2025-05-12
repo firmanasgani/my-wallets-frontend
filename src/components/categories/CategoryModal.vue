@@ -38,13 +38,13 @@
 
               <div class="space-y-4">
                 <div>
-                  <label for="categoryName" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="name" class="block text-sm font-medium text-slate-700 mb-1"
                     >Nama Kategori <span class="text-red-500">*</span></label
                   >
                   <input
                     type="text"
-                    id="categoryName"
-                    v-model="formData.categoryName"
+                    id="name"
+                    v-model="formData.name"
                     required
                     class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
                     placeholder="Mis: Belanja Bulanan"
@@ -52,12 +52,12 @@
                 </div>
 
                 <div>
-                  <label for="categoryType" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="type" class="block text-sm font-medium text-slate-700 mb-1"
                     >Tipe Kategori <span class="text-red-500">*</span></label
                   >
                   <select
-                    id="categoryType"
-                    v-model="formData.categoryType"
+                    id="type"
+                    v-model="formData.type"
                     required
                     class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
                     :disabled="isEditMode && hasTransactions"
@@ -77,14 +77,12 @@
                 </div>
 
                 <div>
-                  <label
-                    for="parentCategoryId"
-                    class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="parentId" class="block text-sm font-medium text-slate-700 mb-1"
                     >Induk Kategori (Opsional)</label
                   >
                   <select
-                    id="parentCategoryId"
-                    v-model="formData.parentCategoryId"
+                    id="parentId"
+                    v-model="formData.parentId"
                     class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
                   >
                     <option :value="null">-- Tidak Ada Induk (Kategori Utama) --</option>
@@ -198,9 +196,7 @@ const categoryStore = useCategoryStore()
 const localError = ref<string | null>(null)
 
 const isEditMode = computed(() => !!props.categoryToEdit && !!props.categoryToEdit.id)
-// Untuk demo, kita anggap 'hasTransactions' true jika sedang edit, untuk men-disable type change
-// Di aplikasi nyata, Anda perlu cara untuk mengetahui ini (misal, properti dari backend)
-const hasTransactions = computed(() => isEditMode.value) // Placeholder
+const hasTransactions = computed(() => isEditMode.value)
 
 const categoryTypeOptions = [
   { value: FrontendCategoryType.INCOME, text: 'Pemasukan (Income)' },
@@ -208,13 +204,13 @@ const categoryTypeOptions = [
 ]
 
 interface FormData extends Omit<CreateCategoryPayload, 'parentCategoryId'> {
-  parentCategoryId: string | null // Memperbolehkan null secara eksplisit
+  parentId: string | null // Memperbolehkan null secara eksplisit
 }
 
 const formData = reactive<FormData>({
-  categoryName: '',
-  categoryType: FrontendCategoryType.EXPENSE, // Default
-  parentCategoryId: null,
+  name: '',
+  type: FrontendCategoryType.EXPENSE, // Default
+  parentId: null,
   icon: '',
   color: '#CBD5E1', // Default warna (slate-300)
 })
@@ -224,46 +220,45 @@ watch(
   () => props.categoryToEdit,
   (newVal) => {
     if (newVal && isEditMode.value) {
-      formData.categoryName = newVal.categoryName
-      formData.categoryType = newVal.categoryType
-      formData.parentCategoryId = newVal.parentCategoryId || null
+      formData.name = newVal.categoryName
+      formData.type = newVal.categoryType
+      formData.parentId = newVal.parentCategoryId || null
       formData.icon = newVal.icon || ''
       formData.color = newVal.color || '#CBD5E1'
     } else {
       // Reset form untuk mode tambah
-      formData.categoryName = ''
-      formData.categoryType = FrontendCategoryType.EXPENSE
-      formData.parentCategoryId = null
+      formData.name = ''
+      formData.type = FrontendCategoryType.EXPENSE
+      formData.parentId = null
       formData.icon = ''
       formData.color = '#CBD5E1'
     }
   },
   { immediate: true },
-) // immediate true agar dijalankan saat komponen pertama kali dimuat
-
+)
 const closeModal = () => {
   if (categoryStore.isSubmittingCategory) return
   emit('update:isOpen', false)
-  localError.value = null // Reset error lokal saat modal ditutup
+  localError.value = null
 }
 
 const handleSubmit = async () => {
   localError.value = null
-  categoryStore.error = null // Reset error di store
+  categoryStore.error = null
 
-  if (!formData.categoryName.trim()) {
+  if (!formData.name.trim()) {
     localError.value = 'Nama kategori wajib diisi.'
     return
   }
-  if (!formData.categoryType) {
+  if (!formData.name) {
     localError.value = 'Tipe kategori wajib dipilih.'
     return
   }
 
   const payload: CreateCategoryPayload | UpdateCategoryPayload = {
-    name: formData.categoryName,
-    type: formData.categoryType,
-    parentId: formData.parentCategoryId || null, // Kirim null jika tidak ada
+    name: formData.name,
+    type: formData.type,
+    parentId: formData.parentId || null,
     icon: formData.icon?.trim() || null,
     color: formData.color?.trim() || null,
   }
@@ -274,21 +269,19 @@ const handleSubmit = async () => {
     } else {
       await categoryStore.createCategory(payload as CreateCategoryPayload)
     }
-    emit('saved') // Emit event 'saved'
-    closeModal() // Tutup modal setelah sukses
+    emit('saved')
+    closeModal()
   } catch (error: any) {
     localError.value = categoryStore.error || error.message || 'Terjadi kesalahan.'
     console.error('Error saving category:', error)
   } finally {
-    formData.categoryName = ''
-    formData.parentCategoryId = null
+    formData.name = ''
+    formData.parentId = null
     formData.icon = ''
     formData.color = '#CBD5E1'
   }
 }
 
-// Opsi untuk dropdown parent category
-// Ini mengambil semua kategori dan mem-flat-kan nya dengan prefix untuk hierarki
 const availableParentCategories = computed(() => {
   const flatCategories: {
     id: string
@@ -298,10 +291,7 @@ const availableParentCategories = computed(() => {
   }[] = []
   function flatten(categories: Category[], level = 0) {
     for (const cat of categories) {
-      // Jangan izinkan kategori menjadi parent dari dirinya sendiri atau anaknya sendiri
       if (isEditMode.value && props.categoryToEdit?.id === cat.id) continue
-      // Juga, idealnya jangan izinkan anak dari kategori yang diedit menjadi parentnya.
-      // Logika ini bisa lebih kompleks jika hierarki sangat dalam.
 
       flatCategories.push({
         id: cat.id,
@@ -314,12 +304,9 @@ const availableParentCategories = computed(() => {
       }
     }
   }
-  flatten(categoryStore.allCategories) // Gunakan semua kategori dari store
+  flatten(categoryStore.allCategories)
   return flatCategories
 })
-
-// Panggil fetchCategories jika belum ada saat modal mungkin dibuka
-// Ini hanya contoh, idealnya data sudah ada atau di-trigger oleh parent
 onMounted(() => {
   if (categoryStore.allCategories.length === 0) {
     categoryStore.fetchCategories({ hierarchical: 'true' })

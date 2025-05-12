@@ -30,17 +30,17 @@ export interface Category {
 }
 
 export interface CreateCategoryPayload {
-  categoryName: string
-  categoryType: FrontendCategoryType
-  parentCategoryId?: string | null
+  name: string
+  type: FrontendCategoryType
+  parentId?: string | null
   icon?: string | null
   color?: string | null
 }
 
 export interface UpdateCategoryPayload {
-  categoryName?: string
-  categoryType?: FrontendCategoryType
-  parentCategoryId?: string | null
+  name: string
+  type: FrontendCategoryType
+  parentId?: string | null
   icon?: string | null
   color?: string | null
 }

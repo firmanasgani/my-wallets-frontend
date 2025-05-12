@@ -266,7 +266,10 @@
         </div>
       </div>
     </div>
-    <AddTransactionModal v-model:isOpen="isAddTransactionModalOpen" />
+    <AddTransactionModal
+      v-model:isOpen="isAddTransactionModalOpen"
+      @transaction-saved="handleTransactionSaved"
+    />
 
     <ConfirmationModal
       v-model:isOpen="isDeleteModalOpen"
@@ -433,7 +436,10 @@ const promptDeleteTransaction = (transaction: Transaction) => {
   transactionToDelete.value = transaction
   isDeleteModalOpen.value = true
 }
-
+const handleTransactionSaved = () => {
+  isAddTransactionModalOpen.value = false
+  transactionStore.fetchTransactions(localFilters)
+}
 const handleConfirmDelete = async () => {
   if (!transactionToDelete.value) return
   isDeletingTransaction.value = true
