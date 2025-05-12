@@ -266,10 +266,7 @@
         </div>
       </div>
     </div>
-    <AddTransactionModal
-      v-model:isOpen="isAddTransactionModalOpen"
-      @transaction-saved="handleTransactionSaved"
-    />
+    <AddTransactionModal v-model:isOpen="isAddTransactionModalOpen" />
 
     <ConfirmationModal
       v-model:isOpen="isDeleteModalOpen"

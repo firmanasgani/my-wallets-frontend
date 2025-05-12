@@ -142,7 +142,7 @@ export const useTransactionStore = defineStore('transactions', {
           `Gagal: ${successMessage.toLowerCase().replace('berhasil ', '')}`
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
 
-        throw new Error(this.error)
+        throw new Error(this.error ?? 'Unknown error')
       } finally {
         this.isSubmitting = false
       }

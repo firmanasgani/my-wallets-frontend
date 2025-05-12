@@ -178,7 +178,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch, computed, onMounted } from 'vue'
 import { FrontendCategoryType } from '@/types/enums'
-import type { Category, CreateCategoryPayload, UpdateCategoryPayload } from '@/types/category'
+import type { Category, CreateCategoryPayload, UpdateCategoryPayload } from '@/types/enums'
 import { useCategoryStore } from '@/stores/categories'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
