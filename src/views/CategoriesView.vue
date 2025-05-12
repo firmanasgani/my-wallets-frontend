@@ -25,22 +25,26 @@
     </div>
 
     <LoadingSpinner
-      v-if="isLoading"
+      v-if="isLoading && categories.length === 0"
       :visible="true"
       text="Memuat data kategori..."
       size="lg"
       overlay
-      color="text-sky-500"
-      text-color="text-sky-700"
     />
-
+    <div
+      v-if="error && !isLoading"
+      class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
+      role="alert"
+    >
+      <p class="font-bold">Gagal Memuat Kategori</p>
+      <p>{{ error }}</p>
+    </div>
     <div
       v-if="!isLoading && categories.length === 0 && !error"
       class="text-center py-10 bg-white rounded-lg shadow-md print:hidden"
     >
       <svg
         class="mx-auto h-16 w-16 text-slate-400"
-        xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.5"
@@ -53,9 +57,7 @@
         />
       </svg>
       <h3 class="mt-4 text-lg font-medium text-slate-800">Belum Ada Kategori</h3>
-      <p class="mt-1 text-sm text-slate-500">
-        Anda belum membuat kategori. Tambahkan kategori untuk mengelompokkan transaksi Anda.
-      </p>
+      <p class="mt-1 text-sm text-slate-500">Anda belum membuat kategori.</p>
       <button
         @click="openCreateCategoryModal"
         class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -64,30 +66,21 @@
       </button>
     </div>
 
-    <div
-      v-if="error && !isLoading"
-      class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
-      role="alert"
-    >
-      <p class="font-bold">Gagal Memuat Kategori</p>
-      <p>{{ error }}</p>
-    </div>
-
     <div v-if="!isLoading && categories.length > 0" class="space-y-8">
       <div>
         <h2 class="text-xl font-semibold text-slate-700 mb-3 pb-2 border-b border-slate-300">
           Kategori Pemasukan (Income)
         </h2>
-        <div v-if="incomeCategories.length === 0" class="text-sm text-slate-500 italic">
+        <div v-if="incomeCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
           Belum ada kategori pemasukan.
         </div>
-        <ul v-else class="space-y-2">
+        <ul v-else class="space-y-1">
           <CategoryItem
             v-for="category in incomeCategories"
             :key="category.id"
             :category="category"
             :level="0"
-            @edit="editCategory"
+            @edit="openEditCategoryModal"
             @delete="promptDeleteCategory"
           />
         </ul>
@@ -97,30 +90,36 @@
         <h2 class="text-xl font-semibold text-slate-700 mb-3 pb-2 border-b border-slate-300">
           Kategori Pengeluaran (Expense)
         </h2>
-        <div v-if="expenseCategories.length === 0" class="text-sm text-slate-500 italic">
+        <div v-if="expenseCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
           Belum ada kategori pengeluaran.
         </div>
-        <ul v-else class="space-y-2">
+        <ul v-else class="space-y-1">
           <CategoryItem
             v-for="category in expenseCategories"
             :key="category.id"
             :category="category"
             :level="0"
-            @edit="editCategory"
+            @edit="openEditCategoryModal"
             @delete="promptDeleteCategory"
           />
         </ul>
       </div>
     </div>
 
+    <CategoryModal
+      v-model:isOpen="isCategoryModalOpen"
+      :categoryToEdit="categoryToEdit"
+      @saved="handleCategorySaved"
+    />
+
     <ConfirmationModal
       v-model:isOpen="isDeleteModalOpen"
       title="Konfirmasi Hapus Kategori"
-      :message="`Apakah Anda yakin ingin menghapus kategori '${categoryToDelete?.categoryName || ''}'? Jika kategori ini memiliki sub-kategori, sub-kategori tersebut akan menjadi kategori utama. Aksi ini tidak dapat dibatalkan.`"
+      :message="`Apakah Anda yakin ingin menghapus kategori '${categoryToDelete?.categoryName || ''}'? Jika kategori ini memiliki sub-kategori, sub-kategori tersebut akan menjadi kategori utama. Transaksi yang menggunakan kategori ini akan kehilangan kategorinya. Aksi ini tidak dapat dibatalkan.`"
       confirmButtonText="Ya, Hapus"
       confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       iconType="danger"
-      :isConfirming="isDeletingCategory"
+      :isConfirming="isDeletingCategory || categoryStore.isSubmittingCategory"
       @confirm="handleConfirmDelete"
       @cancel="closeDeleteModal"
     />
@@ -131,151 +130,47 @@
 import { ref, onMounted, computed } from 'vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
-import CategoryItem from '@/components/categories/CategoryItem.vue' // Komponen baru untuk item kategori
-// import CategoryFormModal from '@/components/categories/CategoryFormModal.vue'; // Komponen baru untuk form
+import CategoryItem from '@/components/categories/CategoryItem.vue'
+import CategoryModal from '@/components/categories/CategoryModal.vue' // <-- Impor Modal Form Kategori
+import { useCategoryStore } from '@/stores/categories'
+import type { Category } from '@/types/enums'
 
-// Definisikan tipe untuk kategori, termasuk subKategori (sesuaikan dengan data dari API Anda)
-// Anda mungkin sudah punya ini di src/types/category.ts atau src/types/index.ts
-// Untuk sementara, kita gunakan any. Idealnya impor dari tipe yang sudah ada.
-interface Category {
-  id: string
-  categoryName: string
-  categoryType: 'INCOME' | 'EXPENSE' // Seharusnya enum FrontendCategoryType
-  icon?: string | null
-  color?: string | null
-  parentCategoryId?: string | null
-  subCategories?: Category[] // Untuk data hierarkis
-  userId?: string | null // Untuk membedakan global/default (null) dengan user-specific
-}
+const categoryStore = useCategoryStore()
 
-const isLoading = ref(true)
-const categories = ref<Category[]>([]) // Akan diisi dari store
-const error = ref<string | null>(null)
-
-// --- DATA DUMMY (Ganti dengan data dari Pinia Store nanti) ---
-const dummyCategories: Category[] = [
-  // Income
-  {
-    id: 'cat-inc-1',
-    categoryName: 'Gaji',
-    categoryType: 'INCOME',
-    userId: null,
-    icon: 'briefcase',
-    color: '#4CAF50',
-    subCategories: [],
-  },
-  {
-    id: 'cat-inc-2',
-    categoryName: 'Bonus',
-    categoryType: 'INCOME',
-    userId: 'user-123',
-    icon: 'gift',
-    color: '#8BC34A',
-    subCategories: [],
-  },
-  // Expense
-  {
-    id: 'cat-exp-1',
-    categoryName: 'Makanan & Minuman',
-    categoryType: 'EXPENSE',
-    userId: null,
-    icon: 'utensils',
-    color: '#FF9800',
-    subCategories: [
-      {
-        id: 'sub-cat-exp-1a',
-        categoryName: 'Belanja Bahan',
-        categoryType: 'EXPENSE',
-        parentCategoryId: 'cat-exp-1',
-        userId: null,
-        icon: 'shopping-basket',
-        color: '#FFC107',
-        subCategories: [],
-      },
-      {
-        id: 'sub-cat-exp-1b',
-        categoryName: 'Makan di Luar',
-        categoryType: 'EXPENSE',
-        parentCategoryId: 'cat-exp-1',
-        userId: 'user-123',
-        icon: 'glass-cheers',
-        color: '#FFA726',
-        subCategories: [],
-      },
-    ],
-  },
-  {
-    id: 'cat-exp-2',
-    categoryName: 'Transportasi',
-    categoryType: 'EXPENSE',
-    userId: null,
-    icon: 'car-side',
-    color: '#2196F3',
-    subCategories: [],
-  },
-  {
-    id: 'cat-exp-3',
-    categoryName: 'Tagihan',
-    categoryType: 'EXPENSE',
-    userId: 'user-123',
-    icon: 'file-invoice',
-    color: '#03A9F4',
-    subCategories: [],
-  },
-]
+const categories = computed(() => categoryStore.allCategories)
+const incomeCategories = computed(() => categoryStore.incomeCategories)
+const expenseCategories = computed(() => categoryStore.expenseCategories)
+const isLoading = computed(() => categoryStore.isLoadingCategories)
+const error = computed(() => categoryStore.categoryError)
 
 onMounted(async () => {
-  // Nanti: Panggil action dari useCategoryStore() untuk fetch kategori
-  // const categoryStore = useCategoryStore();
-  // await categoryStore.fetchCategories({ hierarchical: true }); // Minta data hierarkis
-  // categories.value = categoryStore.categories;
-  // isLoading.value = categoryStore.isLoading;
-  // error.value = categoryStore.error;
-
-  // Simulasi fetch data
-  setTimeout(() => {
-    // Filter hanya top-level categories untuk tampilan awal jika data dummy tidak terstruktur hierarkis dari API
-    // Jika API sudah mengembalikan data hierarkis (parent dengan children), maka filter ini tidak perlu.
-    // Untuk data dummy kita, semua sudah top-level atau ada di dalam children.
-    categories.value = dummyCategories.filter((cat) => !cat.parentCategoryId)
-    isLoading.value = false
-  }, 1000)
+  if (categoryStore.allCategories.length === 0) {
+    await categoryStore.fetchCategories({ hierarchical: 'true' })
+  }
 })
-// --- AKHIR DATA DUMMY ---
 
-const incomeCategories = computed(() =>
-  categories.value.filter((cat) => cat.categoryType === 'INCOME'),
-)
-const expenseCategories = computed(() =>
-  categories.value.filter((cat) => cat.categoryType === 'EXPENSE'),
-)
-
-// --- Logika untuk Modal Tambah/Edit Kategori ---
+// State dan fungsi untuk Modal Tambah/Edit Kategori
 const isCategoryModalOpen = ref(false)
-const editingCategory = ref<Category | null>(null) // null untuk 'tambah', objek kategori untuk 'edit'
+const categoryToEdit = ref<Category | null>(null)
 
 const openCreateCategoryModal = () => {
-  editingCategory.value = null // Mode tambah
+  categoryToEdit.value = null // Tidak ada data untuk diedit, berarti mode tambah
   isCategoryModalOpen.value = true
-  alert('Buka modal Tambah Kategori (implementasi nanti)')
 }
 
-const editCategory = (category: Category) => {
-  editingCategory.value = { ...category } // Salin objek agar tidak mutasi langsung
+const openEditCategoryModal = (category: Category) => {
+  categoryToEdit.value = { ...category } // Salin data kategori untuk diedit
   isCategoryModalOpen.value = true
-  alert(`Edit kategori: ${category.categoryName} (implementasi nanti)`)
 }
 
-const handleSaveCategory = (savedCategory: Category) => {
-  // Nanti: Logika untuk menyimpan ke store dan update UI
-  console.log('Kategori disimpan:', savedCategory)
-  isCategoryModalOpen.value = false
+const handleCategorySaved = () => {
+  console.log('Category saved, modal should close.')
 }
 
-// --- Logika untuk Modal Hapus Kategori ---
+// State dan fungsi untuk Modal Hapus Kategori
 const isDeleteModalOpen = ref(false)
 const categoryToDelete = ref<Category | null>(null)
-const isDeletingCategory = ref(false)
+const isDeletingCategory = ref(false) // Bisa juga pakai categoryStore.isSubmittingCategory
 
 const promptDeleteCategory = (category: Category) => {
   categoryToDelete.value = category
@@ -285,18 +180,14 @@ const promptDeleteCategory = (category: Category) => {
 const handleConfirmDelete = async () => {
   if (!categoryToDelete.value) return
   isDeletingCategory.value = true
-  // Nanti: Panggil action dari useCategoryStore() untuk hapus kategori
-  // await categoryStore.deleteCategory(categoryToDelete.value.id);
-  console.log(`Menghapus kategori: ${categoryToDelete.value.categoryName}`)
-  setTimeout(() => {
-    // Simulasi
-    categories.value = categories.value.filter((c) => c.id !== categoryToDelete.value!.id)
-    // Juga perlu logika untuk menghapus sub-kategori dari parent di UI jika parent dihapus,
-    // atau membiarkan service backend yang menangani relasinya dan kita fetch ulang.
-    alert(`Kategori '${categoryToDelete.value?.categoryName}' (placeholder) telah dihapus.`)
+  try {
+    await categoryStore.deleteCategory(categoryToDelete.value.id)
+  } catch (error: any) {
+    console.error('Gagal menghapus kategori dari view:', error)
+  } finally {
     isDeletingCategory.value = false
     closeDeleteModal()
-  }, 1000)
+  }
 }
 
 const closeDeleteModal = () => {

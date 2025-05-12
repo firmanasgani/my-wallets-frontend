@@ -100,14 +100,14 @@
           }}
           {{ formatCurrency(transaction.amount, 'IDR') }}
         </p>
-        <div class="text-xs mt-1 space-x-2 print:hidden">
+        <!-- <div class="text-xs mt-1 space-x-2 print:hidden">
           <button @click="$emit('edit', transaction)" class="text-blue-600 hover:text-blue-800">
             Edit
           </button>
           <button @click="$emit('delete', transaction)" class="text-red-600 hover:text-red-800">
             Hapus
           </button>
-        </div>
+        </div> -->
       </div>
     </div>
   </li>
@@ -142,9 +142,6 @@ const emit = defineEmits(['edit', 'delete'])
 const defaultCategoryColor = '#94a3b8' // slate-500
 
 const categoryColorBackground = computed(() => {
-  // Jika ingin background dari warna kategori, gunakan ini,
-  // tapi pastikan kontras teksnya bagus. Untuk sekarang kita pakai warna kategori di style ikon.
-  // return `bg-[${props.transaction.category?.color || defaultCategoryColor}]`;
   return '' // Dihandle oleh :style pada span ikon
 })
 
@@ -155,7 +152,7 @@ const amountColorClass = computed(() => {
     case 'EXPENSE':
       return 'text-red-600'
     case 'TRANSFER':
-      return 'text-slate-600' // Atau warna lain untuk transfer
+      return 'text-slate-600'
     default:
       return 'text-slate-800'
   }
@@ -172,11 +169,8 @@ const formatCurrency = (value: number, currency: string = 'IDR') => {
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   return date.toLocaleDateString('id-ID', {
-    // year: 'numeric',
     month: 'short',
     day: 'numeric',
-    // hour: '2-digit',
-    // minute: '2-digit',
   })
 }
 </script>

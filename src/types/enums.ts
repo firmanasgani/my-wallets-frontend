@@ -4,3 +4,49 @@ export enum FrontendAccountType {
   CASH = 'CASH',
   CREDIT_CARD = 'CREDIT_CARD',
 }
+
+export enum FrontendCategoryType {
+  INCOME = 'INCOME',
+  EXPENSE = 'EXPENSE',
+}
+
+export enum FrontendTransactionType {
+  INCOME = 'INCOME',
+  EXPENSE = 'EXPENSE',
+  TRANSFER = 'TRANSFER',
+}
+
+export interface Category {
+  id: string
+  categoryName: string
+  categoryType: FrontendCategoryType
+  parentCategoryId?: string | null
+  userId?: string | null
+  icon?: string | null
+  color?: string | null
+  subCategories?: Category[]
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface CreateCategoryPayload {
+  categoryName: string
+  categoryType: FrontendCategoryType
+  parentCategoryId?: string | null
+  icon?: string | null
+  color?: string | null
+}
+
+export interface UpdateCategoryPayload {
+  categoryName?: string
+  categoryType?: FrontendCategoryType
+  parentCategoryId?: string | null
+  icon?: string | null
+  color?: string | null
+}
+export interface QueryCategoryParams {
+  type?: FrontendCategoryType
+  includeGlobal?: boolean | string
+  hierarchical?: boolean | string
+  parentOnly?: string
+}
