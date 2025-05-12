@@ -264,7 +264,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import { useAccountStore } from '@/stores/accounts'
-import type { Account } from '@/types/account'
+import type { Account } from '@/types/accounts'
 
 const accountStore = useAccountStore()
 const router = useRouter()

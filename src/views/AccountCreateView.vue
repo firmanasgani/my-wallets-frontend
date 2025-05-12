@@ -151,7 +151,7 @@
 import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { FrontendAccountType } from '@/types/enums'
-import type { CreateAccountPayload } from '@/types/account'
+import type { CreateAccountPayload } from '@/types/accounts'
 import { useBankStore } from '@/stores/banks'
 import { useAccountStore } from '@/stores/accounts'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'

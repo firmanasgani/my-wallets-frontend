@@ -6,6 +6,7 @@ import { FrontendAccountType } from '@/types/enums'
 
 interface AccountsState {
   accounts: Account[]
+  isSubmitting: boolean
   isLoading: boolean
   isFetchingDetails: boolean
   error: string | null
@@ -15,6 +16,7 @@ export const useAccountStore = defineStore('accounts', {
   state: (): AccountsState => ({
     accounts: [],
     isLoading: false,
+    isSubmitting: false,
     isFetchingDetails: false,
     error: null,
   }),
@@ -64,7 +66,7 @@ export const useAccountStore = defineStore('accounts', {
         const errorMessage = err.response?.data?.message || `Gagal memuat detail akun ${accountId}.`
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
         // this.currentEditingAccount = null;
-        throw new Error(this.error)
+        throw new Error(this.error ?? 'Unknown error')
       } finally {
         this.isFetchingDetails = false
       }
@@ -73,7 +75,7 @@ export const useAccountStore = defineStore('accounts', {
       const authStore = useAuthStore()
       if (!authStore.isAuthenticated) {
         this.error = 'User not authenticated to create an account.'
-        throw new Error(this.error)
+        throw new Error(this.error ?? 'Unknown error')
       }
       this.isLoading = true
       this.error = null
@@ -95,7 +97,7 @@ export const useAccountStore = defineStore('accounts', {
         console.error('Failed to create account:', err.response?.data || err.message)
         const errorMessage = err.response?.data?.message || 'Gagal membuat akun.'
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
-        throw new Error(this.error)
+        throw new Error(this.error ?? 'Unknown error')
       } finally {
         this.isLoading = false
       }

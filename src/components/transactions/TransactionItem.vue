@@ -71,7 +71,7 @@
         >
           {{ transaction.category?.categoryName || transaction.transactionType.replace('_', ' ') }}
         </p>
-        <p class="text-sm text-slate-700 truncate" :title="transaction.description">
+        <p class="text-sm text-slate-700 truncate" :title="transaction.description ?? undefined">
           {{ transaction.description || 'Tidak ada deskripsi' }}
         </p>
         <p class="text-xs text-slate-500 truncate">
