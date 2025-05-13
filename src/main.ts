@@ -13,5 +13,4 @@ const authStore = useAuthStore()
 authStore.tryAutoLogin().finally(() => {
   app.use(router)
   app.mount('#app')
-  console.log('App mounted after authStore.tryAutoLogin()')
 })

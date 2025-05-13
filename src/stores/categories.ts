@@ -33,7 +33,6 @@ export const useCategoryStore = defineStore('categories', {
     categoryError: (state) => state.error,
   },
   actions: {
-    // Method untuk mengambil semua kategori (user-specific + global, idealnya hierarkis)
     async fetchCategories(query?: QueryCategoryParams) {
       const authStore = useAuthStore()
       if (!authStore.isAuthenticated) {
@@ -44,13 +43,10 @@ export const useCategoryStore = defineStore('categories', {
       this.isLoading = true
       this.error = null
       try {
-        // Minta data hierarkis ke backend. Backend harus mendukung parameter ini.
         const params = { ...query, hierarchical: 'true' }
         const response = await apiClient.get<Category[]>('/categories', { params })
-        this.categories = response.data // Asumsi backend mengembalikan array Category (top-level dengan subCategories)
-        console.log('Categories fetched:', this.categories.length)
+        this.categories = response.data
       } catch (err: any) {
-        console.error('Failed to fetch categories:', err.response?.data || err.message)
         const errorMessage = err.response?.data?.message || 'Gagal memuat daftar kategori.'
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
         this.categories = []
@@ -59,7 +55,6 @@ export const useCategoryStore = defineStore('categories', {
       }
     },
 
-    // Action untuk membuat kategori baru
     async createCategory(payload: CreateCategoryPayload) {
       const authStore = useAuthStore()
       if (!authStore.isAuthenticated) throw new Error('User not authenticated.')

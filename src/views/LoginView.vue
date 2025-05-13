@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100">
     <div>
-      <img src="@/assets/logo.svg" alt="Logo" class="w-32 h-32" />
+      <img src="@/assets/dompet.png" alt="Logo" class="w-32 h-32" />
     </div>
     <div>
       <h2 class="text-3xl font-semibold text-center">Welcome to My Wallets</h2>
@@ -22,6 +22,7 @@
             role="button"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
+            @click="errorMessage = null"
           >
             <title>Close</title>
             <path
@@ -91,10 +92,10 @@ const handleLogin = async () => {
       password: password.value,
     })
   } catch (error) {
-    console.error('Login error:', error)
+    errorMessage.value = 'Login gagal. Silakan coba lagi.'
+    isLoading.value = false
   } finally {
-    isLoading.value = true
-    errorMessage.value = null
+    isLoading.value = false
   }
 }
 </script>

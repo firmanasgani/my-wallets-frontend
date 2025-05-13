@@ -145,7 +145,7 @@ const error = computed(() => categoryStore.categoryError)
 
 onMounted(async () => {
   if (categoryStore.allCategories.length === 0) {
-    await categoryStore.fetchCategories({ hierarchical: 'true' })
+    await categoryStore.fetchCategories({ hierarchical: 'true', includeGlobal: 'false' })
   }
 })
 

@@ -2,6 +2,12 @@ import { defineStore } from 'pinia'
 import apiClient from '@/services/apiService'
 import router from '@/router'
 
+export interface ChangePasswordPayload {
+  newPassword: string
+  currentPassword: string
+  confirmNewPassword: string
+}
+
 interface UserProfile {
   id: string
   username: string
@@ -56,14 +62,11 @@ export const useAuthStore = defineStore('auth', {
           delete dataToSubmit.fullName
         }
 
-        const response = await apiClient.post('/auth/register', dataToSubmit)
-
-        console.log('Registration successful:', response.data)
+        await apiClient.post('/auth/register', dataToSubmit)
 
         router.push({ name: 'login', query: { registered: 'true' } })
         return true // Kembalikan true jika sukses
       } catch (err: any) {
-        console.error('Registration failed:', err.response?.data || err.message)
         this.error =
           err.response?.data?.message || err.message || 'Registrasi gagal. Silakan coba lagi.'
         throw this.error
@@ -75,7 +78,6 @@ export const useAuthStore = defineStore('auth', {
     async login(credentials: { login: string; password: string }) {
       this.isLoading = true
       this.error = null
-      console.log('Attempting login with:', credentials)
       try {
         const response = await apiClient.post<LoginResponse>('/auth/login', credentials)
         this.setToken(response.data.access_token)
@@ -85,7 +87,6 @@ export const useAuthStore = defineStore('auth', {
         router.push(redirectPath)
         return true
       } catch (err: any) {
-        console.error('Login failed:', err.response?.data || err.message)
         this.error = err.response?.data?.message || err.message || 'Login gagal. Silakan coba lagi.'
         this.setToken(null)
         this.setUser(null)
@@ -97,7 +98,6 @@ export const useAuthStore = defineStore('auth', {
 
     async fetchUserProfile() {
       if (!this.token) {
-        console.log('FetchUserProfile: No token, skipping fetch.')
         return
       }
 
@@ -106,9 +106,34 @@ export const useAuthStore = defineStore('auth', {
         const response = await apiClient.get<UserProfile>('/auth/profile')
         this.setUser(response.data)
       } catch (err: any) {
-        console.error('Failed to fetch user profile:', err.response?.data || err.message)
         await this.logout()
         throw err
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async changePassword(payload: ChangePasswordPayload) {
+      if (!this.isAuthenticated) {
+        // Tambahan pengecekan
+        throw new Error('User not authenticated.')
+      }
+      this.isLoading = true // Gunakan isLoading global atau buat state spesifik
+      this.error = null
+      try {
+        // Asumsi endpoint backend Anda adalah PATCH /api/auth/change-password
+        await apiClient.patch('/auth/change-password', payload)
+        // Backend akan memvalidasi currentPassword, lalu update
+        console.log('Password changed successfully via API.')
+        // Anda bisa memilih untuk:
+        // 1. Tidak melakukan apa-apa, biarkan token saat ini tetap valid
+        // 2. Menganggap sesi ini masih valid, tapi sarankan user login ulang di perangkat lain
+        // 3. Logout user saat ini untuk memaksa login ulang dengan password baru (lebih aman)
+        // Pilihan 3 diimplementasikan di modal setelah pesan sukses.
+      } catch (err: any) {
+        console.error('Change password failed in store:', err.response?.data || err.message)
+        const errorMessage = err.response?.data?.message || 'Gagal mengubah password.'
+        this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
+        throw new Error(this.error) // Lemparkan error agar komponen bisa menangani
       } finally {
         this.isLoading = false
       }
@@ -124,11 +149,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async tryAutoLogin() {
-      console.log('Attemping auto-login...')
       if (this.token && !this.user) {
         await this.fetchUserProfile()
       } else if (this.token && this.user) {
-        console.log('Auto-login successful.')
         apiClient.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
       }
     },

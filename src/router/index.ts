@@ -12,12 +12,13 @@ import ProfileView from '@/views/ProfileView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 
 import { useAuthStore } from '@/stores/auth'
+import HomeView from '@/views/HomeView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
-    component: LoginView,
+    component: HomeView,
   },
   {
     path: '/login',

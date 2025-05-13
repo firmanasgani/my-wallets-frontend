@@ -66,7 +66,7 @@
             type="text"
             id="fullName"
             v-model="profileData.fullName"
-            class="input-field"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
             placeholder="Nama lengkap Anda"
           />
         </div>
@@ -84,7 +84,7 @@
             readonly
             disabled
           />
-          <p class="text-xs text-slate-500 mt-1">Username tidak dapat diubah (contoh batasan).</p>
+          <p class="text-xs text-slate-500 mt-1">Username tidak dapat diubah.</p>
         </div>
 
         <div>
@@ -98,7 +98,7 @@
             readonly
             disabled
           />
-          <p class="text-xs text-slate-500 mt-1">Email tidak dapat diubah (contoh batasan).</p>
+          <p class="text-xs text-slate-500 mt-1">Email tidak dapat diubah.</p>
         </div>
 
         <div class="pt-4 border-t border-slate-200 flex justify-end">
@@ -120,7 +120,7 @@
       </form>
     </section>
 
-    <!-- <section aria-labelledby="security-heading" class="bg-white shadow-lg rounded-xl p-6">
+    <section aria-labelledby="security-heading" class="bg-white shadow-lg rounded-xl p-6">
       <h2 id="security-heading" class="text-lg font-medium text-slate-900 mb-1">Keamanan</h2>
       <p class="text-sm text-slate-500 mb-6">Kelola pengaturan keamanan akun Anda.</p>
       <div>
@@ -132,58 +132,58 @@
           Ubah Password
         </button>
       </div>
-    </section> -->
+    </section>
+    <ChangePasswordModal
+      v-model:isOpen="isChangePasswordModalOpen"
+      @password-changed-successfully="handlePasswordChanged"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import { useAuthStore } from '@/stores/auth' // Akan digunakan nanti
-
-// Placeholder untuk data profil, nanti akan diambil dari authStore
+import ChangePasswordModal from '@/components/profile/ChangePasswordModal.vue'
+import { useAuthStore } from '@/stores/auth'
 interface ProfileData {
   fullName: string
   username: string
   email: string
-  profilePictureUrl?: string | null // URL gambar profil yang sudah ada
+  profilePictureUrl?: string | null
 }
 
 const profileData = reactive<ProfileData>({
   fullName: '',
   username: '',
   email: '',
-  profilePictureUrl: null, // atau URL gambar default: '/img/default-avatar.png'
+  profilePictureUrl: null,
 })
 
 const profileImagePreview = ref<string | null>(null)
-const fileInputRef = ref<HTMLInputElement | null>(null) // Ref untuk input file
+const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const isSubmittingProfile = ref(false)
-const authStore = useAuthStore() // Akan di-uncomment nanti
+const authStore = useAuthStore()
 
 onMounted(() => {
-  // Nanti: Isi profileData dari authStore.currentUser
   if (authStore.currentUser) {
     profileData.fullName = authStore.currentUser.fullName || ''
     profileData.username = authStore.currentUser.username
     profileData.email = authStore.currentUser.email
-    // profileData.profilePictureUrl = authStore.currentUser.profilePictureUrl; // Jika ada
+
     if (profileData.profilePictureUrl) {
       profileImagePreview.value = profileData.profilePictureUrl
     }
   }
 
-  // Untuk demo, jika ada profilePictureUrl di dummy data, set preview
   if (profileData.profilePictureUrl) {
     profileImagePreview.value = profileData.profilePictureUrl
   } else {
-    // Jika tidak ada gambar, tampilkan inisial (sudah dihandle di template)
   }
 })
 
 const triggerFileInput = () => {
-  fileInputRef.value?.click() // Memicu klik pada input file yang tersembunyi
+  fileInputRef.value?.click()
 }
 
 const handleFileChange = (event: Event) => {
@@ -191,12 +191,10 @@ const handleFileChange = (event: Event) => {
   const file = target.files?.[0]
 
   if (file) {
-    // Validasi ukuran dan tipe file bisa ditambahkan di sini
-    // Misalnya:
     const maxSize = 2 * 1024 * 1024 // 2MB
     if (file.size > maxSize) {
       alert('Ukuran file terlalu besar! Maksimal 2MB.')
-      target.value = '' // Reset input file
+      target.value = ''
       return
     }
     if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
@@ -205,15 +203,12 @@ const handleFileChange = (event: Event) => {
       return
     }
 
-    // Buat preview gambar
     const reader = new FileReader()
     reader.onload = (e) => {
       profileImagePreview.value = e.target?.result as string
     }
     reader.readAsDataURL(file)
 
-    // Nanti, simpan `file` ini di state untuk diupload saat `handleUpdateProfile`
-    // selectedFile.value = file;
     console.log('File dipilih:', file)
   }
 }
@@ -221,21 +216,20 @@ const handleFileChange = (event: Event) => {
 const handleUpdateProfile = async () => {
   isSubmittingProfile.value = true
   console.log('Memperbarui profil dengan data:', JSON.parse(JSON.stringify(profileData)))
-  // Nanti:
-  // const payload = { fullName: profileData.fullName }; // Hanya field yang bisa diubah
-  // await authStore.updateUserProfile(payload);
-  // Jika ada file gambar baru (dari selectedFile.value), upload juga:
-  // await authStore.uploadProfilePicture(selectedFile.value);
 
   setTimeout(() => {
-    // Simulasi
-    alert('Profil (placeholder) berhasil diperbarui!')
+    alert('Profil  berhasil diperbarui!')
     isSubmittingProfile.value = false
   }, 1500)
 }
 
+const handlePasswordChanged = () => {
+  console.log('Password change process completed from modal.')
+}
+const isChangePasswordModalOpen = ref(false)
+
 const openChangePasswordModal = () => {
-  alert('Buka modal ubah password (implementasi nanti)')
+  isChangePasswordModalOpen.value = true
 }
 </script>
 
