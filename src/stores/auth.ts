@@ -5,7 +5,6 @@ import router from '@/router'
 export interface ChangePasswordPayload {
   newPassword: string
   currentPassword: string
-  confirmNewPassword: string
 }
 
 interface UserProfile {
@@ -133,7 +132,7 @@ export const useAuthStore = defineStore('auth', {
         console.error('Change password failed in store:', err.response?.data || err.message)
         const errorMessage = err.response?.data?.message || 'Gagal mengubah password.'
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
-        throw new Error(this.error) // Lemparkan error agar komponen bisa menangani
+        throw new Error(this.error ?? '') // Lemparkan error agar komponen bisa menangani
       } finally {
         this.isLoading = false
       }
