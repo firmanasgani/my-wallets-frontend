@@ -1,142 +1,226 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-slate-100 px-4 sm:px-6 lg:px-8">
-    <div class="w-full max-w-md space-y-8">
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-slate-900">Buat Akun Baru</h2>
-        <p class="mt-2 text-center text-sm text-slate-600">
-          Sudah punya akun?
-          <RouterLink to="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
-            Masuk di sini
-          </RouterLink>
-        </p>
+  <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+    <div>
+      <img src="@/assets/dompet.png" alt="Logo" class="w-32 h-32" />
+    </div>
+    <div>
+      <h2 class="text-3xl font-semibold text-center">Welcome to My Wallets</h2>
+      <p class="text-lg text-gray-600 mb-4">Buat akun baru untuk melanjutkan.</p>
+    </div>
+
+    <form class="bg-white rounded-lg shadow-lg p-8 w-96" @submit.prevent="handleRegister">
+      <h1 class="text-3xl font-semibold text-center mb-4">Register</h1>
+      
+      <!-- Error Messages -->
+      <div
+        v-if="authStore.authError || clientSideError"
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+        role="alert"
+      >
+        <span class="block sm:inline text-sm">{{ authStore.authError || clientSideError }}</span>
+        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+          <svg
+            class="fill-current h-6 w-6 text-red-700"
+            role="button"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            @click="clearErrors"
+          >
+            <title>Close</title>
+            <path
+              d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"
+            />
+          </svg>
+        </span>
       </div>
 
-      <form
-        class="mt-8 space-y-6 bg-white p-6 sm:p-8 rounded-xl shadow-2xl"
-        @submit.prevent="handleRegister"
-      >
-        <div v-if="authStore.authError" class="rounded-md bg-red-50 p-4 mb-4">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg
-                class="h-5 w-5 text-red-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">{{ authStore.authError }}</h3>
-            </div>
-          </div>
+      <div class="space-y-4">
+        <!-- Full Name Field -->
+        <div>
+          <label for="fullName" class="block text-sm font-medium text-gray-700">
+            Nama Lengkap (Opsional)
+          </label>
+          <input
+            type="text"
+            id="fullName"
+            v-model="formData.fullName"
+            class="border border-gray-300 rounded-lg block w-full px-3 py-2"
+            placeholder="Masukkan nama lengkap"
+          />
         </div>
 
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="fullName" class="sr-only">Nama Lengkap</label>
+        <!-- Username Field -->
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700">
+            Username <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="username"
+            v-model="formData.username"
+            required
+            class="border border-gray-300 rounded-lg block w-full px-3 py-2"
+            placeholder="Masukkan username"
+          />
+        </div>
+
+        <!-- Email Field -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">
+            Email <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            v-model="formData.email"
+            required
+            class="border border-gray-300 rounded-lg block w-full px-3 py-2"
+            placeholder="Masukkan email"
+          />
+        </div>
+
+        <!-- Password Field with Eye Toggle -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Password <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
             <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              v-model="formData.fullName"
-              class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Nama Lengkap (Opsional)"
-            />
-          </div>
-          <div>
-            <label for="username" class="sr-only">Username</label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              v-model="formData.username"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Username"
-            />
-          </div>
-          <div>
-            <label for="email" class="sr-only">Alamat Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              v-model="formData.email"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Alamat Email"
-            />
-          </div>
-          <div>
-            <label for="password" class="sr-only">Password</label>
-            <input
+              :type="showPassword ? 'text' : 'password'"
               id="password"
-              name="password"
-              type="password"
               v-model="formData.password"
               required
-              class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Password (min. 8 karakter)"
+              class="border border-gray-300 rounded-lg block w-full px-3 py-2 pr-10"
+              placeholder="Min. 8 karakter"
             />
-          </div>
-          <div>
-            <label for="confirmPassword" class="sr-only">Konfirmasi Password</label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              v-model="formData.confirmPassword"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Konfirmasi Password"
-            />
-          </div>
-        </div>
-
-        <p v-if="clientSideError" class="text-sm text-red-600">{{ clientSideError }}</p>
-
-        <div>
-          <button
-            type="submit"
-            :disabled="authStore.authIsLoading"
-            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-          >
-            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <button
+              type="button"
+              @click="showPassword = !showPassword"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+            >
               <svg
-                class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+                v-if="!showPassword"
                 xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
               >
                 <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                  clip-rule="evenodd"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-            </span>
-            {{ authStore.authIsLoading ? 'Memproses...' : 'Daftar' }}
-          </button>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
-      </form>
-    </div>
+
+        <!-- Confirm Password Field with Eye Toggle -->
+        <div>
+          <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
+            Konfirmasi Password <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input
+              :type="showConfirmPassword ? 'text' : 'password'"
+              id="confirmPassword"
+              v-model="formData.confirmPassword"
+              required
+              class="border border-gray-300 rounded-lg block w-full px-3 py-2 pr-10"
+              placeholder="Ulangi password"
+            />
+            <button
+              type="button"
+              @click="showConfirmPassword = !showConfirmPassword"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+            >
+              <svg
+                v-if="!showConfirmPassword"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg w-full"
+          :disabled="authStore.authIsLoading"
+        >
+          {{ authStore.authIsLoading ? 'Memproses...' : 'Daftar' }}
+        </button>
+      </div>
+
+      <p class="mt-4 text-center">
+        Sudah punya akun?
+        <RouterLink to="/login" class="text-blue-500 hover:text-blue-600">
+          Masuk di sini
+        </RouterLink>
+      </p>
+    </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue' // Hapus useRouter jika sudah dihandle store
+import { reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useAuthStore } from '@/stores/auth' // Impor auth store
+import { useAuthStore } from '@/stores/auth'
 
-const authStore = useAuthStore() // Gunakan store
+const authStore = useAuthStore()
 
 interface RegisterFormData {
   fullName?: string | null
@@ -147,18 +231,25 @@ interface RegisterFormData {
 }
 
 const formData = reactive<RegisterFormData>({
-  fullName: '', // Default ke string kosong agar lebih mudah divalidasi jika perlu
+  fullName: '',
   username: '',
   email: '',
   password: '',
   confirmPassword: '',
 })
 
-const clientSideError = ref<string | null>(null) // Untuk error validasi sisi klien
+const clientSideError = ref<string | null>(null)
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+
+const clearErrors = () => {
+  clientSideError.value = null
+  authStore.error = null
+}
 
 const handleRegister = async () => {
-  clientSideError.value = null // Reset client-side error
-  authStore.error = null // Reset server-side error dari store
+  clientSideError.value = null
+  authStore.error = null
 
   if (formData.password !== formData.confirmPassword) {
     clientSideError.value = 'Password dan Konfirmasi Password tidak cocok.'
@@ -168,24 +259,18 @@ const handleRegister = async () => {
     clientSideError.value = 'Password minimal harus 8 karakter.'
     return
   }
-  // Validasi lain di sisi klien bisa ditambahkan di sini
 
   try {
-    // Hanya kirim field yang relevan, tanpa confirmPassword
     const payload = {
       username: formData.username,
       email: formData.email,
       password: formData.password,
-      fullName: formData.fullName || null, // Kirim null jika kosong
+      fullName: formData.fullName || null,
     }
     await authStore.register(payload)
-    // Navigasi ke login sudah dihandle di dalam action store
-    // alert('Registrasi berhasil! Silakan cek email Anda (jika ada verifikasi) atau langsung login.'); // Pesan bisa dari store juga
   } catch (error) {
-    // Error sudah dihandle dan disimpan di authStore.error, yang akan ditampilkan di template
-    // Jika ingin log tambahan di sini:
     console.error('Component-level registration error:', error)
-    // Tidak perlu set clientSideError di sini karena authStore.error akan menampilkan error dari server
   }
 }
 </script>
+

@@ -14,7 +14,7 @@
           id="accountName"
           v-model="formData.accountName"
           required
-          class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           placeholder="Contoh: BCA Tabungan, GoPay"
         />
       </div>
@@ -27,7 +27,7 @@
           id="accountType"
           v-model="formData.accountType"
           required
-          class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
         >
           <option disabled value="">Pilih tipe akun...</option>
           <option v-for="typeOpt in accountTypeOptions" :key="typeOpt.value" :value="typeOpt.value">
@@ -44,7 +44,7 @@
           id="bankId"
           v-model="formData.bankId"
           :required="formData.accountType === FrontendAccountType.BANK"
-          class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
         >
           <option disabled :value="null">Pilih bank...</option>
           <option v-for="bank in availableBanks" :key="bank.id" :value="bank.id">
@@ -87,7 +87,7 @@
             v-model.number="formData.initialBalance"
             min="0"
             step="any"
-            class="input-field pl-12 pr-3 p-2 rounded-md shadow-sm focus:ring-indigo-500 border focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+            class="border border-gray-300 rounded-lg block w-full pl-12 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             placeholder="0.00"
           />
         </div>
@@ -102,7 +102,7 @@
           id="currency"
           v-model="formData.currency"
           maxlength="5"
-          class="input-field p-2 rounded-md shadow-sm border focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           placeholder="IDR"
         />
       </div>
@@ -115,7 +115,7 @@
           type="text"
           id="accountNumber"
           v-model="formData.accountNumber"
-          class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           placeholder="Untuk rekening bank atau e-wallet"
         />
       </div>
@@ -124,21 +124,24 @@
         <p class="text-sm font-medium text-red-700">{{ submissionError }}</p>
       </div>
 
-      <div class="flex items-center justify-end space-x-3 pt-4 border-t mt-8">
-        <RouterLink :to="{ name: 'accounts-list' }" class="btn-secondary hover:cursor-pointer"
-          >Batal</RouterLink
+      <div class="flex items-center justify-end gap-3 pt-6 border-t mt-8">
+        <RouterLink
+          :to="{ name: 'accounts-list' }"
+          class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
         >
+          Batal
+        </RouterLink>
         <button
           type="submit"
           :disabled="isSubmitting"
-          class="btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-blue-600 flex items-center"
         >
           <LoadingSpinner
             v-if="isSubmitting"
             :visible="true"
             size="xs"
             color="text-white"
-            class="-ml-1 mr-2"
+            class="mr-2"
           />
           {{ isSubmitting ? 'Menyimpan...' : 'Simpan Akun' }}
         </button>
