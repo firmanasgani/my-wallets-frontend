@@ -105,7 +105,7 @@
           <button
             type="submit"
             :disabled="isSubmittingProfile"
-            class="btn-primary disabled:opacity-60"
+            class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed sm:text-sm transition-colors"
           >
             <LoadingSpinner
               v-if="isSubmittingProfile"
@@ -137,12 +137,46 @@
       v-model:isOpen="isChangePasswordModalOpen"
       @password-changed-successfully="handlePasswordChanged"
     />
+
+    <!-- Success Modal -->
+    <ConfirmationModal
+      v-model:isOpen="isSuccessModalOpen"
+      title="Berhasil!"
+      :message="successMessage"
+      confirmButtonText="OK"
+      :confirmButtonClass="'bg-green-600 hover:bg-green-700 focus:ring-green-500'"
+      iconType="success"
+      :closeOnOverlayClick="true"
+      @confirm="closeSuccessModal"
+      @cancel="closeSuccessModal"
+    >
+      <template #icon>
+        <svg
+          class="h-6 w-6 text-green-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </template>
+      <template #cancelButtonText>
+        <!-- Hide cancel button by providing empty slot -->
+      </template>
+    </ConfirmationModal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import ChangePasswordModal from '@/components/profile/ChangePasswordModal.vue'
 import { useAuthStore } from '@/stores/auth'
 interface ProfileData {
@@ -164,6 +198,10 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const isSubmittingProfile = ref(false)
 const authStore = useAuthStore()
+
+// Success modal state
+const isSuccessModalOpen = ref(false)
+const successMessage = ref('')
 
 onMounted(() => {
   if (authStore.currentUser) {
@@ -218,9 +256,15 @@ const handleUpdateProfile = async () => {
   console.log('Memperbarui profil dengan data:', JSON.parse(JSON.stringify(profileData)))
 
   setTimeout(() => {
-    alert('Profil  berhasil diperbarui!')
     isSubmittingProfile.value = false
+    successMessage.value = 'Profil Anda berhasil diperbarui!'
+    isSuccessModalOpen.value = true
   }, 1500)
+}
+
+const closeSuccessModal = () => {
+  isSuccessModalOpen.value = false
+  successMessage.value = ''
 }
 
 const handlePasswordChanged = () => {

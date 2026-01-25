@@ -99,10 +99,16 @@
         </div>
       </div>
       <div class="mt-4 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
-        <button @click="resetFilters" class="btn-secondary-filter text-sm w-full sm:w-auto">
+        <button
+          @click="resetFilters"
+          class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors w-full sm:w-auto"
+        >
           Reset
         </button>
-        <button @click="applyCurrentFilters" class="btn-primary-filter text-sm w-full sm:w-auto">
+        <button
+          @click="applyCurrentFilters"
+          class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors w-full sm:w-auto"
+        >
           Terapkan
         </button>
       </div>
@@ -301,7 +307,17 @@ const transactionStore = useTransactionStore()
 const accountStore = useAccountStore()
 const categoryStore = useCategoryStore()
 
-const localFilters = reactive<QueryTransactionDto>({ ...transactionStore.activeFilters })
+// Helper function untuk mendapatkan current date dalam format YYYY-MM-DD
+const getCurrentDate = () => {
+  return new Date().toISOString().split('T')[0]
+}
+
+// Set default filter dengan current date
+const localFilters = reactive<QueryTransactionDto>({
+  ...transactionStore.activeFilters,
+  startDate: transactionStore.activeFilters.startDate || getCurrentDate(),
+  endDate: transactionStore.activeFilters.endDate || getCurrentDate(),
+})
 
 // Computed properties untuk mengambil data dari store
 const transactions = computed(() => transactionStore.transactionList)
@@ -384,11 +400,12 @@ const applyCurrentFilters = () => {
 }
 
 const resetFilters = () => {
+  const currentDate = getCurrentDate()
   localFilters.accountId = undefined
   localFilters.categoryId = undefined
   localFilters.type = undefined
-  localFilters.startDate = undefined
-  localFilters.endDate = undefined
+  localFilters.startDate = currentDate
+  localFilters.endDate = currentDate
   localFilters.page = 1 // Reset ke halaman 1
   // localFilters.limit tetap (atau reset ke default store)
   // localFilters.sortBy & sortOrder tetap (atau reset ke default store)
@@ -397,6 +414,8 @@ const resetFilters = () => {
     limit: localFilters.limit,
     sortBy: 'transactionDate',
     sortOrder: 'desc',
+    startDate: currentDate,
+    endDate: currentDate,
   })
 }
 
