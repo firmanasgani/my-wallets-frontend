@@ -61,20 +61,15 @@
       </div>
 
       <div v-if="formData.accountType === FrontendAccountType.BANK">
-        <label for="bankId" class="block text-sm font-medium text-slate-700 mb-1">Bank</label>
-        <input
-          type="text"
-          :value="selectedBankName"
-          class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
-          readonly
-          disabled
+        <SearchableSelect
+          v-model="selectedBankId"
+          :options="bankOptions"
+          label="Bank"
+          placeholder="Bank tidak dapat diubah"
+          :disabled="true"
+          helper-text="Bank tidak dapat diubah saat mengedit akun."
+          input-id="bankId"
         />
-        <p
-          v-if="isLoadingBanks && formData.accountType === FrontendAccountType.BANK"
-          class="text-xs text-slate-500 mt-1"
-        >
-          Memuat info bank...
-        </p>
       </div>
 
       <div>
@@ -150,6 +145,7 @@
 import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import SearchableSelect from '@/components/common/SearchableSelect.vue'
 import { FrontendAccountType } from '@/types/enums'
 import type { Bank as BankOption, Account, UpdateAccountPayload } from '@/types/accounts'
 import { useBankStore } from '@/stores/banks'
@@ -215,6 +211,22 @@ const selectedBankName = computed(() => {
     return bank ? bank.name : 'Bank tidak ditemukan'
   }
   return ''
+})
+
+// Format bank options untuk SearchableSelect
+const bankOptions = computed(() => {
+  return availableBanks.value.map((bank) => ({
+    value: bank.id,
+    label: bank.name,
+  }))
+})
+
+// Computed property untuk handle bankId dengan type yang sesuai
+const selectedBankId = computed({
+  get: () => formData.bankId ?? null,
+  set: (value) => {
+    formData.bankId = value
+  },
 })
 
 const fetchAccountDetails = async (accountId: string) => {

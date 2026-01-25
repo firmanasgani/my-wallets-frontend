@@ -37,40 +37,16 @@
       </div>
 
       <div v-if="formData.accountType === FrontendAccountType.BANK">
-        <label for="bankId" class="block text-sm font-medium text-slate-700 mb-1"
-          >Pilih Bank <span class="text-red-500">*</span></label
-        >
-        <select
-          id="bankId"
-          v-model="formData.bankId"
+        <SearchableSelect
+          v-model="selectedBankId"
+          :options="bankOptions"
+          label="Pilih Bank"
+          placeholder="Ketik untuk mencari bank..."
           :required="formData.accountType === FrontendAccountType.BANK"
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-        >
-          <option disabled :value="null">Pilih bank...</option>
-          <option v-for="bank in availableBanks" :key="bank.id" :value="bank.id">
-            {{ bank.name }}
-          </option>
-        </select>
-        <p
-          v-if="bankStore.isLoadingBanks && formData.accountType === FrontendAccountType.BANK"
-          class="text-xs text-slate-500 mt-1"
-        >
-          Memuat daftar bank...
-        </p>
-        <p
-          v-if="
-            !bankStore.isLoadingBanks &&
-            formData.accountType === FrontendAccountType.BANK &&
-            availableBanks.length === 0 &&
-            !bankStore.bankError
-          "
-          class="text-xs text-orange-500 mt-1"
-        >
-          Tidak ada bank tersedia atau gagal memuat.
-        </p>
-        <p v-if="bankStore.bankError" class="text-xs text-red-500 mt-1">
-          {{ bankStore.bankError }}
-        </p>
+          :disabled="bankStore.isLoadingBanks"
+          :helper-text="getHelperText()"
+          input-id="bankId"
+        />
       </div>
 
       <div>
@@ -158,6 +134,7 @@ import type { CreateAccountPayload } from '@/types/accounts'
 import { useBankStore } from '@/stores/banks'
 import { useAccountStore } from '@/stores/accounts'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import SearchableSelect from '@/components/common/SearchableSelect.vue'
 
 const accountTypeOptions = [
   { value: FrontendAccountType.BANK, text: 'Rekening Bank' },
@@ -172,6 +149,28 @@ const router = useRouter()
 
 const availableBanks = computed(() => bankStore.allBanks)
 
+// Format bank options untuk SearchableSelect
+const bankOptions = computed(() => {
+  return availableBanks.value.map((bank) => ({
+    value: bank.id,
+    label: bank.name,
+  }))
+})
+
+// Helper text untuk bank select
+const getHelperText = () => {
+  if (bankStore.isLoadingBanks) {
+    return 'Memuat daftar bank...'
+  }
+  if (bankStore.bankError) {
+    return bankStore.bankError
+  }
+  if (!bankStore.isLoadingBanks && availableBanks.value.length === 0) {
+    return 'Tidak ada bank tersedia atau gagal memuat.'
+  }
+  return ''
+}
+
 // Reactive form data
 const formData = reactive<CreateAccountPayload>({
   accountName: '',
@@ -184,6 +183,14 @@ const formData = reactive<CreateAccountPayload>({
 
 const isSubmitting = ref(false)
 const submissionError = ref<string | null>(null)
+
+// Computed property untuk handle bankId dengan type yang sesuai
+const selectedBankId = computed({
+  get: () => formData.bankId ?? null,
+  set: (value) => {
+    formData.bankId = value
+  },
+})
 
 const fetchBanksIfNeeded = async () => {
   if (formData.accountType === FrontendAccountType.BANK && bankStore.banks.length === 0) {
