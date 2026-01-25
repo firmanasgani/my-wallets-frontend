@@ -78,7 +78,7 @@
           <span
             v-if="hasSubCategories"
             class="ml-2 text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full"
-            >{{ category.subCategories.length }}</span
+            >{{ category.subCategories?.length }}</span
           >
         </div>
       </div>

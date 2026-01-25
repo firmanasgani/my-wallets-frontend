@@ -86,7 +86,7 @@
         :key="account.id"
         class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transform hover:scale-105 transition-transform duration-300 ease-in-out"
       >
-        <div class="bg-slate-700 text-white px-4 py-2">
+        <div :class="getHeaderColorClass(account.accountType)" class="text-white px-4 py-2">
           <h3 class="text-md font-semibold truncate" :title="account.accountName">
             {{ account.accountName }}
           </h3>
@@ -288,6 +288,22 @@ const formatCurrency = (
     currency: currency,
     minimumFractionDigits: 0,
   }).format(numericValue)
+}
+
+// Fungsi untuk mendapatkan warna header berdasarkan tipe akun
+const getHeaderColorClass = (accountType: string): string => {
+  switch (accountType) {
+    case 'BANK':
+      return 'bg-blue-600' // Rekening - Biru
+    case 'CREDIT_CARD':
+      return 'bg-yellow-500' // Kartu Kredit - Kuning
+    case 'CASH':
+      return 'bg-green-600' // Cash - Hijau
+    case 'E_WALLET':
+      return 'bg-red-600' // E-Wallet - Merah
+    default:
+      return 'bg-slate-700' // Default - Abu-abu
+  }
 }
 
 const viewTransactions = (accountId: string) => {
