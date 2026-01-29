@@ -29,7 +29,18 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
     const authStore = useAuthStore()
-    if (error.response?.status === 401 && !originalRequest._retry && authStore.token) {
+
+    // Check if this is a change-password endpoint
+    const isChangePasswordEndpoint = originalRequest?.url?.includes('/auth/change-password')
+
+    // Only auto-logout for 401 errors that are NOT from change-password endpoint
+    // (401 from change-password means wrong current password, not expired token)
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      authStore.token &&
+      !isChangePasswordEndpoint
+    ) {
       originalRequest._retry = true
       console.error(
         'API request unauthorized (401). Token might be expired or invalid. Logging out.',

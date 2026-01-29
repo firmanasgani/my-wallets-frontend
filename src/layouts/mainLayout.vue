@@ -93,7 +93,14 @@
               aria-haspopup="true"
             >
               <span class="sr-only">Buka menu pengguna</span>
+              <img
+                v-if="userProfilePicture"
+                :src="userProfilePicture"
+                alt="Foto Profil"
+                class="w-8 h-8 rounded-full object-cover ring-1 ring-slate-200"
+              />
               <div
+                v-else
                 class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold ring-1 ring-indigo-700"
               >
                 {{ authStore.currentUser?.username?.charAt(0).toUpperCase() || 'U' }}
@@ -305,6 +312,18 @@ const currentRouteTitle = computed(() => {
     return cleanedName.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
   }
   return 'MyWallets App'
+})
+
+const userProfilePicture = computed(() => {
+  const user = authStore.currentUser
+  if (user?.profilePictureUrl) {
+    return user.profilePictureUrl
+  }
+  if (user?.profilePicture) {
+    const baseURL = import.meta.env.VITE_API_BASE_URL || ''
+    return baseURL + user.profilePicture
+  }
+  return null
 })
 
 const navLinkBaseClasses = 'flex items-center py-2.5 px-4 rounded-md transition-colors'

@@ -12,6 +12,8 @@ interface UserProfile {
   username: string
   email: string
   fullName?: string | null
+  profilePicture?: string | null
+  profilePictureUrl?: string | null
 }
 
 interface LoginResponse {
@@ -113,26 +115,44 @@ export const useAuthStore = defineStore('auth', {
     },
     async changePassword(payload: ChangePasswordPayload) {
       if (!this.isAuthenticated) {
-        // Tambahan pengecekan
         throw new Error('User not authenticated.')
       }
-      this.isLoading = true // Gunakan isLoading global atau buat state spesifik
+      this.isLoading = true
       this.error = null
       try {
-        // Asumsi endpoint backend Anda adalah PATCH /api/auth/change-password
         await apiClient.patch('/auth/change-password', payload)
-        // Backend akan memvalidasi currentPassword, lalu update
         console.log('Password changed successfully via API.')
-        // Anda bisa memilih untuk:
-        // 1. Tidak melakukan apa-apa, biarkan token saat ini tetap valid
-        // 2. Menganggap sesi ini masih valid, tapi sarankan user login ulang di perangkat lain
-        // 3. Logout user saat ini untuk memaksa login ulang dengan password baru (lebih aman)
-        // Pilihan 3 diimplementasikan di modal setelah pesan sukses.
       } catch (err: any) {
         console.error('Change password failed in store:', err.response?.data || err.message)
-        const errorMessage = err.response?.data?.message || 'Gagal mengubah password.'
-        this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
-        throw new Error(this.error ?? '') // Lemparkan error agar komponen bisa menangani
+
+        // Handle specific error responses from backend
+        const response = err.response?.data
+        let errorMessage = 'Gagal mengubah password.'
+
+        if (response) {
+          // Handle validation errors (array of messages)
+          if (Array.isArray(response.message)) {
+            errorMessage = response.message.join(', ')
+          }
+          // Handle specific error messages
+          else if (typeof response.message === 'string') {
+            // Map backend error messages to user-friendly Indonesian messages
+            if (response.message === 'Current password is incorrect') {
+              errorMessage = 'Password saat ini tidak benar.'
+            } else if (
+              response.message === 'New password must be different from current password'
+            ) {
+              errorMessage = 'Password baru harus berbeda dari password saat ini.'
+            } else if (response.message.includes('at least 6 characters')) {
+              errorMessage = 'Password baru minimal 6 karakter.'
+            } else {
+              errorMessage = response.message
+            }
+          }
+        }
+
+        this.error = errorMessage
+        throw new Error(this.error)
       } finally {
         this.isLoading = false
       }

@@ -9,7 +9,7 @@
         Foto Profil
       </h2>
       <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
-        <div class="flex-shrink-0">
+        <div class="flex-shrink-0 relative">
           <img
             v-if="profileImagePreview"
             :src="profileImagePreview"
@@ -29,6 +29,13 @@
                   : 'U'
             }}
           </div>
+          <!-- Loading spinner overlay saat upload -->
+          <div
+            v-if="isUploadingPicture"
+            class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center"
+          >
+            <LoadingSpinner :visible="true" size="md" color="text-white" />
+          </div>
         </div>
         <div class="flex-grow">
           <input
@@ -36,18 +43,17 @@
             ref="fileInputRef"
             @change="handleFileChange"
             class="hidden"
-            accept="image/png, image/jpeg, image/gif"
+            accept="image/jpeg,image/png,image/webp"
           />
           <button
             type="button"
             @click="triggerFileInput"
-            class="w-full sm:w-auto px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            :disabled="isUploadingPicture"
+            class="w-full sm:w-auto px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Ubah Foto Profil
+            {{ isUploadingPicture ? 'Mengupload...' : 'Ubah Foto Profil' }}
           </button>
-          <p class="mt-2 text-xs text-slate-500">
-            JPG, GIF atau PNG. Ukuran maksimal 2MB (placeholder).
-          </p>
+          <p class="mt-2 text-xs text-slate-500">JPEG, PNG atau WebP. Ukuran maksimal 5MB.</p>
         </div>
       </div>
     </section>
@@ -79,7 +85,7 @@
             type="text"
             id="username"
             v-model="profileData.username"
-            class="input-field bg-slate-50"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 bg-slate-50"
             placeholder="Username Anda"
             readonly
             disabled
@@ -93,7 +99,7 @@
             type="email"
             id="email"
             v-model="profileData.email"
-            class="input-field bg-slate-50"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 bg-slate-50"
             placeholder="Email Anda"
             readonly
             disabled
@@ -170,6 +176,39 @@
         <!-- Hide cancel button by providing empty slot -->
       </template>
     </ConfirmationModal>
+
+    <!-- Error Modal -->
+    <ConfirmationModal
+      v-model:isOpen="isErrorModalOpen"
+      title="Gagal!"
+      :message="errorMessage"
+      confirmButtonText="OK"
+      :confirmButtonClass="'bg-red-600 hover:bg-red-700 focus:ring-red-500'"
+      iconType="danger"
+      :closeOnOverlayClick="true"
+      @confirm="closeErrorModal"
+      @cancel="closeErrorModal"
+    >
+      <template #icon>
+        <svg
+          class="h-6 w-6 text-red-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+          />
+        </svg>
+      </template>
+      <template #cancelButtonText>
+        <!-- Hide cancel button by providing empty slot -->
+      </template>
+    </ConfirmationModal>
   </div>
 </template>
 
@@ -179,6 +218,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import ChangePasswordModal from '@/components/profile/ChangePasswordModal.vue'
 import { useAuthStore } from '@/stores/auth'
+import apiClient from '@/services/apiService'
 interface ProfileData {
   fullName: string
   username: string
@@ -197,11 +237,16 @@ const profileImagePreview = ref<string | null>(null)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const isSubmittingProfile = ref(false)
+const isUploadingPicture = ref(false) // Added this line
 const authStore = useAuthStore()
 
 // Success modal state
 const isSuccessModalOpen = ref(false)
 const successMessage = ref('')
+
+// Error modal state (untuk upload errors)
+const isErrorModalOpen = ref(false)
+const errorMessage = ref('')
 
 onMounted(() => {
   if (authStore.currentUser) {
@@ -209,14 +254,15 @@ onMounted(() => {
     profileData.username = authStore.currentUser.username
     profileData.email = authStore.currentUser.email
 
-    if (profileData.profilePictureUrl) {
-      profileImagePreview.value = profileData.profilePictureUrl
+    // Updated logic to use authStore.currentUser.profilePictureUrl or profilePicture
+    if (authStore.currentUser.profilePictureUrl) {
+      profileImagePreview.value = authStore.currentUser.profilePictureUrl
+    } else if (authStore.currentUser.profilePicture) {
+      const baseURL = import.meta.env.VITE_API_BASE_URL || ''
+      profileImagePreview.value = baseURL + authStore.currentUser.profilePicture
+    } else {
+      profileImagePreview.value = null
     }
-  }
-
-  if (profileData.profilePictureUrl) {
-    profileImagePreview.value = profileData.profilePictureUrl
-  } else {
   }
 })
 
@@ -224,30 +270,93 @@ const triggerFileInput = () => {
   fileInputRef.value?.click()
 }
 
-const handleFileChange = (event: Event) => {
+const handleFileChange = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
 
-  if (file) {
-    const maxSize = 2 * 1024 * 1024 // 2MB
-    if (file.size > maxSize) {
-      alert('Ukuran file terlalu besar! Maksimal 2MB.')
-      target.value = ''
-      return
-    }
-    if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
-      alert('Tipe file tidak didukung! Hanya JPG, PNG, GIF.')
-      target.value = ''
-      return
+  if (!file) {
+    return
+  }
+
+  // Validasi ukuran file (max 5MB sesuai backend)
+  const maxSize = 5 * 1024 * 1024 // 5MB
+  if (file.size > maxSize) {
+    errorMessage.value = 'Ukuran file terlalu besar! Maksimal 5MB.'
+    isErrorModalOpen.value = true
+    target.value = ''
+    return
+  }
+
+  // Validasi tipe file (JPEG, PNG, WebP sesuai backend)
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+  if (!allowedTypes.includes(file.type)) {
+    errorMessage.value = 'Tipe file tidak didukung! Hanya JPEG, PNG, dan WebP.'
+    isErrorModalOpen.value = true
+    target.value = ''
+    return
+  }
+
+  // Preview image
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    profileImagePreview.value = e.target?.result as string
+  }
+  reader.readAsDataURL(file)
+
+  // Upload ke backend
+  await uploadProfilePicture(file)
+
+  // Reset input
+  target.value = ''
+}
+
+const uploadProfilePicture = async (file: File) => {
+  isUploadingPicture.value = true
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await apiClient.patch('/auth/profile-picture/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    // Update user data dari response
+    if (response.data.user) {
+      authStore.setUser(response.data.user)
+      profileData.profilePictureUrl = response.data.user.profilePictureUrl
+
+      // Update preview dengan URL dari backend
+      if (response.data.user.profilePictureUrl) {
+        profileImagePreview.value = response.data.user.profilePictureUrl
+      } else if (response.data.user.profilePicture) {
+        // Jika path relatif, tambahkan base URL
+        const baseURL = import.meta.env.VITE_API_BASE_URL || ''
+        profileImagePreview.value = baseURL + response.data.user.profilePicture
+      }
     }
 
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      profileImagePreview.value = e.target?.result as string
-    }
-    reader.readAsDataURL(file)
+    successMessage.value = 'Foto profil berhasil diperbarui!'
+    isSuccessModalOpen.value = true
+  } catch (error: any) {
+    console.error('Upload profile picture failed:', error)
 
-    console.log('File dipilih:', file)
+    // Reset preview to current user's picture or null if upload fails
+    if (authStore.currentUser?.profilePicture) {
+      const baseURL = import.meta.env.VITE_API_BASE_URL || ''
+      profileImagePreview.value = baseURL + authStore.currentUser.profilePicture
+    } else {
+      profileImagePreview.value = null
+    }
+
+    // Handle error dari backend
+    const errorMsg = error.response?.data?.message || 'Gagal mengupload foto profil.'
+    errorMessage.value = Array.isArray(errorMsg) ? errorMsg.join(', ') : errorMsg
+    isErrorModalOpen.value = true
+  } finally {
+    isUploadingPicture.value = false
   }
 }
 
@@ -265,6 +374,11 @@ const handleUpdateProfile = async () => {
 const closeSuccessModal = () => {
   isSuccessModalOpen.value = false
   successMessage.value = ''
+}
+
+const closeErrorModal = () => {
+  isErrorModalOpen.value = false
+  errorMessage.value = ''
 }
 
 const handlePasswordChanged = () => {
