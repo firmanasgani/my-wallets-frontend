@@ -84,7 +84,8 @@
       <div
         v-for="account in accounts"
         :key="account.id"
-        class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transform hover:scale-105 transition-transform duration-300 ease-in-out"
+        class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer"
+        @click="viewTransactions(account.id)"
       >
         <div :class="getHeaderColorClass(account.accountType)" class="text-white px-4 py-2">
           <h3 class="text-md font-semibold truncate" :title="account.accountName">
@@ -180,8 +181,8 @@
 
           <div class="pt-2 border-t border-slate-200 flex justify-end space-x-2 mt-2 print:hidden">
             <button
-              @click.prevent="viewTransactions(account.id)"
-              title="Lihat Transaksi"
+              @click.stop="viewTransactions(account.id)"
+              title="Lihat Detail Akun"
               class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-md hover:bg-indigo-50 transition-colors"
             >
               <svg
@@ -195,12 +196,19 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                ></path>
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
               </svg>
             </button>
             <RouterLink
               :to="{ name: 'account-edit', params: { id: account.id } }"
+              @click.stop
               title="Edit Akun"
               class="p-1.5 text-slate-500 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors"
             >
@@ -220,7 +228,7 @@
               </svg>
             </RouterLink>
             <button
-              @click.prevent="promptDeleteAccount(account)"
+              @click.stop="promptDeleteAccount(account)"
               title="Hapus Akun"
               class="p-1.5 text-slate-500 hover:text-red-600 rounded-md hover:bg-red-50 transition-colors"
             >
@@ -307,7 +315,7 @@ const getHeaderColorClass = (accountType: string): string => {
 }
 
 const viewTransactions = (accountId: string) => {
-  router.push({ name: 'transactions-list', query: { accountId: accountId } })
+  router.push({ name: 'account-detail', params: { id: accountId } })
 }
 
 // Logika untuk Modal Hapus

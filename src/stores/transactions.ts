@@ -75,30 +75,69 @@ export const useTransactionStore = defineStore('transactions', {
       this.isLoading = true
       this.error = null
 
-      // Gabungkan filter baru dengan filter yang sudah ada atau default
-      // Pastikan page dan limit selalu ada
       const queryParams: QueryTransactionDto = {
-        ...this.currentFilters, // Ambil filter terakhir yg dipakai
-        ...filters, // Timpa dengan filter baru jika ada
+        ...this.currentFilters,
+        ...filters,
         page: filters?.page || this.currentFilters.page || 1,
         limit: filters?.limit || this.currentFilters.limit || 10,
       }
-      this.currentFilters = queryParams // Simpan filter yang sedang aktif
+      this.currentFilters = queryParams
 
       try {
-        // Pastikan endpoint '/transactions' sesuai dengan API backend Anda
         const response = await apiClient.get<PaginatedTransactionsResponse>('/transactions', {
           params: queryParams,
         })
         this.transactions = response.data.data
         this.meta = response.data.meta
-        console.log('Transactions fetched:', this.transactions.length)
       } catch (err: any) {
         console.error('Failed to fetch transactions:', err.response?.data || err.message)
         const errorMessage = err.response?.data?.message || 'Gagal memuat daftar transaksi.'
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
-        this.transactions = [] // Kosongkan jika error
-        this.meta = { total: 0, page: 1, limit: queryParams.limit || 10, lastPage: 1 } // Reset meta
+        this.transactions = []
+        this.meta = { total: 0, page: 1, limit: queryParams.limit || 10, lastPage: 1 }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async fetchTransactionsByAccount(accountId: string, filters?: QueryTransactionDto) {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) {
+        this.error = 'User not authenticated.'
+        return
+      }
+
+      this.isLoading = true
+      this.error = null
+
+      // Set filter accountId secara eksplisit
+      const queryParams: QueryTransactionDto = {
+        ...this.currentFilters,
+        ...filters,
+        accountId: accountId, // Pastikan accountId tersimpan di filter
+        page: filters?.page || 1, // Reset ke page 1 jika filter baru, atau gunakan yang diminta
+        limit: filters?.limit || this.currentFilters.limit || 10,
+      }
+      this.currentFilters = queryParams
+
+      try {
+        const response = await apiClient.get<PaginatedTransactionsResponse>(
+          `/transactions/account/${accountId}`,
+          {
+            params: queryParams,
+          },
+        )
+        this.transactions = response.data.data
+        this.meta = response.data.meta
+      } catch (err: any) {
+        console.error(
+          `Failed to fetch transactions for account ${accountId}:`,
+          err.response?.data || err.message,
+        )
+        const errorMessage = err.response?.data?.message || 'Gagal memuat transaksi akun.'
+        this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
+        this.transactions = []
+        this.meta = { total: 0, page: 1, limit: queryParams.limit || 10, lastPage: 1 }
       } finally {
         this.isLoading = false
       }

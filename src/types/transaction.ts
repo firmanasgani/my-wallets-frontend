@@ -4,6 +4,7 @@ interface BasicAccountInfo {
   id: string
   accountName: string
   accountType?: FrontendAccountType // Opsional jika hanya perlu nama
+  bank?: { name: string } | null
 }
 
 interface BasicCategoryInfo {

@@ -6,6 +6,7 @@ import DashboardView from '../views/DashboardView.vue'
 import AccountsView from '../views/AccountsView.vue'
 import AccountCreateView from '../views/AccountCreateView.vue'
 import AccountEditView from '../views/AccountEditView.vue'
+import AccountDetailView from '../views/AccountDetailView.vue'
 import CategoriesView from '@/views/CategoriesView.vue' // Buat file ini jika belum
 import TransactionsView from '@/views/TransactionsView.vue' // Buat file ini jika belum
 import ProfileView from '@/views/ProfileView.vue'
@@ -54,6 +55,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'account-create',
         component: AccountCreateView,
         meta: { title: 'Tambah Akun' },
+      },
+      {
+        path: 'accounts/:id',
+        name: 'account-detail',
+        component: AccountDetailView,
+        meta: { title: 'Detail Akun' },
       },
       {
         path: 'accounts/:id/edit',
