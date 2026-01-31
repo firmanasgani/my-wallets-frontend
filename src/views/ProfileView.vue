@@ -1,7 +1,18 @@
 <template>
   <div class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
-    <header>
-      <h1 class="text-3xl font-semibold text-slate-800 border-b pb-4">Profil Saya</h1>
+    <header class="flex items-center justify-between border-b pb-4">
+      <h1 class="text-3xl font-semibold text-slate-800">Profil Saya</h1>
+      <span
+        v-if="authStore.currentUser?.subscriptionPlan"
+        :class="{
+          'bg-gray-100 text-gray-800': authStore.currentUser.subscriptionPlan === 'FREE',
+          'bg-amber-100 text-amber-800': authStore.currentUser.subscriptionPlan === 'PREMIUM',
+          'bg-purple-100 text-purple-800': authStore.currentUser.subscriptionPlan === 'FAMILY',
+        }"
+        class="px-3 py-1 rounded-full text-sm font-bold tracking-wide uppercase"
+      >
+        {{ authStore.currentUser.subscriptionPlan }} PLAN
+      </span>
     </header>
 
     <section aria-labelledby="profile-picture-heading" class="bg-white shadow-lg rounded-xl p-6">
@@ -45,14 +56,25 @@
             class="hidden"
             accept="image/jpeg,image/png,image/webp"
           />
-          <button
-            type="button"
-            @click="triggerFileInput"
-            :disabled="isUploadingPicture"
-            class="w-full sm:w-auto px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {{ isUploadingPicture ? 'Mengupload...' : 'Ubah Foto Profil' }}
-          </button>
+          <div class="flex flex-col sm:flex-row gap-3 mt-2 sm:mt-0">
+            <button
+              type="button"
+              @click="triggerFileInput"
+              :disabled="isUploadingPicture"
+              class="w-full sm:w-auto px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {{ isUploadingPicture ? 'Mengupload...' : 'Ubah Foto Profil' }}
+            </button>
+            <button
+              v-if="profileImagePreview"
+              type="button"
+              @click="confirmDeletePicture"
+              :disabled="isUploadingPicture"
+              class="w-full sm:w-auto px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Hapus Foto
+            </button>
+          </div>
           <p class="mt-2 text-xs text-slate-500">JPEG, PNG atau WebP. Ukuran maksimal 5MB.</p>
         </div>
       </div>
@@ -139,9 +161,45 @@
         </button>
       </div>
     </section>
+
+    <section
+      aria-labelledby="danger-zone-heading"
+      class="bg-white shadow-lg rounded-xl p-6 border border-red-100"
+    >
+      <h2 id="danger-zone-heading" class="text-lg font-medium text-red-600 mb-1">Zona Bahaya</h2>
+      <p class="text-sm text-slate-500 mb-6">Tindakan di sini tidak dapat dibatalkan.</p>
+
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h3 class="text-sm font-medium text-slate-900">Hapus Akun</h3>
+          <p class="text-sm text-slate-500">
+            Menghapus akun dan semua data Anda secara permanen. Setelah dihapus, data tidak dapat
+            dipulihkan kembali.
+          </p>
+        </div>
+        <button
+          type="button"
+          @click="promptDeleteAccount"
+          class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+        >
+          Hapus Akun
+        </button>
+      </div>
+    </section>
     <ChangePasswordModal
       v-model:isOpen="isChangePasswordModalOpen"
       @password-changed-successfully="handlePasswordChanged"
+    />
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmationModal
+      v-model:isOpen="isDeleteConfirmModalOpen"
+      title="Hapus Foto Profil"
+      message="Apakah Anda yakin ingin menghapus foto profil ini? Tindakan ini tidak dapat dibatalkan."
+      confirmButtonText="Hapus"
+      confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+      iconType="danger"
+      @confirm="handleDeletePicture"
     />
 
     <!-- Success Modal -->
@@ -240,6 +298,9 @@ const isSubmittingProfile = ref(false)
 const isUploadingPicture = ref(false) // Added this line
 const authStore = useAuthStore()
 
+// Delete modal state
+const isDeleteConfirmModalOpen = ref(false)
+
 // Success modal state
 const isSuccessModalOpen = ref(false)
 const successMessage = ref('')
@@ -254,12 +315,9 @@ onMounted(() => {
     profileData.username = authStore.currentUser.username
     profileData.email = authStore.currentUser.email
 
-    // Updated logic to use authStore.currentUser.profilePictureUrl or profilePicture
+    // Updated logic to use authStore.currentUser.profilePictureUrl
     if (authStore.currentUser.profilePictureUrl) {
       profileImagePreview.value = authStore.currentUser.profilePictureUrl
-    } else if (authStore.currentUser.profilePicture) {
-      const baseURL = import.meta.env.VITE_API_BASE_URL || ''
-      profileImagePreview.value = baseURL + authStore.currentUser.profilePicture
     } else {
       profileImagePreview.value = null
     }
@@ -326,15 +384,11 @@ const uploadProfilePicture = async (file: File) => {
     // Update user data dari response
     if (response.data.user) {
       authStore.setUser(response.data.user)
-      profileData.profilePictureUrl = response.data.user.profilePictureUrl
+      await authStore.fetchUserProfile() // Fetch complete profile to get new profilePictureUrl
 
-      // Update preview dengan URL dari backend
-      if (response.data.user.profilePictureUrl) {
-        profileImagePreview.value = response.data.user.profilePictureUrl
-      } else if (response.data.user.profilePicture) {
-        // Jika path relatif, tambahkan base URL
-        const baseURL = import.meta.env.VITE_API_BASE_URL || ''
-        profileImagePreview.value = baseURL + response.data.user.profilePicture
+      if (authStore.currentUser?.profilePictureUrl) {
+        profileImagePreview.value = authStore.currentUser.profilePictureUrl
+        profileData.profilePictureUrl = authStore.currentUser.profilePictureUrl
       }
     }
 
@@ -344,15 +398,43 @@ const uploadProfilePicture = async (file: File) => {
     console.error('Upload profile picture failed:', error)
 
     // Reset preview to current user's picture or null if upload fails
-    if (authStore.currentUser?.profilePicture) {
-      const baseURL = import.meta.env.VITE_API_BASE_URL || ''
-      profileImagePreview.value = baseURL + authStore.currentUser.profilePicture
+    if (authStore.currentUser?.profilePictureUrl) {
+      profileImagePreview.value = authStore.currentUser.profilePictureUrl
     } else {
       profileImagePreview.value = null
     }
 
     // Handle error dari backend
     const errorMsg = error.response?.data?.message || 'Gagal mengupload foto profil.'
+    errorMessage.value = Array.isArray(errorMsg) ? errorMsg.join(', ') : errorMsg
+    isErrorModalOpen.value = true
+  } finally {
+    isUploadingPicture.value = false
+  }
+}
+
+const confirmDeletePicture = () => {
+  isDeleteConfirmModalOpen.value = true
+}
+
+const handleDeletePicture = async () => {
+  isDeleteConfirmModalOpen.value = false
+  isUploadingPicture.value = true // Reuse uploading spinner or state
+
+  try {
+    await apiClient.delete('/auth/profile-picture')
+
+    // Refresh profile to reflect changes
+    await authStore.fetchUserProfile()
+
+    profileImagePreview.value = null
+    profileData.profilePictureUrl = null
+
+    successMessage.value = 'Foto profil berhasil dihapus.'
+    isSuccessModalOpen.value = true
+  } catch (error: any) {
+    console.error('Delete profile picture failed:', error)
+    const errorMsg = error.response?.data?.message || 'Gagal menghapus foto profil.'
     errorMessage.value = Array.isArray(errorMsg) ? errorMsg.join(', ') : errorMsg
     isErrorModalOpen.value = true
   } finally {
@@ -388,6 +470,10 @@ const isChangePasswordModalOpen = ref(false)
 
 const openChangePasswordModal = () => {
   isChangePasswordModalOpen.value = true
+}
+
+const promptDeleteAccount = () => {
+  alert('Fitur hapus akun bersifat permanen dan akan segera tersedia. Hubungi admin jika mendesak.')
 }
 </script>
 

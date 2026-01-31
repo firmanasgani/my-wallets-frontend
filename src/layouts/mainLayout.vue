@@ -43,6 +43,45 @@
               Transaksi
             </RouterLink>
           </li>
+          <li v-if="!isFreePlan">
+            <button
+              @click="toggleBudgetDropdown"
+              :class="`${navLinkBaseClasses} w-full justify-between ${isBudgetActive ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`"
+            >
+              Budget
+              <svg
+                :class="isBudgetDropdownOpen ? 'transform rotate-180' : ''"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div
+              v-show="isBudgetDropdownOpen || isBudgetActive"
+              class="pl-4 space-y-1 mt-1 transition-all"
+            >
+              <RouterLink :to="{ name: 'budget-setup' }" :class="navLinkClasses('budget-setup')">
+                Setup
+              </RouterLink>
+              <RouterLink :to="{ name: 'budget-report' }" :class="navLinkClasses('budget-report')">
+                Laporan
+              </RouterLink>
+            </div>
+          </li>
+          <li>
+            <RouterLink :to="{ name: 'settings' }" :class="navLinkClasses('settings')">
+              Pengaturan
+            </RouterLink>
+          </li>
         </ul>
       </nav>
       <div class="mt-auto pt-4 border-t border-slate-700">
@@ -93,17 +132,32 @@
               aria-haspopup="true"
             >
               <span class="sr-only">Buka menu pengguna</span>
-              <img
-                v-if="userProfilePicture"
-                :src="userProfilePicture"
-                alt="Foto Profil"
-                class="w-8 h-8 rounded-full object-cover ring-1 ring-slate-200"
-              />
-              <div
-                v-else
-                class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold ring-1 ring-indigo-700"
-              >
-                {{ authStore.currentUser?.username?.charAt(0).toUpperCase() || 'U' }}
+              <div class="flex items-center gap-3">
+                <span
+                  class="hidden sm:inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset cursor-default"
+                  :class="{
+                    'bg-blue-50 text-blue-600 ring-blue-600/10':
+                      authStore.currentUser?.subscriptionPlan === 'FREE',
+                    'bg-amber-50 text-amber-700 ring-amber-600/20':
+                      authStore.currentUser?.subscriptionPlan === 'PREMIUM',
+                    'bg-purple-50 text-purple-700 ring-purple-600/20':
+                      authStore.currentUser?.subscriptionPlan === 'FAMILY',
+                  }"
+                >
+                  {{ authStore.currentUser?.subscriptionPlan || 'FREE' }}
+                </span>
+                <img
+                  v-if="userProfilePicture"
+                  :src="userProfilePicture"
+                  alt="Foto Profil"
+                  class="w-8 h-8 rounded-full object-cover ring-1 ring-slate-200"
+                />
+                <div
+                  v-else
+                  class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold ring-1 ring-indigo-700"
+                >
+                  {{ authStore.currentUser?.username?.charAt(0).toUpperCase() || 'U' }}
+                </div>
               </div>
             </button>
 
@@ -251,6 +305,13 @@
                 >
                   Transaksi
                 </RouterLink>
+                <RouterLink
+                  :to="{ name: 'settings' }"
+                  @click="closeMobileSidebar"
+                  :class="navLinkClassesMobile('settings')"
+                >
+                  Pengaturan
+                </RouterLink>
               </nav>
             </div>
             <div class="flex-shrink-0 flex border-t border-slate-700 p-4">
@@ -297,9 +358,19 @@ const authStore = useAuthStore()
 const route = useRoute()
 const router = vueUseRouter()
 
+const isFreePlan = computed(() => authStore.currentUser?.subscriptionPlan === 'FREE')
+
 const isProfileDropdownOpen = ref(false)
 const isMobileSidebarOpen = ref(false)
+const isBudgetDropdownOpen = ref(false)
 const profileDropdownRef = ref<HTMLElement | null>(null) // Ref untuk elemen dropdown
+
+const isBudgetActive = computed(() => {
+  const currentRouteName = route.name?.toString() || ''
+  return currentRouteName.startsWith('budget')
+})
+
+const toggleBudgetDropdown = () => (isBudgetDropdownOpen.value = !isBudgetDropdownOpen.value)
 
 const currentRouteTitle = computed(() => {
   if (route.meta && route.meta.title) {
@@ -318,10 +389,6 @@ const userProfilePicture = computed(() => {
   const user = authStore.currentUser
   if (user?.profilePictureUrl) {
     return user.profilePictureUrl
-  }
-  if (user?.profilePicture) {
-    const baseURL = import.meta.env.VITE_API_BASE_URL || ''
-    return baseURL + user.profilePicture
   }
   return null
 })

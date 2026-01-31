@@ -17,7 +17,7 @@
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
               <RouterLink :to="{ name: 'home' }" class="flex-shrink-0">
-                <span class="text-2xl font-bold text-indigo-600">MyWallets</span>
+                <span class="text-2xl font-bold text-indigo-600">My Wallets</span>
               </RouterLink>
             </div>
             <div class="hidden md:block">
@@ -25,7 +25,10 @@
                 <a href="#features" class="nav-link">Fitur</a>
                 <a href="#pricing" class="nav-link">Harga</a>
                 <RouterLink :to="{ name: 'login' }" class="nav-link">Masuk</RouterLink>
-                <RouterLink :to="{ name: 'register' }" class="btn-primary-sm shadow-sm">
+                <RouterLink
+                  :to="{ name: 'register' }"
+                  class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
                   Daftar Gratis
                 </RouterLink>
               </div>
@@ -87,7 +90,7 @@
               <RouterLink
                 :to="{ name: 'register' }"
                 @click="mobileMenuOpen = false"
-                class="mt-1 block w-full text-left text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded-md"
+                class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >Daftar Gratis</RouterLink
               >
             </div>
@@ -304,6 +307,7 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { PRICING_PLANS } from '@/enums/pricing'
 
 const isLoadingPage = ref(true)
 const mobileMenuOpen = ref(false)
@@ -314,54 +318,7 @@ onMounted(() => {
   }, 700)
 })
 
-const pricingPlans = ref([
-  {
-    name: 'Dasar',
-    description: 'Untuk kebutuhan pencatatan keuangan pribadi yang esensial.',
-    price: 'Gratis',
-    features: [
-      'Hingga 3 Akun Keuangan',
-      'Hingga 10 Kategori Kustom',
-      'Pencatatan Transaksi Manual',
-      'Dashboard Ringkas',
-      'Riwayat Transaksi 12 Bulan',
-    ],
-    cta: { text: 'Mulai Gratis', link: { name: 'register' } },
-    recommended: false,
-  },
-  {
-    name: 'Premium',
-    description: 'Fitur lengkap untuk kontrol finansial yang lebih mendalam.',
-    price: 'Rp 39rb',
-    features: [
-      'Semua di paket Dasar',
-      'Akun Keuangan Tanpa Batas',
-      'Kategori Kustom Tanpa Batas',
-      'Laporan & Analisis Lanjutan',
-      'Transaksi Berulang Otomatis',
-      'Fitur Budgeting',
-      'Lampiran Struk Transaksi',
-      'Dukungan Prioritas',
-    ],
-    cta: { text: 'Pilih Premium', link: { name: 'register' } },
-    recommended: true,
-  },
-  {
-    name: 'Pro/Keluarga',
-    description: 'Untuk pengguna mahir atau pengelolaan keuangan bersama keluarga.',
-    price: 'Rp 99rb',
-    features: [
-      'Semua di paket Premium',
-      'Akun Bersama (Family Sharing)',
-      'Laporan Keluarga Terkonsolidasi',
-      'Budgeting Keluarga',
-      'Pelacakan Tujuan Finansial',
-      'Analisis Kekayaan Bersih',
-    ],
-    cta: { text: 'Pilih Pro', link: { name: 'register' } },
-    recommended: false,
-  },
-])
+const pricingPlans = ref(PRICING_PLANS)
 </script>
 
 <style scoped>

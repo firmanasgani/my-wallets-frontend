@@ -26,6 +26,12 @@ export const useAccountStore = defineStore('accounts', {
     getAccountById: (state) => (id: string) => {
       return state.accounts.find((acc: Account) => acc.id === id)
     },
+    totalBanks: (state) =>
+      state.accounts.filter((acc) => acc.accountType === FrontendAccountType.BANK).length,
+    totalWallets: (state) =>
+      state.accounts.filter((acc) => acc.accountType === FrontendAccountType.E_WALLET).length,
+    totalCards: (state) =>
+      state.accounts.filter((acc) => acc.accountType === FrontendAccountType.CREDIT_CARD).length,
   },
   actions: {
     async fetchAccounts() {
@@ -77,6 +83,15 @@ export const useAccountStore = defineStore('accounts', {
         this.error = 'User not authenticated to create an account.'
         throw new Error(this.error ?? 'Unknown error')
       }
+
+      const isFree = authStore.currentUser?.subscriptionPlan === 'FREE'
+      if (isFree && this.accounts.length >= 4) {
+        const limitError =
+          'Batas akun untuk paket FREE adalah 4. Upgrade ke Premium untuk unlimited akun.'
+        this.error = limitError
+        throw new Error(limitError)
+      }
+
       this.isLoading = true
       this.error = null
 

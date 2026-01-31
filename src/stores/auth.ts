@@ -14,6 +14,7 @@ interface UserProfile {
   fullName?: string | null
   profilePicture?: string | null
   profilePictureUrl?: string | null
+  subscriptionPlan: 'FREE' | 'PREMIUM' | 'FAMILY'
 }
 
 interface LoginResponse {
@@ -83,6 +84,7 @@ export const useAuthStore = defineStore('auth', {
         const response = await apiClient.post<LoginResponse>('/auth/login', credentials)
         this.setToken(response.data.access_token)
         this.setUser(response.data.user)
+        await this.fetchUserProfile() // Fetch full profile to get profilePictureUrl
         const redirectPath =
           (router.currentRoute.value.query.redirect as string) || '/app/dashboard'
         router.push(redirectPath)

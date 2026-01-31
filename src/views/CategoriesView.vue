@@ -4,7 +4,10 @@
       <h1 class="text-3xl font-semibold text-gray-800">Kelola Kategori</h1>
       <button
         @click="openCreateCategoryModal"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors"
+        :disabled="!canAddCategory"
+        :title="addCategoryButtonTitle"
+        class="bg-indigo-600 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors"
+        :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -60,17 +63,84 @@
       <p class="mt-1 text-sm text-slate-500">Anda belum membuat kategori.</p>
       <button
         @click="openCreateCategoryModal"
-        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        :disabled="!canAddCategory"
+        :title="addCategoryButtonTitle"
+        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
       >
         + Tambah Kategori Sekarang
       </button>
     </div>
 
+    <div
+      v-if="!isLoading && categories.length > 0"
+      class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8"
+    >
+      <StatsCard title="Total Kategori" :value="categories.length" variant="indigo">
+        <template #icon>
+          <svg
+            class="h-6 w-6 text-current"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
+            />
+          </svg>
+        </template>
+      </StatsCard>
+
+      <StatsCard
+        title="Income"
+        :value="incomeCategories.length"
+        variant="green"
+        :subtitle="`${categoryStore.totalIncomeParent} Kategori • ${categoryStore.totalIncomeSub} Sub Kategori`"
+      >
+        <template #icon>
+          <svg
+            class="h-6 w-6 text-current"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </template>
+      </StatsCard>
+
+      <StatsCard
+        title="Expense"
+        :value="expenseCategories.length"
+        variant="red"
+        :subtitle="`${categoryStore.totalExpenseParent} Kategori • ${categoryStore.totalExpenseSub} Sub Kategori`"
+      >
+        <template #icon>
+          <svg
+            class="h-6 w-6 text-current"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
+          </svg>
+        </template>
+      </StatsCard>
+    </div>
+
     <div v-if="!isLoading && categories.length > 0" class="space-y-8">
       <div>
-        <h2 class="text-xl font-semibold text-slate-700 mb-3 pb-2 border-b border-slate-300">
-          Kategori Pemasukan (Income)
-        </h2>
+        <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
+          <h2 class="text-xl font-semibold text-slate-700">Kategori Pemasukan (Income)</h2>
+          <span class="text-sm bg-green-100 text-green-800 py-1 px-3 rounded-full font-medium"
+            >Total: {{ incomeCategories.length }}</span
+          >
+        </div>
         <div v-if="incomeCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
           Belum ada kategori pemasukan.
         </div>
@@ -87,9 +157,12 @@
       </div>
 
       <div>
-        <h2 class="text-xl font-semibold text-slate-700 mb-3 pb-2 border-b border-slate-300">
-          Kategori Pengeluaran (Expense)
-        </h2>
+        <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
+          <h2 class="text-xl font-semibold text-slate-700">Kategori Pengeluaran (Expense)</h2>
+          <span class="text-sm bg-red-100 text-red-800 py-1 px-3 rounded-full font-medium"
+            >Total: {{ expenseCategories.length }}</span
+          >
+        </div>
         <div v-if="expenseCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
           Belum ada kategori pengeluaran.
         </div>
@@ -130,18 +203,35 @@
 import { ref, onMounted, computed } from 'vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+import StatsCard from '@/components/common/StatsCard.vue'
 import CategoryItem from '@/components/categories/CategoryItem.vue'
-import CategoryModal from '@/components/categories/CategoryModal.vue' // <-- Impor Modal Form Kategori
 import { useCategoryStore } from '@/stores/categories'
 import type { Category } from '@/types/enums'
+import { useAuthStore } from '@/stores/auth'
 
 const categoryStore = useCategoryStore()
+const authStore = useAuthStore()
 
 const categories = computed(() => categoryStore.allCategories)
 const incomeCategories = computed(() => categoryStore.incomeCategories)
 const expenseCategories = computed(() => categoryStore.expenseCategories)
 const isLoading = computed(() => categoryStore.isLoadingCategories)
 const error = computed(() => categoryStore.categoryError)
+
+const canAddCategory = computed(() => {
+  const isFree = authStore.currentUser?.subscriptionPlan === 'FREE'
+  const countIncome = categoryStore.totalRecursiveIncome
+  const countExpense = categoryStore.totalRecursiveExpense
+  // Bisa tambah jika bukan Free, ATAU (salah satu dari Income/Expense belum mencapai 15)
+  return !isFree || countIncome < 15 || countExpense < 15
+})
+
+const addCategoryButtonTitle = computed(() => {
+  if (!canAddCategory.value) {
+    return 'Batas kategori untuk paket FREE telah tercapai (15 Income & 15 Expense). Upgrade untuk menambah.'
+  }
+  return 'Tambah Kategori Baru'
+})
 
 onMounted(async () => {
   if (categoryStore.allCategories.length === 0) {

@@ -33,36 +33,9 @@
           :style="{ backgroundColor: category.color || '#CBD5E1' }"
           :title="category.categoryName"
         >
-          <svg
-            v-if="category.icon === 'briefcase'"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-4 h-4"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M20.25 14.15v4.073a2.25 2.25 0 0 1-2.25 2.25h-12a2.25 2.25 0 0 1-2.25-2.25v-4.073M15.75 10.5h-7.5a2.25 2.25 0 0 0-2.25 2.25v4.073a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-4.073a2.25 2.25 0 0 0-2.25-2.25Z"
-            />
-          </svg>
-          <svg
-            v-else-if="category.icon === 'utensils'"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-4 h-4"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15.362 5.214A8.252 8.252 0 0 1 12 21M6.038 7.098A8.252 8.252 0 0 1 9.75 21M12 13.5A3.375 3.375 0 0 0 15.375 10.125V9.75A3.375 3.375 0 0 0 12 6.375V5.25A3.375 3.375 0 0 0 8.625 1.875M12 6.375A3.375 3.375 0 0 0 8.625 9.75V10.125A3.375 3.375 0 0 0 12 13.5Z"
-            />
-          </svg>
+          <span v-if="category.icon" class="flex items-center justify-center w-full h-full">
+            <i :class="['fa-solid', `fa-${category.icon}`, 'text-xs']"></i>
+          </span>
           <span v-else class="font-semibold">{{
             category.categoryName.charAt(0).toUpperCase()
           }}</span>

@@ -31,6 +31,63 @@ export const useCategoryStore = defineStore('categories', {
     isLoadingCategories: (state) => state.isLoading,
     isSubmittingCategory: (state) => state.isSubmitting,
     categoryError: (state) => state.error,
+    totalIncomeParent: (state) =>
+      state.categories.filter((cat) => cat.categoryType === 'INCOME' && !cat.parentCategoryId)
+        .length,
+    totalIncomeSub: (state) => {
+      const parentCats = state.categories.filter(
+        (cat) => cat.categoryType === 'INCOME' && !cat.parentCategoryId,
+      )
+      return countSubCategories(parentCats)
+    },
+    totalExpenseParent: (state) =>
+      state.categories.filter((cat) => cat.categoryType === 'EXPENSE' && !cat.parentCategoryId)
+        .length,
+    totalExpenseSub: (state) => {
+      const parentCats = state.categories.filter(
+        (cat) => cat.categoryType === 'EXPENSE' && !cat.parentCategoryId,
+      )
+      return countSubCategories(parentCats)
+    },
+    totalRecursiveIncome: (state): number => {
+      const countRecursive = (cats: Category[]): number => {
+        let count = 0
+        for (const cat of cats) {
+          if (cat.categoryType === 'INCOME') count++
+          if (cat.subCategories && cat.subCategories.length > 0) {
+            count += countRecursive(cat.subCategories)
+          }
+        }
+        return count
+      }
+      return countRecursive(state.categories)
+    },
+    totalRecursiveExpense: (state): number => {
+      const countRecursive = (cats: Category[]): number => {
+        let count = 0
+        for (const cat of cats) {
+          if (cat.categoryType === 'EXPENSE') count++
+          if (cat.subCategories && cat.subCategories.length > 0) {
+            count += countRecursive(cat.subCategories)
+          }
+        }
+        return count
+      }
+      return countRecursive(state.categories)
+    },
+    totalCategoriesCount: (state): number => {
+      const countRecursive = (cats: Category[]): number => {
+        let count = 0
+        for (const cat of cats) {
+          count++ // Count the category itself
+          if (cat.subCategories && cat.subCategories.length > 0) {
+            count += countRecursive(cat.subCategories)
+          }
+        }
+        return count
+      }
+      return countRecursive(state.categories)
+    },
   },
   actions: {
     async fetchCategories(query?: QueryCategoryParams) {
@@ -58,6 +115,22 @@ export const useCategoryStore = defineStore('categories', {
     async createCategory(payload: CreateCategoryPayload) {
       const authStore = useAuthStore()
       if (!authStore.isAuthenticated) throw new Error('User not authenticated.')
+
+      // Check subscription limit for FREE users
+      const isFreePlan = authStore.currentUser?.subscriptionPlan === 'FREE'
+      if (isFreePlan) {
+        if (payload.type === 'INCOME' && this.totalRecursiveIncome >= 15) {
+          const limitError = 'Batas kategori Pemasukan (Income) untuk paket FREE adalah 15.'
+          this.error = limitError
+          throw new Error(limitError)
+        }
+        if (payload.type === 'EXPENSE' && this.totalRecursiveExpense >= 15) {
+          const limitError = 'Batas kategori Pengeluaran (Expense) untuk paket FREE adalah 15.'
+          this.error = limitError
+          throw new Error(limitError)
+        }
+      }
+
       this.isSubmitting = true
       this.error = null
       try {
@@ -112,3 +185,15 @@ export const useCategoryStore = defineStore('categories', {
     },
   },
 })
+
+// Helper function to count all subcategories recursively
+function countSubCategories(categories: Category[]): number {
+  let count = 0
+  for (const cat of categories) {
+    if (cat.subCategories && cat.subCategories.length > 0) {
+      count += cat.subCategories.length
+      count += countSubCategories(cat.subCategories)
+    }
+  }
+  return count
+}

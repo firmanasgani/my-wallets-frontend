@@ -102,13 +102,41 @@
                   <label for="categoryIcon" class="block text-sm font-medium text-slate-700 mb-1"
                     >Ikon (Opsional)</label
                   >
-                  <input
-                    type="text"
-                    id="categoryIcon"
-                    v-model="formData.icon"
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
-                    placeholder="Mis: shopping-cart (nama ikon Font Awesome)"
-                  />
+                  <div class="flex items-center space-x-2">
+                    <div class="relative w-full">
+                      <select
+                        id="categoryIcon"
+                        v-model="formData.icon"
+                        class="input-field p-2 pl-10 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 appearance-none"
+                      >
+                        <option value="">Pilih Ikon...</option>
+                        <option v-for="icon in iconOptions" :key="icon" :value="icon">
+                          {{ icon }}
+                        </option>
+                      </select>
+                      <div
+                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500"
+                      >
+                        <i v-if="formData.icon" :class="['fa-solid', `fa-${formData.icon}`]"></i>
+                        <i v-else class="fa-solid fa-icons"></i>
+                      </div>
+                    </div>
+
+                    <div
+                      class="h-10 w-10 flex items-center justify-center rounded-md border border-slate-300 bg-slate-50 text-slate-700 flex-shrink-0 transition-all duration-200"
+                      :class="{ 'bg-indigo-50 border-indigo-300 text-indigo-600': formData.icon }"
+                    >
+                      <i
+                        v-if="formData.icon"
+                        :class="['fa-solid', `fa-${formData.icon}`, 'text-lg']"
+                      ></i>
+                      <i v-else class="fa-regular fa-image text-slate-400 text-lg"></i>
+                    </div>
+                  </div>
+                  <p v-if="formData.icon" class="mt-1 text-xs text-slate-500">
+                    Preview: <i :class="['fa-solid', `fa-${formData.icon}`]"></i>
+                    {{ formData.icon }}
+                  </p>
                 </div>
 
                 <div>
@@ -197,6 +225,8 @@ const localError = ref<string | null>(null)
 
 const isEditMode = computed(() => !!props.categoryToEdit && !!props.categoryToEdit.id)
 const hasTransactions = computed(() => isEditMode.value)
+
+import { iconOptions } from '@/constants/icons'
 
 const categoryTypeOptions = [
   { value: FrontendCategoryType.INCOME, text: 'Pemasukan (Income)' },

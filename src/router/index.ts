@@ -9,7 +9,11 @@ import AccountEditView from '../views/AccountEditView.vue'
 import AccountDetailView from '../views/AccountDetailView.vue'
 import CategoriesView from '@/views/CategoriesView.vue' // Buat file ini jika belum
 import TransactionsView from '@/views/TransactionsView.vue' // Buat file ini jika belum
+import BudgetSetupView from '@/views/budgets/BudgetSetupView.vue'
+import BudgetReportView from '@/views/budgets/BudgetReportView.vue'
+import BudgetFormView from '@/views/budgets/BudgetFormView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import SettingsView from '@/views/SettingsView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 
 import { useAuthStore } from '@/stores/auth'
@@ -81,7 +85,37 @@ const routes: Array<RouteRecordRaw> = [
         component: TransactionsView,
         meta: { title: 'Daftar Transaksi' },
       },
+      {
+        path: 'budgets',
+        name: 'budget-setup',
+        component: BudgetSetupView,
+        meta: { title: 'Pengaturan Anggaran', requiresPremium: true },
+      },
+      {
+        path: 'budgets/new',
+        name: 'budget-create',
+        component: BudgetFormView,
+        meta: { title: 'Buat Anggaran', requiresPremium: true },
+      },
+      {
+        path: 'budgets/:id/edit',
+        name: 'budget-edit',
+        component: BudgetFormView,
+        meta: { title: 'Edit Anggaran', requiresPremium: true },
+      },
+      {
+        path: 'budgets/report',
+        name: 'budget-report',
+        component: BudgetReportView,
+        meta: { title: 'Laporan Anggaran', requiresPremium: true },
+      },
       { path: 'profile', name: 'profile', component: ProfileView, meta: { title: 'Profil Saya' } },
+      {
+        path: 'settings',
+        name: 'settings',
+        component: SettingsView,
+        meta: { title: 'Pengaturan' },
+      },
       { path: '', redirect: { name: 'dashboard' } },
     ],
   },
@@ -108,6 +142,9 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'login', query: { redirect: to.fullPath } })
   } else if (to.meta.requiresUnauth && authStore.isAuthenticated) {
     next({ name: 'dashboard' })
+  } else if (to.meta.requiresPremium && authStore.currentUser?.subscriptionPlan === 'FREE') {
+    // Redirect FREE users trying to access Premium features
+    next({ name: 'settings', query: { upgrade: 'true' } })
   } else {
     next()
   }

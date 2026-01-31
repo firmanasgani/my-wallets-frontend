@@ -4,6 +4,7 @@
       <h1 class="text-3xl font-semibold text-gray-800">Akun Saya</h1>
       <div v-if="!isLoading && accounts && accounts.length > 0">
         <RouterLink
+          v-if="canAddAccount"
           :to="{ name: 'account-create' }"
           class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors"
         >
@@ -23,7 +24,154 @@
           </svg>
           Tambah Akun
         </RouterLink>
+        <button
+          v-else
+          disabled
+          title="Batas akun paket FREE tercapai (Maks 4)"
+          class="bg-slate-300 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center cursor-not-allowed"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4 mr-1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+            />
+          </svg>
+          Limit Tercapai
+        </button>
       </div>
+    </div>
+
+    <!-- Limit Alert -->
+    <div
+      v-if="!canAddAccount"
+      class="rounded-md bg-yellow-50 p-4 border-l-4 border-yellow-400 mb-6"
+    >
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg
+            class="h-5 w-5 text-yellow-400"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-yellow-800">Batas Akun Tercapai</h3>
+          <div class="mt-2 text-sm text-yellow-700">
+            <p>
+              Anda telah mencapai batas maksimum 4 akun untuk paket FREE. Silakan upgrade ke Premium
+              untuk menambah akun tanpa batas.
+            </p>
+          </div>
+          <div class="mt-4">
+            <div class="-mx-2 -my-1.5 flex">
+              <RouterLink
+                :to="{ name: 'settings' }"
+                class="rounded-md bg-yellow-50 px-2 py-1.5 text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
+              >
+                Upgrade Sekarang &rarr;
+              </RouterLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Statistics Cards -->
+    <div
+      v-if="!isLoading && accounts && accounts.length > 0"
+      class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
+    >
+      <StatsCard title="Total Akun" :value="accounts.length" variant="indigo">
+        <template #icon>
+          <svg
+            class="h-6 w-6 text-current"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
+            />
+          </svg>
+        </template>
+      </StatsCard>
+
+      <StatsCard title="Rekening Bank" :value="accountStore.totalBanks" variant="blue">
+        <template #icon>
+          <svg
+            class="h-6 w-6 text-current"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
+            />
+          </svg>
+        </template>
+      </StatsCard>
+
+      <StatsCard title="E-Wallet" :value="accountStore.totalWallets" variant="red">
+        <template #icon>
+          <svg
+            class="h-6 w-6 text-current"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
+            />
+          </svg>
+        </template>
+      </StatsCard>
+
+      <StatsCard title="Kartu Kredit" :value="accountStore.totalCards" variant="yellow">
+        <template #icon>
+          <svg
+            class="h-6 w-6 text-current"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.5 0 3.5-7.5h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0M6.75 7.5h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-5.25A2.25 2.25 0 0 0 4.5 13.5H6.75m-1.5-1.5h.75m-.75 3h.75m0-3a1.5 1.5 0 0 0-3 0m3 0V7.5"
+            />
+          </svg>
+        </template>
+      </StatsCard>
     </div>
 
     <LoadingSpinner
@@ -271,14 +419,22 @@ import { ref, onMounted, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+import StatsCard from '@/components/common/StatsCard.vue'
 import { useAccountStore } from '@/stores/accounts'
+import { useAuthStore } from '@/stores/auth'
 import type { Account } from '@/types/accounts'
 
 const accountStore = useAccountStore()
+const authStore = useAuthStore()
 const router = useRouter()
 
 const accounts = computed(() => accountStore.accounts)
 const isLoading = computed(() => accountStore.isLoading)
+
+const canAddAccount = computed(() => {
+  const isFree = authStore.currentUser?.subscriptionPlan === 'FREE'
+  return !isFree || (accounts.value && accounts.value.length < 4)
+})
 
 onMounted(async () => {
   await accountStore.fetchAccounts()

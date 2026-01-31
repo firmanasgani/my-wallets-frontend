@@ -5,125 +5,97 @@
     <section aria-labelledby="summary-heading">
       <h2 id="summary-heading" class="sr-only">Ringkasan Keuangan</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6">
-        <div
-          class="bg-white shadow-lg rounded-xl p-5 transform hover:scale-105 transition-transform duration-300"
+        <StatsCard
+          title="Total Saldo Saat Ini"
+          :value="formatCurrency(overallNetBalance, 'IDR')"
+          variant="indigo"
         >
-          <div class="flex items-center">
-            <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
-              <svg
-                class="h-6 w-6 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
-                />
-              </svg>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-slate-500 truncate">Total Saldo Saat Ini</p>
-              <p class="text-2xl font-semibold text-slate-900">
-                {{ formatCurrency(overallNetBalance, 'IDR') }}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-white shadow-lg rounded-xl p-5 transform hover:scale-105 transition-transform duration-300"
-        >
-          <div class="flex items-center">
-            <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
-              <svg
-                class="h-6 w-6 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75"
-                />
-              </svg>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-slate-500 truncate">Pemasukan Bulan Ini</p>
-              <p class="text-2xl font-semibold text-green-600">
-                {{ formatCurrency(monthlySummary.income, 'IDR') }}
-              </p>
-            </div>
-          </div>
-        </div>
+          <template #icon>
+            <svg
+              class="h-6 w-6 text-current"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
+              />
+            </svg>
+          </template>
+        </StatsCard>
 
-        <div
-          class="bg-white shadow-lg rounded-xl p-5 transform hover:scale-105 transition-transform duration-300"
+        <StatsCard
+          title="Pemasukan Bulan Ini"
+          :value="formatCurrency(monthlySummary.income, 'IDR')"
+          variant="green"
         >
-          <div class="flex items-center">
-            <div class="flex-shrink-0 bg-red-500 rounded-md p-3">
-              <svg
-                class="h-6 w-6 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75"
-                />
-              </svg>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-slate-500 truncate">Pengeluaran Bulan Ini</p>
-              <p class="text-2xl font-semibold text-red-600">
-                {{ formatCurrency(monthlySummary.expense, 'IDR') }}
-              </p>
-            </div>
-          </div>
-        </div>
+          <template #icon>
+            <svg
+              class="h-6 w-6 text-current"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75"
+              />
+            </svg>
+          </template>
+        </StatsCard>
 
-        <div
-          class="bg-white shadow-lg rounded-xl p-5 transform hover:scale-105 transition-transform duration-300"
+        <StatsCard
+          title="Pengeluaran Bulan Ini"
+          :value="formatCurrency(monthlySummary.expense, 'IDR')"
+          variant="red"
         >
-          <div class="flex items-center">
-            <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
-              <svg
-                class="h-6 w-6 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A2.25 2.25 0 0 1 1.5 18.75v-5.625c0-1.036.84-1.875 1.875-1.875H13.5A2.25 2.25 0 0 1 15.75 12v2.25A2.25 2.25 0 0 1 13.5 16.5h-2.25A2.25 2.25 0 0 0 9 18.75v2.25M15.75 12A2.25 2.25 0 0 0 13.5 9.75h-2.25A2.25 2.25 0 0 0 9 7.5V5.25A2.25 2.25 0 0 1 11.25 3h2.25A2.25 2.25 0 0 1 15.75 5.25v6.75Z"
-                />
-              </svg>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-slate-500 truncate">Arus Kas Bersih (Bulan Ini)</p>
-              <p
-                :class="[
-                  'text-2xl font-semibold',
-                  monthlySummary.net >= 0 ? 'text-blue-600' : 'text-orange-600',
-                ]"
-              >
-                {{ formatCurrency(monthlySummary.net, 'IDR') }}
-              </p>
-            </div>
-          </div>
-        </div>
+          <template #icon>
+            <svg
+              class="h-6 w-6 text-current"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75"
+              />
+            </svg>
+          </template>
+        </StatsCard>
+
+        <StatsCard
+          title="Arus Kas Bersih (Bulan Ini)"
+          :value="formatCurrency(monthlySummary.net, 'IDR')"
+          variant="blue"
+        >
+          <template #icon>
+            <svg
+              class="h-6 w-6 text-current"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A2.25 2.25 0 0 1 1.5 18.75v-5.625c0-1.036.84-1.875 1.875-1.875H13.5A2.25 2.25 0 0 1 15.75 12v2.25A2.25 2.25 0 0 1 13.5 16.5h-2.25A2.25 2.25 0 0 0 9 18.75v2.25M15.75 12A2.25 2.25 0 0 0 13.5 9.75h-2.25A2.25 2.25 0 0 0 9 7.5V5.25A2.25 2.25 0 0 1 11.25 3h2.25A2.25 2.25 0 0 1 15.75 5.25v6.75Z"
+              />
+            </svg>
+          </template>
+        </StatsCard>
       </div>
     </section>
 
@@ -256,6 +228,7 @@ import { useTransactionStore } from '@/stores/transactions'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+import StatsCard from '@/components/common/StatsCard.vue'
 
 import type { Transaction } from '@/types/transaction'
 
