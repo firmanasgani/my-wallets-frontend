@@ -31,6 +31,27 @@ export interface Transaction {
   updatedAt: string
 }
 
+export interface RecurringTransaction {
+  id: string
+  userId: string
+  transactionType: FrontendTransactionType
+  amount: number
+  description?: string | null
+  categoryId?: string | null
+  category?: BasicCategoryInfo | null
+  sourceAccountId?: string | null
+  sourceAccount?: BasicAccountInfo | null
+  destinationAccountId?: string | null
+  destinationAccount?: BasicAccountInfo | null
+  interval: RecurringInterval
+  startDate: string
+  endDate?: string | null
+  nextRunDate: string
+  lastRunDate?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
 export interface QueryTransactionDto {
   page?: number
   limit?: number
@@ -43,10 +64,23 @@ export interface QueryTransactionDto {
   endDate?: string | null
 }
 
+// Enum untuk interval transaksi berulang
+export enum RecurringInterval {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY',
+}
+
 export interface CreateTransactionCommonPayload {
   amount: number
   transactionDate?: string | null // YYYY-MM-DD
   description?: string | null
+  // Fields untuk recurring transaction
+  isRecurring?: boolean
+  interval?: RecurringInterval | null
+  recurringStartDate?: string | null
+  recurringEndDate?: string | null
 }
 
 export interface CreateIncomePayload extends CreateTransactionCommonPayload {

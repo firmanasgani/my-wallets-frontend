@@ -57,12 +57,10 @@
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <span class="text-slate-500 sm:text-sm"> {{ formData.currency || 'IDR' }} </span>
           </div>
-          <input
-            type="number"
+          <CurrencyInput
             id="initialBalance"
-            v-model.number="formData.initialBalance"
-            min="0"
-            step="any"
+            v-model="formData.initialBalance"
+            :options="{ currency: formData.currency || 'IDR' }"
             class="border border-gray-300 rounded-lg block w-full pl-12 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             placeholder="0.00"
           />
@@ -135,6 +133,7 @@ import { useBankStore } from '@/stores/banks'
 import { useAccountStore } from '@/stores/accounts'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
+import CurrencyInput from '@/components/common/CurrencyInput.vue'
 
 const accountTypeOptions = [
   { value: FrontendAccountType.BANK, text: 'Rekening Bank' },

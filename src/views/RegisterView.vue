@@ -1,217 +1,315 @@
+```html
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-    <div>
-      <img src="@/assets/dompet.png" alt="Logo" class="w-32 h-32" />
-    </div>
-    <div>
-      <h2 class="text-3xl font-semibold text-center">Welcome to My Wallets</h2>
-      <p class="text-lg text-gray-600 mb-4">Buat akun baru untuk melanjutkan.</p>
-    </div>
-
-    <form class="bg-white rounded-lg shadow-lg p-8 w-96" @submit.prevent="handleRegister">
-      <h1 class="text-3xl font-semibold text-center mb-4">Register</h1>
-      
-      <!-- Error Messages -->
+  <div class="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+    <!-- Card Container -->
+    <div
+      class="flex w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[550px]"
+    >
+      <!-- Left Side (Branding) -->
       <div
-        v-if="authStore.authError || clientSideError"
-        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-        role="alert"
+        class="hidden md:flex w-1/2 bg-gradient-to-br from-blue-700 to-blue-900 p-12 flex-col justify-between relative text-white"
       >
-        <span class="block sm:inline text-sm">{{ authStore.authError || clientSideError }}</span>
-        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-          <svg
-            class="fill-current h-6 w-6 text-red-700"
-            role="button"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            @click="clearErrors"
+        <!-- Decoration / Noise could go here -->
+        <div class="absolute inset-0 bg-pattern opacity-10"></div>
+
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-2">
+            <!-- Simple Logo Placeholder -->
+            <div class="bg-blue-500 bg-opacity-30 p-2 rounded-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <span class="text-xl font-bold tracking-wider">My Wallets</span>
+          </div>
+        </div>
+
+        <div class="relative z-10 space-y-6">
+          <h1 class="text-4xl font-extrabold leading-tight">Create an Account</h1>
+
+          <h2 class="text-xl font-semibold text-blue-100">Start Your Financial Journey</h2>
+
+          <p class="text-blue-200 text-sm leading-relaxed max-w-sm">
+            Create an account to track expenses, manage budgets, and gain insights into your
+            financial health.
+          </p>
+        </div>
+
+        <div class="relative z-10 text-xs text-blue-300">&copy; 2026 My Wallets Inc.</div>
+      </div>
+
+      <!-- Right Side (Register Form) -->
+      <div
+        class="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center bg-white relative overflow-y-auto max-h-[90vh]"
+      >
+        <div class="max-w-md mx-auto w-full py-4">
+          <!-- Mobile Logo -->
+          <div class="md:hidden flex justify-center mb-6">
+            <div class="bg-blue-600 p-3 rounded-full shadow-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08-.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Buat Akun Baru</h2>
+
+          <!-- Error Message -->
+          <div
+            v-if="authStore.authError || clientSideError"
+            class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-3 text-sm rounded-r relative shadow-sm mb-4"
+            role="alert"
           >
-            <title>Close</title>
-            <path
-              d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"
-            />
-          </svg>
-        </span>
-      </div>
-
-      <div class="space-y-4">
-        <!-- Full Name Field -->
-        <div>
-          <label for="fullName" class="block text-sm font-medium text-gray-700">
-            Nama Lengkap (Opsional)
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            v-model="formData.fullName"
-            class="border border-gray-300 rounded-lg block w-full px-3 py-2"
-            placeholder="Masukkan nama lengkap"
-          />
-        </div>
-
-        <!-- Username Field -->
-        <div>
-          <label for="username" class="block text-sm font-medium text-gray-700">
-            Username <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="username"
-            v-model="formData.username"
-            required
-            class="border border-gray-300 rounded-lg block w-full px-3 py-2"
-            placeholder="Masukkan username"
-          />
-        </div>
-
-        <!-- Email Field -->
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700">
-            Email <span class="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            v-model="formData.email"
-            required
-            class="border border-gray-300 rounded-lg block w-full px-3 py-2"
-            placeholder="Masukkan email"
-          />
-        </div>
-
-        <!-- Password Field with Eye Toggle -->
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700">
-            Password <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input
-              :type="showPassword ? 'text' : 'password'"
-              id="password"
-              v-model="formData.password"
-              required
-              class="border border-gray-300 rounded-lg block w-full px-3 py-2 pr-10"
-              placeholder="Min. 8 karakter"
-            />
-            <button
-              type="button"
-              @click="showPassword = !showPassword"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+            <span class="block sm:inline">{{ authStore.authError || clientSideError }}</span>
+            <svg
+              class="absolute top-0 right-0 mt-3 mr-3 h-4 w-4 cursor-pointer text-blue-400 hover:text-blue-600"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              @click="clearErrors"
             >
-              <svg
-                v-if="!showPassword"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              <svg
-                v-else
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                />
-              </svg>
-            </button>
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
           </div>
-        </div>
 
-        <!-- Confirm Password Field with Eye Toggle -->
-        <div>
-          <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
-            Konfirmasi Password <span class="text-red-500">*</span>
-          </label>
-          <div class="relative">
-            <input
-              :type="showConfirmPassword ? 'text' : 'password'"
-              id="confirmPassword"
-              v-model="formData.confirmPassword"
-              required
-              class="border border-gray-300 rounded-lg block w-full px-3 py-2 pr-10"
-              placeholder="Ulangi password"
-            />
+          <form @submit.prevent="handleRegister" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Full Name -->
+            <div>
+              <label for="fullName" class="block text-sm font-bold text-blue-900 mb-1"
+                >Nama Lengkap (Opsional)</label
+              >
+              <input
+                type="text"
+                id="fullName"
+                v-model="formData.fullName"
+                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Contoh: Budi Santoso"
+              />
+            </div>
+
+            <!-- Username -->
+            <div>
+              <label for="username" class="block text-sm font-bold text-blue-900 mb-1"
+                >Username <span class="text-blue-600">*</span></label
+              >
+              <input
+                type="text"
+                id="username"
+                v-model="formData.username"
+                required
+                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Username unik"
+              />
+            </div>
+
+            <!-- Email -->
+            <div class="md:col-span-2">
+              <label for="email" class="block text-sm font-bold text-blue-900 mb-1"
+                >Email <span class="text-blue-600">*</span></label
+              >
+              <input
+                type="email"
+                id="email"
+                v-model="formData.email"
+                required
+                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="nama@email.com"
+              />
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label for="password" class="block text-sm font-bold text-blue-900 mb-1"
+                >Kata Sandi <span class="text-blue-600">*</span></label
+              >
+              <div class="relative">
+                <input
+                  :type="showPassword ? 'text' : 'password'"
+                  id="password"
+                  v-model="formData.password"
+                  required
+                  class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
+                  placeholder="Min. 8 karakter"
+                />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <button
+                    type="button"
+                    @click="showPassword = !showPassword"
+                    class="text-gray-400 hover:text-blue-600 focus:outline-none"
+                  >
+                    <svg
+                      v-if="!showPassword"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                    <svg
+                      v-else
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+              <label for="confirmPassword" class="block text-sm font-bold text-blue-900 mb-1"
+                >Konfirmasi Kata Sandi <span class="text-blue-600">*</span></label
+              >
+              <div class="relative">
+                <input
+                  :type="showConfirmPassword ? 'text' : 'password'"
+                  id="confirmPassword"
+                  v-model="formData.confirmPassword"
+                  required
+                  class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
+                  placeholder="Ulangi kata sandi"
+                />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <button
+                    type="button"
+                    @click="showConfirmPassword = !showConfirmPassword"
+                    class="text-gray-400 hover:text-blue-600 focus:outline-none"
+                  >
+                    <svg
+                      v-if="!showConfirmPassword"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                    <svg
+                      v-else
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
             <button
-              type="button"
-              @click="showConfirmPassword = !showConfirmPassword"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+              type="submit"
+              class="md:col-span-2 w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+              :disabled="authStore.authIsLoading"
             >
-              <svg
-                v-if="!showConfirmPassword"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              <svg
-                v-else
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                />
-              </svg>
+              <span v-if="!authStore.authIsLoading">Daftar</span>
+              <span v-else class="flex items-center justify-center">
+                <svg
+                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Memproses...
+              </span>
             </button>
-          </div>
+
+            <!-- Login Link -->
+            <div class="md:col-span-2 text-center mt-2">
+              <p class="text-sm text-gray-500">
+                Sudah punya akun?
+                <RouterLink to="/login" class="font-bold text-blue-700 hover:text-blue-900">
+                  Masuk di sini
+                </RouterLink>
+              </p>
+            </div>
+          </form>
         </div>
-
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg w-full"
-          :disabled="authStore.authIsLoading"
-        >
-          {{ authStore.authIsLoading ? 'Memproses...' : 'Daftar' }}
-        </button>
       </div>
-
-      <p class="mt-4 text-center">
-        Sudah punya akun?
-        <RouterLink to="/login" class="text-blue-500 hover:text-blue-600">
-          Masuk di sini
-        </RouterLink>
-      </p>
-    </form>
+    </div>
   </div>
 </template>
 
@@ -273,4 +371,3 @@ const handleRegister = async () => {
   }
 }
 </script>
-

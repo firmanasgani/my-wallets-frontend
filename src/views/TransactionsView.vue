@@ -23,6 +23,43 @@
       </div>
     </div>
 
+    <!-- Free Plan Alert -->
+    <div
+      v-if="authStore.user?.subscriptionPlan === 'FREE'"
+      class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4"
+    >
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg
+            class="h-5 w-5 text-blue-400"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-blue-700">
+            <span class="font-bold">Info Paket Free:</span>
+            Anda hanya dapat melihat riwayat transaksi selama 12 bulan terakhir.
+            <RouterLink
+              :to="{ name: 'settings' }"
+              class="font-medium underline hover:text-blue-600"
+            >
+              Upgrade ke Premium
+            </RouterLink>
+            untuk akses tanpa batas.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div class="bg-white p-4 rounded-lg shadow print:hidden">
       <h2 class="text-lg font-medium text-slate-700 mb-3">Filter Transaksi</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -272,11 +309,6 @@
         </div>
       </div>
     </div>
-    <AddTransactionModal
-      v-model:isOpen="isAddTransactionModalOpen"
-      @transaction-saved="handleTransactionSaved"
-    />
-
     <ConfirmationModal
       v-model:isOpen="isDeleteModalOpen"
       title="Konfirmasi Hapus Transaksi"
@@ -293,19 +325,22 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, reactive, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import { useTransactionStore } from '@/stores/transactions'
 import { useAccountStore } from '@/stores/accounts'
 import { useCategoryStore } from '@/stores/categories'
+import { useAuthStore } from '@/stores/auth'
 import type { Transaction, QueryTransactionDto } from '@/types/transaction'
 import type { FrontendTransactionType } from '@/types/enums'
-import AddTransactionModal from '@/components/transactions/AddTransactionModal.vue'
 
+const router = useRouter()
 const transactionStore = useTransactionStore()
 const accountStore = useAccountStore()
 const categoryStore = useCategoryStore()
+const authStore = useAuthStore()
 
 // Helper function untuk mendapatkan current date dalam format YYYY-MM-DD
 const getCurrentDate = () => {
@@ -441,9 +476,8 @@ const formatCurrency = (value: number | string, currency: string = 'IDR') => {
 }
 
 // Logika Modal Tambah Transaksi (Placeholder)
-const isAddTransactionModalOpen = ref(false)
 const openAddTransactionModal = () => {
-  isAddTransactionModalOpen.value = true
+  router.push({ name: 'transaction-create' })
 }
 
 // Logika Modal Hapus Transaksi
@@ -455,10 +489,7 @@ const promptDeleteTransaction = (transaction: Transaction) => {
   transactionToDelete.value = transaction
   isDeleteModalOpen.value = true
 }
-const handleTransactionSaved = () => {
-  isAddTransactionModalOpen.value = false
-  transactionStore.fetchTransactions(localFilters)
-}
+// handleTransactionSaved removed as it is no longer needed
 const handleConfirmDelete = async () => {
   if (!transactionToDelete.value) return
   isDeletingTransaction.value = true

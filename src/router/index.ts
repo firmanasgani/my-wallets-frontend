@@ -86,6 +86,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Daftar Transaksi' },
       },
       {
+        path: 'transactions/new',
+        name: 'transaction-create',
+        component: () => import('@/views/transactions/AddTransactionView.vue'),
+        meta: { title: 'Tambah Transaksi' },
+      },
+      {
         path: 'budgets',
         name: 'budget-setup',
         component: BudgetSetupView,

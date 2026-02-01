@@ -79,14 +79,11 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-slate-500 sm:text-sm">Rp</span>
             </div>
-            <input
-              type="number"
-              name="amount"
+            <CurrencyInput
               id="amount"
               v-model="formData.amount"
               class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-slate-300 rounded-md"
               placeholder="0"
-              min="0"
             />
           </div>
         </div>
@@ -179,6 +176,7 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useBudgetStore } from '@/stores/budget'
 import { useCategoryStore } from '@/stores/categories'
+import CurrencyInput from '@/components/common/CurrencyInput.vue'
 
 const router = useRouter()
 const route = useRoute()

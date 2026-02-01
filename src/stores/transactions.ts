@@ -6,6 +6,7 @@ import type {
   CreateIncomePayload,
   CreateExpensePayload,
   CreateTransferPayload,
+  RecurringTransaction,
 } from '@/types/transaction'
 import { useAuthStore } from './auth'
 
@@ -20,6 +21,7 @@ interface TransactionMeta {
 
 interface TransactionsState {
   transactions: Transaction[]
+  recurringTransactions: RecurringTransaction[]
   meta: TransactionMeta
   isLoading: boolean
   isSubmitting: boolean // Untuk create/update/delete
@@ -37,6 +39,7 @@ interface PaginatedTransactionsResponse {
 export const useTransactionStore = defineStore('transactions', {
   state: (): TransactionsState => ({
     transactions: [],
+    recurringTransactions: [],
     meta: {
       total: 0,
       page: 1,
@@ -56,6 +59,7 @@ export const useTransactionStore = defineStore('transactions', {
   }),
   getters: {
     transactionList: (state) => state.transactions,
+    recurringTransactionList: (state) => state.recurringTransactions,
     transactionMeta: (state) => state.meta,
     isLoadingTransactions: (state) => state.isLoading,
     isSubmittingTransaction: (state) => state.isSubmitting,
@@ -171,9 +175,53 @@ export const useTransactionStore = defineStore('transactions', {
       if (!authStore.isAuthenticated) throw new Error('User not authenticated.')
       this.isSubmitting = true
       this.error = null
+
+      let finalEndpoint = endpoint
+      // Check if it's a recurring transaction payload
+      if ('isRecurring' in payload && payload.isRecurring) {
+        // Use the recurring transaction endpoint
+        finalEndpoint = '/recurring-transactions'
+
+        // 1. Map 'startDate' or 'transactionDate'
+        // The API says 'transactionDate' OR 'startDate' is required.
+        // Frontend 'CreateTransactionCommonPayload' has 'transactionDate'.
+        // It also has 'recurringStartDate'. We need to prioritize what to send.
+        // If user set a specific recurring start date, use that.
+        // Otherwise use the transactionDate.
+        // The API response shows 'startDate', so we'll likely want to send 'startDate' or 'transactionDate'.
+        // Let's send 'transactionDate' as per Example Request in docs.
+
+        if ('recurringStartDate' in payload && payload.recurringStartDate) {
+          ;(payload as any).transactionDate = payload.recurringStartDate
+          delete (payload as any).recurringStartDate
+        }
+
+        // 2. Map 'endDate'
+        if ('recurringEndDate' in payload && payload.recurringEndDate) {
+          ;(payload as any).endDate = payload.recurringEndDate
+          delete (payload as any).recurringEndDate
+        }
+
+        // 3. Ensure 'amount' is number if API expects number, but payload type says number.
+        // (No change needed if payload.amount is already number)
+
+        // 4. Set transactionType
+        let type = 'EXPENSE'
+        if (endpoint.includes('income')) type = 'INCOME'
+        else if (endpoint.includes('transfer')) type = 'TRANSFER'
+        ;(payload as any).transactionType = type
+      }
+
       try {
-        await apiClient.post<Transaction>(endpoint, payload)
-        await this.fetchTransactions(this.currentFilters)
+        await apiClient.post<Transaction>(finalEndpoint, payload)
+
+        // If it was a recurring transaction, we might want to refresh the recurring list too
+        if ('isRecurring' in payload && payload.isRecurring) {
+          await this.fetchRecurringTransactions()
+        } else {
+          await this.fetchTransactions(this.currentFilters)
+        }
+
         console.log(successMessage) // Ganti dengan notifikasi yang lebih baik
       } catch (err: any) {
         const errorMessage =
@@ -223,6 +271,45 @@ export const useTransactionStore = defineStore('transactions', {
         const errorMessage = err.response?.data?.message || 'Gagal menghapus transaksi.'
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
         console.error('Delete transaction error in store:', this.error)
+        throw new Error(this.error ?? 'Unknown error')
+      } finally {
+        this.isSubmitting = false
+      }
+    },
+
+    async fetchRecurringTransactions() {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await apiClient.get<RecurringTransaction[]>('/recurring-transactions')
+        this.recurringTransactions = response.data
+      } catch (err: any) {
+        console.error('Failed to fetch recurring transactions:', err)
+        const errorMessage =
+          err.response?.data?.message || 'Gagal memuat daftar transaksi berulang.'
+        this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async deleteRecurringTransaction(id: string) {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+
+      this.isSubmitting = true
+      this.error = null
+      try {
+        await apiClient.delete(`/recurring-transactions/${id}`)
+        // Remove from local state
+        this.recurringTransactions = this.recurringTransactions.filter((rt) => rt.id !== id)
+      } catch (err: any) {
+        console.error('Failed to delete recurring transaction:', err)
+        const errorMessage = err.response?.data?.message || 'Gagal menghapus transaksi berulang.'
+        this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
         throw new Error(this.error ?? 'Unknown error')
       } finally {
         this.isSubmitting = false

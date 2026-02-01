@@ -165,6 +165,65 @@
                   />
                 </div>
 
+                <div class="pt-2">
+                  <div class="flex items-center">
+                    <input
+                      id="isRecurring"
+                      type="checkbox"
+                      v-model="recurringForm.isRecurring"
+                      class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    />
+                    <label for="isRecurring" class="ml-2 block text-sm text-slate-900 select-none">
+                      Jadikan Transaksi Berulang
+                    </label>
+                  </div>
+
+                  <div
+                    v-if="recurringForm.isRecurring"
+                    class="mt-3 space-y-4 rounded-md bg-slate-50 p-3 border border-slate-200"
+                  >
+                    <div>
+                      <label
+                        for="recurringInterval"
+                        class="block text-sm font-medium text-slate-700 mb-1"
+                        >Interval Ulangan <span class="text-red-500">*</span></label
+                      >
+                      <select
+                        id="recurringInterval"
+                        v-model="recurringForm.interval"
+                        class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                      >
+                        <option :value="null" disabled>Pilih interval...</option>
+                        <option
+                          v-for="opt in recurringIntervalOptions"
+                          :key="opt.value"
+                          :value="opt.value"
+                        >
+                          {{ opt.label }}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        for="recurringEndDate"
+                        class="block text-sm font-medium text-slate-700 mb-1"
+                        >Berakhir Pada (Opsional)</label
+                      >
+                      <input
+                        type="date"
+                        id="recurringEndDate"
+                        v-model="recurringForm.endDate"
+                        class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                        :min="commonFormData.transactionDate"
+                      />
+                      <p class="text-xs text-slate-500 mt-1">
+                        Biarkan kosong untuk berulang selamanya.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <label for="txDescription" class="block text-sm font-medium text-slate-700 mb-1"
                     >Deskripsi (Opsional)</label
@@ -219,6 +278,7 @@
 import { ref, reactive, watch, computed, onMounted } from 'vue'
 import { FrontendTransactionType, FrontendCategoryType } from '@/types/enums'
 import type { Category } from '@/types/enums'
+import { RecurringInterval } from '@/types/transaction'
 import type {
   CreateIncomePayload,
   CreateExpensePayload,
@@ -259,6 +319,19 @@ const accountFormFields = reactive({
   destinationAccountId: '',
   categoryId: '',
 })
+
+const recurringForm = reactive({
+  isRecurring: false,
+  interval: null as RecurringInterval | null,
+  endDate: '',
+})
+
+const recurringIntervalOptions = [
+  { value: RecurringInterval.DAILY, label: 'Harian' },
+  { value: RecurringInterval.WEEKLY, label: 'Mingguan' },
+  { value: RecurringInterval.MONTHLY, label: 'Bulanan' },
+  { value: RecurringInterval.YEARLY, label: 'Tahunan' },
+]
 
 const submissionError = ref<string | null>(null)
 const isSubmittingForm = computed(() => transactionStore.isSubmittingTransaction) // Gunakan state dari store
@@ -312,6 +385,16 @@ watch(selectedTransactionType, () => {
   submissionError.value = null
 })
 
+watch(
+  () => recurringForm.isRecurring,
+  (newVal) => {
+    if (!newVal) {
+      recurringForm.interval = null
+      recurringForm.endDate = ''
+    }
+  },
+)
+
 onMounted(() => {
   if (accountStore.accounts.length === 0) accountStore.fetchAccounts()
   if (categoryStore.categories.length === 0) categoryStore.fetchCategories({ hierarchical: 'true' })
@@ -321,6 +404,10 @@ const closeModal = () => {
   if (isSubmittingForm.value) return
   emit('update:isOpen', false)
   selectedTransactionType.value = null
+  // Reset recurrence
+  recurringForm.isRecurring = false
+  recurringForm.interval = null
+  recurringForm.endDate = ''
 }
 
 const handleSubmit = async () => {
@@ -338,6 +425,18 @@ const handleSubmit = async () => {
     amount: commonFormData.amount,
     transactionDate: commonFormData.transactionDate || new Date().toISOString().split('T')[0],
     description: commonFormData.description?.trim() || null,
+    isRecurring: recurringForm.isRecurring,
+    interval: recurringForm.isRecurring ? recurringForm.interval : null,
+    recurringStartDate: recurringForm.isRecurring
+      ? commonFormData.transactionDate || new Date().toISOString().split('T')[0]
+      : null,
+    recurringEndDate:
+      recurringForm.isRecurring && recurringForm.endDate ? recurringForm.endDate : null,
+  }
+
+  if (recurringForm.isRecurring && !recurringForm.interval) {
+    submissionError.value = 'Interval ulangan wajib dipilih untuk transaksi berulang.'
+    return
   }
 
   try {

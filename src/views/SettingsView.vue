@@ -5,7 +5,7 @@
       <p class="mt-1 text-sm text-slate-500">Kelola preferensi dan langganan akun Anda.</p>
     </div>
 
-    <div class="space-y-6">
+    <div v-if="currentView === 'main'" class="space-y-6">
       <!-- Subscription Section -->
       <div class="bg-white shadow-sm rounded-xl border border-slate-200 overflow-hidden">
         <div
@@ -48,13 +48,37 @@
         </div>
       </div>
 
-      <!-- App Preferences -->
+      <!-- General Settings (Pengaturan Umum) -->
       <div class="bg-white shadow-sm rounded-xl border border-slate-200 overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
-          <h3 class="text-lg font-medium text-slate-900">Preferensi Aplikasi</h3>
+          <h3 class="text-lg font-medium text-slate-900">Pengaturan Umum</h3>
         </div>
         <div class="p-6 space-y-6">
-          <div class="flex items-center justify-between">
+          <div
+            @click="currentView = 'recurring'"
+            class="flex items-center justify-between cursor-pointer hover:bg-slate-50 -mx-6 px-6 py-2 transition-colors"
+          >
+            <div>
+              <label class="text-sm font-medium text-slate-700 cursor-pointer"
+                >Transaksi Berulang</label
+              >
+              <p class="text-xs text-slate-500">Atur dan kelola transaksi otomatis Anda.</p>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-slate-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+
+          <div class="border-t border-slate-100 pt-6 flex items-center justify-between">
             <div>
               <label class="text-sm font-medium text-slate-700">Tema Tampilan</label>
               <p class="text-xs text-slate-500">Pilih tema terang atau gelap.</p>
@@ -120,6 +144,12 @@
       </div>
     </div>
 
+    <!-- Recurring Transactions Sub-View -->
+    <!-- Recurring Transactions Sub-View -->
+    <div v-else-if="currentView === 'recurring'" class="space-y-6">
+      <RecurringTransactionsList @back="currentView = 'main'" />
+    </div>
+
     <!-- Pricing Modal -->
     <PricingModal
       :isOpen="isPricingModalOpen"
@@ -134,11 +164,13 @@ import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import PricingModal from '@/components/common/PricingModal.vue'
+import RecurringTransactionsList from '@/components/settings/RecurringTransactionsList.vue'
 
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const isPricingModalOpen = ref(false)
+const currentView = ref<'main' | 'recurring'>('main')
 
 onMounted(() => {
   if (route.query.upgrade === 'true') {
