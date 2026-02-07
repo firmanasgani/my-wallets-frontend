@@ -63,6 +63,26 @@
     <div class="bg-white p-4 rounded-lg shadow print:hidden">
       <h2 class="text-lg font-medium text-slate-700 mb-3">Filter Transaksi</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Global Search -->
+        <div class="md:col-span-2 lg:col-span-4">
+          <label for="filter-search" class="block text-sm font-medium text-slate-600 mb-1"
+            >Cari Transaksi</label
+          >
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+              <i class="fa-solid fa-magnifying-glass text-sm"></i>
+            </span>
+            <input
+              type="text"
+              id="filter-search"
+              v-model="localFilters.search"
+              placeholder="Cari deskripsi, kategori, atau akun..."
+              class="input-field pl-10 p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+              @keyup.enter="applyCurrentFilters"
+            />
+          </div>
+        </div>
+
         <div>
           <label for="filter-daterange-start" class="block text-sm font-medium text-slate-600 mb-1"
             >Tanggal Mulai</label
@@ -430,6 +450,7 @@ const applyCurrentFilters = () => {
   if (localFilters.limit) cleanFilters.limit = localFilters.limit
   if (localFilters.sortBy) cleanFilters.sortBy = localFilters.sortBy
   if (localFilters.sortOrder) cleanFilters.sortOrder = localFilters.sortOrder
+  if (localFilters.search) cleanFilters.search = localFilters.search.trim() || null
 
   transactionStore.applyFilters(cleanFilters)
 }
@@ -441,6 +462,7 @@ const resetFilters = () => {
   localFilters.type = undefined
   localFilters.startDate = currentDate
   localFilters.endDate = currentDate
+  localFilters.search = ''
   localFilters.page = 1 // Reset ke halaman 1
   // localFilters.limit tetap (atau reset ke default store)
   // localFilters.sortBy & sortOrder tetap (atau reset ke default store)

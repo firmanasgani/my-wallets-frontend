@@ -59,7 +59,11 @@ export const useAuthStore = defineStore('auth', {
       this.isLoading = true
       this.error = null
       try {
-        const { ...dataToSubmit } = payload
+        const dataToSubmit = {
+          ...payload,
+          email: payload.email.toLowerCase(),
+          username: payload.username.toLowerCase(),
+        }
         if (!dataToSubmit.fullName?.trim()) {
           delete dataToSubmit.fullName
         }
@@ -81,7 +85,11 @@ export const useAuthStore = defineStore('auth', {
       this.isLoading = true
       this.error = null
       try {
-        const response = await apiClient.post<LoginResponse>('/auth/login', credentials)
+        const loginData = {
+          ...credentials,
+          login: credentials.login.toLowerCase(),
+        }
+        const response = await apiClient.post<LoginResponse>('/auth/login', loginData)
         this.setToken(response.data.access_token)
         this.setUser(response.data.user)
         await this.fetchUserProfile() // Fetch full profile to get profilePictureUrl

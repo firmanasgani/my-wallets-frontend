@@ -29,6 +29,8 @@ export interface Transaction {
   destinationAccount?: BasicAccountInfo | null
   createdAt: string
   updatedAt: string
+  attachmentPath?: string | null
+  attachmentUrl?: string | null
 }
 
 export interface RecurringTransaction {
@@ -62,6 +64,9 @@ export interface QueryTransactionDto {
   sortOrder?: 'asc' | 'desc'
   startDate?: string | null
   endDate?: string | null
+  search?: string | null
+  accountName?: string | null
+  categoryName?: string | null
 }
 
 // Enum untuk interval transaksi berulang
@@ -81,6 +86,7 @@ export interface CreateTransactionCommonPayload {
   interval?: RecurringInterval | null
   recurringStartDate?: string | null
   recurringEndDate?: string | null
+  attachment?: File | null
 }
 
 export interface CreateIncomePayload extends CreateTransactionCommonPayload {

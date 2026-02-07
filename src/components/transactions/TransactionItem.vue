@@ -1,5 +1,8 @@
 <template>
-  <li class="px-4 py-4 sm:px-6 hover:bg-slate-50 transition-colors">
+  <RouterLink
+    :to="{ name: 'transaction-detail', params: { id: transaction.id } }"
+    class="block px-4 py-4 sm:px-6 hover:bg-slate-50 transition-colors"
+  >
     <div class="flex items-center space-x-4">
       <div class="flex-shrink-0">
         <div
@@ -26,12 +29,22 @@
       </div>
 
       <div class="flex-1 min-w-0">
-        <p
-          class="text-sm font-medium text-indigo-600 truncate"
-          :title="transaction.category?.categoryName || transaction.transactionType"
-        >
-          {{ transaction.category?.categoryName || transaction.transactionType.replace('_', ' ') }}
-        </p>
+        <div class="flex items-center gap-2">
+          <p
+            class="text-sm font-medium text-indigo-600 truncate"
+            :title="transaction.category?.categoryName || transaction.transactionType"
+          >
+            {{
+              transaction.category?.categoryName || transaction.transactionType.replace('_', ' ')
+            }}
+          </p>
+          <!-- Attachment Indicator -->
+          <i
+            v-if="transaction.attachmentPath"
+            class="fa-solid fa-paperclip text-[10px] text-slate-400"
+            title="Ada lampiran"
+          ></i>
+        </div>
         <p class="text-sm text-slate-700 truncate" :title="transaction.description ?? undefined">
           {{ transaction.description || 'Tidak ada deskripsi' }}
         </p>
@@ -50,21 +63,14 @@
         </p>
       </div>
 
-      <div class="text-right">
+      <div class="text-right flex flex-col items-end">
         <p :class="['text-sm font-semibold whitespace-nowrap', amountColorClass]">
           {{ showAmount ? formatCurrency(transaction.amount, 'IDR') : '••••••••' }}
         </p>
-        <!-- <div class="text-xs mt-1 space-x-2 print:hidden">
-          <button @click="$emit('edit', transaction)" class="text-blue-600 hover:text-blue-800">
-            Edit
-          </button>
-          <button @click="$emit('delete', transaction)" class="text-red-600 hover:text-red-800">
-            Hapus
-          </button>
-        </div> -->
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 mt-1"></i>
       </div>
     </div>
-  </li>
+  </RouterLink>
 </template>
 
 <script setup lang="ts">
@@ -85,6 +91,7 @@ interface Transaction {
   } | null
   sourceAccount?: { id: string; accountName: string } | null
   destinationAccount?: { id: string; accountName: string } | null
+  attachmentPath?: string | null
 }
 
 const props = withDefaults(

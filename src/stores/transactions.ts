@@ -147,6 +147,22 @@ export const useTransactionStore = defineStore('transactions', {
       }
     },
 
+    async fetchTransactionById(id: string): Promise<Transaction | null> {
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await apiClient.get<Transaction>(`/transactions/${id}`)
+        return response.data
+      } catch (err: any) {
+        console.error(`Failed to fetch transaction ${id}:`, err.response?.data || err.message)
+        const errorMessage = err.response?.data?.message || 'Gagal memuat detail transaksi.'
+        this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
+        return null
+      } finally {
+        this.isLoading = false
+      }
+    },
+
     // Action untuk mengubah filter dan otomatis fetch ulang
     async applyFilters(newFilters: Partial<QueryTransactionDto>) {
       // Gabungkan filter baru, reset halaman ke 1 jika filter utama berubah (bukan hanya page/limit)
@@ -155,7 +171,12 @@ export const useTransactionStore = defineStore('transactions', {
         (newFilters.categoryId && newFilters.categoryId !== this.currentFilters.categoryId) ||
         (newFilters.type && newFilters.type !== this.currentFilters.type) ||
         (newFilters.startDate && newFilters.startDate !== this.currentFilters.startDate) ||
-        (newFilters.endDate && newFilters.endDate !== this.currentFilters.endDate)
+        (newFilters.endDate && newFilters.endDate !== this.currentFilters.endDate) ||
+        (newFilters.search !== undefined && newFilters.search !== this.currentFilters.search) ||
+        (newFilters.accountName !== undefined &&
+          newFilters.accountName !== this.currentFilters.accountName) ||
+        (newFilters.categoryName !== undefined &&
+          newFilters.categoryName !== this.currentFilters.categoryName)
 
       const pageToFetch = significantFilterChanged ? 1 : newFilters.page || this.currentFilters.page
 
@@ -219,8 +240,35 @@ export const useTransactionStore = defineStore('transactions', {
         delete (payload as any).recurringEndDate
       }
 
+      const payloadData = { ...payload }
+
       try {
-        await apiClient.post<Transaction>(finalEndpoint, payload)
+        if ('attachment' in payloadData && payloadData.attachment) {
+          const formData = new FormData()
+          const file = payloadData.attachment
+          delete payloadData.attachment
+
+          // Append all other fields to FormData
+          Object.keys(payloadData).forEach((key) => {
+            const val = (payloadData as any)[key]
+            if (val !== null && val !== undefined) {
+              formData.append(key, val)
+            }
+          })
+
+          // Append file
+          formData.append('attachment', file)
+
+          await apiClient.post<Transaction>(finalEndpoint, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+        } else {
+          // Standard JSON request
+          delete payloadData.attachment
+          await apiClient.post<Transaction>(finalEndpoint, payloadData)
+        }
 
         // If it was a recurring transaction, we might want to refresh the recurring list too
         if ('isRecurring' in payload && payload.isRecurring) {
@@ -229,7 +277,7 @@ export const useTransactionStore = defineStore('transactions', {
           await this.fetchTransactions(this.currentFilters)
         }
 
-        console.log(successMessage) // Ganti dengan notifikasi yang lebih baik
+        console.log(successMessage)
       } catch (err: any) {
         const errorMessage =
           err.response?.data?.message ||

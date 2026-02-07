@@ -311,6 +311,128 @@
             </div>
           </div>
 
+          <!-- Attachment -->
+          <div class="space-y-3">
+            <label class="block text-sm font-medium text-slate-900">Lampiran (Opsional)</label>
+            <div
+              class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-lg hover:border-indigo-400 transition-colors cursor-pointer relative group"
+            >
+              <div class="space-y-1 text-center">
+                <svg
+                  class="mx-auto h-12 w-12 text-slate-400 group-hover:text-indigo-500 transition-colors"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <div class="flex text-sm text-slate-600">
+                  <label
+                    for="file-upload"
+                    class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none"
+                  >
+                    <span>Upload file</span>
+                    <input
+                      id="file-upload"
+                      name="file-upload"
+                      type="file"
+                      class="sr-only"
+                      accept="image/*,.pdf"
+                      @change="handleFileUpload"
+                    />
+                  </label>
+                  <p class="pl-1">atau seret dan lepas</p>
+                </div>
+                <p class="text-xs text-slate-500">PNG, JPG, PDF hingga 5MB</p>
+              </div>
+
+              <!-- Selected File name/preview -->
+              <div
+                v-if="selectedFile"
+                class="absolute inset-0 bg-white rounded-lg flex flex-col items-center justify-center p-4"
+              >
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="p-2 bg-indigo-50 rounded-lg">
+                    <svg
+                      v-if="selectedFile.type === 'application/pdf'"
+                      class="w-8 h-8 text-indigo-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"
+                      />
+                      <path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
+                    </svg>
+                    <img
+                      v-else-if="previewUrl"
+                      :src="previewUrl"
+                      class="w-16 h-16 object-cover rounded shadow-sm"
+                    />
+                    <svg
+                      v-else
+                      class="w-8 h-8 text-indigo-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div class="text-left">
+                    <p class="text-sm font-medium text-slate-900 truncate max-w-[200px]">
+                      {{ selectedFile.name }}
+                    </p>
+                    <p class="text-xs text-slate-500">
+                      {{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  @click="removeFile"
+                  class="text-xs font-semibold text-red-600 hover:text-red-500"
+                >
+                  Hapus File
+                </button>
+              </div>
+            </div>
+
+            <!-- PDF Preview (if applicable and small/safe) -->
+            <div
+              v-if="selectedFile && selectedFile.type === 'application/pdf'"
+              class="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-slate-700">Preview PDF</span>
+                <a
+                  :href="previewUrl || undefined"
+                  target="_blank"
+                  class="text-xs text-indigo-600 hover:text-indigo-500 font-semibold"
+                  >Buka di tab baru</a
+                >
+              </div>
+              <div
+                class="aspect-auto h-40 bg-slate-200 rounded flex items-center justify-center text-slate-500 overflow-hidden"
+              >
+                <iframe
+                  v-if="previewUrl"
+                  :src="previewUrl"
+                  class="w-full h-full pointer-events-none scale-110 origin-top"
+                ></iframe>
+              </div>
+            </div>
+          </div>
+
           <!-- Errors -->
           <div v-if="submissionError" class="rounded-md bg-red-50 p-4 border border-red-100">
             <div class="flex">
@@ -457,6 +579,41 @@ const recurringIntervalOptions = [
 const submissionError = ref<string | null>(null)
 const isSubmittingForm = computed(() => transactionStore.isSubmittingTransaction) // Gunakan state dari store
 
+// Attachment logic
+const selectedFile = ref<File | null>(null)
+const previewUrl = ref<string | null>(null)
+
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  // Validation
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf']
+  if (!allowedTypes.includes(file.type)) {
+    submissionError.value = 'Hanya file PDF dan gambar yang diperbolehkan.'
+    return
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    submissionError.value = 'Ukuran file maksimal adalah 5MB.'
+    return
+  }
+
+  selectedFile.value = file
+  submissionError.value = null
+
+  // Create preview
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+  previewUrl.value = URL.createObjectURL(file)
+}
+
+const removeFile = () => {
+  selectedFile.value = null
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+  previewUrl.value = null
+}
+
 // Computed properties untuk dropdown
 const availableAccounts = computed(() => accountStore.allAccounts)
 const relevantCategories = computed(() => {
@@ -531,6 +688,7 @@ const resetForm = () => {
   recurringForm.interval = null
   recurringForm.endDate = ''
   submissionError.value = null
+  removeFile()
 }
 
 const handleSubmit = async () => {
@@ -555,6 +713,7 @@ const handleSubmit = async () => {
       : null,
     recurringEndDate:
       recurringForm.isRecurring && recurringForm.endDate ? recurringForm.endDate : null,
+    attachment: selectedFile.value,
   }
 
   if (recurringForm.isRecurring && !recurringForm.interval) {

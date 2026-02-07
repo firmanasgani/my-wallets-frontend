@@ -212,19 +212,27 @@
               <tr
                 v-for="trx in transactions"
                 :key="trx.id"
-                class="hover:bg-slate-50 transition-colors"
+                @click="$router.push({ name: 'transaction-detail', params: { id: trx.id } })"
+                class="hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {{ formatDate(trx.transactionDate) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    v-if="trx.category"
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800"
-                  >
-                    {{ trx.category.categoryName }}
-                  </span>
-                  <span v-else class="text-slate-400 text-xs italic">-</span>
+                  <div class="flex items-center gap-2">
+                    <span
+                      v-if="trx.category"
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800"
+                    >
+                      {{ trx.category.categoryName }}
+                    </span>
+                    <span v-else class="text-slate-400 text-xs italic">-</span>
+                    <!-- Attachment Indicator -->
+                    <i
+                      v-if="trx.attachmentPath"
+                      class="fa-solid fa-paperclip text-[10px] text-slate-400"
+                    ></i>
+                  </div>
                 </td>
                 <td
                   class="px-6 py-4 text-sm text-slate-900 max-w-xs truncate"
