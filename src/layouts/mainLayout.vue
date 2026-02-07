@@ -77,6 +77,14 @@
               </RouterLink>
             </div>
           </li>
+          <li v-if="!isFreePlan">
+            <RouterLink
+              :to="{ name: 'spending-analysis' }"
+              :class="navLinkClasses('spending-analysis')"
+            >
+              Spending Analysis
+            </RouterLink>
+          </li>
           <li>
             <RouterLink :to="{ name: 'settings' }" :class="navLinkClasses('settings')">
               Pengaturan
@@ -304,6 +312,14 @@
                   :class="navLinkClassesMobile('transactions-list')"
                 >
                   Transaksi
+                </RouterLink>
+                <RouterLink
+                  v-if="!isFreePlan"
+                  :to="{ name: 'spending-analysis' }"
+                  @click="closeMobileSidebar"
+                  :class="navLinkClassesMobile('spending-analysis')"
+                >
+                  Spending Analysis
                 </RouterLink>
                 <RouterLink
                   :to="{ name: 'settings' }"

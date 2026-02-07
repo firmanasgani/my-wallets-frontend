@@ -56,6 +56,8 @@ export interface PeriodComparison {
 
 export interface BudgetHealthItem {
   categoryName: string
+  icon?: string
+  color?: string
   budgetAmount: number
   actualSpent: number
   remaining?: number

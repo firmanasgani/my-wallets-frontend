@@ -40,7 +40,21 @@
             </td>
           </tr>
           <tr v-for="(item, index) in data" :key="index">
-            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+            <td
+              class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-3"
+            >
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0"
+                :style="{
+                  backgroundColor: (item.color || '#64748b') + '20',
+                  color: item.color || '#64748b',
+                }"
+              >
+                <span v-if="item.icon">
+                  <i :class="['fa-solid', `fa-${item.icon}`]"></i>
+                </span>
+                <span v-else>🏷️</span>
+              </div>
               {{ item.categoryName }}
             </td>
             <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right">

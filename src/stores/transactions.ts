@@ -210,6 +210,13 @@ export const useTransactionStore = defineStore('transactions', {
         if (endpoint.includes('income')) type = 'INCOME'
         else if (endpoint.includes('transfer')) type = 'TRANSFER'
         ;(payload as any).transactionType = type
+      } else {
+        // Remove recurring fields from payload if not recurring
+        // as the standard transaction endpoints may not accept them
+        delete (payload as any).isRecurring
+        delete (payload as any).interval
+        delete (payload as any).recurringStartDate
+        delete (payload as any).recurringEndDate
       }
 
       try {

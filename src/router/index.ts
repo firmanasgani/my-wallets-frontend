@@ -115,6 +115,12 @@ const routes: Array<RouteRecordRaw> = [
         component: BudgetReportView,
         meta: { title: 'Laporan Anggaran', requiresPremium: true },
       },
+      {
+        path: 'spending-analysis',
+        name: 'spending-analysis',
+        component: () => import('@/views/reports/SpendingAnalysisView.vue'),
+        meta: { title: 'Spending Analysis', requiresPremium: true },
+      },
       { path: 'profile', name: 'profile', component: ProfileView, meta: { title: 'Profil Saya' } },
       {
         path: 'settings',

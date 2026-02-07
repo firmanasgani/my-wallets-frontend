@@ -14,10 +14,13 @@
         <div class="flex items-center gap-3">
           <!-- Icon Placeholder -->
           <div
-            class="w-10 h-10 rounded-full flex items-center justify-center text-lg shadow-sm"
+            class="w-10 h-10 rounded-full flex items-center justify-center text-lg shadow-sm flex-shrink-0"
             :style="{ backgroundColor: item.color + '20', color: item.color || '#666' }"
           >
-            {{ item.icon || '🏷️' }}
+            <span v-if="item.icon">
+              <i :class="['fa-solid', `fa-${item.icon}`]"></i>
+            </span>
+            <span v-else>🏷️</span>
           </div>
           <div>
             <p class="font-semibold text-gray-800 text-sm">{{ item.categoryName }}</p>

@@ -366,6 +366,32 @@
         </div>
       </form>
     </div>
+
+    <!-- Success Modal -->
+    <ConfirmationModal
+      v-model:isOpen="isSuccessModalOpen"
+      title="Transaksi Berhasil"
+      message="Transaksi Anda telah berhasil dicatat."
+      confirmButtonText="Lihat Daftar Transaksi"
+      cancelButtonText="Tambah Lagi"
+      iconType="success"
+      confirmButtonClass="bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
+      @confirm="router.push({ name: 'transactions-list' })"
+      @cancel="resetForm"
+    >
+      <template #icon>
+        <svg
+          class="h-6 w-6 text-green-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      </template>
+    </ConfirmationModal>
   </div>
 </template>
 
@@ -386,11 +412,14 @@ import { useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import CurrencyInput from '@/components/common/CurrencyInput.vue'
 
+import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+
 const router = useRouter()
 const transactionStore = useTransactionStore()
 const accountStore = useAccountStore()
 const categoryStore = useCategoryStore()
 
+const isSuccessModalOpen = ref(false)
 const selectedTransactionType = ref<FrontendTransactionType>(FrontendTransactionType.EXPENSE) // Default to Expense
 
 const transactionTypeOptions = [
@@ -492,6 +521,18 @@ onMounted(() => {
   if (categoryStore.categories.length === 0) categoryStore.fetchCategories({ hierarchical: 'true' })
 })
 
+const resetForm = () => {
+  commonFormData.amount = null
+  commonFormData.description = ''
+  accountFormFields.sourceAccountId = ''
+  accountFormFields.destinationAccountId = ''
+  accountFormFields.categoryId = ''
+  recurringForm.isRecurring = false
+  recurringForm.interval = null
+  recurringForm.endDate = ''
+  submissionError.value = null
+}
+
 const handleSubmit = async () => {
   submissionError.value = null
   if (!selectedTransactionType.value || !commonFormData.amount) {
@@ -561,8 +602,8 @@ const handleSubmit = async () => {
       await transactionStore.createTransferTransaction(payload)
     }
 
-    // Succcess
-    router.push({ name: 'transactions' }) // Or wherever you want to go back
+    // Success
+    isSuccessModalOpen.value = true
   } catch (error: any) {
     submissionError.value =
       transactionStore.transactionError || error.message || 'Gagal menyimpan transaksi.'

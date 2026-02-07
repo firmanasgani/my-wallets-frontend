@@ -27,7 +27,10 @@
         <div class="flex justify-between items-start">
           <div>
             <h4 class="font-bold text-gray-800 text-sm">{{ insight.title }}</h4>
-            <p class="text-xs text-gray-600 mt-1">{{ insight.message }}</p>
+            <div
+              class="text-xs text-gray-600 mt-1 insight-message"
+              v-html="formatMessage(insight.message)"
+            ></div>
           </div>
           <span
             v-if="insight.action"
@@ -83,4 +86,17 @@ const getInsightColor = (type: string) => {
       return 'border-gray-300'
   }
 }
+
+const formatMessage = (message: string) => {
+  if (!message) return ''
+  // Basic markdown-like bold converter: **text** -> <strong>text</strong>
+  return message.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
+}
 </script>
+
+<style scoped>
+.insight-message :deep(strong) {
+  font-weight: 700;
+  color: #111827; /* gray-900 */
+}
+</style>

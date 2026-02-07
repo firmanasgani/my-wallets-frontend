@@ -421,17 +421,18 @@ const handleSubmit = async () => {
     return
   }
 
-  const basePayload = {
+  const basePayload: any = {
     amount: commonFormData.amount,
     transactionDate: commonFormData.transactionDate || new Date().toISOString().split('T')[0],
     description: commonFormData.description?.trim() || null,
-    isRecurring: recurringForm.isRecurring,
-    interval: recurringForm.isRecurring ? recurringForm.interval : null,
-    recurringStartDate: recurringForm.isRecurring
-      ? commonFormData.transactionDate || new Date().toISOString().split('T')[0]
-      : null,
-    recurringEndDate:
-      recurringForm.isRecurring && recurringForm.endDate ? recurringForm.endDate : null,
+  }
+
+  if (recurringForm.isRecurring) {
+    basePayload.isRecurring = true
+    basePayload.interval = recurringForm.interval
+    basePayload.recurringStartDate =
+      commonFormData.transactionDate || new Date().toISOString().split('T')[0]
+    basePayload.recurringEndDate = recurringForm.endDate || null
   }
 
   if (recurringForm.isRecurring && !recurringForm.interval) {
