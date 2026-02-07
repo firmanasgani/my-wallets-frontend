@@ -330,11 +330,12 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBudgetStore } from '@/stores/budget'
-import LoadinSpinner from '@/components/common/LoadingSpinner.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import type { Budget } from '@/types/budget'
 
 import { useAuthStore } from '@/stores/auth'
+import { SubscriptionPlan } from '@/enums/pricing'
 
 const router = useRouter()
 const budgetStore = useBudgetStore()
@@ -387,6 +388,19 @@ const isLoading = computed(() => budgetStore.isLoadingBudgets)
 
 const totalMonthlyAmount = computed(() => {
   return budgetStore.allBudgets.reduce((sum, b) => sum + (Number(b.amount) || 0), 0)
+})
+
+const isPremiumOrFamily = computed(() => {
+  const plan = authStore.currentUser?.subscriptionPlan
+  return plan === SubscriptionPlan.PREMIUM || plan === SubscriptionPlan.FAMILY
+})
+
+const canAddBudget = computed(() => isPremiumOrFamily.value)
+
+const addBudgetButtonTitle = computed(() => {
+  return canAddBudget.value
+    ? 'Buat anggaran baru'
+    : 'Fitur Anggaran hanya tersedia untuk pengguna Premium dan Family'
 })
 
 const fetchData = async () => {

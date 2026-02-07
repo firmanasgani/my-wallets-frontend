@@ -11,18 +11,19 @@
 import { useCurrencyInput } from 'vue-currency-input'
 import { watch } from 'vue'
 
-const props = defineProps({
-  modelValue: {
-    type: Number,
-    default: null,
-  },
-  options: {
-    type: Object,
-    default: () => ({}),
-  },
+interface Props {
+  modelValue: number | null | undefined
+  options?: any
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: null,
+  options: () => ({}),
 })
 
-const { inputRef, setValue } = useCurrencyInput({
+const emit = defineEmits(['update:modelValue'])
+
+const { inputRef, setValue, numberValue } = useCurrencyInput({
   currency: 'IDR',
   locale: 'id-ID',
   hideCurrencySymbolOnFocus: false,
@@ -31,7 +32,7 @@ const { inputRef, setValue } = useCurrencyInput({
   autoDecimalDigits: true,
   useGrouping: true,
   accountingSign: false,
-  currencyDisplay: 'hidden', // We have a prefix in the parent design
+  currencyDisplay: 'hidden' as any, // Supported by library but not in default Intl types
   valueRange: { min: 0 },
   precision: 0,
   ...props.options,
@@ -43,4 +44,8 @@ watch(
     setValue(value) // Programmatically update input value if model changes externally
   },
 )
+
+watch(numberValue, (value) => {
+  emit('update:modelValue', value)
+})
 </script>

@@ -545,7 +545,7 @@ const handleSubmit = async () => {
   }
 
   const basePayload = {
-    amount: commonFormData.amount,
+    amount: commonFormData.amount as number,
     transactionDate: commonFormData.transactionDate || new Date().toISOString().split('T')[0],
     description: commonFormData.description?.trim() || null,
     isRecurring: recurringForm.isRecurring,
