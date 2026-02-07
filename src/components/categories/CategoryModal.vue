@@ -280,7 +280,7 @@ const handleSubmit = async () => {
     localError.value = 'Nama kategori wajib diisi.'
     return
   }
-  if (!formData.name) {
+  if (!formData.type) {
     localError.value = 'Tipe kategori wajib dipilih.'
     return
   }
@@ -304,11 +304,6 @@ const handleSubmit = async () => {
   } catch (error: any) {
     localError.value = categoryStore.error || error.message || 'Terjadi kesalahan.'
     console.error('Error saving category:', error)
-  } finally {
-    formData.name = ''
-    formData.parentId = null
-    formData.icon = ''
-    formData.color = '#CBD5E1'
   }
 }
 
