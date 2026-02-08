@@ -31,6 +31,7 @@ export interface Transaction {
   updatedAt: string
   attachmentPath?: string | null
   attachmentUrl?: string | null
+  isRecurring?: boolean
 }
 
 export interface RecurringTransaction {

@@ -5,9 +5,30 @@
         <h1 class="text-2xl font-bold text-slate-900">Laporan Anggaran</h1>
         <p class="text-sm text-slate-500 mt-1">Pantau realisasi anggaran Anda.</p>
       </div>
-      <!-- Filters -->
-      <div class="p-5">
-        <div class="flex justify-end gap-4">
+
+      <div class="flex flex-col sm:flex-row gap-4 items-end sm:items-center">
+        <!-- Export Buttons -->
+        <div v-if="reportData.length > 0" class="flex gap-2">
+          <button
+            @click="exportBudget('excel')"
+            class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-lg flex items-center transition-colors shadow-sm"
+            title="Download Excel"
+          >
+            <i class="fa-solid fa-file-excel mr-2 text-green-600"></i>
+            Excel
+          </button>
+          <button
+            @click="exportBudget('pdf')"
+            class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-lg flex items-center transition-colors shadow-sm"
+            title="Download PDF"
+          >
+            <i class="fa-solid fa-file-pdf mr-2 text-red-600"></i>
+            PDF
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex gap-4">
           <div class="relative group">
             <label for="filterYear" class="sr-only">Tahun</label>
             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -33,22 +54,6 @@
             >
               <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
             </select>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                class="w-4 h-4 text-slate-400"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                />
-              </svg>
-            </div>
           </div>
 
           <div class="relative group">
@@ -78,22 +83,6 @@
                 {{ m }}
               </option>
             </select>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                class="w-4 h-4 text-slate-400"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                />
-              </svg>
-            </div>
           </div>
         </div>
       </div>
@@ -219,6 +208,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useBudgetStore } from '@/stores/budget'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import ExportService from '@/services/exportService'
 
 const budgetStore = useBudgetStore()
 
@@ -281,6 +271,18 @@ const getBadgeClass = (percentage: number) => {
   if (percentage >= 100) return 'text-red-600 bg-red-200'
   if (percentage >= 80) return 'text-yellow-600 bg-yellow-200'
   return 'text-green-600 bg-green-200'
+}
+
+const exportBudget = async (format: 'excel' | 'pdf') => {
+  if (reportData.value.length === 0) return
+
+  const periodName = `${monthNames[filterMonth.value - 1]} ${filterYear.value}`
+
+  if (format === 'excel') {
+    await ExportService.exportBudgetsToExcel(reportData.value, periodName)
+  } else {
+    ExportService.exportBudgetsToPDF(reportData.value, periodName)
+  }
 }
 
 onMounted(() => {

@@ -25,10 +25,39 @@
           <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
         </select>
 
+        <!-- Export Dropdown -->
+        <div v-if="!reportsStore.isLoading" class="relative group">
+          <button
+            class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg flex items-center transition-colors shadow-sm"
+          >
+            <i class="fa-solid fa-file-export mr-2 text-indigo-500"></i>
+            Ekspor Laporan
+            <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-gray-400"></i>
+          </button>
+          <div
+            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200"
+          >
+            <button
+              @click="exportFullReport('excel')"
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+            >
+              <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
+              Format Excel (.xlsx)
+            </button>
+            <button
+              @click="exportFullReport('pdf')"
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+            >
+              <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
+              Format PDF (.pdf)
+            </button>
+          </div>
+        </div>
+
         <!-- Refresh Button -->
         <button
           @click="fetchData"
-          class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition-colors shadow-sm"
           title="Refresh Data"
         >
           <svg
@@ -98,6 +127,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { useReportsStore } from '@/stores/reports'
+import ExportService from '@/services/exportService'
 import FinancialSummary from '@/components/reports/FinancialSummary.vue'
 import InsightsList from '@/components/reports/InsightsList.vue'
 import ComparisonCard from '@/components/reports/ComparisonCard.vue'
@@ -144,6 +174,11 @@ const fetchData = async () => {
     reportsStore.fetchCategoryTrend(startDate, endDate, 'DAY', 'EXPENSE'),
     reportsStore.fetchBudgetHealth(selectedMonth.value, selectedYear.value),
   ])
+}
+
+const exportFullReport = async (format: 'excel' | 'pdf') => {
+  alert(`Ekspor laporan ${format.toUpperCase()} sedang disiapkan. Harap tunggu...`)
+  // Nanti: Implementasi ekspor data summary & charts
 }
 
 onMounted(() => {

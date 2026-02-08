@@ -45,11 +45,40 @@
           </svg>
         </button>
       </div>
-      <div v-if="!isLoading && accounts && accounts.length > 0">
+      <div v-if="!isLoading && accounts && accounts.length > 0" class="flex gap-2">
+        <!-- Export Dropdown -->
+        <div class="relative group">
+          <button
+            class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm"
+          >
+            <i class="fa-solid fa-download mr-1.5 text-slate-400"></i>
+            Ekspor
+          </button>
+
+          <div
+            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200"
+          >
+            <button
+              @click="exportAccounts('excel')"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
+            >
+              <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
+              Format Excel (.xlsx)
+            </button>
+            <button
+              @click="exportAccounts('pdf')"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
+            >
+              <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
+              Format PDF (.pdf)
+            </button>
+          </div>
+        </div>
+
         <RouterLink
           v-if="canAddAccount"
           :to="{ name: 'account-create' }"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +100,7 @@
           v-else
           disabled
           title="Batas akun paket FREE tercapai (Maks 4)"
-          class="bg-slate-300 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center cursor-not-allowed"
+          class="bg-slate-300 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center cursor-not-allowed shadow-sm"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -474,6 +503,7 @@ import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import StatsCard from '@/components/common/StatsCard.vue'
 import { useAccountStore } from '@/stores/accounts'
 import { useAuthStore } from '@/stores/auth'
+import ExportService from '@/services/exportService'
 import type { Account } from '@/types/accounts'
 
 const accountStore = useAccountStore()
@@ -530,6 +560,17 @@ const getHeaderColorClass = (accountType: string): string => {
 
 const viewTransactions = (accountId: string) => {
   router.push({ name: 'account-detail', params: { id: accountId } })
+}
+
+const exportAccounts = async (format: 'excel' | 'pdf') => {
+  if (accounts.value.length === 0) return
+
+  const title = 'Laporan Daftar Akun Saya'
+  if (format === 'excel') {
+    await ExportService.exportAccountsToExcel(accounts.value, title)
+  } else {
+    ExportService.exportAccountsToPDF(accounts.value, title)
+  }
 }
 
 // Logika untuk Modal Hapus

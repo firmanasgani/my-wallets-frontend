@@ -138,6 +138,21 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/payment/finish',
+    name: 'payment-finish',
+    component: () => import('@/views/payment/PaymentStatusView.vue'),
+  },
+  {
+    path: '/payment/unfinish',
+    name: 'payment-unfinish',
+    component: () => import('@/views/payment/PaymentStatusView.vue'),
+  },
+  {
+    path: '/payment/error',
+    name: 'payment-error',
+    component: () => import('@/views/payment/PaymentStatusView.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFoundView,

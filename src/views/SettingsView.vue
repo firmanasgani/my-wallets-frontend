@@ -154,7 +154,7 @@
     <PricingModal
       :isOpen="isPricingModalOpen"
       @update:isOpen="isPricingModalOpen = $event"
-      @select-plan="handlePlanSelection"
+      @success="handleUpgradeSuccess"
     />
   </div>
 </template>
@@ -187,14 +187,8 @@ const openPricingModal = () => {
   isPricingModalOpen.value = true
 }
 
-const handlePlanSelection = async (plan: string) => {
-  if (plan === 'PREMIUM') {
-    // Modal has already handled payment success
-    // Update local state to reflect upgrade immediately for demo
-    if (authStore.currentUser) {
-      const updatedUser = { ...authStore.currentUser, subscriptionPlan: 'PREMIUM' as const }
-      authStore.setUser(updatedUser)
-    }
-  }
+const handleUpgradeSuccess = () => {
+  // User profile is already refreshed by the modal
+  // We can add a toast notification here if needed
 }
 </script>

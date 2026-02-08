@@ -9,7 +9,7 @@
   >
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-50 overflow-y-auto bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 min-h-screen"
+      class="fixed inset-0 z-50 overflow-y-auto bg-slate-900 bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 min-h-screen"
       @click.self="closeModal"
     >
       <Transition
@@ -22,234 +22,211 @@
       >
         <div
           v-if="isOpen"
-          class="relative transform rounded-lg bg-white text-left shadow-xl transition-all w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+          class="relative transform rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
         >
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 min-h-[400px]">
-            <!-- STEP 1: PLAN SELECTION -->
-            <div v-if="currentStep === 'PLAN_SELECTION'">
-              <div class="sm:flex sm:items-start">
-                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                  <h3 class="text-xl font-bold leading-6 text-gray-900 text-center mb-8">
-                    Upgrade Paket Anda
-                  </h3>
+          <!-- Header -->
+          <div
+            class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50"
+          >
+            <h3 class="text-xl font-bold text-slate-800">
+              {{ currentStep === 'SUCCESS' ? 'Pembayaran Berhasil' : 'Upgrade ke Premium' }}
+            </h3>
+            <button
+              @click="closeModal"
+              class="text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+          </div>
 
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div
-                      v-for="plan in availablePlans"
-                      :key="plan.key"
-                      class="rounded-xl p-6 relative flex flex-col transition-all duration-300"
-                      :class="[
-                        plan.recommended
-                          ? 'border-2 border-indigo-500 bg-blue-50 shadow-md hover:shadow-lg'
-                          : 'border border-slate-200 bg-white opacity-90 hover:opacity-100 hover:shadow-md',
-                      ]"
+          <div class="flex-1 overflow-y-auto p-6">
+            <!-- Loading State -->
+            <div
+              v-if="subscriptionStore.isLoading"
+              class="flex flex-col items-center justify-center py-20"
+            >
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+              <p class="mt-4 text-slate-500 font-medium">Memuat paket langganan...</p>
+            </div>
+
+            <!-- Error State -->
+            <div
+              v-else-if="subscriptionStore.error"
+              class="bg-red-50 p-4 rounded-xl border border-red-100 flex items-center gap-3 text-red-700"
+            >
+              <i class="fa-solid fa-circle-exclamation text-xl"></i>
+              <p>{{ subscriptionStore.error }}</p>
+              <button
+                @click="subscriptionStore.fetchPlans"
+                class="ml-auto text-sm font-bold underline hover:no-underline"
+              >
+                Coba Lagi
+              </button>
+            </div>
+
+            <!-- STEP 1: PLAN SELECTION -->
+            <div v-else-if="currentStep === 'PLAN_SELECTION'" class="space-y-8">
+              <div class="text-center max-w-lg mx-auto">
+                <h4 class="text-2xl font-extrabold text-slate-900 mb-2">
+                  Buka Potensi Penuh Keuanganmu
+                </h4>
+                <p class="text-slate-500">
+                  Pilih durasi yang paling cocok untukmu dan nikmati fitur premium tanpa batas.
+                </p>
+              </div>
+
+              <!-- Durations Table/Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div
+                  v-for="plan in premiumPlans"
+                  :key="plan.id"
+                  class="group relative flex flex-col p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer"
+                  :class="[
+                    selectedPlanId === plan.id
+                      ? 'border-indigo-600 bg-indigo-50/30'
+                      : 'border-slate-100 hover:border-indigo-200 hover:bg-slate-50',
+                  ]"
+                  @click="selectedPlanId = plan.id"
+                >
+                  <!-- Badge for Best Value -->
+                  <div
+                    v-if="plan.durationMonths === 12"
+                    class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm tracking-wider uppercase"
+                  >
+                    Nilai Terbaik
+                  </div>
+
+                  <div class="mb-4">
+                    <span class="text-sm font-bold text-indigo-600 uppercase tracking-widest"
+                      >{{ plan.durationMonths }} Bulan</span
                     >
-                      <div
-                        v-if="plan.recommended"
-                        class="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl"
-                      >
-                        POPULAR
-                      </div>
-                      <h4 class="text-lg font-bold text-slate-800">{{ plan.name }}</h4>
-                      <p
-                        class="text-3xl font-bold mt-2"
-                        :class="plan.recommended ? 'text-indigo-600' : 'text-slate-700'"
-                      >
-                        {{ plan.price
-                        }}<span class="text-sm text-slate-500 font-normal">{{
-                          plan.billingPeriod
-                        }}</span>
-                      </p>
-                      <ul class="mt-6 space-y-3 flex-1">
-                        <li
-                          v-for="feature in plan.features"
-                          :key="feature"
-                          class="flex items-start"
-                        >
-                          <svg
-                            class="h-5 w-5 text-green-500 mr-2 flex-shrink-0"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                          <span class="text-sm text-slate-600">{{ feature }}</span>
-                        </li>
-                      </ul>
-                      <button
-                        @click="goToPayment(plan.key)"
-                        :disabled="plan.disabled"
-                        class="mt-8 w-full py-2 rounded-lg font-semibold transition-colors"
-                        :class="[
-                          plan.recommended && !plan.disabled
-                            ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                            : plan.disabled
-                              ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
-                              : 'bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50',
-                        ]"
-                      >
-                        {{ plan.disabled ? 'Segera Hadir' : 'Pilih ' + plan.name }}
-                      </button>
-                    </div>
+                    <h5 class="text-xl font-bold text-slate-800 mt-1">{{ plan.name }}</h5>
+                  </div>
+
+                  <div class="flex items-baseline gap-1 mb-4">
+                    <span class="text-3xl font-black text-slate-900"
+                      >Rp {{ formatNumber(plan.discountPrice || plan.price) }}</span
+                    >
+                    <span class="text-slate-400 text-sm">/total</span>
+                  </div>
+
+                  <div v-if="plan.discountPrice" class="mb-6">
+                    <span class="text-xs text-slate-400 line-through"
+                      >Rp {{ formatNumber(plan.price) }}</span
+                    >
+                    <span
+                      class="ml-2 text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded"
+                      >Hemat {{ calculateSaving(plan) }}%</span
+                    >
+                  </div>
+
+                  <div
+                    class="mt-auto pt-4 flex items-center gap-2 font-bold"
+                    :class="
+                      selectedPlanId === plan.id
+                        ? 'text-indigo-600'
+                        : 'text-slate-400 group-hover:text-slate-600'
+                    "
+                  >
+                    <i
+                      class="fa-solid"
+                      :class="
+                        selectedPlanId === plan.id
+                          ? 'fa-circle-check text-indigo-600'
+                          : 'fa-circle text-slate-200'
+                      "
+                    ></i>
+                    {{ selectedPlanId === plan.id ? 'Terpilih' : 'Pilih Paket' }}
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- STEP 2: PAYMENT METHOD -->
-            <div v-else-if="currentStep === 'PAYMENT_METHOD'">
-              <div class="max-w-xl mx-auto">
-                <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center">
-                  <button
-                    @click="currentStep = 'PLAN_SELECTION'"
-                    class="mr-3 text-slate-400 hover:text-slate-600"
+              <!-- Features List -->
+              <div class="bg-indigo-900 rounded-2xl p-8 text-white">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                  <div
+                    v-for="feature in premiumFeatures"
+                    :key="feature"
+                    class="flex items-start gap-3"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-5 h-5"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-                      />
-                    </svg>
-                  </button>
-                  Pilih Metode Pembayaran
-                </h3>
-
-                <!-- Order Summary -->
-                <div
-                  class="bg-indigo-50 p-4 rounded-lg mb-6 flex justify-between items-center border border-indigo-100"
-                >
-                  <div>
-                    <p class="font-semibold text-indigo-900">
-                      Upgrade {{ selectedPlanDetails?.name }}
-                    </p>
-                    <p class="text-xs text-indigo-600">Tagihan Bulanan</p>
+                    <div class="bg-indigo-500/30 p-1 rounded-full">
+                      <i class="fa-solid fa-check text-xs text-indigo-300"></i>
+                    </div>
+                    <span class="text-sm font-medium text-indigo-50">{{ feature }}</span>
                   </div>
-                  <p class="font-bold text-lg text-indigo-700">{{ selectedPlanDetails?.price }}</p>
                 </div>
-
-                <!-- Payment Options -->
-                <div class="space-y-3">
-                  <p class="text-sm font-medium text-slate-700">Virtual Account</p>
-                  <label
-                    v-for="bank in banks"
-                    :key="bank.code"
-                    class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors"
-                    :class="
-                      selectedPayment === bank.code
-                        ? 'border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500'
-                        : 'border-slate-200'
-                    "
-                  >
-                    <input
-                      type="radio"
-                      name="payment"
-                      :value="bank.code"
-                      v-model="selectedPayment"
-                      class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
-                    />
-                    <span class="ml-3 block text-sm font-medium text-gray-700">{{
-                      bank.name
-                    }}</span>
-                    <span class="ml-auto text-xs text-slate-500">Auto Check</span>
-                  </label>
-
-                  <p class="text-sm font-medium text-slate-700 mt-4">E-Wallet / QRIS</p>
-                  <label
-                    v-for="wallet in wallets"
-                    :key="wallet.code"
-                    class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors"
-                    :class="
-                      selectedPayment === wallet.code
-                        ? 'border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500'
-                        : 'border-slate-200'
-                    "
-                  >
-                    <input
-                      type="radio"
-                      name="payment"
-                      :value="wallet.code"
-                      v-model="selectedPayment"
-                      class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
-                    />
-                    <span class="ml-3 block text-sm font-medium text-gray-700">{{
-                      wallet.name
-                    }}</span>
-                  </label>
-                </div>
-
-                <button
-                  @click="processPayment"
-                  :disabled="!selectedPayment || isProcessing"
-                  class="mt-8 w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
-                >
-                  <span v-if="isProcessing">Memproses Pembayaran...</span>
-                  <span v-else>Bayar Sekarang &bullet; {{ selectedPlanDetails?.price }}</span>
-                </button>
               </div>
             </div>
 
             <!-- STEP 3: SUCCESS -->
             <div
               v-else-if="currentStep === 'SUCCESS'"
-              class="flex flex-col items-center justify-center py-10"
+              class="flex flex-col items-center justify-center py-12 text-center"
             >
-              <div
-                class="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-6"
-              >
-                <svg
-                  class="h-8 w-8 text-green-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+              <div class="relative mb-8">
+                <div
+                  class="absolute inset-0 bg-green-200 rounded-full animate-ping opacity-25"
+                ></div>
+                <div
+                  class="relative h-20 w-20 bg-green-100 rounded-full flex items-center justify-center"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+                  <i class="fa-solid fa-check text-3xl text-green-600"></i>
+                </div>
               </div>
-              <h3 class="text-2xl font-bold text-gray-900 mb-2">Pembayaran Berhasil!</h3>
-              <p class="text-slate-600 text-center max-w-sm mb-8">
-                Selamat! Akun Anda telah berhasil diupgrade ke <strong>Premium</strong>. Nikmati
-                fitur tanpa batas sekarang.
+              <h3 class="text-3xl font-black text-slate-900 mb-2">Upgrade Berhasil!</h3>
+              <p class="text-slate-500 text-lg max-w-sm mx-auto mb-10">
+                Terima kasih! Akun Anda kini aktif sebagai anggota <strong>Premium</strong>. Mulai
+                kelola keuanganmu lebih baik.
               </p>
               <button
                 @click="finishProcess"
-                class="bg-indigo-600 text-white px-8 py-2 rounded-lg font-semibold hover:bg-indigo-700"
+                class="bg-indigo-600 text-white px-10 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all"
               >
-                Selesai
+                Mulai Sekarang
               </button>
             </div>
           </div>
 
-          <!-- Footer Buttons (Only for Plan Selection) -->
+          <!-- Sticky Footer -->
           <div
             v-if="currentStep === 'PLAN_SELECTION'"
-            class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"
+            class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4"
           >
-            <button
-              type="button"
-              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-              @click="closeModal"
-            >
-              Tutup
-            </button>
+            <div v-if="selectedPlanDetails" class="flex items-center gap-3">
+              <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+                <i class="fa-solid fa-crown"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">
+                  Total Bayar
+                </p>
+                <p class="text-lg font-black text-slate-900">
+                  Rp
+                  {{ formatNumber(selectedPlanDetails.discountPrice || selectedPlanDetails.price) }}
+                </p>
+              </div>
+            </div>
+            <div v-else class="text-slate-400 text-sm font-medium italic">
+              Silakan pilih durasi paket langganan
+            </div>
+
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+              <button
+                type="button"
+                class="flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors"
+                @click="closeModal"
+              >
+                Batal
+              </button>
+              <button
+                @click="handlePayment"
+                :disabled="!selectedPlanId || isProcessing"
+                class="flex-1 sm:flex-initial bg-indigo-600 text-white px-10 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+              >
+                <i v-if="isProcessing" class="fa-solid fa-circle-notch animate-spin"></i>
+                {{ isProcessing ? 'Memproses...' : 'Lanjutkan ke Pembayaran' }}
+              </button>
+            </div>
           </div>
         </div>
       </Transition>
@@ -258,81 +235,127 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import { PRICING_PLANS, SubscriptionPlan } from '@/enums/pricing'
+import { ref, watch, computed, onMounted } from 'vue'
+import { useSubscriptionStore } from '@/stores/subscriptions'
+import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps<{
   isOpen: boolean
 }>()
 
-const emit = defineEmits(['update:isOpen', 'select-plan'])
+const emit = defineEmits(['update:isOpen', 'success'])
 
-type Step = 'PLAN_SELECTION' | 'PAYMENT_METHOD' | 'SUCCESS'
+const subscriptionStore = useSubscriptionStore()
+const authStore = useAuthStore()
+
+type Step = 'PLAN_SELECTION' | 'SUCCESS'
 const currentStep = ref<Step>('PLAN_SELECTION')
-const selectedPlan = ref('')
-const selectedPayment = ref('')
+const selectedPlanId = ref<string | null>(null)
 const isProcessing = ref(false)
 
-const availablePlans = computed(() => {
-  return PRICING_PLANS.filter((plan) => plan.key !== SubscriptionPlan.FREE)
+const premiumPlans = computed(() => {
+  return subscriptionStore.plans.filter((p) => p.code !== 'FREE')
 })
 
 const selectedPlanDetails = computed(() => {
-  return PRICING_PLANS.find((p) => p.key === selectedPlan.value)
+  return subscriptionStore.plans.find((p) => p.id === selectedPlanId.value)
 })
 
-const banks = [
-  { code: 'BCA', name: 'BCA Virtual Account' },
-  { code: 'MANDIRI', name: 'Mandiri Virtual Account' },
-  { code: 'BRI', name: 'BRI Virtual Account' },
-  { code: 'BNI', name: 'BNI Virtual Account' },
+const premiumFeatures = [
+  'Akun Keuangan Tanpa Batas',
+  'Kategori Kustom Tanpa Batas',
+  'Laporan & Analisis Lanjutan',
+  'Transaksi Berulang Otomatis',
+  'Fitur Budgeting Lengkap',
+  'Lampiran Struk Transaksi',
+  'Export Data (CSV/Excel)',
+  'Dukungan Prioritas 24/7',
 ]
 
-const wallets = [
-  { code: 'GOPAY', name: 'GoPay' },
-  { code: 'OVO', name: 'OVO' },
-  { code: 'DANA', name: 'DANA' },
-  { code: 'SHOPEEPAY', name: 'ShopeePay' },
-]
+const formatNumber = (num: number) => {
+  return new Intl.NumberFormat('id-ID').format(num)
+}
+
+const calculateSaving = (plan: any) => {
+  if (!plan.discountPrice) return 0
+  const saving = ((plan.price - plan.discountPrice) / plan.price) * 100
+  return Math.round(saving)
+}
 
 const closeModal = () => {
+  if (isProcessing.value) return
   emit('update:isOpen', false)
-  // Reset after transition usually, but immediate for now
   setTimeout(() => {
     currentStep.value = 'PLAN_SELECTION'
-    selectedPayment.value = ''
-    selectedPlan.value = ''
+    selectedPlanId.value = null
     isProcessing.value = false
   }, 300)
 }
 
-const goToPayment = (plan: string) => {
-  selectedPlan.value = plan
-  currentStep.value = 'PAYMENT_METHOD'
-}
-
-const processPayment = () => {
-  if (!selectedPayment.value) return
+const handlePayment = async () => {
+  if (!selectedPlanDetails.value) return
 
   isProcessing.value = true
+  try {
+    const snapToken = await subscriptionStore.initiateCheckout(selectedPlanDetails.value.code)
 
-  // Simulate API call
-  setTimeout(() => {
+    // @ts-ignore
+    window.snap.pay(snapToken, {
+      onSuccess: function (result: any) {
+        console.log('success', result)
+        currentStep.value = 'SUCCESS'
+        isProcessing.value = false
+        // Polling profile update because Midtrans webhook is async
+        let attempts = 0
+        const maxAttempts = 5
+        const checkStatus = async () => {
+          await authStore.fetchUserProfile()
+          if (authStore.currentUser?.subscriptionPlan !== 'FREE') return
+          if (attempts < maxAttempts) {
+            attempts++
+            setTimeout(checkStatus, 2000)
+          }
+        }
+        checkStatus()
+      },
+      onPending: function (result: any) {
+        console.log('pending', result)
+        isProcessing.value = false
+        closeModal()
+        alert('Pembayaran tertunda. Silakan selesaikan pembayaran Anda.')
+      },
+      onError: function (result: any) {
+        console.log('error', result)
+        isProcessing.value = false
+        alert('Terjadi kesalahan saat pembayaran.')
+      },
+      onClose: function () {
+        console.log('customer closed the popup without finishing the payment')
+        isProcessing.value = false
+      },
+    })
+  } catch (err: any) {
+    alert(err.message || 'Gagal memproses pembayaran')
     isProcessing.value = false
-    currentStep.value = 'SUCCESS'
-  }, 2000)
+  }
 }
 
 const finishProcess = () => {
-  emit('select-plan', selectedPlan.value) // Parent handles the store update
+  emit('success')
   closeModal()
 }
 
-// Reset when opened
+onMounted(() => {
+  if (props.isOpen) {
+    subscriptionStore.fetchPlans()
+  }
+})
+
 watch(
   () => props.isOpen,
   (newVal) => {
     if (newVal) {
+      subscriptionStore.fetchPlans()
       currentStep.value = 'PLAN_SELECTION'
     }
   },

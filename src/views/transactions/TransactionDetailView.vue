@@ -247,6 +247,12 @@
           </p>
           <div class="flex gap-3">
             <button
+              @click="exportToPDF"
+              class="px-4 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
+            >
+              <i class="fa-solid fa-file-pdf mr-2"></i>Cetak PDF
+            </button>
+            <button
               @click="showDeleteConfirm = true"
               class="px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors"
             >
@@ -290,6 +296,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTransactionStore } from '@/stores/transactions'
+import ExportService from '@/services/exportService'
 import type { Transaction } from '@/types/transaction'
 import { FrontendTransactionType } from '@/types/enums'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
@@ -358,6 +365,12 @@ const loadTransaction = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+const exportToPDF = () => {
+  if (!transaction.value) return
+  const title = `Detail Transaksi - ${transaction.value.description || 'Tanpa Deskripsi'}`
+  ExportService.exportTransactionsToPDF([transaction.value], title)
 }
 
 const handleDelete = async () => {

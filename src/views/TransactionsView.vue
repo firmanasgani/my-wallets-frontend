@@ -3,10 +3,41 @@
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 print:hidden">
       <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800">Riwayat Transaksi</h1>
-      <div v-if="transactionStore.transactionList.length > 0">
+      <div class="flex gap-2 w-full sm:w-auto">
+        <!-- Export Dropdown -->
+        <div class="relative group">
+          <button
+            class="w-full sm:w-auto bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
+          >
+            <i class="fa-solid fa-download mr-2 text-slate-400"></i>
+            Ekspor
+            <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-slate-400"></i>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div
+            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200"
+          >
+            <button
+              @click="exportTransactions('excel')"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
+            >
+              <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
+              Format Excel (.xlsx)
+            </button>
+            <button
+              @click="exportTransactions('pdf')"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
+            >
+              <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
+              Format PDF (.pdf)
+            </button>
+          </div>
+        </div>
+
         <button
           @click="openAddTransactionModal"
-          class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors"
+          class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -353,6 +384,7 @@ import { useTransactionStore } from '@/stores/transactions'
 import { useAccountStore } from '@/stores/accounts'
 import { useCategoryStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
+import ExportService from '@/services/exportService'
 import type { Transaction, QueryTransactionDto } from '@/types/transaction'
 import type { FrontendTransactionType } from '@/types/enums'
 
@@ -536,6 +568,22 @@ const closeDeleteModal = () => {
 const editTransaction = (transaction: Transaction) => {
   alert(`Edit transaksi: ${transaction.description} (implementasi nanti)`)
   // Nanti: buka modal edit atau navigasi ke halaman edit
+}
+
+const exportTransactions = async (format: 'excel' | 'pdf') => {
+  if (transactionStore.transactionList.length === 0) return
+
+  // Untuk ekspor, sebaiknya ambil semua data yang sesuai filter (tanpa paginasi)
+  // Tapi untuk sekarang kita gunakan data yang ada di list saat ini
+  // Nanti bisa dikembangkan untuk fetch all
+
+  const title = `Laporan Transaksi ${localFilters.startDate} s/d ${localFilters.endDate}`
+
+  if (format === 'excel') {
+    await ExportService.exportTransactionsToExcel(transactionStore.transactionList, title)
+  } else {
+    ExportService.exportTransactionsToPDF(transactionStore.transactionList, title)
+  }
 }
 </script>
 
