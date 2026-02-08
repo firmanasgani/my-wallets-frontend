@@ -24,13 +24,23 @@
               <div class="ml-10 flex items-baseline space-x-4">
                 <a href="#features" class="nav-link">Fitur</a>
                 <a href="#pricing" class="nav-link">Harga</a>
-                <RouterLink :to="{ name: 'login' }" class="nav-link">Masuk</RouterLink>
-                <RouterLink
-                  :to="{ name: 'register' }"
-                  class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Daftar Gratis
-                </RouterLink>
+                <template v-if="!isAuthenticated">
+                  <RouterLink :to="{ name: 'login' }" class="nav-link">Masuk</RouterLink>
+                  <RouterLink
+                    :to="{ name: 'register' }"
+                    class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Daftar Gratis
+                  </RouterLink>
+                </template>
+                <template v-else>
+                  <RouterLink
+                    :to="{ name: 'dashboard' }"
+                    class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Ke Dashboard
+                  </RouterLink>
+                </template>
               </div>
             </div>
             <div class="-mr-2 flex md:hidden">
@@ -81,18 +91,28 @@
           </div>
           <div class="pt-4 pb-3 border-t border-slate-200">
             <div class="px-2 space-y-1">
-              <RouterLink
-                :to="{ name: 'login' }"
-                @click="mobileMenuOpen = false"
-                class="block w-full text-left nav-link-mobile"
-                >Masuk</RouterLink
-              >
-              <RouterLink
-                :to="{ name: 'register' }"
-                @click="mobileMenuOpen = false"
-                class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >Daftar Gratis</RouterLink
-              >
+              <template v-if="!isAuthenticated">
+                <RouterLink
+                  :to="{ name: 'login' }"
+                  @click="mobileMenuOpen = false"
+                  class="block w-full text-left nav-link-mobile"
+                  >Masuk</RouterLink
+                >
+                <RouterLink
+                  :to="{ name: 'register' }"
+                  @click="mobileMenuOpen = false"
+                  class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >Daftar Gratis</RouterLink
+                >
+              </template>
+              <template v-else>
+                <RouterLink
+                  :to="{ name: 'dashboard' }"
+                  @click="mobileMenuOpen = false"
+                  class="block w-full text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >Ke Dashboard</RouterLink
+                >
+              </template>
             </div>
           </div>
         </div>
@@ -308,6 +328,11 @@ import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { PRICING_PLANS } from '@/enums/pricing'
+import { useAuthStore } from '@/stores/auth'
+import { storeToRefs } from 'pinia'
+
+const authStore = useAuthStore()
+const { isAuthenticated } = storeToRefs(authStore)
 
 const isLoadingPage = ref(true)
 const mobileMenuOpen = ref(false)
