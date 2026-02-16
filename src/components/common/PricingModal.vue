@@ -22,13 +22,13 @@
       >
         <div
           v-if="isOpen"
-          class="relative transform rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+          class="relative transform rounded-2xl bg-white dark:bg-slate-800 text-left shadow-2xl transition-all w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
         >
           <!-- Header -->
           <div
-            class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50"
+            class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50"
           >
-            <h3 class="text-xl font-bold text-slate-800">
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white">
               {{ currentStep === 'SUCCESS' ? 'Pembayaran Berhasil' : 'Upgrade ke Premium' }}
             </h3>
             <button
@@ -67,10 +67,10 @@
             <!-- STEP 1: PLAN SELECTION -->
             <div v-else-if="currentStep === 'PLAN_SELECTION'" class="space-y-8">
               <div class="text-center max-w-lg mx-auto">
-                <h4 class="text-2xl font-extrabold text-slate-900 mb-2">
+                <h4 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">
                   Buka Potensi Penuh Keuanganmu
                 </h4>
-                <p class="text-slate-500">
+                <p class="text-slate-500 dark:text-slate-400">
                   Pilih durasi yang paling cocok untukmu dan nikmati fitur premium tanpa batas.
                 </p>
               </div>
@@ -97,17 +97,20 @@
                   </div>
 
                   <div class="mb-4">
-                    <span class="text-sm font-bold text-indigo-600 uppercase tracking-widest"
+                    <span
+                      class="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest"
                       >{{ plan.durationMonths }} Bulan</span
                     >
-                    <h5 class="text-xl font-bold text-slate-800 mt-1">{{ plan.name }}</h5>
+                    <h5 class="text-xl font-bold text-slate-800 dark:text-white mt-1">
+                      {{ plan.name }}
+                    </h5>
                   </div>
 
                   <div class="flex items-baseline gap-1 mb-4">
-                    <span class="text-3xl font-black text-slate-900"
+                    <span class="text-3xl font-black text-slate-900 dark:text-white"
                       >Rp {{ formatNumber(plan.discountPrice || plan.price) }}</span
                     >
-                    <span class="text-slate-400 text-sm">/total</span>
+                    <span class="text-slate-400 dark:text-slate-500 text-sm">/total</span>
                   </div>
 
                   <div v-if="plan.discountPrice" class="mb-6">
@@ -173,8 +176,10 @@
                   <i class="fa-solid fa-check text-3xl text-green-600"></i>
                 </div>
               </div>
-              <h3 class="text-3xl font-black text-slate-900 mb-2">Upgrade Berhasil!</h3>
-              <p class="text-slate-500 text-lg max-w-sm mx-auto mb-10">
+              <h3 class="text-3xl font-black text-slate-900 dark:text-white mb-2">
+                Upgrade Berhasil!
+              </h3>
+              <p class="text-slate-500 dark:text-slate-400 text-lg max-w-sm mx-auto mb-10">
                 Terima kasih! Akun Anda kini aktif sebagai anggota <strong>Premium</strong>. Mulai
                 kelola keuanganmu lebih baik.
               </p>
@@ -197,10 +202,12 @@
                 <i class="fa-solid fa-crown"></i>
               </div>
               <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">
+                <p
+                  class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter"
+                >
                   Total Bayar
                 </p>
-                <p class="text-lg font-black text-slate-900">
+                <p class="text-lg font-black text-slate-900 dark:text-white">
                   Rp
                   {{ formatNumber(selectedPlanDetails.discountPrice || selectedPlanDetails.price) }}
                 </p>

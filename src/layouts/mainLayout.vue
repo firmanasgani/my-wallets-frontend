@@ -1,6 +1,6 @@
 // src/layouts/MainLayout.vue
 <template>
-  <div v-if="authStore.isAuthenticated" class="flex h-screen bg-slate-100">
+  <div v-if="authStore.isAuthenticated" class="flex h-screen bg-slate-100 dark:bg-slate-900">
     <aside
       class="w-64 bg-slate-800 text-slate-100 p-4 space-y-6 hidden md:flex md:flex-col shadow-lg print:hidden"
     >
@@ -103,12 +103,12 @@
     </aside>
 
     <div class="flex-1 flex flex-col overflow-hidden">
-      <header class="bg-white shadow-sm print:hidden">
+      <header class="bg-white dark:bg-slate-800 shadow-sm print:hidden">
         <div class="mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div class="flex items-center">
             <button
               @click="toggleMobileSidebar"
-              class="md:hidden mr-3 text-slate-600 hover:text-slate-800 focus:outline-none"
+              class="md:hidden mr-3 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white focus:outline-none"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +125,7 @@
                 />
               </svg>
             </button>
-            <h1 class="text-lg font-semibold text-slate-700 hidden sm:block">
+            <h1 class="text-lg font-semibold text-slate-700 dark:text-slate-200 hidden sm:block">
               {{ currentRouteTitle }}
             </h1>
           </div>
@@ -179,29 +179,32 @@
             >
               <div
                 v-if="isProfileDropdownOpen"
-                class="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                class="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg py-1 bg-white dark:bg-slate-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50 transition-colors"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="user-menu-button"
                 tabindex="-1"
                 ref="profileDropdownRef"
               >
-                <div class="px-4 py-3 border-b border-slate-200">
-                  <p class="text-sm text-slate-700">Masuk sebagai</p>
+                <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                  <p class="text-sm text-slate-700 dark:text-slate-300">Masuk sebagai</p>
                   <p
-                    class="text-sm font-medium text-slate-900 truncate"
+                    class="text-sm font-medium text-slate-900 dark:text-white truncate"
                     :title="authStore.currentUser?.fullName || authStore.currentUser?.username"
                   >
                     {{ authStore.currentUser?.fullName || authStore.currentUser?.username }}
                   </p>
-                  <p class="text-xs text-slate-500 truncate" :title="authStore.currentUser?.email">
+                  <p
+                    class="text-xs text-slate-500 dark:text-slate-400 truncate"
+                    :title="authStore.currentUser?.email"
+                  >
                     {{ authStore.currentUser?.email }}
                   </p>
                 </div>
                 <RouterLink
                   :to="{ name: 'profile' }"
                   @click="closeProfileDropdown"
-                  class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 w-full text-left"
+                  class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 w-full text-left"
                   role="menuitem"
                   tabindex="-1"
                 >
@@ -209,7 +212,7 @@
                 </RouterLink>
                 <button
                   @click="handleLogout"
-                  class="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                  class="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                   role="menuitem"
                   tabindex="-1"
                 >
@@ -221,7 +224,9 @@
         </div>
       </header>
 
-      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-4 sm:p-6 lg:p-8">
+      <main
+        class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 dark:bg-slate-900 p-4 sm:p-6 lg:p-8"
+      >
         <RouterView />
       </main>
     </div>

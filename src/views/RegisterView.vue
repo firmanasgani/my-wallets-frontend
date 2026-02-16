@@ -153,6 +153,7 @@
                   :type="showPassword ? 'text' : 'password'"
                   id="password"
                   v-model="formData.password"
+                  @input="checkPassword"
                   required
                   class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
                   placeholder="Min. 8 karakter"
@@ -202,6 +203,39 @@
                   </button>
                 </div>
               </div>
+              <div class="mt-2 text-xs text-gray-600 space-y-1" v-if="formData.password">
+                <p>Syarat Kata Sandi:</p>
+                <ul class="list-disc list-inside pl-2">
+                  <li
+                    :class="
+                      passwordCriteria.minLength ? 'text-green-600 font-bold' : 'text-gray-500'
+                    "
+                  >
+                    Min. 8 Karakter
+                  </li>
+                  <li
+                    :class="
+                      passwordCriteria.hasUpper ? 'text-green-600 font-bold' : 'text-gray-500'
+                    "
+                  >
+                    Huruf Besar (A-Z)
+                  </li>
+                  <li
+                    :class="
+                      passwordCriteria.hasNumber ? 'text-green-600 font-bold' : 'text-gray-500'
+                    "
+                  >
+                    Angka (0-9)
+                  </li>
+                  <li
+                    :class="
+                      passwordCriteria.hasSpecial ? 'text-green-600 font-bold' : 'text-gray-500'
+                    "
+                  >
+                    Karakter Spesial (!@#...)
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <!-- Confirm Password -->
@@ -214,6 +248,7 @@
                   :type="showConfirmPassword ? 'text' : 'password'"
                   id="confirmPassword"
                   v-model="formData.confirmPassword"
+                  @input="checkMatch"
                   required
                   class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
                   placeholder="Ulangi kata sandi"
@@ -262,6 +297,20 @@
                     </svg>
                   </button>
                 </div>
+              </div>
+              <div v-if="formData.confirmPassword" class="mt-2 text-xs">
+                <span
+                  v-if="passwordMatchStatus === 'match'"
+                  class="text-green-600 flex items-center"
+                >
+                  <i class="fa-solid fa-circle-check mr-1"></i> Kata sandi cocok
+                </span>
+                <span
+                  v-else-if="passwordMatchStatus === 'mismatch'"
+                  class="text-red-500 flex items-center"
+                >
+                  <i class="fa-solid fa-circle-xmark mr-1"></i> Kata sandi tidak cocok
+                </span>
               </div>
             </div>
 
@@ -339,6 +388,35 @@ const formData = reactive<RegisterFormData>({
 const clientSideError = ref<string | null>(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+
+const passwordCriteria = reactive({
+  minLength: false,
+  hasUpper: false,
+  hasNumber: false,
+  hasSpecial: false,
+})
+
+const passwordMatchStatus = ref<'idle' | 'match' | 'mismatch'>('idle')
+
+const checkPassword = () => {
+  const p = formData.password
+  passwordCriteria.minLength = p.length >= 8
+  passwordCriteria.hasUpper = /[A-Z]/.test(p)
+  passwordCriteria.hasNumber = /[0-9]/.test(p)
+  passwordCriteria.hasSpecial = /[^A-Za-z0-9]/.test(p)
+
+  if (formData.confirmPassword) {
+    checkMatch()
+  }
+}
+
+const checkMatch = () => {
+  if (!formData.confirmPassword) {
+    passwordMatchStatus.value = 'idle'
+    return
+  }
+  passwordMatchStatus.value = formData.password === formData.confirmPassword ? 'match' : 'mismatch'
+}
 
 const clearErrors = () => {
   clientSideError.value = null
