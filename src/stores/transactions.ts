@@ -370,5 +370,40 @@ export const useTransactionStore = defineStore('transactions', {
         this.isSubmitting = false
       }
     },
+
+    // Action untuk update detail transaksi (kategori & deskripsi)
+    async updateTransactionDetails(
+      transactionId: string,
+      payload: { categoryId?: string; description?: string },
+    ) {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) throw new Error('User not authenticated.')
+      this.isSubmitting = true
+      this.error = null
+      try {
+        const response = await apiClient.patch<Transaction>(
+          `/transactions/${transactionId}`,
+          payload,
+        )
+
+        // Update local state if transaction exists in list
+        const index = this.transactions.findIndex((t) => t.id === transactionId)
+        if (index !== -1) {
+          this.transactions[index] = { ...this.transactions[index], ...response.data }
+        }
+
+        return response.data
+      } catch (err: any) {
+        console.error(
+          `Failed to update transaction ${transactionId}:`,
+          err.response?.data || err.message,
+        )
+        const errorMessage = err.response?.data?.message || 'Gagal memperbarui transaksi.'
+        this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
+        throw new Error(this.error ?? 'Unknown error')
+      } finally {
+        this.isSubmitting = false
+      }
+    },
   },
 })

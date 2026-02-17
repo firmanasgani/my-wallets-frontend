@@ -68,15 +68,23 @@
                   </div>
                   <div>
                     <p class="text-xs text-slate-400 font-medium mb-0.5">Deskripsi</p>
-                    <p class="text-slate-900 font-semibold">
+                    <div v-if="isEditing" class="relative">
+                      <input
+                        v-model="editForm.description"
+                        type="text"
+                        class="w-full border-b border-slate-300 focus:border-indigo-500 outline-none py-1 text-slate-900 font-semibold bg-transparent"
+                        placeholder="Masukkan deskripsi"
+                      />
+                    </div>
+                    <p v-else class="text-slate-900 font-semibold">
                       {{ transaction.description || 'Tidak ada deskripsi' }}
                     </p>
                   </div>
                 </div>
 
-                <!-- Category -->
-                <div v-if="transaction.category" class="flex items-start gap-4">
+                <div class="flex items-start gap-4">
                   <div
+                    v-if="!isEditing && transaction.category"
                     class="p-2.5 rounded-xl text-white"
                     :style="{ backgroundColor: transaction.category.color || '#6366f1' }"
                   >
@@ -87,7 +95,19 @@
                       ]"
                     ></i>
                   </div>
-                  <div>
+                  <div v-if="isEditing" class="w-full">
+                    <p class="text-xs text-slate-400 font-medium mb-0.5">Kategori</p>
+                    <select
+                      v-model="editForm.categoryId"
+                      class="w-full border-b border-slate-300 focus:border-indigo-500 outline-none py-1 text-slate-900 font-semibold bg-transparent"
+                    >
+                      <option value="" disabled>Pilih Kategori</option>
+                      <option v-for="cat in availableCategories" :key="cat.id" :value="cat.id">
+                        {{ cat.categoryName }}
+                      </option>
+                    </select>
+                  </div>
+                  <div v-else-if="transaction.category">
                     <p class="text-xs text-slate-400 font-medium mb-0.5">Kategori</p>
                     <p class="text-slate-900 font-semibold">
                       {{ transaction.category.categoryName }}
@@ -247,6 +267,30 @@
           </p>
           <div class="flex gap-3">
             <button
+              v-if="!isEditing"
+              @click="startEditing"
+              class="px-4 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
+            >
+              <i class="fa-solid fa-pen mr-2"></i>Edit
+            </button>
+            <div v-else class="flex gap-2">
+              <button
+                @click="cancelEditing"
+                class="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                :disabled="isSaving"
+              >
+                Batal
+              </button>
+              <button
+                @click="saveChanges"
+                class="px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors"
+                :disabled="isSaving"
+              >
+                <i class="fa-solid fa-check mr-2"></i>Simpan
+              </button>
+            </div>
+            <button
+              v-if="!isEditing"
               @click="exportToPDF"
               class="px-4 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
             >
@@ -293,9 +337,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTransactionStore } from '@/stores/transactions'
+import { useCategoryStore } from '@/stores/categories'
 import ExportService from '@/services/exportService'
 import type { Transaction } from '@/types/transaction'
 import { FrontendTransactionType } from '@/types/enums'
@@ -305,11 +350,19 @@ import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 const route = useRoute()
 const router = useRouter()
 const transactionStore = useTransactionStore()
+const categoryStore = useCategoryStore()
 
 const transaction = ref<Transaction | null>(null)
 const isLoading = ref(true)
 const isDeleting = ref(false)
 const showDeleteConfirm = ref(false)
+const isEditing = ref(false)
+const isSaving = ref(false)
+
+const editForm = reactive({
+  description: '',
+  categoryId: '',
+})
 
 const isIncome = computed(
   () => transaction.value?.transactionType === FrontendTransactionType.INCOME,
@@ -416,8 +469,66 @@ const formatDateTime = (dateString: string) => {
   })
 }
 
-onMounted(() => {
-  loadTransaction()
+const availableCategories = computed(() => {
+  if (!transaction.value) return []
+
+  // Tampilkan semua kategori berdasarkan tipe transaksi
+  // Jika transfer, tidak perlu kategori (biasanya)
+  if (isTransfer.value) return []
+
+  const allCats = categoryStore.allCategories
+  if (isIncome.value) {
+    return allCats.filter((c) => c.categoryType === 'INCOME')
+  } else if (isExpense.value) {
+    return allCats.filter((c) => c.categoryType === 'EXPENSE')
+  }
+  return []
+})
+
+const startEditing = () => {
+  if (!transaction.value) return
+  editForm.description = transaction.value.description || ''
+  editForm.categoryId = transaction.value.category?.id || ''
+  isEditing.value = true
+}
+
+const cancelEditing = () => {
+  isEditing.value = false
+  editForm.description = ''
+  editForm.categoryId = ''
+}
+
+const saveChanges = async () => {
+  if (!transaction.value) return
+  isSaving.value = true
+  try {
+    const payload: { description?: string; categoryId?: string } = {}
+
+    if (editForm.description !== transaction.value.description) {
+      payload.description = editForm.description
+    }
+
+    if (editForm.categoryId && editForm.categoryId !== transaction.value.category?.id) {
+      payload.categoryId = editForm.categoryId
+    }
+
+    if (Object.keys(payload).length > 0) {
+      const updated = await transactionStore.updateTransactionDetails(transaction.value.id, payload)
+      transaction.value = updated
+    }
+
+    isEditing.value = false
+  } catch (error) {
+    console.error('Failed to update transaction:', error)
+    alert('Gagal memperbarui transaksi')
+  } finally {
+    isSaving.value = false
+  }
+}
+
+onMounted(async () => {
+  await loadTransaction()
+  await categoryStore.fetchCategories()
 })
 </script>
 
