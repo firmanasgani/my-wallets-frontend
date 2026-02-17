@@ -213,7 +213,7 @@ const currentDate = ref(new Date())
 const selectedDate = ref(new Date())
 const transactions = ref<Transaction[]>([])
 const isLoading = ref(false)
-const weekDays = ['Min', 'Sen', 'Sel', 'Obs', 'Kam', 'Jum', 'Sab']
+const weekDays = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
 
 // Calendar Logic
 const currentYear = computed(() => currentDate.value.getFullYear())
@@ -254,9 +254,17 @@ const calendarDays = computed(() => {
   return days
 })
 
+// Helper to get local YYYY-MM-DD
+const toLocalDateString = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 // Transaction Filtering
 const getDailySummary = (date: Date) => {
-  const dateStr = date.toISOString().split('T')[0]
+  const dateStr = toLocalDateString(date)
   const dailyTx = transactions.value.filter((tx) => tx.transactionDate.startsWith(dateStr))
 
   let income = 0
@@ -272,12 +280,12 @@ const getDailySummary = (date: Date) => {
 }
 
 const getDailyCount = (date: Date) => {
-  const dateStr = date.toISOString().split('T')[0]
+  const dateStr = toLocalDateString(date)
   return transactions.value.filter((tx) => tx.transactionDate.startsWith(dateStr)).length
 }
 
 const selectedDateTransactions = computed(() => {
-  const dateStr = selectedDate.value.toISOString().split('T')[0]
+  const dateStr = toLocalDateString(selectedDate.value)
   return transactions.value.filter((tx) => tx.transactionDate.startsWith(dateStr))
 })
 
@@ -345,7 +353,7 @@ const fetchTransactionsForMonth = async () => {
   // Let's just create a generous range. -7 days from start, +14 days from end.
   // Or just create the objects.
 
-  const queryStartDate = gridStartDate.toISOString().split('T')[0]
+  const queryStartDate = toLocalDateString(gridStartDate)
   // Calculate end date properly to cover all potential grid cells
   // If last day is Saturday (6), we don't add waiting.
   // If last day is Friday (5), we add 1 day.
@@ -353,7 +361,7 @@ const fetchTransactionsForMonth = async () => {
   // (7 - (daysInMonth + startPadding) % 7) % 7
   // Let's just use a safe buffer of +7 days from end of month to cover next month preview.
   const safeEndDate = new Date(year, month + 1, 14)
-  const queryEndDate = safeEndDate.toISOString().split('T')[0]
+  const queryEndDate = toLocalDateString(safeEndDate)
 
   try {
     const response = await apiClient.get('/transactions', {
