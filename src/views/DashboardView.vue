@@ -469,10 +469,10 @@ const fetchAndCalculateTopSpendingCategories = async () => {
           expenseByCategory[tx.category.id] = {
             name: tx.category.categoryName,
             amount: 0,
-            colorClass: `bg-[${tx.category.color || '#718096'}]`, // Placeholder color
+            colorClass: `bg-[${tx.category.color || '#718096'}]`,
           }
         }
-        expenseByCategory[tx.category.id].amount += tx.amount
+        expenseByCategory[tx.category.id].amount += Number(tx.amount)
       }
     }
   })
