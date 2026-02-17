@@ -35,11 +35,15 @@ apiClient.interceptors.response.use(
 
     // Only auto-logout for 401 errors that are NOT from change-password endpoint
     // (401 from change-password means wrong current password, not expired token)
+    // Also ignore 401 from profile fetch if it is being handled by store
+    const isProfileEndpoint = originalRequest?.url?.includes('/auth/profile')
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       authStore.token &&
-      !isChangePasswordEndpoint
+      !isChangePasswordEndpoint &&
+      !isProfileEndpoint
     ) {
       originalRequest._retry = true
       console.error(

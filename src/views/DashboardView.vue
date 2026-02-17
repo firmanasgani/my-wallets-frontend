@@ -260,19 +260,31 @@
       @confirm="handleConfirmDelete"
       @cancel="closeDeleteModal"
     />
+
+    <!-- Welcome & Premium Modals -->
+    <WelcomeWizardModal
+      :visible="showWelcomeModal"
+      @close="handleCloseWelcome"
+      @upgrade="handleUpgradeFromWelcome"
+    />
+
+    <PremiumSuccessModal :visible="showPremiumSuccessModal" @close="handleClosePremiumSuccess" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import { useAccountStore } from '@/stores/accounts'
 import { useTransactionStore } from '@/stores/transactions'
-// import { useCategoryStore } from '@/stores/categories'; // Jika diperlukan untuk filter spending
+// import { useCategoryStore } from '@/stores/categories';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import StatsCard from '@/components/common/StatsCard.vue'
+import WelcomeWizardModal from '@/components/dashboard/WelcomeWizardModal.vue'
+import PremiumSuccessModal from '@/components/dashboard/PremiumSuccessModal.vue'
 
 import type { Transaction } from '@/types/transaction'
 
@@ -291,14 +303,15 @@ import {
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Colors)
 
 const router = useRouter()
+const route = useRoute()
 const accountStore = useAccountStore()
 const transactionStore = useTransactionStore()
+const authStore = useAuthStore()
 
+// --- State Definitions ---
 const showBalance = ref(localStorage.getItem('show_balance') === 'false')
-
-watch(showBalance, (val) => {
-  localStorage.setItem('show_balance', val.toString())
-})
+const showWelcomeModal = ref(false)
+const showPremiumSuccessModal = ref(false)
 
 const overallNetBalance = ref(0)
 const monthlySummary = reactive({ income: 0, expense: 0, net: 0 })
@@ -307,7 +320,16 @@ const isLoadingRecentTransactions = ref(true)
 const topSpendingCategories = ref([{ name: '', amount: 0, colorClass: '' }])
 const isLoadingSpendingCategories = ref(true)
 
-// --- Data dan Opsi untuk Grafik Saldo Akun ---
+const isDeleteModalOpen = ref(false)
+const transactionToDelete = ref<Transaction | null>(null)
+const isDeletingTransaction = ref(false)
+
+// --- Watchers ---
+watch(showBalance, (val) => {
+  localStorage.setItem('show_balance', val.toString())
+})
+
+// --- Computed Properties ---
 const accountChartData = computed(() => {
   const relevantAccounts = accountStore.allAccounts.filter(
     (acc) => acc.accountType !== 'CREDIT_CARD' && acc.currentBalance > 0,
@@ -348,7 +370,6 @@ const accountChartOptions = ref({
       beginAtZero: true,
       ticks: {
         callback: function (value: string | number) {
-          // Format angka menjadi K, Jt, M, dll. jika perlu
           const numValue = Number(value)
           if (numValue >= 1000000000) return numValue / 1000000000 + ' M'
           if (numValue >= 1000000) return numValue / 1000000 + ' Jt'
@@ -377,7 +398,15 @@ const accountChartOptions = ref({
   },
 })
 
-// --- Fungsi Helper ---
+const transactionToDeleteDescription = computed(() => {
+  if (!transactionToDelete.value) return 'transaksi ini'
+  return (
+    transactionToDelete.value.description ||
+    `transaksi ${transactionToDelete.value.category?.categoryName || transactionToDelete.value.transactionType}`
+  )
+})
+
+// --- Helper Functions ---
 const formatCurrency = (value: number | string, currency: string = 'IDR') => {
   const numericValue = typeof value === 'string' ? parseFloat(value) : value
   if (isNaN(numericValue)) return 'N/A'
@@ -388,36 +417,11 @@ const formatCurrency = (value: number | string, currency: string = 'IDR') => {
   }).format(numericValue)
 }
 
-// --- Fetch Data Saat Komponen Dimuat ---
-onMounted(async () => {
-  // 1. Ambil semua akun untuk chart dan kalkulasi total saldo
-  if (accountStore.accounts.length === 0) {
-    await accountStore.fetchAccounts()
-  }
-  calculateOverallNetBalance() // Hitung total saldo setelah akun di-fetch
-
-  // 2. Ambil transaksi terbaru
-  isLoadingRecentTransactions.value = true
-  await transactionStore.fetchTransactions({
-    page: 1,
-    limit: 5,
-    sortBy: 'transactionDate',
-    sortOrder: 'desc',
-  })
-  recentTransactions.value = transactionStore.transactionList
-  isLoadingRecentTransactions.value = false
-
-  // 3. Ambil summary pemasukan/pengeluaran bulan ini & spending per kategori (Nanti dari API khusus dashboard)
-  // Untuk sekarang, kita bisa coba hitung dari transaksi bulan ini jika ada
-  await fetchAndCalculateMonthlySummary()
-  await fetchAndCalculateTopSpendingCategories()
-})
-
 const calculateOverallNetBalance = () => {
   let total = 0
   accountStore.allAccounts.forEach((acc) => {
     if (acc.accountType === 'CREDIT_CARD') {
-      total -= Number(acc.currentBalance) // Asumsi saldo kartu kredit adalah utang (positif berarti tagihan)
+      total -= Number(acc.currentBalance)
     } else {
       total += Number(acc.currentBalance)
     }
@@ -426,15 +430,14 @@ const calculateOverallNetBalance = () => {
 }
 
 const fetchAndCalculateMonthlySummary = async () => {
-  // Dapatkan tanggal awal dan akhir bulan ini
   const now = new Date()
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
-  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0] // Hari terakhir bulan ini
+  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]
 
   let incomeThisMonth = 0
   let expenseThisMonth = 0
 
-  const tempTransactionsForSummary = transactionStore.transactionList // Ini hanya transaksi terbaru, bukan seluruh bulan
+  const tempTransactionsForSummary = transactionStore.transactionList
 
   tempTransactionsForSummary.forEach((tx) => {
     const txDate = new Date(tx.transactionDate)
@@ -453,15 +456,12 @@ const fetchAndCalculateMonthlySummary = async () => {
 
 const fetchAndCalculateTopSpendingCategories = async () => {
   isLoadingSpendingCategories.value = true
-  // Ini juga placeholder, idealnya dari API: GET /api/dashboard/spending-by-category?period=this_month
-  // Untuk demo, kita proses data dummy atau transaksi yang ada
   const expenseByCategory: Record<string, { name: string; amount: number; colorClass: string }> = {}
   const now = new Date()
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
   transactionStore.transactionList.forEach((tx) => {
-    // Sekali lagi, ini hanya dari recent tx, tidak akurat
     if (tx.transactionType === 'EXPENSE' && tx.category) {
       const txDate = new Date(tx.transactionDate)
       if (txDate >= startDate && txDate <= endDate) {
@@ -478,23 +478,11 @@ const fetchAndCalculateTopSpendingCategories = async () => {
   })
   topSpendingCategories.value = Object.values(expenseByCategory)
     .sort((a, b) => b.amount - a.amount)
-    .slice(0, 5) // Ambil top 5
+    .slice(0, 5)
   isLoadingSpendingCategories.value = false
 }
 
-// --- Logika untuk Delete Transaction Modal (dipindahkan dari TransactionItem) ---
-const isDeleteModalOpen = ref(false)
-const transactionToDelete = ref<Transaction | null>(null)
-const isDeletingTransaction = ref(false)
-
-const transactionToDeleteDescription = computed(() => {
-  if (!transactionToDelete.value) return 'transaksi ini'
-  return (
-    transactionToDelete.value.description ||
-    `transaksi ${transactionToDelete.value.category?.categoryName || transactionToDelete.value.transactionType}`
-  )
-})
-
+// --- Event Handlers ---
 const promptDeleteTransaction = (transaction: Transaction) => {
   transactionToDelete.value = transaction
   isDeleteModalOpen.value = true
@@ -505,7 +493,6 @@ const handleConfirmDelete = async () => {
   isDeletingTransaction.value = true
   try {
     await transactionStore.deleteTransaction(transactionToDelete.value.id)
-    // Refresh recent transactions and summaries
     await transactionStore.fetchTransactions({
       page: 1,
       limit: 5,
@@ -515,9 +502,7 @@ const handleConfirmDelete = async () => {
     recentTransactions.value = transactionStore.transactionList
     await fetchAndCalculateMonthlySummary()
     await fetchAndCalculateTopSpendingCategories()
-    // Notifikasi sukses
   } catch (error: any) {
-    // Notifikasi error
     console.error('Failed to delete transaction from dashboard:', error)
   } finally {
     isDeletingTransaction.value = false
@@ -531,9 +516,114 @@ const closeDeleteModal = () => {
 }
 
 const navigateToEditTransaction = (transaction: Transaction) => {
-  // Nanti: router.push({ name: 'transaction-edit', params: { id: transaction.id } });
   alert(`Edit transaksi: ${transaction.description} (navigasi nanti)`)
 }
+
+const handleCloseWelcome = () => {
+  showWelcomeModal.value = false
+}
+
+const handleUpgradeFromWelcome = () => {
+  showWelcomeModal.value = false
+  router.push({ name: 'settings', query: { upgrade: 'true' } })
+}
+
+const handleClosePremiumSuccess = () => {
+  showPremiumSuccessModal.value = false
+}
+
+// --- Lifecycle Hooks ---
+// --- Lifecycle Hooks ---
+const fetchDashboardData = async () => {
+  if (!authStore.isAuthenticated) {
+    console.log('[DashboardView] Not authenticated yet, skipping fetch.')
+    return
+  }
+
+  try {
+    if (accountStore.accounts.length === 0) {
+      console.log('[DashboardView] Fetching accounts...')
+      await accountStore.fetchAccounts()
+    }
+    calculateOverallNetBalance()
+  } catch (e) {
+    console.error('[DashboardView] Error fetching accounts:', e)
+  }
+
+  try {
+    isLoadingRecentTransactions.value = true
+    console.log('[DashboardView] Fetching transactions...')
+    await transactionStore.fetchTransactions({
+      page: 1,
+      limit: 5,
+      sortBy: 'transactionDate',
+      sortOrder: 'desc',
+    })
+    recentTransactions.value = transactionStore.transactionList
+  } catch (e) {
+    console.error('[DashboardView] Error fetching transactions:', e)
+  } finally {
+    isLoadingRecentTransactions.value = false
+  }
+
+  try {
+    await fetchAndCalculateMonthlySummary()
+    await fetchAndCalculateTopSpendingCategories()
+  } catch (e) {
+    console.error('[DashboardView] Error calculating summaries:', e)
+    isLoadingSpendingCategories.value = false
+  }
+}
+
+const checkModals = () => {
+  // Check for welcome/upgrade params
+  if (route.query.welcome === 'true') {
+    console.log('[DashboardView] Show Welcome Modal')
+    showWelcomeModal.value = true
+    try {
+      // Cleanup URL - use history.replaceState to avoid router reload
+      const url = new URL(window.location.href)
+      url.searchParams.delete('welcome')
+      window.history.replaceState({}, '', url.toString())
+    } catch (e) {
+      console.error('[DashboardView] Failed to clean URL:', e)
+    }
+  }
+
+  if (route.query.upgraded === 'true') {
+    console.log('[DashboardView] Show Premium Success Modal')
+    showPremiumSuccessModal.value = true
+    try {
+      // Cleanup URL
+      const url = new URL(window.location.href)
+      url.searchParams.delete('upgraded')
+      window.history.replaceState({}, '', url.toString())
+    } catch (e) {
+      console.error('[DashboardView] Failed to clean URL:', e)
+    }
+  }
+}
+
+// Watch for authentication to become ready
+watch(
+  () => authStore.isAuthenticated,
+  (isAuthenticated) => {
+    if (isAuthenticated) {
+      console.log('[DashboardView] Auth state changed to authenticated. Fetching data.')
+      fetchDashboardData()
+    }
+  },
+)
+
+// --- Lifecycle Hooks ---
+onMounted(async () => {
+  console.log('[DashboardView] Mounted')
+
+  checkModals()
+
+  // Initial Data Fetch
+  await fetchDashboardData()
+})
 </script>
 
 <style scoped>

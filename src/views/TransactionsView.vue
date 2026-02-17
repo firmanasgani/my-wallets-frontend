@@ -36,6 +36,14 @@
         </div>
 
         <button
+          @click="openCalendarModal"
+          class="w-full sm:w-auto bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
+        >
+          <i class="fa-regular fa-calendar-days mr-2 text-indigo-500"></i>
+          Kalender
+        </button>
+
+        <button
           @click="openAddTransactionModal"
           class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
         >
@@ -371,6 +379,8 @@
       @confirm="handleConfirmDelete"
       @cancel="closeDeleteModal"
     />
+
+    <CalendarViewModal :visible="isCalendarModalOpen" @close="closeCalendarModal" />
   </div>
 </template>
 
@@ -380,6 +390,7 @@ import { useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
+import CalendarViewModal from '@/components/transactions/CalendarViewModal.vue'
 import { useTransactionStore } from '@/stores/transactions'
 import { useAccountStore } from '@/stores/accounts'
 import { useCategoryStore } from '@/stores/categories'
@@ -532,6 +543,14 @@ const formatCurrency = (value: number | string, currency: string = 'IDR') => {
 // Logika Modal Tambah Transaksi (Placeholder)
 const openAddTransactionModal = () => {
   router.push({ name: 'transaction-create' })
+}
+
+const isCalendarModalOpen = ref(false)
+const openCalendarModal = () => {
+  isCalendarModalOpen.value = true
+}
+const closeCalendarModal = () => {
+  isCalendarModalOpen.value = false
 }
 
 // Logika Modal Hapus Transaksi

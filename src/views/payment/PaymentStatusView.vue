@@ -96,8 +96,13 @@ const statusConfig = computed(() => {
   }
 })
 
+const currentStatus = computed(() => status.value)
+
 const goToDashboard = () => {
-  router.push({ name: 'dashboard' })
+  router.push({
+    name: 'dashboard',
+    query: currentStatus.value === 'finish' ? { upgraded: 'true' } : {},
+  })
 }
 
 const goToSettings = () => {
@@ -108,12 +113,14 @@ onMounted(async () => {
   if (status.value === 'finish') {
     // Polling because Midtrans webhook is async
     let attempts = 0
-    const maxAttempts = 5
+    const maxAttempts = 10
 
     const checkStatus = async () => {
       await authStore.fetchUserProfile()
       if (authStore.currentUser?.subscriptionPlan !== 'FREE') {
-        // Success!
+        setTimeout(() => {
+          router.push({ name: 'dashboard', query: { upgraded: 'true' } })
+        }, 2000)
         return
       }
 

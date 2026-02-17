@@ -70,8 +70,16 @@ export const useAuthStore = defineStore('auth', {
 
         await apiClient.post('/auth/register', dataToSubmit)
 
-        router.push({ name: 'login', query: { registered: 'true' } })
-        return true // Kembalikan true jika sukses
+        // Auto-login after registration
+        await this.login({ login: payload.username, password: payload.password }, false)
+
+        // Ensure user state is set before navigating
+        if (this.user) {
+          router.push({ name: 'dashboard', query: { welcome: 'true' } })
+          return true
+        } else {
+          throw new Error('Login succesfull but user state missing')
+        }
       } catch (err: any) {
         this.error =
           err.response?.data?.message || err.message || 'Registrasi gagal. Silakan coba lagi.'
@@ -81,7 +89,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async login(credentials: { login: string; password: string }) {
+    async login(credentials: { login: string; password: string }, shouldRedirect = true) {
       this.isLoading = true
       this.error = null
       try {
@@ -90,12 +98,30 @@ export const useAuthStore = defineStore('auth', {
           login: credentials.login.toLowerCase(),
         }
         const response = await apiClient.post<LoginResponse>('/auth/login', loginData)
-        this.setToken(response.data.access_token)
-        this.setUser(response.data.user)
-        await this.fetchUserProfile() // Fetch full profile to get profilePictureUrl
-        const redirectPath =
-          (router.currentRoute.value.query.redirect as string) || '/app/dashboard'
-        router.push(redirectPath)
+        console.log('[AuthStore] Login successful', {
+          hasToken: !!response.data.access_token,
+          user: response.data.user,
+        })
+
+        // Update state synchronously
+        this.token = response.data.access_token
+        this.user = response.data.user
+
+        // Update persistence
+        localStorage.setItem('authToken', response.data.access_token)
+
+        // Update Axios default headers
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`
+
+        // Trigger fetch profile but don't await if we already have user data from login response
+        // This is to speed up UI transition
+        this.fetchUserProfile().catch(console.error)
+
+        if (shouldRedirect) {
+          const redirectPath =
+            (router.currentRoute.value.query.redirect as string) || '/app/dashboard'
+          router.push(redirectPath)
+        }
         return true
       } catch (err: any) {
         this.error = err.response?.data?.message || err.message || 'Login gagal. Silakan coba lagi.'
@@ -112,12 +138,21 @@ export const useAuthStore = defineStore('auth', {
         return
       }
 
+      // Ensure header is set before request
+      if (!apiClient.defaults.headers.common['Authorization']) {
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
+      }
+
       this.isLoading = true
       try {
         const response = await apiClient.get<UserProfile>('/auth/profile')
         this.setUser(response.data)
       } catch (err: any) {
-        await this.logout()
+        // Only logout if 401
+        if (err.response?.status === 401) {
+          console.warn('[AuthStore] Profile fetch 401, logging out')
+          await this.logout()
+        }
         throw err
       } finally {
         this.isLoading = false
@@ -178,10 +213,17 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async tryAutoLogin() {
-      if (this.token && !this.user) {
-        await this.fetchUserProfile()
-      } else if (this.token && this.user) {
+      if (this.token) {
+        // Ensure default header is set BEFORE fetching profile
         apiClient.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
+        if (!this.user) {
+          try {
+            await this.fetchUserProfile()
+          } catch (e) {
+            console.warn('[Auth] Auto-login failed, invalid token', e)
+            this.logout()
+          }
+        }
       }
     },
   },

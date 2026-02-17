@@ -37,8 +37,13 @@ export const useAccountStore = defineStore('accounts', {
     async fetchAccounts() {
       const authStore = useAuthStore()
       if (!authStore.isAuthenticated || !authStore.currentUser?.id) {
+        console.error('[AccountStore] Auth check failed:', {
+          isAuthenticated: authStore.isAuthenticated,
+          hasUser: !!authStore.currentUser,
+          userId: authStore.currentUser?.id,
+        })
         this.error = 'User not authenticated to fetch accounts.'
-        console.error(this.error)
+        // console.error(this.error) // Duplicate log
         return
       }
 
