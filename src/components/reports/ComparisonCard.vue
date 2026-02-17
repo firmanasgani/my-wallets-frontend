@@ -12,25 +12,40 @@
       <div class="flex flex-col justify-center">
         <p class="text-sm text-gray-500 mb-1">Income Change</p>
         <div class="flex items-baseline gap-2">
-          <span class="text-2xl font-bold text-gray-800"
-            >{{ data.income.percentageChange > 0 ? '+' : ''
-            }}{{ data.income.percentageChange.toFixed(1) }}%</span
-          >
-          <span
-            :class="[
-              'text-xs font-medium px-2 py-0.5 rounded',
-              data.income.percentageChange >= 0
-                ? 'bg-green-100 text-green-700'
-                : 'bg-red-100 text-red-700',
-            ]"
-          >
-            {{ data.income.status }}
-          </span>
+          <template v-if="data.income.previous === 0">
+            <span class="text-xl font-bold text-slate-700">No Data</span>
+            <span class="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+              NEW
+            </span>
+          </template>
+          <template v-else>
+            <span class="text-2xl font-bold text-gray-800"
+              >{{ data.income.percentageChange > 0 ? '+' : ''
+              }}{{ data.income.percentageChange.toFixed(1) }}%</span
+            >
+            <span
+              :class="[
+                'text-xs font-medium px-2 py-0.5 rounded',
+                data.income.percentageChange >= 0
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-red-100 text-red-700',
+              ]"
+            >
+              {{ data.income.status }}
+            </span>
+          </template>
         </div>
-        <p class="text-xs text-gray-500 mt-2">{{ data.income.message }}</p>
+        <p class="text-xs text-gray-500 mt-2">
+          {{
+            data.income.previous === 0
+              ? 'Tidak ada data bulan lalu untuk dibandingkan.'
+              : data.income.message
+          }}
+        </p>
         <div class="mt-3 w-full bg-gray-100 rounded-full h-1.5 dark:bg-gray-200">
           <!-- Simple visual bar showing magnitude (capped at 100%) -->
           <div
+            v-if="data.income.previous !== 0"
             :class="[
               'h-1.5 rounded-full',
               data.income.percentageChange >= 0 ? 'bg-green-500' : 'bg-red-500',
@@ -44,24 +59,39 @@
       <div class="flex flex-col justify-center">
         <p class="text-sm text-gray-500 mb-1">Expense Change</p>
         <div class="flex items-baseline gap-2">
-          <span class="text-2xl font-bold text-gray-800"
-            >{{ data.expense.percentageChange > 0 ? '+' : ''
-            }}{{ data.expense.percentageChange.toFixed(1) }}%</span
-          >
-          <span
-            :class="[
-              'text-xs font-medium px-2 py-0.5 rounded',
-              data.expense.percentageChange <= 0
-                ? 'bg-green-100 text-green-700'
-                : 'bg-red-100 text-red-700',
-            ]"
-          >
-            {{ data.expense.status }}
-          </span>
+          <template v-if="data.expense.previous === 0">
+            <span class="text-xl font-bold text-slate-700">No Data</span>
+            <span class="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+              NEW
+            </span>
+          </template>
+          <template v-else>
+            <span class="text-2xl font-bold text-gray-800"
+              >{{ data.expense.percentageChange > 0 ? '+' : ''
+              }}{{ data.expense.percentageChange.toFixed(1) }}%</span
+            >
+            <span
+              :class="[
+                'text-xs font-medium px-2 py-0.5 rounded',
+                data.expense.percentageChange <= 0
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-red-100 text-red-700',
+              ]"
+            >
+              {{ data.expense.status }}
+            </span>
+          </template>
         </div>
-        <p class="text-xs text-gray-500 mt-2">{{ data.expense.message }}</p>
+        <p class="text-xs text-gray-500 mt-2">
+          {{
+            data.expense.previous === 0
+              ? 'Tidak ada data bulan lalu untuk dibandingkan.'
+              : data.expense.message
+          }}
+        </p>
         <div class="mt-3 w-full bg-gray-100 rounded-full h-1.5 dark:bg-gray-200">
           <div
+            v-if="data.expense.previous !== 0"
             :class="[
               'h-1.5 rounded-full',
               data.expense.percentageChange <= 0 ? 'bg-green-500' : 'bg-red-500',

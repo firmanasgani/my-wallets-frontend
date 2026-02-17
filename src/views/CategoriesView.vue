@@ -2,29 +2,42 @@
   <div>
     <div class="flex justify-between items-center mb-6 print:hidden">
       <h1 class="text-3xl font-semibold text-gray-800">Kelola Kategori</h1>
-      <button
-        @click="openCreateCategoryModal"
-        :disabled="!canAddCategory"
-        :title="addCategoryButtonTitle"
-        class="bg-indigo-600 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors"
-        :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-4 h-4 mr-1.5"
+      <div class="flex justify-end items-center gap-3">
+        <!-- Filter Controls -->
+        <div class="relative inline-block text-left">
+          <select
+            v-model="selectedFilter"
+            class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 h-10 items-center bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <option value="ALL">Semua Kategori</option>
+            <option value="INCOME">Pemasukan</option>
+            <option value="EXPENSE">Pengeluaran</option>
+          </select>
+        </div>
+        <button
+          @click="openCreateCategoryModal"
+          :disabled="!canAddCategory"
+          :title="addCategoryButtonTitle"
+          class="bg-indigo-600 text-white text-sm font-medium px-4 h-10 rounded-lg flex items-center transition-colors shadow-sm"
+          :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
-        Tambah Kategori
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-5 h-5 mr-1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+          Tambah Kategori
+        </button>
+      </div>
     </div>
 
     <LoadingSpinner
@@ -76,7 +89,7 @@
       v-if="!isLoading && categories.length > 0"
       class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8"
     >
-      <StatsCard title="Total Kategori" :value="categories.length" variant="indigo">
+      <StatsCard title="Total Kategori" :value="filteredCategoryCount" variant="indigo">
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -134,49 +147,67 @@
     </div>
 
     <div v-if="!isLoading && categories.length > 0" class="space-y-8">
-      <div>
-        <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
-          <h2 class="text-xl font-semibold text-slate-700">Kategori Pemasukan (Income)</h2>
-          <span class="text-sm bg-green-100 text-green-800 py-1 px-3 rounded-full font-medium"
-            >Total: {{ incomeCategories.length }}</span
-          >
+      <transition
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0 translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition ease-in duration-150"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 translate-y-2"
+      >
+        <div v-if="selectedFilter === 'ALL' || selectedFilter === 'INCOME'">
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
+            <h2 class="text-xl font-semibold text-slate-700">Kategori Pemasukan (Income)</h2>
+            <span class="text-sm bg-green-100 text-green-800 py-1 px-3 rounded-full font-medium"
+              >Total: {{ incomeCategories.length }}</span
+            >
+          </div>
+          <div v-if="incomeCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
+            Belum ada kategori pemasukan.
+          </div>
+          <ul v-else class="space-y-1">
+            <CategoryItem
+              v-for="category in incomeCategories"
+              :key="category.id"
+              :category="category"
+              :level="0"
+              @edit="openEditCategoryModal"
+              @delete="promptDeleteCategory"
+            />
+          </ul>
         </div>
-        <div v-if="incomeCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
-          Belum ada kategori pemasukan.
-        </div>
-        <ul v-else class="space-y-1">
-          <CategoryItem
-            v-for="category in incomeCategories"
-            :key="category.id"
-            :category="category"
-            :level="0"
-            @edit="openEditCategoryModal"
-            @delete="promptDeleteCategory"
-          />
-        </ul>
-      </div>
+      </transition>
 
-      <div>
-        <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
-          <h2 class="text-xl font-semibold text-slate-700">Kategori Pengeluaran (Expense)</h2>
-          <span class="text-sm bg-red-100 text-red-800 py-1 px-3 rounded-full font-medium"
-            >Total: {{ expenseCategories.length }}</span
-          >
+      <transition
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0 translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition ease-in duration-150"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 translate-y-2"
+      >
+        <div v-if="selectedFilter === 'ALL' || selectedFilter === 'EXPENSE'">
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
+            <h2 class="text-xl font-semibold text-slate-700">Kategori Pengeluaran (Expense)</h2>
+            <span class="text-sm bg-red-100 text-red-800 py-1 px-3 rounded-full font-medium"
+              >Total: {{ expenseCategories.length }}</span
+            >
+          </div>
+          <div v-if="expenseCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
+            Belum ada kategori pengeluaran.
+          </div>
+          <ul v-else class="space-y-1">
+            <CategoryItem
+              v-for="category in expenseCategories"
+              :key="category.id"
+              :category="category"
+              :level="0"
+              @edit="openEditCategoryModal"
+              @delete="promptDeleteCategory"
+            />
+          </ul>
         </div>
-        <div v-if="expenseCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
-          Belum ada kategori pengeluaran.
-        </div>
-        <ul v-else class="space-y-1">
-          <CategoryItem
-            v-for="category in expenseCategories"
-            :key="category.id"
-            :category="category"
-            :level="0"
-            @edit="openEditCategoryModal"
-            @delete="promptDeleteCategory"
-          />
-        </ul>
-      </div>
+      </transition>
     </div>
 
     <CategoryModal
@@ -213,9 +244,22 @@ import { useAuthStore } from '@/stores/auth'
 const categoryStore = useCategoryStore()
 const authStore = useAuthStore()
 
+const selectedFilter = ref<'ALL' | 'INCOME' | 'EXPENSE'>('ALL')
+
 const categories = computed(() => categoryStore.allCategories)
-const incomeCategories = computed(() => categoryStore.incomeCategories)
-const expenseCategories = computed(() => categoryStore.expenseCategories)
+const incomeCategories = computed(() => {
+  if (selectedFilter.value === 'EXPENSE') return []
+  return categoryStore.incomeCategories
+})
+const expenseCategories = computed(() => {
+  if (selectedFilter.value === 'INCOME') return []
+  return categoryStore.expenseCategories
+})
+const filteredCategoryCount = computed(() => {
+  if (selectedFilter.value === 'INCOME') return incomeCategories.value.length
+  if (selectedFilter.value === 'EXPENSE') return expenseCategories.value.length
+  return categories.value.length
+})
 const isLoading = computed(() => categoryStore.isLoadingCategories)
 const error = computed(() => categoryStore.categoryError)
 
