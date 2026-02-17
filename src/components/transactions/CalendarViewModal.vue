@@ -16,9 +16,9 @@
     <!-- Modal panel -->
     <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
       <div
-        class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl"
+        class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl flex flex-col max-h-[90vh]"
       >
-        <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+        <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 overflow-y-auto">
           <!-- Calendar Header -->
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">
@@ -154,7 +154,7 @@
                       {{ tx.description || tx.category?.categoryName || 'Tanpa Keterangan' }}
                     </p>
                     <p class="text-xs text-gray-500 truncate">
-                      {{ tx.account?.accountName }} • {{ tx.category?.categoryName }}
+                      {{ getAccountName(tx) }} • {{ tx.category?.categoryName }}
                     </p>
                   </div>
                 </div>
@@ -310,6 +310,13 @@ const isSameDate = (d1: Date, d2: Date) => {
 const isToday = (date: Date) => {
   const today = new Date()
   return isSameDate(date, today)
+}
+
+const getAccountName = (tx: Transaction) => {
+  if (tx.transactionType === 'INCOME') {
+    return tx.destinationAccount?.accountName || 'Unknown Account'
+  }
+  return tx.sourceAccount?.accountName || 'Unknown Account'
 }
 
 // Fetch Logic
