@@ -15,6 +15,7 @@ interface UserProfile {
   profilePicture?: string | null
   profilePictureUrl?: string | null
   subscriptionPlan: 'FREE' | 'PREMIUM' | 'FAMILY'
+  createdAt?: string | null
 }
 
 interface LoginResponse {
@@ -35,6 +36,7 @@ export const useAuthStore = defineStore('auth', {
     token: localStorage.getItem('authToken') || (null as string | null),
     isLoading: false,
     error: null as string | null, // Untuk menyimpan pesan error
+    isNewRegistration: false,
   }),
   getters: {
     isAuthenticated: (state) => !!state.token && !!state.user,
@@ -75,7 +77,8 @@ export const useAuthStore = defineStore('auth', {
 
         // Ensure user state is set before navigating
         if (this.user) {
-          router.push({ name: 'dashboard', query: { welcome: 'true' } })
+          this.isNewRegistration = true
+          router.push({ name: 'dashboard' })
           return true
         } else {
           throw new Error('Login succesfull but user state missing')
@@ -120,6 +123,7 @@ export const useAuthStore = defineStore('auth', {
         if (shouldRedirect) {
           const redirectPath =
             (router.currentRoute.value.query.redirect as string) || '/app/dashboard'
+          console.log(redirectPath)
           router.push(redirectPath)
         }
         return true

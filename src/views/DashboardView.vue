@@ -541,6 +541,13 @@ const fetchDashboardData = async () => {
   }
 
   try {
+    // Fetch profile dulu untuk dapat createdAt
+    await authStore.fetchUserProfile()
+  } catch (e) {
+    console.error('[DashboardView] Error fetching profile:', e)
+  }
+
+  try {
     if (accountStore.accounts.length === 0) {
       console.log('[DashboardView] Fetching accounts...')
       await accountStore.fetchAccounts()
@@ -573,34 +580,23 @@ const fetchDashboardData = async () => {
     console.error('[DashboardView] Error calculating summaries:', e)
     isLoadingSpendingCategories.value = false
   }
+
+  // Setelah semua request selesai, baru cek welcome modal
+  checkAndShowWelcomeModal()
 }
 
-const checkModals = () => {
-  // Check for welcome/upgrade params
-  if (route.query.welcome === 'true') {
-    console.log('[DashboardView] Show Welcome Modal')
-    showWelcomeModal.value = true
-    try {
-      // Cleanup URL - use history.replaceState to avoid router reload
-      const url = new URL(window.location.href)
-      url.searchParams.delete('welcome')
-      window.history.replaceState({}, '', url.toString())
-    } catch (e) {
-      console.error('[DashboardView] Failed to clean URL:', e)
-    }
-  }
+const checkAndShowWelcomeModal = () => {
+  const profile = authStore.user
+  if (!profile?.createdAt) return
 
-  if (route.query.upgraded === 'true') {
-    console.log('[DashboardView] Show Premium Success Modal')
-    showPremiumSuccessModal.value = true
-    try {
-      // Cleanup URL
-      const url = new URL(window.location.href)
-      url.searchParams.delete('upgraded')
-      window.history.replaceState({}, '', url.toString())
-    } catch (e) {
-      console.error('[DashboardView] Failed to clean URL:', e)
-    }
+  const createdAt = new Date(profile.createdAt)
+  const now = new Date()
+  const diffMs = now.getTime() - createdAt.getTime()
+  const diffHours = diffMs / (1000 * 60 * 60)
+
+  if (diffHours <= 24) {
+    console.log('[DashboardView] New user detected (within 24h), showing welcome modal.')
+    showWelcomeModal.value = true
   }
 }
 
@@ -619,9 +615,20 @@ watch(
 onMounted(async () => {
   console.log('[DashboardView] Mounted')
 
-  checkModals()
+  // Cek query param upgrade premium
+  if (route.query.upgraded === 'true') {
+    console.log('[DashboardView] Show Premium Success Modal')
+    showPremiumSuccessModal.value = true
+    try {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('upgraded')
+      window.history.replaceState({}, '', url.toString())
+    } catch (e) {
+      console.error('[DashboardView] Failed to clean URL:', e)
+    }
+  }
 
-  // Initial Data Fetch
+  // Initial Data Fetch (welcome modal dicek di dalamnya setelah semua request selesai)
   await fetchDashboardData()
 })
 </script>
