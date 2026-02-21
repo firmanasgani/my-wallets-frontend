@@ -16,13 +16,15 @@ export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED'
 export interface PaymentHistory {
   id: string
   orderId: string
-  planName: string
+  plan: SubscriptionPlan | null
+  midtransResponse: any
   planCode: string
   amount: number
   status: PaymentStatus
   createdAt: string
   paidAt: string | null
 }
+
 
 export const useSubscriptionStore = defineStore('subscriptions', {
   state: () => ({

@@ -7,8 +7,8 @@ import AccountsView from '../views/AccountsView.vue'
 import AccountCreateView from '../views/AccountCreateView.vue'
 import AccountEditView from '../views/AccountEditView.vue'
 import AccountDetailView from '../views/AccountDetailView.vue'
-import CategoriesView from '@/views/CategoriesView.vue' // Buat file ini jika belum
-import TransactionsView from '@/views/TransactionsView.vue' // Buat file ini jika belum
+import CategoriesView from '@/views/CategoriesView.vue'
+import TransactionsView from '@/views/TransactionsView.vue'
 import BudgetSetupView from '@/views/budgets/BudgetSetupView.vue'
 import BudgetReportView from '@/views/budgets/BudgetReportView.vue'
 import BudgetFormView from '@/views/budgets/BudgetFormView.vue'
@@ -133,6 +133,18 @@ const routes: Array<RouteRecordRaw> = [
         name: 'settings',
         component: SettingsView,
         meta: { title: 'Pengaturan' },
+      },
+      {
+        path: 'financial-goals',
+        name: 'financial-goals-list',
+        component: () => import('@/views/financial-goals/FinancialGoalsView.vue'),
+        meta: { title: 'Goal Keuangan', requiresPremium: true },
+      },
+      {
+        path: 'financial-goals/:id',
+        name: 'financial-goal-detail',
+        component: () => import('@/views/financial-goals/GoalDetailView.vue'),
+        meta: { title: 'Detail Goal', requiresPremium: true },
       },
       { path: '', redirect: { name: 'dashboard' } },
     ],

@@ -85,6 +85,14 @@
               Spending Analysis
             </RouterLink>
           </li>
+          <li v-if="!isFreePlan">
+            <RouterLink
+              :to="{ name: 'financial-goals-list' }"
+              :class="navLinkClasses(['financial-goals-list', 'financial-goal-detail'])"
+            >
+              Financial Goals
+            </RouterLink>
+          </li>
           <li>
             <RouterLink :to="{ name: 'settings' }" :class="navLinkClasses('settings')">
               Pengaturan

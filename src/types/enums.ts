@@ -50,3 +50,21 @@ export interface QueryCategoryParams {
   hierarchical?: boolean | string
   parentOnly?: string
 }
+
+export enum GoalStatus {
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum GoalLedgerType {
+  ALLOCATE = 'ALLOCATE',
+  SPEND = 'SPEND',
+  RELEASE = 'RELEASE',
+  ADJUST = 'ADJUST',
+}
+
+export enum GoalLedgerDirection {
+  INCOMING = 'INCOMING',
+  OUTGOING = 'OUTGOING',
+}

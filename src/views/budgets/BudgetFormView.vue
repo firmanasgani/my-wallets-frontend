@@ -245,29 +245,8 @@ onMounted(async () => {
   }
 
   if (isEditing.value && budgetId.value) {
-    // Ideally we fetch a specific budget. If strict, we can filter from store if already loaded, or fetch new endpoint.
-    // Current store has fetchBudgets (list). We might need to ensure we have the item.
-    // Let's rely on finding it in the store first, otherwise maybe we should have a `fetchBudgetById` action?
-    // For now, let's assume if it's not in store, we might fail or redirect.
-    // Better: If we came from the list, it's likely in store.
     let budget = budgetStore.allBudgets.find((b) => b.id === budgetId.value)
-
-    // Fallback or if refreshing page: fetchBudgets call might be needed if empty, but we don't know the exact filter to get JUST this budget without ID
-    // Ideally the API should support GET /budgets/:id
-    // Assuming we might not have a dedicated fetch-one in store yet according to previous context,
-    // but typically editing requires fetching detail.
-    // Looking at previous `BudgetSetupView` code logic, it passed the budget object to openModal.
-    // Here we are navigating.
-    // If budget is undefined, we might need to fetch.
-
-    // Since the user didn't explicitly ask for a new Fetch By ID endpoint, I will use what I have.
-    // If the store is empty, user might experience an issue if they reload directly on Edit page.
-    // I'll add a minimal check. If no budget found, maybe redirect to list for safety or try to fetch.
     if (!budget) {
-      // Try fetching all? Might be heavy.
-      // Ideally, should implement fetchBudget(id).
-      // Let's implement fetchBudget(id) in the store if it's missing, but I need to check store file again.
-      // I'll stick to redirecting if not found for now to be safe, or just check 'budgets' list.
     } else {
       formData.year = budget.year
       formData.month = budget.month
