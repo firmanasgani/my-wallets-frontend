@@ -58,7 +58,6 @@
         </div>
       </div>
 
-      <!-- General Settings (Pengaturan Umum) -->
       <div
         class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
       >
@@ -78,6 +77,32 @@
               >
               <p class="text-xs text-slate-500 dark:text-slate-400">
                 Atur dan kelola transaksi otomatis Anda.
+              </p>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-slate-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+
+          <div
+            @click="currentView = 'payment-history'"
+            class="border-t border-slate-100 dark:border-slate-700 pt-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/30 -mx-6 px-6 py-2 transition-colors"
+          >
+            <div class="dark:text-slate-200">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
+                >Histori Pembayaran</label
+              >
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Lihat riwayat pembelian paket langganan Anda.
               </p>
             </div>
             <svg
@@ -196,6 +221,11 @@
       <RecurringTransactionsList @back="currentView = 'main'" />
     </div>
 
+    <!-- Payment History Sub-View -->
+    <div v-else-if="currentView === 'payment-history'" class="space-y-6">
+      <PaymentHistorySection @back="currentView = 'main'" />
+    </div>
+
     <!-- Pricing Modal -->
     <PricingModal
       :isOpen="isPricingModalOpen"
@@ -212,13 +242,14 @@ import { useThemeStore } from '@/stores/theme'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import PricingModal from '@/components/common/PricingModal.vue'
 import RecurringTransactionsList from '@/components/settings/RecurringTransactionsList.vue'
+import PaymentHistorySection from '@/components/settings/PaymentHistorySection.vue'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
 const route = useRoute()
 const router = useRouter()
 const isPricingModalOpen = ref(false)
-const currentView = ref<'main' | 'recurring'>('main')
+const currentView = ref<'main' | 'recurring' | 'payment-history'>('main')
 
 onMounted(() => {
   if (route.query.upgrade === 'true') {

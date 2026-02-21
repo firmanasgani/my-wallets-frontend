@@ -594,7 +594,7 @@ const checkAndShowWelcomeModal = () => {
   const diffMs = now.getTime() - createdAt.getTime()
   const diffHours = diffMs / (1000 * 60 * 60)
 
-  if (diffHours <= 24) {
+  if (diffHours <= 8 && profile.subscriptionPlan === 'FREE') {
     console.log('[DashboardView] New user detected (within 24h), showing welcome modal.')
     showWelcomeModal.value = true
   }

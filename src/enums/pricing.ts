@@ -69,9 +69,9 @@ export const PRICING_PLANS: PricingPlanDetails[] = [
       'Pelacakan Tujuan Finansial',
       'Analisis Kekayaan Bersih',
     ],
-    cta: { text: 'Pilih Pro', link: { name: 'register' } },
+    cta: { text: 'Pilih Pro (Menyusul)', link: { name: 'register' } },
     recommended: false,
-    disabled: false, // HomeView implies it's available (link to register), but PricingModal previously had it disabled.
+    disabled: true, // HomeView implies it's available (link to register), but PricingModal previously had it disabled.
     // User said "Buat yang ada di HomeView sebagai patokannya". HomeView links to register.
     // However, if the features aren't built, maybe I should keep it disabled in Modal?
     // But instructions say "HomeView sebagai patokannya".
