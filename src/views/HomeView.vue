@@ -319,9 +319,13 @@
         <footer class="text-slate-400">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-center">
-              <div class="text-center">
-                <p class="text-sm">2025 MyWallets. All rights reserved.</p>
-              </div>
+            <div class="text-center">
+                <div class="mb-4 flex justify-center space-x-6">
+                    <RouterLink :to="{ name: 'terms' }" class="text-sm hover:text-white transition-colors">Syarat & Ketentuan</RouterLink>
+                    <RouterLink :to="{ name: 'how-to' }" class="text-sm hover:text-white transition-colors">Cara Penggunaan</RouterLink>
+                </div>
+                <p class="text-sm">2026 MyWallets. All rights reserved.</p>
+            </div>
             </div>
           </div>
         </footer>

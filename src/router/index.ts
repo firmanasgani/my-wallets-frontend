@@ -32,6 +32,12 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: 'Cara Penggunaan' },
   },
   {
+    path: '/terms',
+    name: 'terms',
+    component: () => import('@/views/TermsView.vue'),
+    meta: { title: 'Syarat dan Ketentuan' },
+  },
+  {
     path: '/login',
     name: 'login',
     component: LoginView,

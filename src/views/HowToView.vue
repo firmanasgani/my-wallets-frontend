@@ -260,7 +260,11 @@
     </main>
 
     <footer class="bg-slate-100 dark:bg-slate-800 py-12 text-center border-t border-slate-200 dark:border-slate-700">
-      <p class="text-sm text-slate-500">&copy; 2025 MyWallets. Solusi Cerdas Kelola Keuangan.</p>
+      <div class="mb-4 flex justify-center space-x-6">
+        <RouterLink :to="{ name: 'terms' }" class="text-sm text-slate-500 hover:text-indigo-600 transition-colors">Syarat & Ketentuan</RouterLink>
+        <RouterLink :to="{ name: 'home' }" class="text-sm text-slate-500 hover:text-indigo-600 transition-colors">Beranda</RouterLink>
+      </div>
+      <p class="text-sm text-slate-500">&copy; 2026 MyWallets. Solusi Cerdas Kelola Keuangan.</p>
     </footer>
   </div>
 </template>
