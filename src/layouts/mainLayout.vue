@@ -98,6 +98,11 @@
               Pengaturan
             </RouterLink>
           </li>
+          <li>
+            <RouterLink :to="{ name: 'how-to' }" :class="navLinkClasses('how-to')">
+              Cara Penggunaan
+            </RouterLink>
+          </li>
         </ul>
       </nav>
       <div class="mt-auto pt-4 border-t border-slate-700">
@@ -217,6 +222,15 @@
                   tabindex="-1"
                 >
                   Profil Saya
+                </RouterLink>
+                <RouterLink
+                  :to="{ name: 'how-to' }"
+                  @click="closeProfileDropdown"
+                  class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 w-full text-left"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  Cara Penggunaan
                 </RouterLink>
                 <button
                   @click="handleLogout"
@@ -340,6 +354,13 @@
                   :class="navLinkClassesMobile('settings')"
                 >
                   Pengaturan
+                </RouterLink>
+                <RouterLink
+                  :to="{ name: 'how-to' }"
+                  @click="closeMobileSidebar"
+                  :class="navLinkClassesMobile('how-to')"
+                >
+                  Cara Penggunaan
                 </RouterLink>
               </nav>
             </div>

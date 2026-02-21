@@ -291,7 +291,7 @@
 
     <!-- Modals -->
     <AddGoalModal
-      v-if="isEditModalOpen"
+      v-if="isEditModalOpen && goal"
       :is-open="isEditModalOpen"
       :goal="goal"
       @close="isEditModalOpen = false"
@@ -307,7 +307,7 @@
     />
 
     <SpendModal
-      v-if="isSpendModalOpen"
+      v-if="isSpendModalOpen && goal"
       :is-open="isSpendModalOpen"
       :goal="goal"
       @close="isSpendModalOpen = false"
@@ -315,7 +315,7 @@
     />
 
     <ReleaseModal
-      v-if="isReleaseModalOpen"
+      v-if="isReleaseModalOpen && goal"
       :is-open="isReleaseModalOpen"
       :goal="goal"
       @close="isReleaseModalOpen = false"

@@ -26,6 +26,12 @@ const routes: Array<RouteRecordRaw> = [
     component: HomeView,
   },
   {
+    path: '/how-to',
+    name: 'how-to',
+    component: () => import('@/views/HowToView.vue'),
+    meta: { title: 'Cara Penggunaan' },
+  },
+  {
     path: '/login',
     name: 'login',
     component: LoginView,

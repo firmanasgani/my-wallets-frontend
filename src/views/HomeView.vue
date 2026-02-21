@@ -24,6 +24,7 @@
               <div class="ml-10 flex items-baseline space-x-4">
                 <a href="#features" class="nav-link">Fitur</a>
                 <a href="#pricing" class="nav-link">Harga</a>
+                <RouterLink :to="{ name: 'how-to' }" class="nav-link">Cara Penggunaan</RouterLink>
                 <template v-if="!isAuthenticated">
                   <RouterLink :to="{ name: 'login' }" class="nav-link">Masuk</RouterLink>
                   <RouterLink
@@ -88,6 +89,12 @@
           <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <a href="#features" @click="mobileMenuOpen = false" class="nav-link-mobile">Fitur</a>
             <a href="#pricing" @click="mobileMenuOpen = false" class="nav-link-mobile">Harga</a>
+            <RouterLink
+              :to="{ name: 'how-to' }"
+              @click="mobileMenuOpen = false"
+              class="nav-link-mobile"
+              >Cara Penggunaan</RouterLink
+            >
           </div>
           <div class="pt-4 pb-3 border-t border-slate-200">
             <div class="px-2 space-y-1">
