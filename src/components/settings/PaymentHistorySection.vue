@@ -138,7 +138,7 @@
                   {{ formatDate(item.createdAt) }}
                 </td>
                 <td class="py-3 pr-4 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                  {{ item.midtransResponse.transaction_time ? formatDate(item.midtransResponse.transaction_time) :  '—' }}
+                  {{ item.midtransResponse?.transaction_time ? formatDate(item.midtransResponse.transaction_time) :  '—' }}
                 </td>
                 <td class="py-3 whitespace-nowrap">
                   <!-- Lanjutkan Bayar (hanya PENDING) -->
