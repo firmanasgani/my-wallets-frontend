@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-6 print:hidden">
-      <h1 class="text-3xl font-semibold text-gray-800">Kelola Kategori</h1>
+      <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Kelola Kategori</h1>
       <div class="flex justify-end items-center gap-3">
         <!-- Filter Controls -->
         <div class="relative inline-block text-left">
@@ -157,7 +157,7 @@
       >
         <div v-if="selectedFilter === 'ALL' || selectedFilter === 'INCOME'">
           <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
-            <h2 class="text-xl font-semibold text-slate-700">Kategori Pemasukan (Income)</h2>
+            <h2 class="text-xl font-semibold text-slate-700 dark:text-white">Kategori Pemasukan (Income)</h2>
             <span class="text-sm bg-green-100 text-green-800 py-1 px-3 rounded-full font-medium"
               >Total: {{ incomeCategories.length }}</span
             >
@@ -188,7 +188,7 @@
       >
         <div v-if="selectedFilter === 'ALL' || selectedFilter === 'EXPENSE'">
           <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
-            <h2 class="text-xl font-semibold text-slate-700">Kategori Pengeluaran (Expense)</h2>
+            <h2 class="text-xl font-semibold text-slate-700 dark:text-white">Kategori Pengeluaran (Expense)</h2>
             <span class="text-sm bg-red-100 text-red-800 py-1 px-3 rounded-full font-medium"
               >Total: {{ expenseCategories.length }}</span
             >

@@ -3,7 +3,7 @@
     <div class="mb-8">
       <button
         @click="$router.back()"
-        class="mb-4 text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-1"
+        class="mb-4 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-white flex items-center gap-1"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +21,7 @@
       </button>
       <div>
         <h1 class="text-2xl font-bold leading-7 text-slate-900 sm:truncate">Tambah Transaksi</h1>
-        <p class="mt-1 text-sm text-slate-500">Catat transaksi baru untuk melacak keuanganmu.</p>
+        <p class="mt-1 text-sm text-slate-500 dark:text-white">Catat transaksi baru untuk melacak keuanganmu.</p>
       </div>
     </div>
 

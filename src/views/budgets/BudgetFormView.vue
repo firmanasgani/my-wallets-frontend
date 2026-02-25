@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
     <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-slate-900">
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
         {{ isEditing ? 'Edit Anggaran' : 'Buat Anggaran Baru' }}
       </h1>
       <button

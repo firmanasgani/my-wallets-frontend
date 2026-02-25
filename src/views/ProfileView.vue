@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
     <header class="flex items-center justify-between border-b pb-4">
-      <h1 class="text-3xl font-semibold text-slate-800">Profil Saya</h1>
+      <h1 class="text-3xl font-semibold text-slate-800 dark:text-white">Profil Saya</h1>
       <span
         v-if="authStore.currentUser?.subscriptionPlan"
         :class="{

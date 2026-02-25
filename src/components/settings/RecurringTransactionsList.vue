@@ -20,7 +20,7 @@
           />
         </svg>
       </button>
-      <h2 class="text-xl font-bold text-slate-900">Daftar Transaksi Berulang</h2>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white">Daftar Transaksi Berulang</h2>
     </div>
 
     <div class="bg-white shadow-sm rounded-xl border border-slate-200 overflow-hidden">

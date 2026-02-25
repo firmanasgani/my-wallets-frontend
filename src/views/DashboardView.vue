@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6 sm:space-y-8">
     <div class="flex items-center space-x-3">
-      <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800">Dashboard</h1>
+      <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white ">Dashboard</h1>
       <button
         @click="showBalance = !showBalance"
         class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors focus:outline-none"

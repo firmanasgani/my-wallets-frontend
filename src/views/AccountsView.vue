@@ -2,7 +2,7 @@
   <div>
     <div class="flex justify-between items-center mb-6 print:hidden">
       <div class="flex items-center space-x-3">
-        <h1 class="text-3xl font-semibold text-gray-800">Akun Saya</h1>
+        <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Akun Saya</h1>
         <button
           @click="showBalance = !showBalance"
           class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors focus:outline-none"

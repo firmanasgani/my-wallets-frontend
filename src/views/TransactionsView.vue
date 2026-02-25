@@ -1,8 +1,7 @@
-// src/views/TransactionsView.vue
 <template>
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 print:hidden">
-      <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800">Riwayat Transaksi</h1>
+      <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">Riwayat Transaksi</h1>
       <div class="flex gap-2 w-full sm:w-auto">
         <!-- Export Dropdown -->
         <div class="relative group">

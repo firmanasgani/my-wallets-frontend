@@ -2,9 +2,9 @@
   <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">Pengaturan Anggaran</h1>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Pengaturan Anggaran</h1>
         <div class="flex items-center flex-wrap gap-2 mt-1">
-          <p class="text-sm text-slate-500">Kelola anggaran bulanan Anda di sini.</p>
+          <p class="text-sm text-slate-500 dark:text-white">Kelola anggaran bulanan Anda di sini.</p>
         </div>
       </div>
       <div>
