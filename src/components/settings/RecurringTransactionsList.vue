@@ -3,7 +3,7 @@
     <div class="flex items-center">
       <button
         @click="$emit('back')"
-        class="mr-4 p-2 rounded-full hover:bg-slate-100 text-slate-500"
+        class="mr-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -23,14 +23,14 @@
       <h2 class="text-xl font-bold text-slate-900 dark:text-white">Daftar Transaksi Berulang</h2>
     </div>
 
-    <div class="bg-white shadow-sm rounded-xl border border-slate-200 overflow-hidden">
+    <div class="bg-white dark:bg-slate-800 dark:border-slate-700 shadow-sm rounded-xl border border-slate-200 overflow-hidden">
       <div class="p-6">
         <div v-if="isLoadingRecurring" class="flex justify-center py-4">
-          <p class="text-slate-500">Memuat data...</p>
+          <p class="text-slate-500 dark:text-slate-400">Memuat data...</p>
         </div>
         <div v-else-if="recurringTransactions.length === 0" class="text-center py-4">
           <div
-            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-slate-100 mb-3"
+            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-700 mb-3"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -47,14 +47,14 @@
               />
             </svg>
           </div>
-          <h3 class="text-sm font-medium text-slate-900">Belum ada transaksi berulang</h3>
-          <p class="mt-1 text-sm text-slate-500">Anda belum mengatur jadwal transaksi otomatis.</p>
+          <h3 class="text-sm font-medium text-slate-900 dark:text-white">Belum ada transaksi berulang</h3>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Anda belum mengatur jadwal transaksi otomatis.</p>
         </div>
         <div v-else class="space-y-4">
           <div
             v-for="rt in recurringTransactions"
             :key="rt.id"
-            class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-indigo-200 transition-colors"
+            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-500 transition-colors"
           >
             <div>
               <div class="flex items-center gap-2">
@@ -68,15 +68,15 @@
                 >
                   {{ rt.transactionType }}
                 </span>
-                <span class="text-sm font-medium text-slate-900">
+                <span class="text-sm font-medium text-slate-900 dark:text-slate-100">
                   {{ formatCurrency(rt.amount) }}
                 </span>
-                <span class="text-xs text-slate-500"> / {{ getIntervalLabel(rt.interval) }} </span>
+                <span class="text-xs text-slate-500 dark:text-slate-400"> / {{ getIntervalLabel(rt.interval) }} </span>
               </div>
-              <p class="text-sm text-slate-600 mt-1 font-medium">
+              <p class="text-sm text-slate-600 dark:text-slate-300 mt-1 font-medium">
                 {{ rt.description || 'Tanpa deskripsi' }}
               </p>
-              <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
+              <div class="flex items-center gap-4 mt-2 text-xs text-slate-500 dark:text-slate-400">
                 <div class="flex items-center gap-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +115,7 @@
             </div>
             <button
               @click="confirmDeleteRecurring(rt.id)"
-              class="ml-4 p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+              class="ml-4 p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
               title="Hapus Transaksi Berulang"
             >
               <svg

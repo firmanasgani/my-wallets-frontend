@@ -8,11 +8,11 @@
       </div>
 
       <!-- Controls -->
-      <div class="flex flex-wrap items-center gap-3">
+      <div class="flex flex-wrap items-center gap-3 flex-col md:flex-row">
         <!-- Month Selector -->
         <select
           v-model="selectedMonth"
-          class="bg-white border border-gray-300 text-gray-700 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+          class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-auto"
         >
           <option v-for="m in 12" :key="m" :value="m">{{ getMonthName(m) }}</option>
         </select>
@@ -20,33 +20,36 @@
         <!-- Year Selector -->
         <select
           v-model="selectedYear"
-          class="bg-white border border-gray-300 text-gray-700 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+          class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-auto"
         >
           <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
         </select>
 
         <!-- Export Dropdown -->
-        <div v-if="!reportsStore.isLoading" class="relative group">
+        <div class="flex flex-row w-full gap-2">
+          <div v-if="!reportsStore.isLoading" class="relative w-full md:w-auto" ref="exportDropdownRef">
           <button
-            class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg flex items-center transition-colors shadow-sm"
+            @click.stop="isExportDropdownOpen = !isExportDropdownOpen"
+            class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-200 px-4 py-2 rounded-lg flex items-center transition-colors shadow-sm w-full md:w-auto"
           >
             <i class="fa-solid fa-file-export mr-2 text-indigo-500"></i>
             Ekspor Laporan
             <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-gray-400"></i>
           </button>
           <div
-            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200"
+            v-show="isExportDropdownOpen"
+            class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-xl shadow-xl border border-gray-100 dark:border-slate-600 py-2 z-50"
           >
             <button
-              @click="exportFullReport('excel')"
-              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+              @click="exportFullReport('excel'); isExportDropdownOpen = false"
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 flex items-center"
             >
               <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
               Format Excel (.xlsx)
             </button>
             <button
-              @click="exportFullReport('pdf')"
-              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+              @click="exportFullReport('pdf'); isExportDropdownOpen = false"
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 flex items-center"
             >
               <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
               Format PDF (.pdf)
@@ -75,6 +78,7 @@
             />
           </svg>
         </button>
+        </div>
       </div>
     </div>
 
@@ -101,23 +105,23 @@
       <!-- 3. Charts Row: Trend & Breakdown -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Trend Analysis (Line Chart) -->
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
           <TrendAnalysisChart :data="reportsStore.trendAnalysis" title="Income vs Expense Trend" />
         </div>
 
         <!-- Category Breakdown (List/Pie) -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
           <CategoryBreakdown :data="reportsStore.categoryBreakdown" />
         </div>
       </div>
 
       <!-- 4. Category Trend (Stacked Bar) -->
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
         <CategoryTrendChart :data="reportsStore.categoryTrend" />
       </div>
 
       <!-- 5. Budget Health -->
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
         <BudgetHealthList :data="reportsStore.budgetHealth" />
       </div>
     </div>
@@ -125,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useReportsStore } from '@/stores/reports'
 import ExportService from '@/services/exportService'
 import FinancialSummary from '@/components/reports/FinancialSummary.vue'
@@ -137,6 +141,15 @@ import CategoryTrendChart from '@/components/reports/CategoryTrendChart.vue'
 import BudgetHealthList from '@/components/reports/BudgetHealthList.vue'
 
 const reportsStore = useReportsStore()
+
+// Export dropdown
+const isExportDropdownOpen = ref(false)
+const exportDropdownRef = ref<HTMLElement | null>(null)
+const handleClickOutsideExport = (event: MouseEvent) => {
+  if (exportDropdownRef.value && !exportDropdownRef.value.contains(event.target as Node)) {
+    isExportDropdownOpen.value = false
+  }
+}
 
 const currentDate = new Date()
 const selectedMonth = ref(currentDate.getMonth() + 1)
@@ -182,7 +195,12 @@ const exportFullReport = async (format: 'excel' | 'pdf') => {
 }
 
 onMounted(() => {
+  document.addEventListener('click', handleClickOutsideExport)
   fetchData()
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutsideExport)
 })
 
 watch([selectedMonth, selectedYear], () => {

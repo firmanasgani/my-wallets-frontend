@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white overflow-hidden shadow rounded-lg">
+  <div class="bg-white overflow-hidden shadow rounded-lg dark:bg-slate-800">
     <div class="p-5">
       <div class="flex items-center">
         <div class="flex-shrink-0">
@@ -12,14 +12,14 @@
         </div>
         <div class="ml-5 w-0 flex-1">
           <dl>
-            <dt class="text-sm font-medium text-gray-500 truncate">
+            <dt class="text-sm font-medium text-gray-500 truncate dark:text-white">
               {{ title }}
             </dt>
             <dd>
-              <div class="text-lg font-medium text-gray-900">
+              <div class="text-lg font-medium text-gray-900 dark:text-white">
                 {{ value }}
               </div>
-              <div v-if="subtitle || $slots.subtitle" class="text-xs text-slate-500">
+              <div v-if="subtitle || $slots.subtitle" class="text-xs text-slate-500 dark:text-white">
                 <slot name="subtitle">{{ subtitle }}</slot>
               </div>
             </dd>

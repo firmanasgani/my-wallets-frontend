@@ -7,44 +7,44 @@
         <thead>
           <tr>
             <th
-              class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
+              class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
             >
               Category
             </th>
             <th
-              class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider"
+              class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
             >
               Budget
             </th>
             <th
-              class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider"
+              class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
             >
               Spent
             </th>
             <th
-              class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider"
+              class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
             >
               Remaining
             </th>
             <th
-              class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider"
+              class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
             >
               Status
             </th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200">
           <tr v-if="!data || data.length === 0">
-            <td colspan="5" class="px-3 py-4 text-center text-sm text-gray-500">
+            <td colspan="5" class="px-3 py-4 text-center text-sm text-gray-500 dark:text-slate-200">
               No active budgets for this period.
             </td>
           </tr>
           <tr v-for="(item, index) in data" :key="index">
             <td
-              class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-3"
+              class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-slate-100 flex items-center gap-3"
             >
               <div
-                class="w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0"
+                class="w-8 h-8 rounded-full flex items-center justify-center text-xs dark:text-slate-200 flex-shrink-0"
                 :style="{
                   backgroundColor: (item.color || '#64748b') + '20',
                   color: item.color || '#64748b',
@@ -57,13 +57,13 @@
               </div>
               {{ item.categoryName }}
             </td>
-            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right dark:text-slate-200">
               {{ formatCurrency(item.budgetAmount) }}
             </td>
-            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right dark:text-slate-200">
               {{ formatCurrency(item.actualSpent) }}
             </td>
-            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right font-medium">
+            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right font-medium dark:text-slate-200">
               {{ formatCurrency(item.remaining || item.budgetAmount - item.actualSpent) }}
             </td>
             <td class="px-3 py-4 whitespace-nowrap text-center">

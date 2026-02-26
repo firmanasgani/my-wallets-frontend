@@ -1,12 +1,12 @@
 <template>
   <div
     v-if="insights && insights.length > 0"
-    class="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border border-indigo-100"
+    class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-slate-800 dark:to-slate-800 p-6 rounded-xl border border-indigo-100 dark:border-slate-700"
   >
-    <h3 class="text-lg font-bold text-indigo-900 mb-4 flex items-center gap-2">
+    <h3 class="text-lg font-bold text-indigo-900 dark:text-indigo-300 mb-4 flex items-center gap-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 text-indigo-600"
+        class="h-5 w-5 text-indigo-600 dark:text-indigo-400"
         viewBox="0 0 20 20"
         fill="currentColor"
       >
@@ -22,19 +22,19 @@
       <div
         v-for="(insight, index) in insights"
         :key="index"
-        :class="['p-3 rounded-lg border-l-4 shadow-sm bg-white', getInsightColor(insight.type)]"
+        :class="['p-3 rounded-lg border-l-4 shadow-sm bg-white dark:bg-slate-700', getInsightColor(insight.type)]"
       >
         <div class="flex justify-between items-start">
           <div>
-            <h4 class="font-bold text-gray-800 text-sm">{{ insight.title }}</h4>
+            <h4 class="font-bold text-gray-800 dark:text-slate-100 text-sm">{{ insight.title }}</h4>
             <div
-              class="text-xs text-gray-600 mt-1 insight-message"
+              class="text-xs text-gray-600 dark:text-slate-300 mt-1 insight-message"
               v-html="formatMessage(insight.message)"
             ></div>
           </div>
           <span
             v-if="insight.action"
-            class="text-xs font-semibold text-blue-600 cursor-pointer hover:underline whitespace-nowrap ml-2"
+            class="text-xs font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline whitespace-nowrap ml-2"
           >
             {{ insight.action }} &rarr;
           </span>
@@ -44,11 +44,11 @@
   </div>
   <div
     v-else
-    class="bg-gray-50 p-6 rounded-xl border border-gray-100 flex flex-col items-center justify-center text-center h-full"
+    class="bg-gray-50 dark:bg-slate-800 p-6 rounded-xl border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center text-center h-full"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      class="h-10 w-10 text-gray-300 mb-2"
+      class="h-10 w-10 text-gray-300 dark:text-slate-600 mb-2"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -60,8 +60,8 @@
         d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
       />
     </svg>
-    <p class="text-gray-500 font-medium">No insights available for this period yet.</p>
-    <p class="text-xs text-gray-400">Keep tracking to get smart recommendations!</p>
+    <p class="text-gray-500 dark:text-slate-400 font-medium">No insights available for this period yet.</p>
+    <p class="text-xs text-gray-400 dark:text-slate-500">Keep tracking to get smart recommendations!</p>
   </div>
 </template>
 
@@ -90,7 +90,7 @@ const getInsightColor = (type: string) => {
 const formatMessage = (message: string) => {
   if (!message) return ''
   // Basic markdown-like bold converter: **text** -> <strong>text</strong>
-  return message.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
+  return message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
 }
 </script>
 
@@ -98,5 +98,9 @@ const formatMessage = (message: string) => {
 .insight-message :deep(strong) {
   font-weight: 700;
   color: #111827; /* gray-900 */
+}
+
+:global(.dark) .insight-message :deep(strong) {
+  color: #f1f5f9; /* slate-100 */
 }
 </style>

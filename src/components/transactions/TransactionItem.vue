@@ -19,7 +19,7 @@
           <span v-else-if="transaction.category?.icon">
             <i :class="['fa-solid', `fa-${transaction.category.icon}`, 'text-sm']"></i>
           </span>
-          <span v-else class="text-sm font-bold">
+          <span v-else class="text-sm font-bold dark:text-white">
             {{
               transaction.category?.categoryName?.charAt(0).toUpperCase() ||
               transaction.transactionType.charAt(0)
@@ -31,7 +31,7 @@
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2">
           <p
-            class="text-sm font-medium text-indigo-600 truncate"
+            class="text-sm font-medium text-indigo-600 dark:text-indigo-400 truncate"
             :title="transaction.category?.categoryName || transaction.transactionType"
           >
             {{
@@ -41,14 +41,14 @@
           <!-- Attachment Indicator -->
           <i
             v-if="transaction.attachmentPath"
-            class="fa-solid fa-paperclip text-[10px] text-slate-400"
+            class="fa-solid fa-paperclip text-[10px] text-slate-400 dark:text-white"
             title="Ada lampiran"
           ></i>
         </div>
-        <p class="text-sm text-slate-700 truncate" :title="transaction.description ?? undefined">
+        <p class="text-sm text-slate-700 truncate dark:text-slate-300" :title="transaction.description ?? undefined">
           {{ transaction.description || 'Tidak ada deskripsi' }}
         </p>
-        <p class="text-xs text-slate-500 truncate">
+        <p class="text-xs text-slate-500 truncate dark:text-slate-400">
           {{ formatDate(transaction.transactionDate) }}
           <span v-if="transaction.transactionType === 'EXPENSE' && transaction.sourceAccount">
             · Dari: {{ transaction.sourceAccount.accountName }}

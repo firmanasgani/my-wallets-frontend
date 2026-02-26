@@ -2,10 +2,10 @@
   <div v-if="data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <!-- Income -->
     <div
-      class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between"
+      class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 flex items-center justify-between"
     >
       <div>
-        <p class="text-sm text-gray-500 font-medium">Income</p>
+        <p class="text-sm text-gray-500 font-medium dark:text-slate-400">Income</p>
         <p class="text-xl font-bold text-green-600">{{ formatCurrency(data.totalIncome) }}</p>
       </div>
       <div class="bg-green-100 p-2 rounded-lg">
@@ -28,10 +28,10 @@
 
     <!-- Expense -->
     <div
-      class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between"
+      class="bg-white dark:bg-slate-800 dark:border-slate-700 p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between"
     >
       <div>
-        <p class="text-sm text-gray-500 font-medium">Expenses</p>
+        <p class="text-sm text-gray-500 font-medium dark:text-slate-400">Expenses</p>
         <p class="text-xl font-bold text-red-600">{{ formatCurrency(data.totalExpense) }}</p>
       </div>
       <div class="bg-red-100 p-2 rounded-lg">
@@ -54,10 +54,10 @@
 
     <!-- Net Cash Flow -->
     <div
-      class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between"
+      class="bg-white p-4 rounded-xl dark:bg-slate-800 dark:border-slate-700 shadow-sm border border-gray-100 flex items-center justify-between"
     >
       <div>
-        <p class="text-sm text-gray-500 font-medium">Net Cash Flow</p>
+        <p class="text-sm text-gray-500 font-medium dark:text-slate-400">Net Cash Flow</p>
         <p :class="['text-xl font-bold', data.netCashFlow >= 0 ? 'text-blue-600' : 'text-red-500']">
           {{ formatCurrency(data.netCashFlow) }}
         </p>
@@ -82,10 +82,10 @@
 
     <!-- Savings Rate -->
     <div
-      class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between"
+      class="bg-white p-4 dark:bg-slate-800 dark:border-slate-700 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between"
     >
       <div>
-        <p class="text-sm text-gray-500 font-medium">Savings Rate</p>
+        <p class="text-sm text-gray-500 font-medium dark:text-slate-400">Savings Rate</p>
         <p :class="['text-xl font-bold', getSavingsRateColor(data.savingsRate)]">
           {{ data.savingsRate.toFixed(1) }}%
         </p>

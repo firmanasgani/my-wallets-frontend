@@ -2,11 +2,12 @@
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 print:hidden">
       <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">Riwayat Transaksi</h1>
-      <div class="flex gap-2 w-full sm:w-auto">
+      <div class="flex gap-2 flex-col md:flex-row w-full sm:w-auto">
         <!-- Export Dropdown -->
-        <div class="relative group">
+        <div class="relative" ref="exportDropdownRef">
           <button
-            class="w-full sm:w-auto bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
+            @click.stop="isExportDropdownOpen = !isExportDropdownOpen"
+            class="w-full sm:w-auto bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
           >
             <i class="fa-solid fa-download mr-2 text-slate-400"></i>
             Ekspor
@@ -15,18 +16,19 @@
 
           <!-- Dropdown Menu -->
           <div
-            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200"
+            v-show="isExportDropdownOpen"
+            class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-xl shadow-xl border border-slate-100 dark:border-slate-600 py-2 z-50"
           >
             <button
-              @click="exportTransactions('excel')"
-              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
+              @click="exportTransactions('excel'); isExportDropdownOpen = false"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center"
             >
               <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
               Format Excel (.xlsx)
             </button>
             <button
-              @click="exportTransactions('pdf')"
-              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
+              @click="exportTransactions('pdf'); isExportDropdownOpen = false"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center"
             >
               <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
               Format PDF (.pdf)
@@ -36,7 +38,7 @@
 
         <button
           @click="openCalendarModal"
-          class="w-full sm:w-auto bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
+          class="w-full sm:w-auto bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
         >
           <i class="fa-regular fa-calendar-days mr-2 text-indigo-500"></i>
           Kalender
@@ -98,12 +100,12 @@
       </div>
     </div>
 
-    <div class="bg-white p-4 rounded-lg shadow print:hidden">
-      <h2 class="text-lg font-medium text-slate-700 mb-3">Filter Transaksi</h2>
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow print:hidden">
+      <h2 class="text-lg font-medium text-slate-700 dark:text-slate-200 mb-3">Filter Transaksi</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Global Search -->
         <div class="md:col-span-2 lg:col-span-4">
-          <label for="filter-search" class="block text-sm font-medium text-slate-600 mb-1"
+          <label for="filter-search" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
             >Cari Transaksi</label
           >
           <div class="relative">
@@ -115,42 +117,42 @@
               id="filter-search"
               v-model="localFilters.search"
               placeholder="Cari deskripsi, kategori, atau akun..."
-              class="input-field pl-10 p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+              class="input-field pl-10 p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
               @keyup.enter="applyCurrentFilters"
             />
           </div>
         </div>
 
         <div>
-          <label for="filter-daterange-start" class="block text-sm font-medium text-slate-600 mb-1"
+          <label for="filter-daterange-start" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
             >Tanggal Mulai</label
           >
           <input
             type="date"
             id="filter-daterange-start"
             v-model="localFilters.startDate"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
           />
         </div>
         <div>
-          <label for="filter-daterange-end" class="block text-sm font-medium text-slate-600 mb-1"
+          <label for="filter-daterange-end" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
             >Tanggal Akhir</label
           >
           <input
             type="date"
             id="filter-daterange-end"
             v-model="localFilters.endDate"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
           />
         </div>
         <div>
-          <label for="filter-account" class="block text-sm font-medium text-slate-600 mb-1"
+          <label for="filter-account" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
             >Akun</label
           >
           <select
             id="filter-account"
             v-model="localFilters.accountId"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
           >
             <option :value="undefined">Semua Akun</option>
             <option v-for="acc in accountsForFilter" :key="acc.id" :value="acc.id">
@@ -160,13 +162,13 @@
           <p v-if="accountStore.isLoading" class="text-xs text-slate-500 mt-1">Memuat akun...</p>
         </div>
         <div>
-          <label for="filter-category" class="block text-sm font-medium text-slate-600 mb-1"
+          <label for="filter-category" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
             >Kategori</label
           >
           <select
             id="filter-category"
             v-model="localFilters.categoryId"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:text-slate-200"
           >
             <option :value="undefined">Semua Kategori</option>
             <option v-for="cat in categoriesForFilter" :key="cat.id" :value="cat.id">
@@ -178,13 +180,13 @@
           </p>
         </div>
         <div>
-          <label for="filter-type" class="block text-sm font-medium text-slate-600 mb-1"
+          <label for="filter-type" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
             >Tipe</label
           >
           <select
             id="filter-type"
             v-model="localFilters.type"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
           >
             <option :value="undefined">Semua Tipe</option>
             <option value="INCOME">Pemasukan</option>
@@ -209,22 +211,22 @@
       </div>
     </div>
 
-    <div class="bg-white p-4 rounded-lg shadow print:hidden">
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow print:hidden">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
         <div>
-          <p class="text-sm text-slate-500">Total Pemasukan</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Total Pemasukan</p>
           <p class="text-xl font-semibold text-green-600">
             {{ formatCurrency(summary.income, 'IDR') }}
           </p>
         </div>
         <div>
-          <p class="text-sm text-slate-500">Total Pengeluaran</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Total Pengeluaran</p>
           <p class="text-xl font-semibold text-red-600">
             {{ formatCurrency(summary.expense, 'IDR') }}
           </p>
         </div>
         <div>
-          <p class="text-sm text-slate-500">Selisih</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Selisih</p>
           <p
             :class="[
               'text-xl font-semibold',
@@ -288,9 +290,9 @@
 
     <div
       v-if="!transactionStore.isLoadingTransactions && transactionStore.transactionList.length > 0"
-      class="bg-white rounded-lg shadow"
+      class="bg-white dark:bg-slate-800 rounded-lg shadow"
     >
-      <ul role="list" class="divide-y divide-slate-200">
+      <ul role="list" class="divide-y divide-slate-200 dark:divide-slate-700">
         <TransactionItem
           v-for="transaction in transactionStore.transactionList"
           :key="transaction.id"
@@ -301,7 +303,7 @@
       </ul>
       <div
         v-if="transactionStore.meta.lastPage > 1"
-        class="px-4 py-3 flex items-center justify-between border-t border-slate-200 sm:px-6 print:hidden"
+        class="px-4 py-3 flex items-center justify-between border-t border-slate-200 dark:border-slate-700 sm:px-6 print:hidden"
       >
         <div class="flex-1 flex justify-between sm:hidden">
           <button
@@ -321,7 +323,7 @@
         </div>
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div>
-            <p class="text-sm text-slate-700">
+            <p class="text-sm text-slate-700 dark:text-slate-300">
               Menampilkan
               <span class="font-medium">{{
                 (transactionStore.meta.page - 1) * transactionStore.meta.limit + 1
@@ -384,7 +386,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, reactive, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
@@ -400,6 +402,15 @@ import type { FrontendTransactionType } from '@/types/enums'
 
 const router = useRouter()
 const transactionStore = useTransactionStore()
+
+// Export dropdown
+const isExportDropdownOpen = ref(false)
+const exportDropdownRef = ref<HTMLElement | null>(null)
+const handleClickOutsideExport = (event: MouseEvent) => {
+  if (exportDropdownRef.value && !exportDropdownRef.value.contains(event.target as Node)) {
+    isExportDropdownOpen.value = false
+  }
+}
 const accountStore = useAccountStore()
 const categoryStore = useCategoryStore()
 const authStore = useAuthStore()
@@ -473,6 +484,7 @@ watch(
 )
 
 onMounted(async () => {
+  document.addEventListener('click', handleClickOutsideExport)
   // Ambil data awal untuk filter dan transaksi
   // Cek apakah perlu fetch atau data sudah ada di store (tergantung strategi Anda)
   if (accountStore.accounts.length === 0) await accountStore.fetchAccounts()
@@ -582,6 +594,10 @@ const closeDeleteModal = () => {
   isDeleteModalOpen.value = false
   transactionToDelete.value = null
 }
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutsideExport)
+})
 
 const editTransaction = (transaction: Transaction) => {
   alert(`Edit transaksi: ${transaction.description} (implementasi nanti)`)

@@ -1,24 +1,23 @@
 <template>
   <div>
-    <div class="flex justify-between items-center mb-6 print:hidden">
+    <div class="flex justify-between items-center mb-6 print:hidden flex-col md:flex-row gap-5">
       <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Kelola Kategori</h1>
-      <div class="flex justify-end items-center gap-3">
+      <div class="flex items-center gap-3 flex-col md:flex-row w-full">
         <!-- Filter Controls -->
-        <div class="relative inline-block text-left">
+        <div class="flex flex-col md:flex-row  text-left w-full justify-end gap-2">
           <select
             v-model="selectedFilter"
-            class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 h-10 items-center bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            class="inline-flex justify-center rounded-lg border border-gray-300 dark:border-slate-600 shadow-sm px-4 h-10 items-center bg-white dark:bg-slate-700 text-sm font-medium text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full md:w-auto justify-center"
           >
             <option value="ALL">Semua Kategori</option>
             <option value="INCOME">Pemasukan</option>
             <option value="EXPENSE">Pengeluaran</option>
           </select>
-        </div>
         <button
           @click="openCreateCategoryModal"
           :disabled="!canAddCategory"
           :title="addCategoryButtonTitle"
-          class="bg-indigo-600 text-white text-sm font-medium px-4 h-10 rounded-lg flex items-center transition-colors shadow-sm"
+          class="bg-indigo-600 text-white text-sm font-medium px-4 h-10 rounded-lg flex items-center transition-colors shadow-sm w-full md:w-auto justify-center"
           :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
         >
           <svg
@@ -37,6 +36,7 @@
           </svg>
           Tambah Kategori
         </button>
+        </div>
       </div>
     </div>
 

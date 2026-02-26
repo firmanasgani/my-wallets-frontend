@@ -52,7 +52,7 @@
       <div class="p-6">
         <!-- Loading -->
         <div v-if="store.isLoadingHistory" class="flex justify-center py-4">
-          <p class="text-slate-500">Memuat data...</p>
+          <p class="text-slate-500 dark:text-slate-400">Memuat data...</p>
         </div>
 
         <!-- Empty -->

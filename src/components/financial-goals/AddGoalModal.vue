@@ -18,20 +18,7 @@
       >
         <div class="px-6 py-6">
           <div class="flex items-start">
-            <div
-              class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/40"
-            >
-              <svg
-                class="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-            </div>
+
             <div class="ml-4 w-full text-left">
               <h3 class="text-xl font-bold text-slate-900 dark:text-white" id="modal-title">
                 {{ isEdit ? 'Edit Goal' : 'Tambah Goal Baru' }}

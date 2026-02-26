@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="flex justify-between items-center mb-6 print:hidden">
-      <div class="flex items-center space-x-3">
+    <div class="flex flex-col md:flex-row gap-2 justify-between items-center mb-6 print:hidden ">
+      <div class="flex items-center space-x-3 justify-between">
         <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Akun Saya</h1>
         <button
           @click="showBalance = !showBalance"
@@ -45,29 +45,31 @@
           </svg>
         </button>
       </div>
-      <div v-if="!isLoading && accounts && accounts.length > 0" class="flex gap-2">
+      <div v-if="!isLoading && accounts && accounts.length > 0" class="flex gap-2 flex-col md:flex-row w-full"  style="justify-content: flex-end;">
         <!-- Export Dropdown -->
-        <div class="relative group">
+        <div class="relative" ref="exportDropdownRef">
           <button
-            class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm"
+            @click.stop="isExportDropdownOpen = !isExportDropdownOpen"
+            class="bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm justify-center font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm w-full"
           >
             <i class="fa-solid fa-download mr-1.5 text-slate-400"></i>
             Ekspor
           </button>
 
           <div
-            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200"
+            v-show="isExportDropdownOpen"
+            class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-xl shadow-xl border border-slate-100 dark:border-slate-600 py-2 z-50"
           >
             <button
-              @click="exportAccounts('excel')"
-              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
+              @click="exportAccounts('excel'); isExportDropdownOpen = false"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center"
             >
               <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
               Format Excel (.xlsx)
             </button>
             <button
-              @click="exportAccounts('pdf')"
-              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
+              @click="exportAccounts('pdf'); isExportDropdownOpen = false"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center"
             >
               <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
               Format PDF (.pdf)
@@ -78,7 +80,7 @@
         <RouterLink
           v-if="canAddAccount"
           :to="{ name: 'account-create' }"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm justify-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -304,7 +306,7 @@
       <div
         v-for="account in accounts"
         :key="account.id"
-        class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer"
+        class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden flex flex-col transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer"
         @click="viewTransactions(account.id)"
       >
         <div :class="getHeaderColorClass(account.accountType)" class="text-white px-4 py-2">
@@ -314,7 +316,7 @@
         </div>
 
         <div class="p-4 space-y-2 flex-grow flex flex-col">
-          <div class="flex items-center text-xs text-slate-500 mb-2">
+          <div class="flex items-center text-xs text-slate-500 dark:text-slate-400 mb-2">
             <span class="mr-1.5 w-4 h-4 text-slate-500">
               <svg
                 v-if="account.accountType === 'BANK'"
@@ -389,10 +391,10 @@
             >
           </div>
           <div class="my-2">
-            <p class="text-xs text-slate-500 mb-0.5">Saldo:</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Saldo:</p>
             <p
               v-if="showBalance"
-              class="text-xl font-bold text-slate-800 transition-all duration-300"
+              class="text-xl font-bold text-slate-800 dark:text-slate-100 transition-all duration-300"
             >
               {{ formatCurrency(account.currentBalance, account.currency) }}
             </p>
@@ -403,12 +405,12 @@
               Rp ••••••••
             </p>
           </div>
-          <div v-if="account.accountNumber" class="text-xs text-slate-500 mt-auto">
+          <div v-if="account.accountNumber" class="text-xs text-slate-500 dark:text-slate-400 mt-auto">
             <span>No. Akun: ...{{ account.accountNumber.slice(-4) }}</span>
           </div>
           <div v-else class="mt-auto"></div>
 
-          <div class="pt-2 border-t border-slate-200 flex justify-end space-x-2 mt-2 print:hidden">
+          <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-end space-x-2 mt-2 print:hidden">
             <button
               @click.stop="viewTransactions(account.id)"
               title="Lihat Detail Akun"
@@ -496,7 +498,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
@@ -509,6 +511,15 @@ import type { Account } from '@/types/accounts'
 const accountStore = useAccountStore()
 const authStore = useAuthStore()
 const router = useRouter()
+
+// Export dropdown
+const isExportDropdownOpen = ref(false)
+const exportDropdownRef = ref<HTMLElement | null>(null)
+const handleClickOutsideExport = (event: MouseEvent) => {
+  if (exportDropdownRef.value && !exportDropdownRef.value.contains(event.target as Node)) {
+    isExportDropdownOpen.value = false
+  }
+}
 
 const showBalance = ref(localStorage.getItem('show_balance') === 'true')
 
@@ -525,7 +536,12 @@ const canAddAccount = computed(() => {
 })
 
 onMounted(async () => {
+  document.addEventListener('click', handleClickOutsideExport)
   await accountStore.fetchAccounts()
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutsideExport)
 })
 
 const formatCurrency = (

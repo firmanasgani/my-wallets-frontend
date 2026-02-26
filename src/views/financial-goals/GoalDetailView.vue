@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-6">
     <!-- Header & Navigation -->
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between dark:text-white">
       <button
         @click="goBack"
-        class="inline-flex items-center text-slate-500 hover:text-indigo-600 transition-colors"
+        class="inline-flex items-center text-slate-500 hover:text-indigo-600 transition-colors between dark:text-white"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

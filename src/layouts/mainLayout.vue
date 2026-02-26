@@ -340,6 +340,42 @@
                 >
                   Transaksi
                 </RouterLink>
+                <!-- Budget dropdown -->
+                <div v-if="!isFreePlan">
+                  <button
+                    @click="toggleBudgetDropdown"
+                    :class="`${navLinkBaseClasses} w-full justify-between ${isBudgetActive ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`"
+                  >
+                    Budget
+                    <svg
+                      :class="isBudgetDropdownOpen ? 'transform rotate-180' : ''"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 transition-transform duration-200"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div v-show="isBudgetDropdownOpen || isBudgetActive" class="pl-4 space-y-1 mt-1">
+                    <RouterLink
+                      :to="{ name: 'budget-setup' }"
+                      @click="closeMobileSidebar"
+                      :class="navLinkClassesMobile('budget-setup')"
+                    >
+                      Setup
+                    </RouterLink>
+                    <RouterLink
+                      :to="{ name: 'budget-report' }"
+                      @click="closeMobileSidebar"
+                      :class="navLinkClassesMobile('budget-report')"
+                    >
+                      Laporan
+                    </RouterLink>
+                  </div>
+                </div>
+
                 <RouterLink
                   v-if="!isFreePlan"
                   :to="{ name: 'spending-analysis' }"
@@ -347,6 +383,14 @@
                   :class="navLinkClassesMobile('spending-analysis')"
                 >
                   Spending Analysis
+                </RouterLink>
+                <RouterLink
+                  v-if="!isFreePlan"
+                  :to="{ name: 'financial-goals-list' }"
+                  @click="closeMobileSidebar"
+                  :class="navLinkClassesMobile(['financial-goals-list', 'financial-goal-detail'])"
+                >
+                  Financial Goals
                 </RouterLink>
                 <RouterLink
                   :to="{ name: 'settings' }"

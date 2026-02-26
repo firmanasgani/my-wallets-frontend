@@ -144,15 +144,15 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
       <section aria-labelledby="recent-transactions-heading" class="lg:col-span-3">
-        <div class="bg-white shadow-lg rounded-xl">
+        <div class="bg-white shadow-lg rounded-xl dark:bg-slate-800">
           <div class="px-4 py-5 sm:px-6 border-b border-slate-200">
             <div class="flex justify-between items-center">
-              <h2 id="recent-transactions-heading" class="text-lg font-medium text-slate-900">
+              <h2 id="recent-transactions-heading" class="text-lg font-medium text-slate-900 dark:text-white">
                 Transaksi Terbaru
               </h2>
               <RouterLink
                 :to="{ name: 'transactions-list' }"
-                class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
               >
                 Lihat semua
               </RouterLink>
@@ -182,9 +182,9 @@
 
       <div class="lg:col-span-2 space-y-6">
         <section aria-labelledby="account-balances-heading">
-          <div class="bg-white shadow-lg rounded-xl">
+          <div class="bg-white shadow-lg rounded-xl dark:bg-slate-800">
             <div class="px-4 py-5 sm:px-6 border-b border-slate-200">
-              <h2 id="account-balances-heading" class="text-lg font-medium text-slate-900">
+              <h2 id="account-balances-heading" class="text-lg font-medium text-slate-900 dark:text-white">
                 Saldo per Akun
               </h2>
             </div>
@@ -206,16 +206,16 @@
                 v-if="!accountStore.isLoading && accountChartData.labels.length > 0"
                 :data="accountChartData"
                 :options="accountChartOptions"
-                class="max-h-80"
+                class="max-h-80 dark:text-slate-200"
               />
             </div>
           </div>
         </section>
 
         <section aria-labelledby="spending-category-heading">
-          <div class="bg-white shadow-lg rounded-xl">
+          <div class="bg-white shadow-lg rounded-xl dark:bg-slate-800">
             <div class="px-4 py-5 sm:px-6 border-b border-slate-200">
-              <h2 id="spending-category-heading" class="text-lg font-medium text-slate-900">
+              <h2 id="spending-category-heading" class="text-lg font-medium text-slate-900 dark:text-slate-200">
                 Pengeluaran per Kategori (Bulan Ini)
               </h2>
             </div>
@@ -228,9 +228,9 @@
                 >
                   <div class="flex items-center">
                     <span :class="['w-3 h-3 rounded-full mr-2', item?.colorClass]"></span>
-                    <span class="text-slate-700">{{ item?.name }}</span>
+                    <span class="text-slate-700 dark:text-slate-200">{{ item?.name }}</span>
                   </div>
-                  <span class="font-medium text-slate-800">{{
+                  <span class="font-medium text-slate-800 dark:text-slate-200">{{
                     showBalance ? formatCurrency(item.amount, 'IDR') : '••••••••'
                   }}</span>
                 </li>

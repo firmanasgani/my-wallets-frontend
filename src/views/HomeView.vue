@@ -85,8 +85,8 @@
             </div>
           </div>
         </div>
-        <div v-if="mobileMenuOpen" class="md:hidden" id="mobile-menu">
-          <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div v-if="mobileMenuOpen" class="md:hidden flex flex-col" id="mobile-menu">
+          <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col p-2">
             <a href="#features" @click="mobileMenuOpen = false" class="nav-link-mobile">Fitur</a>
             <a href="#pricing" @click="mobileMenuOpen = false" class="nav-link-mobile">Harga</a>
             <RouterLink

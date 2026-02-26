@@ -3,10 +3,10 @@
     <!-- Back Button -->
     <button
       @click="$router.back()"
-      class="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors group"
+      class="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors group"
     >
       <div
-        class="p-2 bg-white rounded-lg shadow-sm border border-slate-200 group-hover:border-slate-300"
+        class="p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 group-hover:border-slate-300 dark:group-hover:border-slate-500"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +26,7 @@
 
     <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
       <LoadingSpinner :visible="true" size="lg" />
-      <p class="mt-4 text-slate-500 animate-pulse">Memuat detail transaksi...</p>
+      <p class="mt-4 text-slate-500 dark:text-slate-400 animate-pulse">Memuat detail transaksi...</p>
     </div>
 
     <div
@@ -35,10 +35,10 @@
     >
       <!-- Main Card -->
       <div
-        class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden"
+        class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700 overflow-hidden"
       >
         <!-- Header Section -->
-        <div :class="['p-8 text-center border-b border-slate-50', typeClass]">
+        <div :class="['p-8 text-center border-b border-slate-50 dark:border-slate-700', typeClass]">
           <div
             class="inline-flex items-center justify-center p-4 bg-white/20 backdrop-blur-md rounded-2xl mb-4 shadow-inner"
           >
@@ -63,7 +63,7 @@
               <div class="space-y-5">
                 <!-- Description -->
                 <div class="flex items-start gap-4">
-                  <div class="p-2.5 bg-slate-50 rounded-xl text-slate-400">
+                  <div class="p-2.5 bg-slate-50 dark:bg-slate-700 rounded-xl text-slate-400 dark:text-slate-500">
                     <i class="fa-solid fa-align-left w-5 text-center"></i>
                   </div>
                   <div>
@@ -72,11 +72,11 @@
                       <input
                         v-model="editForm.description"
                         type="text"
-                        class="w-full border-b border-slate-300 focus:border-indigo-500 outline-none py-1 text-slate-900 font-semibold bg-transparent"
+                        class="w-full border-b border-slate-300 dark:border-slate-600 focus:border-indigo-500 outline-none py-1 text-slate-900 dark:text-slate-100 font-semibold bg-transparent"
                         placeholder="Masukkan deskripsi"
                       />
                     </div>
-                    <p v-else class="text-slate-900 font-semibold">
+                    <p v-else class="text-slate-900 dark:text-slate-100 font-semibold">
                       {{ transaction.description || 'Tidak ada deskripsi' }}
                     </p>
                   </div>
@@ -99,7 +99,7 @@
                     <p class="text-xs text-slate-400 font-medium mb-0.5">Kategori</p>
                     <select
                       v-model="editForm.categoryId"
-                      class="w-full border-b border-slate-300 focus:border-indigo-500 outline-none py-1 text-slate-900 font-semibold bg-transparent"
+                      class="w-full border-b border-slate-300 dark:border-slate-600 focus:border-indigo-500 outline-none py-1 text-slate-900 dark:text-slate-100 font-semibold bg-transparent dark:bg-slate-800"
                     >
                       <option value="" disabled>Pilih Kategori</option>
                       <option v-for="cat in availableCategories" :key="cat.id" :value="cat.id">
@@ -109,7 +109,7 @@
                   </div>
                   <div v-else-if="transaction.category">
                     <p class="text-xs text-slate-400 font-medium mb-0.5">Kategori</p>
-                    <p class="text-slate-900 font-semibold">
+                    <p class="text-slate-900 dark:text-slate-100 font-semibold">
                       {{ transaction.category.categoryName }}
                     </p>
                   </div>
@@ -125,10 +125,10 @@
                 <!-- Source Account -->
                 <div
                   v-if="transaction.sourceAccount"
-                  class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100"
+                  class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700"
                 >
                   <div
-                    class="p-2.5 bg-white rounded-xl shadow-sm text-indigo-600 border border-slate-100"
+                    class="p-2.5 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-indigo-600 border border-slate-100 dark:border-slate-600"
                   >
                     <i class="fa-solid fa-wallet w-5 text-center"></i>
                   </div>
@@ -136,10 +136,10 @@
                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight mb-0.5">
                       {{ isTransfer ? 'Dari Akun' : isExpense ? 'Dibayar Dengan' : 'Akun' }}
                     </p>
-                    <p class="text-slate-900 font-bold text-sm leading-tight">
+                    <p class="text-slate-900 dark:text-slate-100 font-bold text-sm leading-tight">
                       {{ transaction.sourceAccount.accountName }}
                     </p>
-                    <p v-if="transaction.sourceAccount.bank" class="text-xs text-slate-500 mt-1">
+                    <p v-if="transaction.sourceAccount.bank" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                       {{ transaction.sourceAccount.bank.name }}
                     </p>
                   </div>
@@ -148,7 +148,7 @@
                 <!-- Arrow for transfer -->
                 <div v-if="isTransfer" class="flex justify-center -my-3 relative z-10">
                   <div
-                    class="bg-white p-2 rounded-full border border-slate-100 shadow-sm text-blue-500"
+                    class="bg-white dark:bg-slate-700 p-2 rounded-full border border-slate-100 dark:border-slate-600 shadow-sm text-blue-500"
                   >
                     <i class="fa-solid fa-arrow-down"></i>
                   </div>
@@ -157,10 +157,10 @@
                 <!-- Destination Account -->
                 <div
                   v-if="transaction.destinationAccount"
-                  class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100"
+                  class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700"
                 >
                   <div
-                    class="p-2.5 bg-white rounded-xl shadow-sm text-green-600 border border-slate-100"
+                    class="p-2.5 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-green-600 border border-slate-100 dark:border-slate-600"
                   >
                     <i class="fa-solid fa-vault w-5 text-center"></i>
                   </div>
@@ -168,12 +168,12 @@
                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight mb-0.5">
                       {{ isTransfer ? 'Tujuan Ke' : 'Masuk Ke' }}
                     </p>
-                    <p class="text-slate-900 font-bold text-sm leading-tight">
+                    <p class="text-slate-900 dark:text-slate-100 font-bold text-sm leading-tight">
                       {{ transaction.destinationAccount.accountName }}
                     </p>
                     <p
                       v-if="transaction.destinationAccount.bank"
-                      class="text-xs text-slate-500 mt-1"
+                      class="text-xs text-slate-500 dark:text-slate-400 mt-1"
                     >
                       {{ transaction.destinationAccount.bank.name }}
                     </p>
@@ -189,16 +189,16 @@
               <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
                 Riwayat
               </h3>
-              <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100 space-y-4">
+              <div class="bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 space-y-4">
                 <div class="flex justify-between items-center text-sm">
-                  <span class="text-slate-500">Dibuat pada</span>
-                  <span class="text-slate-900 font-medium">{{
+                  <span class="text-slate-500 dark:text-slate-400">Dibuat pada</span>
+                  <span class="text-slate-900 dark:text-slate-100 font-medium">{{
                     formatDateTime(transaction.createdAt)
                   }}</span>
                 </div>
                 <div class="flex justify-between items-center text-sm">
-                  <span class="text-slate-500">Terakhir diupdate</span>
-                  <span class="text-slate-900 font-medium">{{
+                  <span class="text-slate-500 dark:text-slate-400">Terakhir diupdate</span>
+                  <span class="text-slate-900 dark:text-slate-100 font-medium">{{
                     formatDateTime(transaction.updatedAt)
                   }}</span>
                 </div>
@@ -211,7 +211,7 @@
               </h3>
               <div
                 v-if="transaction.attachmentUrl"
-                class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 transition-all hover:shadow-lg"
+                class="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 transition-all hover:shadow-lg"
               >
                 <!-- Image Preview -->
                 <div v-if="isImage" class="aspect-video w-full overflow-hidden">
@@ -224,13 +224,13 @@
                 <!-- PDF / Other Placeholder -->
                 <div
                   v-else
-                  class="aspect-video w-full flex flex-col items-center justify-center p-8 text-slate-400 bg-white"
+                  class="aspect-video w-full flex flex-col items-center justify-center p-8 text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-800"
                 >
-                  <div class="p-4 bg-slate-50 rounded-2xl mb-3 shadow-inner">
+                  <div class="p-4 bg-slate-50 dark:bg-slate-700 rounded-2xl mb-3 shadow-inner">
                     <i class="fa-solid fa-file-pdf text-4xl text-red-500"></i>
                   </div>
-                  <p class="text-sm font-bold text-slate-700">Dokumen PDF</p>
-                  <p class="text-xs mt-1">Klik untuk melihat detail</p>
+                  <p class="text-sm font-bold text-slate-700 dark:text-slate-200">Dokumen PDF</p>
+                  <p class="text-xs mt-1 dark:text-slate-400">Klik untuk melihat detail</p>
                 </div>
 
                 <!-- Overlay Actions -->
@@ -249,10 +249,10 @@
               </div>
               <div
                 v-else
-                class="p-8 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center"
+                class="p-8 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center"
               >
-                <div class="p-3 bg-slate-50 rounded-xl mb-2">
-                  <i class="fa-solid fa-paperclip text-slate-300"></i>
+                <div class="p-3 bg-slate-50 dark:bg-slate-700 rounded-xl mb-2">
+                  <i class="fa-solid fa-paperclip text-slate-300 dark:text-slate-600"></i>
                 </div>
                 <p class="text-xs text-slate-400 font-medium">Tidak ada lampiran</p>
               </div>
@@ -261,7 +261,7 @@
         </div>
 
         <!-- Footer Actions -->
-        <div class="bg-slate-50 p-6 flex items-center justify-between border-t border-slate-100">
+        <div class="bg-slate-50 dark:bg-slate-700/50 p-6 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
           <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
             ID: {{ transaction.id }}
           </p>
@@ -269,21 +269,21 @@
             <button
               v-if="!isEditing"
               @click="startEditing"
-              class="px-4 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
+              class="px-4 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"
             >
               <i class="fa-solid fa-pen mr-2"></i>Edit
             </button>
             <div v-else class="flex gap-2">
               <button
                 @click="cancelEditing"
-                class="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                class="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
                 :disabled="isSaving"
               >
                 Batal
               </button>
               <button
                 @click="saveChanges"
-                class="px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors"
+                class="px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-colors"
                 :disabled="isSaving"
               >
                 <i class="fa-solid fa-check mr-2"></i>Simpan
@@ -292,13 +292,13 @@
             <button
               v-if="!isEditing"
               @click="exportToPDF"
-              class="px-4 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
+              class="px-4 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl transition-colors"
             >
               <i class="fa-solid fa-file-pdf mr-2"></i>Cetak PDF
             </button>
             <button
               @click="showDeleteConfirm = true"
-              class="px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+              class="px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
             >
               <i class="fa-solid fa-trash mr-2"></i>Hapus
             </button>
@@ -308,12 +308,12 @@
     </div>
 
     <!-- 404 Case -->
-    <div v-else class="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
-      <div class="inline-flex p-4 bg-red-50 rounded-2xl text-red-600 mb-4">
+    <div v-else class="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm">
+      <div class="inline-flex p-4 bg-red-50 dark:bg-red-900/20 rounded-2xl text-red-600 mb-4">
         <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
       </div>
-      <h2 class="text-xl font-bold text-slate-900">Transaksi tidak ditemukan</h2>
-      <p class="text-slate-500 mt-1">Kami tidak dapat menemukan transaksi yang Anda cari.</p>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white">Transaksi tidak ditemukan</h2>
+      <p class="text-slate-500 dark:text-slate-400 mt-1">Kami tidak dapat menemukan transaksi yang Anda cari.</p>
       <button
         @click="$router.push({ name: 'transactions-list' })"
         class="mt-6 px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all"

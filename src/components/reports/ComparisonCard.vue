@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
+  <div class="bg-white dark:bg-slate-800 dark:border-slate-700 p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
     <div class="flex justify-between items-center mb-6">
-      <h3 class="text-lg font-bold text-gray-800">Month-over-Month Comparison</h3>
+      <h3 class="text-lg font-bold text-gray-800 dark:text-slate-200">Month-over-Month Comparison</h3>
       <span v-if="data" class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">
         {{ data.period.current }} vs {{ data.period.previous }}
       </span>
@@ -10,10 +10,10 @@
     <div v-if="data" class="grid grid-cols-2 gap-6 flex-grow">
       <!-- Income Comparison -->
       <div class="flex flex-col justify-center">
-        <p class="text-sm text-gray-500 mb-1">Income Change</p>
+        <p class="text-sm text-gray-500 mb-1 dark:text-slate-400">Income Change</p>
         <div class="flex items-baseline gap-2">
           <template v-if="data.income.previous === 0">
-            <span class="text-xl font-bold text-slate-700">No Data</span>
+            <span class="text-xl font-bold text-slate-700 dark:text-slate-200">No Data</span>
             <span class="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600">
               NEW
             </span>
@@ -35,7 +35,7 @@
             </span>
           </template>
         </div>
-        <p class="text-xs text-gray-500 mt-2">
+        <p class="text-xs text-gray-500 mt-2 dark:text-slate-200">
           {{
             data.income.previous === 0
               ? 'Tidak ada data bulan lalu untuk dibandingkan.'
@@ -57,10 +57,10 @@
 
       <!-- Expense Comparison -->
       <div class="flex flex-col justify-center">
-        <p class="text-sm text-gray-500 mb-1">Expense Change</p>
+        <p class="text-sm text-gray-500 mb-1 dark:text-slate-400">Expense Change</p>
         <div class="flex items-baseline gap-2">
           <template v-if="data.expense.previous === 0">
-            <span class="text-xl font-bold text-slate-700">No Data</span>
+            <span class="text-xl font-bold text-slate-700 dark:text-slate-200">No Data</span>
             <span class="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600">
               NEW
             </span>
@@ -82,7 +82,7 @@
             </span>
           </template>
         </div>
-        <p class="text-xs text-gray-500 mt-2">
+        <p class="text-xs text-gray-500 dark:text-slate-200 mt-2">
           {{
             data.expense.previous === 0
               ? 'Tidak ada data bulan lalu untuk dibandingkan.'
@@ -101,7 +101,7 @@
         </div>
       </div>
     </div>
-    <div v-else class="flex-grow flex items-center justify-center text-gray-400">
+    <div v-else class="flex-grow flex items-center justify-center text-gray-400 dark:text-slate-200">
       No comparison data available
     </div>
   </div>
