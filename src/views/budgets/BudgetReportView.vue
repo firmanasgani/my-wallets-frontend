@@ -6,12 +6,13 @@
         <p class="text-sm text-slate-500 mt-1 dark:text-white">Pantau realisasi anggaran Anda.</p>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-4 items-end sm:items-center w-full justify-end">
-        <!-- Export Buttons -->
-        <div v-if="reportData.length > 0" class="flex gap-2 w-full md:w-auto">
-          <button
-            @click="exportBudget('excel')"
-            class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm w-full md:w-auto font-medium py-2 px-4 rounded-lg flex items-center transition-colors shadow-sm"
+        <div class="flex flex-col sm:flex-row gap-4 items-end sm:items-center w-full justify-end">
+          <!-- Export Buttons -->
+          <div v-if="reportData.length > 0" class="flex gap-2 w-full md:w-auto">
+            <button
+              @click="exportBudget('excel')"
+                class="bg-white
+                dark:bg-slate-800 dark:text-slate-200 hover:bg-slate-50 text-slate-700 text-sm w-full md:w-auto font-medium py-2 px-4 rounded-lg flex items-center transition-colors shadow-sm"
             title="Download Excel"
           >
             <i class="fa-solid fa-file-excel mr-2 text-green-600"></i>
@@ -19,10 +20,10 @@
           </button>
           <button
             @click="exportBudget('pdf')"
-            class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm w-full md:w-auto font-medium py-2 px-4 rounded-lg flex items-center transition-colors shadow-sm"
+            class="bg-white hover:bg-slate-50 text-slate-700 text-sm w-full md:w-auto font-medium py-2 px-4 rounded-lg flex items-center dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors shadow-sm"
             title="Download PDF"
           >
-            <i class="fa-solid fa-file-pdf mr-2 text-red-600"></i>
+            <i class="fa-solid fa-file-pdf mr-2 text-red-600 "></i>
             PDF
           </button>
         </div>

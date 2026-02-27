@@ -1,9 +1,8 @@
-```html
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+  <div class="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900 p-4">
     <!-- Card Container -->
     <div
-      class="flex w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[550px]"
+      class="flex w-full max-w-5xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden min-h-[550px]"
     >
       <!-- Left Side (Branding) -->
       <div
@@ -51,7 +50,7 @@
 
       <!-- Right Side (Register Form) -->
       <div
-        class="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center bg-white relative overflow-y-auto max-h-[90vh]"
+        class="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center bg-white dark:bg-slate-800 relative overflow-y-auto max-h-[90vh]"
       >
         <div class="max-w-md mx-auto w-full py-4">
           <!-- Mobile Logo -->
@@ -74,12 +73,12 @@
             </div>
           </div>
 
-          <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Buat Akun Baru</h2>
+          <h2 class="text-2xl font-bold text-gray-800 dark:text-white text-center mb-6">Buat Akun Baru</h2>
 
           <!-- Error Message -->
           <div
             v-if="authStore.authError || clientSideError"
-            class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-3 text-sm rounded-r relative shadow-sm mb-4"
+            class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 text-blue-700 dark:text-blue-300 p-3 text-sm rounded-r relative shadow-sm mb-4"
             role="alert"
           >
             <span class="block sm:inline">{{ authStore.authError || clientSideError }}</span>
@@ -101,52 +100,52 @@
           <form @submit.prevent="handleRegister" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Full Name -->
             <div>
-              <label for="fullName" class="block text-sm font-bold text-blue-900 mb-1"
+              <label for="fullName" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-1"
                 >Nama Lengkap (Opsional)</label
               >
               <input
                 type="text"
                 id="fullName"
                 v-model="formData.fullName"
-                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Contoh: Budi Santoso"
               />
             </div>
 
             <!-- Username -->
             <div>
-              <label for="username" class="block text-sm font-bold text-blue-900 mb-1"
-                >Username <span class="text-blue-600">*</span></label
+              <label for="username" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-1"
+                >Username <span class="text-blue-600 dark:text-blue-400">*</span></label
               >
               <input
                 type="text"
                 id="username"
                 v-model="formData.username"
                 required
-                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Username unik"
               />
             </div>
 
             <!-- Email -->
             <div class="md:col-span-2">
-              <label for="email" class="block text-sm font-bold text-blue-900 mb-1"
-                >Email <span class="text-blue-600">*</span></label
+              <label for="email" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-1"
+                >Email <span class="text-blue-600 dark:text-blue-400">*</span></label
               >
               <input
                 type="email"
                 id="email"
                 v-model="formData.email"
                 required
-                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="nama@email.com"
               />
             </div>
 
             <!-- Password -->
             <div>
-              <label for="password" class="block text-sm font-bold text-blue-900 mb-1"
-                >Kata Sandi <span class="text-blue-600">*</span></label
+              <label for="password" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-1"
+                >Kata Sandi <span class="text-blue-600 dark:text-blue-400">*</span></label
               >
               <div class="relative">
                 <input
@@ -155,14 +154,14 @@
                   v-model="formData.password"
                   @input="checkPassword"
                   required
-                  class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
+                  class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
                   placeholder="Min. 8 karakter"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                   <button
                     type="button"
                     @click="showPassword = !showPassword"
-                    class="text-gray-400 hover:text-blue-600 focus:outline-none"
+                    class="text-gray-400 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none"
                   >
                     <svg
                       v-if="!showPassword"
@@ -203,33 +202,33 @@
                   </button>
                 </div>
               </div>
-              <div class="mt-2 text-xs text-gray-600 space-y-1" v-if="formData.password">
+              <div class="mt-2 text-xs text-gray-600 dark:text-slate-400 space-y-1" v-if="formData.password">
                 <p>Syarat Kata Sandi:</p>
                 <ul class="list-disc list-inside pl-2">
                   <li
                     :class="
-                      passwordCriteria.minLength ? 'text-green-600 font-bold' : 'text-gray-500'
+                      passwordCriteria.minLength ? 'text-green-600 dark:text-green-400 font-bold' : 'text-gray-500 dark:text-slate-500'
                     "
                   >
                     Min. 8 Karakter
                   </li>
                   <li
                     :class="
-                      passwordCriteria.hasUpper ? 'text-green-600 font-bold' : 'text-gray-500'
+                      passwordCriteria.hasUpper ? 'text-green-600 dark:text-green-400 font-bold' : 'text-gray-500 dark:text-slate-500'
                     "
                   >
                     Huruf Besar (A-Z)
                   </li>
                   <li
                     :class="
-                      passwordCriteria.hasNumber ? 'text-green-600 font-bold' : 'text-gray-500'
+                      passwordCriteria.hasNumber ? 'text-green-600 dark:text-green-400 font-bold' : 'text-gray-500 dark:text-slate-500'
                     "
                   >
                     Angka (0-9)
                   </li>
                   <li
                     :class="
-                      passwordCriteria.hasSpecial ? 'text-green-600 font-bold' : 'text-gray-500'
+                      passwordCriteria.hasSpecial ? 'text-green-600 dark:text-green-400 font-bold' : 'text-gray-500 dark:text-slate-500'
                     "
                   >
                     Karakter Spesial (!@#...)
@@ -240,8 +239,8 @@
 
             <!-- Confirm Password -->
             <div>
-              <label for="confirmPassword" class="block text-sm font-bold text-blue-900 mb-1"
-                >Konfirmasi Kata Sandi <span class="text-blue-600">*</span></label
+              <label for="confirmPassword" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-1"
+                >Konfirmasi Kata Sandi <span class="text-blue-600 dark:text-blue-400">*</span></label
               >
               <div class="relative">
                 <input
@@ -250,14 +249,14 @@
                   v-model="formData.confirmPassword"
                   @input="checkMatch"
                   required
-                  class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
+                  class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
                   placeholder="Ulangi kata sandi"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                   <button
                     type="button"
                     @click="showConfirmPassword = !showConfirmPassword"
-                    class="text-gray-400 hover:text-blue-600 focus:outline-none"
+                    class="text-gray-400 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none"
                   >
                     <svg
                       v-if="!showConfirmPassword"
@@ -301,13 +300,13 @@
               <div v-if="formData.confirmPassword" class="mt-2 text-xs">
                 <span
                   v-if="passwordMatchStatus === 'match'"
-                  class="text-green-600 flex items-center"
+                  class="text-green-600 dark:text-green-400 flex items-center"
                 >
                   <i class="fa-solid fa-circle-check mr-1"></i> Kata sandi cocok
                 </span>
                 <span
                   v-else-if="passwordMatchStatus === 'mismatch'"
-                  class="text-red-500 flex items-center"
+                  class="text-red-500 dark:text-red-400 flex items-center"
                 >
                   <i class="fa-solid fa-circle-xmark mr-1"></i> Kata sandi tidak cocok
                 </span>
@@ -348,9 +347,9 @@
 
             <!-- Login Link -->
             <div class="md:col-span-2 text-center mt-2">
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-gray-500 dark:text-slate-400">
                 Sudah punya akun?
-                <RouterLink to="/login" class="font-bold text-blue-700 hover:text-blue-900">
+                <RouterLink to="/login" class="font-bold text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
                   Masuk di sini
                 </RouterLink>
               </p>
@@ -449,3 +448,9 @@ const handleRegister = async () => {
   }
 }
 </script>
+
+<style scoped>
+.bg-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M1 6h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm0 2v10h18V8H1zM3 3h4v2H3V3zm6 0h4v2H9V3zm6 0h4v2h-4V3z'/%3E%3C/g%3E%3C/svg%3E");
+}
+</style>

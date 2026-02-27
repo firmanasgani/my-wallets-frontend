@@ -1,6 +1,6 @@
 <template>
   <div class="relative" ref="dropdownRef">
-    <label v-if="label" :for="inputId" class="block text-sm font-medium text-slate-700 mb-1">
+    <label v-if="label" :for="inputId" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
@@ -15,8 +15,8 @@
         :placeholder="placeholder"
         :disabled="disabled"
         :class="[
-          'border border-gray-300 rounded-lg block w-full px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors',
-          disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white cursor-text',
+          'border border-gray-300 rounded-lg block w-full px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 transition-colors dark:text-slate-200',
+          disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white cursor-text dark:bg-slate-700',
         ]"
       />
 
@@ -40,7 +40,7 @@
     <!-- Dropdown List -->
     <div
       v-show="isOpen && filteredOptions.length > 0"
-      class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto"
+      class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto dark:bg-slate-800"
     >
       <ul class="py-1">
         <li
@@ -48,7 +48,7 @@
           :key="option.value || `option-${index}`"
           @click="selectOption(option)"
           :class="[
-            'px-3 py-2 cursor-pointer hover:bg-blue-50 transition-colors',
+            'px-3 py-2 cursor-pointer hover:bg-blue-50 dark:text-slate-200 transition-colors',
             modelValue === option.value
               ? 'bg-blue-100 text-blue-700 font-medium'
               : 'text-slate-700',
@@ -64,7 +64,7 @@
       v-show="isOpen && filteredOptions.length === 0 && searchQuery"
       class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg"
     >
-      <div class="px-3 py-2 text-sm text-slate-500 text-center">
+      <div class="px-3 py-2 text-sm text-slate-500 text-center dark:text-slate-200">
         Tidak ada hasil untuk "{{ searchQuery }}"
       </div>
     </div>

@@ -1,12 +1,12 @@
 <template>
-  <div class="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-lg">
-    <h1 class="text-2xl sm:text-3xl font-semibold text-slate-800 mb-6 border-b pb-4">
+  <div class="max-w-2xl mx-auto bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-xl shadow-lg">
+    <h1 class="text-2xl sm:text-3xl font-semibold text-slate-800 dark:text-slate-200 mb-6 border-b pb-4">
       Tambah Akun Baru
     </h1>
 
     <form @submit.prevent="handleSubmitAccount" class="space-y-6">
       <div>
-        <label for="accountName" class="block text-sm font-medium text-slate-700 mb-1"
+        <label for="accountName" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
           >Nama Akun <span class="text-red-500">*</span></label
         >
         <input
@@ -14,20 +14,21 @@
           id="accountName"
           v-model="formData.accountName"
           required
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 transition-colors"
           placeholder="Contoh: BCA Tabungan, GoPay"
         />
       </div>
 
       <div>
-        <label for="accountType" class="block text-sm font-medium text-slate-700 mb-1"
+        <label for="accountType" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
           >Tipe Akun <span class="text-red-500">*</span></label
         >
         <select
           id="accountType"
           v-model="formData.accountType"
           required
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200
+          dark:bg-slate-800 transition-colors"
         >
           <option disabled value="">Pilih tipe akun...</option>
           <option v-for="typeOpt in accountTypeOptions" :key="typeOpt.value" :value="typeOpt.value">
@@ -50,25 +51,25 @@
       </div>
 
       <div>
-        <label for="initialBalance" class="block text-sm font-medium text-slate-700 mb-1"
+        <label for="initialBalance" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
           >Saldo Awal (Opsional)</label
         >
         <div class="mt-1 relative rounded-md shadow-sm">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <span class="text-slate-500 sm:text-sm"> {{ formData.currency || 'IDR' }} </span>
+            <span class="text-slate-500 sm:text-sm dark:text-slate-200"> {{ formData.currency || 'IDR' }} </span>
           </div>
           <CurrencyInput
             id="initialBalance"
             v-model="formData.initialBalance"
             :options="{ currency: formData.currency || 'IDR' }"
-            class="border border-gray-300 rounded-lg block w-full pl-12 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            class="border border-gray-300 rounded-lg block w-full pl-12 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 transition-colors"
             placeholder="0.00"
           />
         </div>
       </div>
 
       <div>
-        <label for="currency" class="block text-sm font-medium text-slate-700 mb-1"
+        <label for="currency" class="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-200"
           >Mata Uang (Opsional, default IDR)</label
         >
         <input
@@ -76,20 +77,20 @@
           id="currency"
           v-model="formData.currency"
           maxlength="5"
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:text-slate-200"
           placeholder="IDR"
         />
       </div>
 
       <div>
-        <label for="accountNumber" class="block text-sm font-medium text-slate-700 mb-1"
+        <label for="accountNumber" class="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-200"
           >Nomor Akun/Telepon (Opsional)</label
         >
         <input
           type="text"
           id="accountNumber"
           v-model="formData.accountNumber"
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:text-slate-200"
           placeholder="Untuk rekening bank atau e-wallet"
         />
       </div>

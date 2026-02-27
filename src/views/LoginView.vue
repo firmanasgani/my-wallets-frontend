@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+  <div class="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900 p-4">
     <!-- Card Container -->
     <div
-      class="flex w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[600px]"
+      class="flex w-full max-w-5xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden min-h-[600px]"
     >
       <!-- Left Side (Branding) -->
       <div
@@ -47,7 +47,7 @@
       </div>
 
       <!-- Right Side (Login Form) -->
-      <div class="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center bg-white relative">
+      <div class="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center bg-white dark:bg-slate-800 relative">
         <div class="max-w-md mx-auto w-full">
           <!-- Mobile Logo (Visible only on small screens) -->
           <div class="md:hidden flex justify-center mb-8">
@@ -71,7 +71,7 @@
 
           <!-- Icon for Desktop Right Side -->
           <div class="hidden md:flex justify-center mb-8">
-            <div class="text-blue-600">
+            <div class="text-blue-600 dark:text-blue-400">
               <!-- Decorative Icon inspired by image -->
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -80,7 +80,7 @@
                 fill="currentColor"
               >
                 <path
-                  d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 002.1 9.761.75.75 0 011.7 8.657 61.35 60.35 0 0111.7 2.805z"
+                  d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 002.1 9.761.75.75 0 011.7 8.657 61.35 61.35 0 0111.7 2.805z"
                 />
                 <path
                   d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 001.5 1.5h1.632a1.5 1.5 0 001.5-1.5v-1.515a48.224 48.224 0 011.089.444l.34.179a1.5 1.5 0 001.5 0l.34-.179a48.224 48.224 0 011.16-.474V15.5z"
@@ -92,7 +92,7 @@
           <form @submit.prevent="handleLogin" class="space-y-6">
             <div
               v-if="errorMessage"
-              class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 text-sm rounded-r relative"
+              class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 text-blue-700 dark:text-blue-300 p-4 text-sm rounded-r relative"
               role="alert"
             >
               <span class="block sm:inline">{{ errorMessage }}</span>
@@ -114,21 +114,21 @@
             <div class="space-y-5">
               <!-- Nama Field -->
               <div>
-                <label for="login-field" class="block text-sm font-bold text-blue-900 mb-2"
+                <label for="login-field" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-2"
                   >Nama</label
                 >
                 <input
                   type="text"
                   id="login-field"
                   v-model="loginField"
-                  class="block w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="Nama"
                 />
               </div>
 
               <!-- Password Field -->
               <div>
-                <label for="password" class="block text-sm font-bold text-blue-900 mb-2"
+                <label for="password" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-2"
                   >Kata Sandi</label
                 >
                 <div class="relative">
@@ -136,14 +136,14 @@
                     :type="showPassword ? 'text' : 'password'"
                     id="password"
                     v-model="password"
-                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
+                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
                     placeholder="Kata Sandi"
                   />
                   <div class="absolute inset-y-0 right-0 flex items-center pr-4">
                     <button
                       type="button"
                       @click="showPassword = !showPassword"
-                      class="text-blue-700 hover:text-blue-900 focus:outline-none"
+                      class="text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-200 focus:outline-none"
                     >
                       <svg
                         v-if="!showPassword"
@@ -223,14 +223,14 @@
             <div class="flex flex-col space-y-3 pt-2 text-center">
               <button
                 type="button"
-                class="text-sm font-medium text-blue-700 hover:text-blue-900 hover:underline"
+                class="text-sm font-medium text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:underline"
               >
                 Lupa Password?
               </button>
 
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-gray-500 dark:text-slate-400">
                 Belum punya akun?
-                <RouterLink to="/register" class="font-bold text-blue-700 hover:text-blue-900">
+                <RouterLink to="/register" class="font-bold text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
                   Daftar disini
                 </RouterLink>
               </p>

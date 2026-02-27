@@ -1,5 +1,58 @@
 <template>
   <div class="space-y-6 sm:space-y-8">
+    <!-- Subscription Expiry Alert -->
+    <div
+      v-if="subscriptionExpiryAlert"
+      class="flex items-start gap-3 rounded-xl p-4 border"
+      :class="subscriptionExpiryAlert.urgent
+        ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+        : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'"
+    >
+      <div class="flex-shrink-0 mt-0.5">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-5 h-5"
+          :class="subscriptionExpiryAlert.urgent ? 'text-red-500 dark:text-red-400' : 'text-amber-500 dark:text-amber-400'"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+          />
+        </svg>
+      </div>
+      <div class="flex-1 text-sm">
+        <p
+          class="font-semibold"
+          :class="subscriptionExpiryAlert.urgent ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300'"
+        >
+          {{ subscriptionExpiryAlert.urgent ? 'Langganan Segera Berakhir!' : 'Langganan Akan Berakhir' }}
+        </p>
+        <p
+          class="mt-0.5"
+          :class="subscriptionExpiryAlert.urgent ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'"
+        >
+          Paket <strong>{{ subscriptionExpiryAlert.planName }}</strong> Anda akan berakhir dalam
+          <strong>{{ subscriptionExpiryAlert.daysLeft }} hari</strong>
+          ({{ subscriptionExpiryAlert.endDateFormatted }}).
+          Segera perpanjang agar tidak kehilangan akses fitur premium.
+        </p>
+      </div>
+      <RouterLink
+        :to="{ name: 'settings', query: { upgrade: 'true' } }"
+        class="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+        :class="subscriptionExpiryAlert.urgent
+          ? 'bg-red-600 hover:bg-red-700 text-white'
+          : 'bg-amber-500 hover:bg-amber-600 text-white'"
+      >
+        Perpanjang Sekarang
+      </RouterLink>
+    </div>
+
     <div class="flex items-center space-x-3">
       <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white ">Dashboard</h1>
       <button
@@ -396,6 +449,34 @@ const accountChartOptions = ref({
       forceOverride: false,
     },
   },
+})
+
+const subscriptionExpiryAlert = computed(() => {
+  const user = authStore.currentUser
+  if (!user || user.subscriptionPlan === 'FREE') return null
+
+  // Ambil active subscription dengan endDate
+  const activeSub = user.subscriptions?.find((s) => s.status === 'ACTIVE')
+  if (!activeSub?.endDate) return null
+
+  const endDate = new Date(activeSub.endDate)
+  console.log('endDate', endDate)
+  const now = new Date()
+  const msPerDay = 1000 * 60 * 60 * 24
+  const daysLeft = Math.ceil((endDate.getTime() - now.getTime()) / msPerDay)
+
+  if (daysLeft >  5 || daysLeft <= 0) return null
+
+  return {
+    daysLeft,
+    urgent: daysLeft <= 3,
+    planName: activeSub.plan?.name || user.subscriptionPlan,
+    endDateFormatted: endDate.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }),
+  }
 })
 
 const transactionToDeleteDescription = computed(() => {

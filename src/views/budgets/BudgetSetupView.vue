@@ -4,7 +4,7 @@
       <div>
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Pengaturan Anggaran</h1>
         <div class="flex items-center flex-wrap gap-2 mt-1">
-          <p class="text-sm text-slate-500 dark:text-white">Kelola anggaran bulanan Anda di sini.</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Kelola anggaran bulanan Anda di sini.</p>
         </div>
       </div>
       <div>
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Filters & Search -->
-    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
         <!-- Date Filters -->
         <div class="flex flex-wrap items-center gap-4">
@@ -53,7 +53,7 @@
             <select
               id="filterYear"
               v-model="filterYear"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 bg-slate-50 text-slate-700 shadow-sm hover:bg-white hover:border-indigo-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
+              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-indigo-300 focus:bg-white dark:focus:bg-slate-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
             >
               <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
             </select>
@@ -96,7 +96,7 @@
             <select
               id="filterMonth"
               v-model="filterMonth"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 bg-slate-50 text-slate-700 shadow-sm hover:bg-white hover:border-indigo-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
+              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-indigo-300 focus:bg-white dark:focus:bg-slate-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
             >
               <option v-for="(m, index) in monthNames" :key="index" :value="index + 1">
                 {{ m }}
@@ -143,7 +143,7 @@
             type="text"
             v-model="searchQuery"
             placeholder="Cari kategori budget..."
-            class="pl-11 block w-full rounded-lg border-slate-200 bg-slate-50 text-slate-700 shadow-sm hover:bg-white hover:border-indigo-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm py-2.5 placeholder:text-slate-400"
+            class="pl-11 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-indigo-300 focus:bg-white dark:focus:bg-slate-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm py-2.5 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
         </div>
       </div>
@@ -151,16 +151,16 @@
 
     <!-- Monthly Summary -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
         <div class="flex items-center">
-          <div class="p-2 bg-indigo-50 rounded-lg">
+          <div class="p-2 bg-indigo-50 dark:bg-indigo-900/40 rounded-lg">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-6 h-6 text-indigo-600"
+              class="w-6 h-6 text-indigo-600 dark:text-indigo-400"
             >
               <path
                 stroke-linecap="round"
@@ -170,27 +170,27 @@
             </svg>
           </div>
           <div class="ml-4">
-            <h3 class="text-sm font-medium text-slate-500">Total Anggaran</h3>
-            <p class="text-lg font-bold text-slate-900 mt-0.5">
+            <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Anggaran</h3>
+            <p class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
               {{ formatCurrency(totalMonthlyAmount) }}
             </p>
-            <p class="text-xs text-slate-400 mt-0.5">
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
               {{ monthNames[filterMonth - 1] }} {{ filterYear }}
             </p>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
         <div class="flex items-center">
-          <div class="p-2 bg-pink-50 rounded-lg">
+          <div class="p-2 bg-pink-50 dark:bg-pink-900/40 rounded-lg">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-6 h-6 text-pink-600"
+              class="w-6 h-6 text-pink-600 dark:text-pink-400"
             >
               <path
                 stroke-linecap="round"
@@ -201,11 +201,11 @@
             </svg>
           </div>
           <div class="ml-4">
-            <h3 class="text-sm font-medium text-slate-500">Jumlah Anggaran</h3>
-            <p class="text-lg font-bold text-slate-900 mt-0.5">
+            <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Jumlah Anggaran</h3>
+            <p class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
               {{ budgetStore.allBudgets.length }} Kategori
             </p>
-            <p class="text-xs text-slate-400 mt-0.5">
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
               {{ monthNames[filterMonth - 1] }} {{ filterYear }}
             </p>
           </div>
@@ -214,43 +214,43 @@
     </div>
 
     <!-- Budget List -->
-    <div class="bg-white shadow-sm rounded-lg border border-slate-200 overflow-hidden">
+    <div class="bg-white dark:bg-slate-800 shadow-sm rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
       <div v-if="isLoading" class="p-12 flex justify-center">
         <LoadingSpinner :visible="true" text="Memuat anggaran..." />
       </div>
 
       <div v-else-if="budgets.length === 0" class="p-12 text-center">
-        <p class="text-slate-500">Belum ada anggaran untuk periode ini.</p>
+        <p class="text-slate-500 dark:text-slate-400">Belum ada anggaran untuk periode ini.</p>
         <button
           @click="navigateToCreate"
           :disabled="!canAddBudget"
           :title="addBudgetButtonTitle"
-          class="mt-4 text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-          :class="{ 'opacity-50 cursor-not-allowed hover:text-indigo-600': !canAddBudget }"
+          class="mt-4 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium"
+          :class="{ 'opacity-50 cursor-not-allowed hover:text-indigo-600 dark:hover:text-indigo-400': !canAddBudget }"
         >
           Buat anggaran baru
         </button>
       </div>
 
       <div v-else class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-slate-200">
-          <thead class="bg-slate-50">
+        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+          <thead class="bg-slate-50 dark:bg-slate-700/50">
             <tr>
               <th
                 scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
+                class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
               >
                 Kategori
               </th>
               <th
                 scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
+                class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
               >
                 Nominal
               </th>
               <th
                 scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
+                class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
               >
                 Deskripsi
               </th>
@@ -259,8 +259,8 @@
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-slate-200">
-            <tr v-for="budget in budgets" :key="budget.id" class="hover:bg-slate-50">
+          <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+            <tr v-for="budget in budgets" :key="budget.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div
@@ -277,33 +277,33 @@
                     <span v-else>📁</span>
                   </div>
                   <div>
-                    <div class="text-sm font-medium text-slate-900">
+                    <div class="text-sm font-medium text-slate-900 dark:text-slate-100">
                       {{ budget.category?.categoryName }}
                     </div>
-                    <div class="text-xs text-slate-500">
+                    <div class="text-xs text-slate-500 dark:text-slate-400">
                       {{ budget.category?.categoryType }}
                     </div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-bold text-slate-900">
+                <div class="text-sm font-bold text-slate-900 dark:text-slate-100">
                   {{ formatCurrency(budget.amount) }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-slate-500 truncate max-w-xs">
+                <div class="text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">
                   {{ budget.description || '-' }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button
                   @click="navigateToEdit(budget.id)"
-                  class="text-indigo-600 hover:text-indigo-900 mr-4"
+                  class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 mr-4"
                 >
                   Edit
                 </button>
-                <button @click="confirmDelete(budget)" class="text-red-600 hover:text-red-900">
+                <button @click="confirmDelete(budget)" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
                   Hapus
                 </button>
               </td>

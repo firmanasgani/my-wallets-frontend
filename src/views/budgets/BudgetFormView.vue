@@ -12,28 +12,28 @@
       </button>
     </div>
 
-    <div class="bg-white shadow-sm rounded-lg border border-slate-200 p-6">
+    <div class="bg-white dark:bg-slate-800 shadow-sm rounded-lg border border-slate-200 dark:border-slate-700 p-6">
       <form @submit.prevent="submitForm" class="space-y-6">
         <!-- Period Selectors (For Create only usually, or Readonly for Edit) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="year" class="block text-sm font-medium text-slate-700 mb-1">Tahun</label>
+            <label for="year" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tahun</label>
             <select
               id="year"
               v-model="formData.year"
               :disabled="isEditing"
-              class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-slate-100 disabled:text-slate-500"
+              class="block w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-slate-100 dark:disabled:bg-slate-600 disabled:text-slate-500 dark:disabled:text-slate-400"
             >
               <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
             </select>
           </div>
           <div>
-            <label for="month" class="block text-sm font-medium text-slate-700 mb-1">Bulan</label>
+            <label for="month" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bulan</label>
             <select
               id="month"
               v-model="formData.month"
               :disabled="isEditing"
-              class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-slate-100 disabled:text-slate-500"
+              class="block w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-slate-100 dark:disabled:bg-slate-600 disabled:text-slate-500 dark:disabled:text-slate-400"
             >
               <option v-for="(m, index) in monthNames" :key="index" :value="index + 1">
                 {{ m }}
@@ -44,14 +44,14 @@
 
         <!-- Category -->
         <div>
-          <label for="category" class="block text-sm font-medium text-slate-700 mb-1"
+          <label for="category" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
             >Kategori</label
           >
           <select
             id="category"
             v-model="formData.categoryId"
             :disabled="isEditing"
-            class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-slate-100 disabled:text-slate-500"
+            class="block w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-slate-100 dark:disabled:bg-slate-600 disabled:text-slate-500 dark:disabled:text-slate-400"
           >
             <option value="" disabled>Pilih Kategori</option>
             <optgroup label="Pengeluaran">
@@ -65,24 +65,24 @@
               </option>
             </optgroup>
           </select>
-          <p v-if="isEditing" class="mt-1 text-xs text-slate-500">
+          <p v-if="isEditing" class="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Kategori dan periode tidak dapat diubah saat edit.
           </p>
         </div>
 
         <!-- Amount -->
         <div>
-          <label for="amount" class="block text-sm font-medium text-slate-700 mb-1"
+          <label for="amount" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
             >Jumlah Anggaran</label
           >
           <div class="relative rounded-md shadow-sm">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-slate-500 sm:text-sm">Rp</span>
+              <span class="text-slate-500 dark:text-slate-400 sm:text-sm">Rp</span>
             </div>
             <CurrencyInput
               id="amount"
               v-model="formData.amount"
-              class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-slate-300 rounded-md"
+              class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-md"
               placeholder="0"
             />
           </div>
@@ -90,19 +90,19 @@
 
         <!-- Description -->
         <div>
-          <label for="description" class="block text-sm font-medium text-slate-700 mb-1"
+          <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
             >Deskripsi (Opsional)</label
           >
           <textarea
             id="description"
             v-model="formData.description"
             rows="3"
-            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-slate-300 rounded-md"
+            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-md placeholder:text-slate-400 dark:placeholder:text-slate-500"
           ></textarea>
         </div>
 
         <!-- Error Message -->
-        <div v-if="error" class="bg-red-50 p-4 rounded-md">
+        <div v-if="error" class="bg-red-50 dark:bg-red-900/30 p-4 rounded-md">
           <div class="flex">
             <div class="flex-shrink-0">
               <svg
@@ -120,8 +120,8 @@
               </svg>
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">Gagal menyimpan anggaran</h3>
-              <div class="mt-2 text-sm text-red-700">
+              <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Gagal menyimpan anggaran</h3>
+              <div class="mt-2 text-sm text-red-700 dark:text-red-400">
                 <p>{{ error }}</p>
               </div>
             </div>
@@ -129,11 +129,11 @@
         </div>
 
         <!-- Button Actions -->
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
           <button
             type="button"
             @click="goBack"
-            class="bg-white py-2 px-4 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            class="bg-white dark:bg-slate-700 py-2 px-4 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Batal
           </button>
@@ -172,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useBudgetStore } from '@/stores/budget'
 import { useCategoryStore } from '@/stores/categories'

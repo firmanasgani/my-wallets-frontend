@@ -25,30 +25,30 @@
       >
         <div
           v-if="isOpen"
-          class="bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg w-full"
+          class="bg-white dark:bg-slate-800 rounded-lg shadow-xl transform transition-all sm:max-w-lg w-full"
           role="dialog"
           aria-modal="true"
         >
           <form @submit.prevent="handleSubmit">
             <div class="px-4 pt-5 pb-4 sm:p-6">
-              <h3 class="text-xl font-semibold text-slate-800 mb-1">Tambah Transaksi Baru</h3>
-              <p class="text-sm text-slate-500 mb-6">Pilih tipe dan isi detail transaksi.</p>
+              <h3 class="text-xl font-semibold text-slate-800 dark:text-white mb-1">Tambah Transaksi Baru</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Pilih tipe dan isi detail transaksi.</p>
 
               <div class="mb-6">
-                <label class="block text-sm font-medium text-slate-700 mb-1"
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                   >Tipe Transaksi <span class="text-red-500">*</span></label
                 >
-                <div class="flex space-x-2 rounded-md p-1 bg-slate-100">
+                <div class="flex space-x-2 rounded-md p-1 bg-slate-100 dark:bg-slate-700">
                   <button
                     type="button"
                     v-for="typeOpt in transactionTypeOptions"
                     :key="typeOpt.value"
                     @click="selectedTransactionType = typeOpt.value"
                     :class="[
-                      'w-full rounded-md py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 focus:ring-indigo-500 transition-colors',
+                      'w-full rounded-md py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-700 focus:ring-indigo-500 transition-colors',
                       selectedTransactionType === typeOpt.value
                         ? 'bg-indigo-600 text-white shadow'
-                        : 'text-slate-700 hover:bg-slate-200',
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600',
                     ]"
                   >
                     {{ typeOpt.text }}
@@ -58,7 +58,7 @@
 
               <div v-if="selectedTransactionType" class="space-y-4">
                 <div>
-                  <label for="txAmount" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="txAmount" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                     >Jumlah <span class="text-red-500">*</span></label
                   >
                   <input
@@ -68,7 +68,7 @@
                     required
                     min="0.01"
                     step="any"
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                     placeholder="0.00"
                   />
                 </div>
@@ -79,14 +79,14 @@
                     selectedTransactionType === FrontendTransactionType.TRANSFER
                   "
                 >
-                  <label for="txSourceAccount" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="txSourceAccount" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                     >Dari Akun <span class="text-red-500">*</span></label
                   >
                   <select
                     id="txSourceAccount"
                     v-model="accountFormFields.sourceAccountId"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                   >
                     <option disabled value="">Pilih akun sumber...</option>
                     <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
@@ -103,14 +103,14 @@
                 >
                   <label
                     for="txDestinationAccount"
-                    class="block text-sm font-medium text-slate-700 mb-1"
+                    class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                     >Ke Akun <span class="text-red-500">*</span></label
                   >
                   <select
                     id="txDestinationAccount"
                     v-model="accountFormFields.destinationAccountId"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                   >
                     <option disabled value="">Pilih akun tujuan...</option>
                     <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
@@ -136,14 +136,14 @@
                     selectedTransactionType === FrontendTransactionType.EXPENSE
                   "
                 >
-                  <label for="txCategory" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="txCategory" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                     >Kategori <span class="text-red-500">*</span></label
                   >
                   <select
                     id="txCategory"
                     v-model="accountFormFields.categoryId"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                   >
                     <option disabled value="">Pilih kategori...</option>
                     <option v-for="cat in relevantCategories" :key="cat.id" :value="cat.id">
@@ -153,7 +153,7 @@
                 </div>
 
                 <div>
-                  <label for="txDate" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="txDate" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                     >Tanggal Transaksi <span class="text-red-500">*</span></label
                   >
                   <input
@@ -161,7 +161,7 @@
                     id="txDate"
                     v-model="commonFormData.transactionDate"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                   />
                 </div>
 
@@ -171,27 +171,27 @@
                       id="isRecurring"
                       type="checkbox"
                       v-model="recurringForm.isRecurring"
-                      class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-slate-600 rounded"
                     />
-                    <label for="isRecurring" class="ml-2 block text-sm text-slate-900 select-none">
+                    <label for="isRecurring" class="ml-2 block text-sm text-slate-900 dark:text-slate-100 select-none">
                       Jadikan Transaksi Berulang
                     </label>
                   </div>
 
                   <div
                     v-if="recurringForm.isRecurring"
-                    class="mt-3 space-y-4 rounded-md bg-slate-50 p-3 border border-slate-200"
+                    class="mt-3 space-y-4 rounded-md bg-slate-50 dark:bg-slate-700/50 p-3 border border-slate-200 dark:border-slate-600"
                   >
                     <div>
                       <label
                         for="recurringInterval"
-                        class="block text-sm font-medium text-slate-700 mb-1"
+                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                         >Interval Ulangan <span class="text-red-500">*</span></label
                       >
                       <select
                         id="recurringInterval"
                         v-model="recurringForm.interval"
-                        class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                        class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                       >
                         <option :value="null" disabled>Pilih interval...</option>
                         <option
@@ -207,17 +207,17 @@
                     <div>
                       <label
                         for="recurringEndDate"
-                        class="block text-sm font-medium text-slate-700 mb-1"
+                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                         >Berakhir Pada (Opsional)</label
                       >
                       <input
                         type="date"
                         id="recurringEndDate"
                         v-model="recurringForm.endDate"
-                        class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                        class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                         :min="commonFormData.transactionDate"
                       />
-                      <p class="text-xs text-slate-500 mt-1">
+                      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                         Biarkan kosong untuk berulang selamanya.
                       </p>
                     </div>
@@ -225,25 +225,25 @@
                 </div>
 
                 <div>
-                  <label for="txDescription" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="txDescription" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                     >Deskripsi (Opsional)</label
                   >
                   <textarea
                     id="txDescription"
                     v-model="commonFormData.description"
                     rows="3"
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     placeholder="Catatan tambahan..."
                   ></textarea>
                 </div>
               </div>
 
-              <div v-if="submissionError" class="mt-4 rounded-md bg-red-50 p-3">
-                <p class="text-sm font-medium text-red-700">{{ submissionError }}</p>
+              <div v-if="submissionError" class="mt-4 rounded-md bg-red-50 dark:bg-red-900/30 p-3">
+                <p class="text-sm font-medium text-red-700 dark:text-red-400">{{ submissionError }}</p>
               </div>
             </div>
 
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <div class="bg-gray-50 dark:bg-slate-700/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
               <button
                 type="submit"
                 :disabled="isSubmittingForm"

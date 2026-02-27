@@ -7,6 +7,22 @@ export interface ChangePasswordPayload {
   currentPassword: string
 }
 
+interface UserSubscription {
+  id: string
+  userId: string
+  subscriptionPlanId: string
+  startDate: string
+  endDate: string
+  status: 'ACTIVE' | 'EXPIRED' | 'CANCELLED'
+  plan?: {
+    id: string
+    name: string
+    code: string
+  }
+  createdAt?: string
+  updatedAt?: string
+}
+
 interface UserProfile {
   id: string
   username: string
@@ -16,6 +32,13 @@ interface UserProfile {
   profilePictureUrl?: string | null
   subscriptionPlan: 'FREE' | 'PREMIUM' | 'FAMILY'
   createdAt?: string | null
+  subscriptions?: UserSubscription[]
+  activeSubscription?: {
+    planName: string
+    planCode: string
+    startDate: string
+    endDate?: string
+  } | null
 }
 
 interface LoginResponse {

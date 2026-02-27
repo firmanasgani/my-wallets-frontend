@@ -10,7 +10,7 @@
   >
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-40 overflow-y-auto bg-slate-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
+      class="fixed inset-0 z-40 overflow-y-auto bg-slate-900  bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
       @keydown.esc="closeModal"
       tabindex="-1"
       @click.self="closeModal"
@@ -25,20 +25,20 @@
       >
         <div
           v-if="isOpen"
-          class="bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg w-full"
+          class="bg-white rounded-lg dark:bg-slate-700 shadow-xl transform transition-all sm:max-w-lg w-full"
           role="dialog"
           aria-modal="true"
           aria-labelledby="category-modal-title"
         >
           <form @submit.prevent="handleSubmit">
             <div class="px-4 pt-5 pb-4 sm:p-6">
-              <h3 id="category-modal-title" class="text-xl font-semibold text-slate-800 mb-6">
+              <h3 id="category-modal-title" class="text-xl font-semibold text-slate-800 mb-6 dark:text-slate-200">
                 {{ isEditMode ? 'Edit Kategori' : 'Tambah Kategori Baru' }}
               </h3>
 
               <div class="space-y-4">
                 <div>
-                  <label for="name" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="name" class="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-200"
                     >Nama Kategori <span class="text-red-500">*</span></label
                   >
                   <input
@@ -46,23 +46,23 @@
                     id="name"
                     v-model="formData.name"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
                     placeholder="Mis: Belanja Bulanan"
                   />
                 </div>
 
                 <div>
-                  <label for="type" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="type" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
                     >Tipe Kategori <span class="text-red-500">*</span></label
                   >
                   <select
                     id="type"
                     v-model="formData.type"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:bg-slate-800"
                     :disabled="isEditMode && hasTransactions"
                   >
-                    <option disabled value="">Pilih tipe...</option>
+                    <option disabled value="" >Pilih tipe...</option>
                     <option
                       v-for="typeOpt in categoryTypeOptions"
                       :key="typeOpt.value"
@@ -77,13 +77,13 @@
                 </div>
 
                 <div>
-                  <label for="parentId" class="block text-sm font-medium text-slate-700 mb-1"
+                  <label for="parentId" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
                     >Induk Kategori (Opsional)</label
                   >
                   <select
                     id="parentId"
                     v-model="formData.parentId"
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:bg-slate-800"
                   >
                     <option :value="null">-- Tidak Ada Induk (Kategori Utama) --</option>
                     <option
@@ -107,7 +107,7 @@
                       <select
                         id="categoryIcon"
                         v-model="formData.icon"
-                        class="input-field p-2 pl-10 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 appearance-none"
+                        class="input-field p-2 pl-10 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 appearance-none dark:bg-slate-800 dark:text-slate-200"
                       >
                         <option value="">Pilih Ikon...</option>
                         <option v-for="icon in iconOptions" :key="icon" :value="icon">
@@ -115,7 +115,7 @@
                         </option>
                       </select>
                       <div
-                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500"
+                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 dark:bg-slate-800"
                       >
                         <i v-if="formData.icon" :class="['fa-solid', `fa-${formData.icon}`]"></i>
                         <i v-else class="fa-solid fa-icons"></i>
@@ -148,12 +148,12 @@
                       type="color"
                       id="categoryColorPicker"
                       v-model="formData.color"
-                      class="h-10 w-10 rounded-md border border-slate-300 cursor-pointer"
+                      class="h-10 w-10 rounded-md border border-slate-300 cursor-pointer dark:text-slate-200"
                     />
                     <input
                       type="text"
                       v-model="formData.color"
-                      class="input-field ml-2 flex-1"
+                      class="input-field ml-2 flex-1 dark:text-slate-200"
                       placeholder="#FF0000"
                     />
                   </div>
@@ -164,7 +164,7 @@
                 <p class="text-sm font-medium text-red-700">{{ localError }}</p>
               </div>
             </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <div class="bg-gray-50 px-4 py-3 dark:bg-slate-700 sm:px-6 sm:flex sm:flex-row-reverse">
               <button
                 type="submit"
                 :disabled="categoryStore.isSubmittingCategory"

@@ -1,13 +1,13 @@
 <template>
   <div class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
-    <header class="flex items-center justify-between border-b pb-4">
+    <header class="flex items-center justify-between border-b dark:border-slate-700 pb-4">
       <h1 class="text-3xl font-semibold text-slate-800 dark:text-white">Profil Saya</h1>
       <span
         v-if="authStore.currentUser?.subscriptionPlan"
         :class="{
-          'bg-gray-100 text-gray-800': authStore.currentUser.subscriptionPlan === 'FREE',
-          'bg-amber-100 text-amber-800': authStore.currentUser.subscriptionPlan === 'PREMIUM',
-          'bg-purple-100 text-purple-800': authStore.currentUser.subscriptionPlan === 'FAMILY',
+          'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200': authStore.currentUser.subscriptionPlan === 'FREE',
+          'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300': authStore.currentUser.subscriptionPlan === 'PREMIUM',
+          'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300': authStore.currentUser.subscriptionPlan === 'FAMILY',
         }"
         class="px-3 py-1 rounded-full text-sm font-bold tracking-wide uppercase"
       >
@@ -15,8 +15,8 @@
       </span>
     </header>
 
-    <section aria-labelledby="profile-picture-heading" class="bg-white shadow-lg rounded-xl p-6">
-      <h2 id="profile-picture-heading" class="text-lg font-medium text-slate-900 mb-4">
+    <section aria-labelledby="profile-picture-heading" class="bg-white dark:bg-slate-800 shadow-lg rounded-xl p-6">
+      <h2 id="profile-picture-heading" class="text-lg font-medium text-slate-900 dark:text-white mb-4">
         Foto Profil
       </h2>
       <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -29,7 +29,7 @@
           />
           <div
             v-else
-            class="h-24 w-24 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 text-4xl font-semibold sm:h-32 sm:w-32"
+            class="h-24 w-24 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-300 text-4xl font-semibold sm:h-32 sm:w-32"
             title="Foto profil belum diatur"
           >
             {{
@@ -61,7 +61,7 @@
               type="button"
               @click="triggerFileInput"
               :disabled="isUploadingPicture"
-              class="w-full sm:w-auto px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              class="w-full sm:w-auto px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {{ isUploadingPicture ? 'Mengupload...' : 'Ubah Foto Profil' }}
             </button>
@@ -70,66 +70,66 @@
               type="button"
               @click="confirmDeletePicture"
               :disabled="isUploadingPicture"
-              class="w-full sm:w-auto px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              class="w-full sm:w-auto px-4 py-2 border border-red-300 dark:border-red-700 rounded-md shadow-sm text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Hapus Foto
             </button>
           </div>
-          <p class="mt-2 text-xs text-slate-500">JPEG, PNG atau WebP. Ukuran maksimal 5MB.</p>
+          <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">JPEG, PNG atau WebP. Ukuran maksimal 5MB.</p>
         </div>
       </div>
     </section>
 
-    <section aria-labelledby="user-information-heading" class="bg-white shadow-lg rounded-xl p-6">
-      <h2 id="user-information-heading" class="text-lg font-medium text-slate-900 mb-1">
+    <section aria-labelledby="user-information-heading" class="bg-white dark:bg-slate-800 shadow-lg rounded-xl p-6">
+      <h2 id="user-information-heading" class="text-lg font-medium text-slate-900 dark:text-white mb-1">
         Informasi Akun
       </h2>
-      <p class="text-sm text-slate-500 mb-6">Perbarui informasi akun Anda di sini.</p>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Perbarui informasi akun Anda di sini.</p>
       <form @submit.prevent="handleUpdateProfile" class="space-y-6">
         <div>
-          <label for="fullName" class="block text-sm font-medium text-slate-700 mb-1"
+          <label for="fullName" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
             >Nama Lengkap</label
           >
           <input
             type="text"
             id="fullName"
             v-model="profileData.fullName"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
             placeholder="Nama lengkap Anda"
           />
         </div>
 
         <div>
-          <label for="username" class="block text-sm font-medium text-slate-700 mb-1"
+          <label for="username" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
             >Username</label
           >
           <input
             type="text"
             id="username"
             v-model="profileData.username"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 bg-slate-50"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-500 dark:text-slate-400"
             placeholder="Username Anda"
             readonly
             disabled
           />
-          <p class="text-xs text-slate-500 mt-1">Username tidak dapat diubah.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Username tidak dapat diubah.</p>
         </div>
 
         <div>
-          <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+          <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
           <input
             type="email"
             id="email"
             v-model="profileData.email"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 bg-slate-50"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-500 dark:text-slate-400"
             placeholder="Email Anda"
             readonly
             disabled
           />
-          <p class="text-xs text-slate-500 mt-1">Email tidak dapat diubah.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Email tidak dapat diubah.</p>
         </div>
 
-        <div class="pt-4 border-t border-slate-200 flex justify-end">
+        <div class="pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
           <button
             type="submit"
             :disabled="isSubmittingProfile"
@@ -148,14 +148,14 @@
       </form>
     </section>
 
-    <section aria-labelledby="security-heading" class="bg-white shadow-lg rounded-xl p-6">
-      <h2 id="security-heading" class="text-lg font-medium text-slate-900 mb-1">Keamanan</h2>
-      <p class="text-sm text-slate-500 mb-6">Kelola pengaturan keamanan akun Anda.</p>
+    <section aria-labelledby="security-heading" class="bg-white dark:bg-slate-800 shadow-lg rounded-xl p-6">
+      <h2 id="security-heading" class="text-lg font-medium text-slate-900 dark:text-white mb-1">Keamanan</h2>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Kelola pengaturan keamanan akun Anda.</p>
       <div>
         <button
           type="button"
           @click="openChangePasswordModal"
-          class="px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Ubah Password
         </button>
@@ -164,15 +164,15 @@
 
     <section
       aria-labelledby="danger-zone-heading"
-      class="bg-white shadow-lg rounded-xl p-6 border border-red-100"
+      class="bg-white dark:bg-slate-800 shadow-lg rounded-xl p-6 border border-red-100 dark:border-red-900/50"
     >
-      <h2 id="danger-zone-heading" class="text-lg font-medium text-red-600 mb-1">Zona Bahaya</h2>
-      <p class="text-sm text-slate-500 mb-6">Tindakan di sini tidak dapat dibatalkan.</p>
+      <h2 id="danger-zone-heading" class="text-lg font-medium text-red-600 dark:text-red-400 mb-1">Zona Bahaya</h2>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Tindakan di sini tidak dapat dibatalkan.</p>
 
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h3 class="text-sm font-medium text-slate-900">Hapus Akun</h3>
-          <p class="text-sm text-slate-500">
+          <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100">Hapus Akun</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400">
             Menghapus akun dan semua data Anda secara permanen. Setelah dihapus, data tidak dapat
             dipulihkan kembali.
           </p>

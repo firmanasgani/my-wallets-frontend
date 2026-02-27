@@ -3,7 +3,7 @@
     <div class="mb-8">
       <button
         @click="$router.back()"
-        class="mb-4 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-white flex items-center gap-1"
+        class="mb-4 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -20,17 +20,17 @@
         Kembali
       </button>
       <div>
-        <h1 class="text-2xl font-bold leading-7 text-slate-900 sm:truncate">Tambah Transaksi</h1>
-        <p class="mt-1 text-sm text-slate-500 dark:text-white">Catat transaksi baru untuk melacak keuanganmu.</p>
+        <h1 class="text-2xl font-bold leading-7 text-slate-900 dark:text-white sm:truncate">Tambah Transaksi</h1>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Catat transaksi baru untuk melacak keuanganmu.</p>
       </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
       <form @submit.prevent="handleSubmit">
         <div class="p-6 space-y-8">
           <!-- Transaction Type -->
           <div class="space-y-3">
-            <label class="block text-sm font-medium text-slate-900">Tipe Transaksi</label>
+            <label class="block text-sm font-medium text-slate-900 dark:text-slate-100">Tipe Transaksi</label>
             <div class="grid grid-cols-3 gap-3">
               <button
                 type="button"
@@ -41,7 +41,7 @@
                   'relative flex items-center justify-center py-3 px-4 text-sm font-medium rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200',
                   selectedTransactionType === typeOpt.value
                     ? 'border-transparent text-white shadow-md transform scale-105'
-                    : 'border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300',
+                    : 'border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500',
                   selectedTransactionType === typeOpt.value &&
                   typeOpt.value === FrontendTransactionType.INCOME
                     ? 'bg-green-600 focus:ring-green-500'
@@ -63,22 +63,22 @@
 
           <!-- Amount -->
           <div class="space-y-3">
-            <label for="txAmount" class="block text-sm font-medium text-slate-900"
+            <label for="txAmount" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
               >Jumlah Transaksi</label
             >
             <div class="relative rounded-md shadow-sm">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-slate-500 sm:text-sm">Rp</span>
+                <span class="text-slate-500 dark:text-slate-400 sm:text-sm">Rp</span>
               </div>
               <CurrencyInput
                 v-model="commonFormData.amount"
                 id="txAmount"
-                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-12 sm:text-lg border-slate-300 rounded-md py-3 placeholder:text-slate-300 font-semibold text-slate-900"
+                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-12 sm:text-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-md py-3 placeholder:text-slate-300 dark:placeholder:text-slate-500 font-semibold"
                 placeholder="0"
                 required
               />
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span class="text-slate-500 sm:text-sm">IDR</span>
+                <span class="text-slate-500 dark:text-slate-400 sm:text-sm">IDR</span>
               </div>
             </div>
           </div>
@@ -93,7 +93,7 @@
               "
               class="space-y-2 w-full"
             >
-              <label for="txSourceAccount" class="block text-sm font-medium text-slate-900"
+              <label for="txSourceAccount" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
                 >Dari Akun</label
               >
               <div class="relative">
@@ -101,7 +101,7 @@
                   id="txSourceAccount"
                   v-model="accountFormFields.sourceAccountId"
                   required
-                  class="appearance-none block w-full bg-white border border-slate-300 rounded-lg py-3 pl-4 pr-10 text-slate-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 >
                   <option disabled value="">Pilih akun sumber...</option>
                   <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
@@ -109,7 +109,7 @@
                   </option>
                 </select>
                 <div
-                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400"
                 >
                   <svg
                     class="h-4 w-4"
@@ -135,7 +135,7 @@
               "
               class="space-y-2 w-full"
             >
-              <label for="txDestinationAccount" class="block text-sm font-medium text-slate-900"
+              <label for="txDestinationAccount" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
                 >Ke Akun</label
               >
               <div class="relative">
@@ -143,7 +143,7 @@
                   id="txDestinationAccount"
                   v-model="accountFormFields.destinationAccountId"
                   required
-                  class="appearance-none block w-full bg-white border border-slate-300 rounded-lg py-3 pl-4 pr-10 text-slate-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 >
                   <option disabled value="">Pilih akun tujuan...</option>
                   <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
@@ -151,7 +151,7 @@
                   </option>
                 </select>
                 <div
-                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400"
                 >
                   <svg
                     class="h-4 w-4"
@@ -175,7 +175,7 @@
               accountFormFields.sourceAccountId &&
               accountFormFields.sourceAccountId === accountFormFields.destinationAccountId
             "
-            class="text-sm text-red-600 bg-red-50 p-3 rounded-md"
+            class="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 p-3 rounded-md"
           >
             Akun sumber dan tujuan tidak boleh sama.
           </p>
@@ -188,7 +188,7 @@
             "
             class="space-y-2"
           >
-            <label for="txCategory" class="block text-sm font-medium text-slate-900"
+            <label for="txCategory" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
               >Kategori</label
             >
             <div class="relative">
@@ -196,7 +196,7 @@
                 id="txCategory"
                 v-model="accountFormFields.categoryId"
                 required
-                class="appearance-none block w-full bg-white border border-slate-300 rounded-lg py-3 pl-4 pr-10 text-slate-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               >
                 <option disabled value="">Pilih kategori...</option>
                 <option v-for="cat in relevantCategories" :key="cat.id" :value="cat.id">
@@ -204,7 +204,7 @@
                 </option>
               </select>
               <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400"
               >
                 <svg
                   class="h-4 w-4"
@@ -222,10 +222,10 @@
             </div>
           </div>
 
-          <div class="border-t border-slate-100 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="border-t border-slate-100 dark:border-slate-700 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Date -->
             <div class="space-y-2">
-              <label for="txDate" class="block text-sm font-medium text-slate-900"
+              <label for="txDate" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
                 >Tanggal Transaksi</label
               >
               <input
@@ -233,41 +233,41 @@
                 id="txDate"
                 v-model="commonFormData.transactionDate"
                 required
-                class="block w-full bg-white border border-slate-300 rounded-lg py-3 px-4 text-slate-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                class="block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
 
             <!-- Description -->
             <div class="space-y-2">
-              <label for="txDescription" class="block text-sm font-medium text-slate-900"
+              <label for="txDescription" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
                 >Deskripsi</label
               >
               <input
                 type="text"
                 id="txDescription"
                 v-model="commonFormData.description"
-                class="block w-full bg-white border border-slate-300 rounded-lg py-3 px-4 text-slate-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                class="block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 placeholder="Contoh: Makan siang, Gaji bulan ini..."
               />
             </div>
           </div>
 
           <!-- Recurring Toggle -->
-          <div class="bg-indigo-50 rounded-lg p-5 border border-indigo-100">
+          <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-5 border border-indigo-100 dark:border-indigo-800">
             <div class="flex items-center">
               <div class="flex items-center h-5">
                 <input
                   id="isRecurring"
                   type="checkbox"
                   v-model="recurringForm.isRecurring"
-                  class="focus:ring-indigo-500 h-5 w-5 text-indigo-600 border-gray-300 rounded"
+                  class="focus:ring-indigo-500 h-5 w-5 text-indigo-600 border-gray-300 dark:border-slate-600 rounded"
                 />
               </div>
               <div class="ml-3 text-sm">
-                <label for="isRecurring" class="font-medium text-indigo-900"
+                <label for="isRecurring" class="font-medium text-indigo-900 dark:text-indigo-200"
                   >Jadikan Transaksi Berulang?</label
                 >
-                <p class="text-indigo-700">Aktifkan untuk membuat jadwal otomatis.</p>
+                <p class="text-indigo-700 dark:text-indigo-300">Aktifkan untuk membuat jadwal otomatis.</p>
               </div>
             </div>
 
@@ -275,13 +275,13 @@
               <div class="flex-1">
                 <label
                   for="recurringInterval"
-                  class="block text-xs font-semibold text-indigo-900 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold text-indigo-900 dark:text-indigo-200 uppercase tracking-wider mb-2"
                   >Setiap</label
                 >
                 <select
                   id="recurringInterval"
                   v-model="recurringForm.interval"
-                  class="block w-full bg-white border border-indigo-200 rounded-lg py-2.5 px-3 text-indigo-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  class="block w-full bg-white dark:bg-slate-700 border border-indigo-200 dark:border-indigo-700 rounded-lg py-2.5 px-3 text-indigo-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 >
                   <option :value="null" disabled>Pilih interval...</option>
                   <option
@@ -297,14 +297,14 @@
               <div class="flex-1">
                 <label
                   for="recurringEndDate"
-                  class="block text-xs font-semibold text-indigo-900 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold text-indigo-900 dark:text-indigo-200 uppercase tracking-wider mb-2"
                   >Berakhir Pada (Opsional)</label
                 >
                 <input
                   type="date"
                   id="recurringEndDate"
                   v-model="recurringForm.endDate"
-                  class="block w-full bg-white border border-indigo-200 rounded-lg py-2.5 px-3 text-indigo-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-indigo-300"
+                  class="block w-full bg-white dark:bg-slate-700 border border-indigo-200 dark:border-indigo-700 rounded-lg py-2.5 px-3 text-indigo-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-indigo-300 dark:placeholder:text-slate-500"
                   :min="commonFormData.transactionDate"
                 />
               </div>
@@ -313,13 +313,13 @@
 
           <!-- Attachment -->
           <div class="space-y-3">
-            <label class="block text-sm font-medium text-slate-900">Lampiran (Opsional)</label>
+            <label class="block text-sm font-medium text-slate-900 dark:text-slate-100">Lampiran (Opsional)</label>
             <div
-              class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-lg hover:border-indigo-400 transition-colors cursor-pointer relative group"
+              class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors cursor-pointer relative group"
             >
               <div class="space-y-1 text-center">
                 <svg
-                  class="mx-auto h-12 w-12 text-slate-400 group-hover:text-indigo-500 transition-colors"
+                  class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500 group-hover:text-indigo-500 transition-colors"
                   stroke="currentColor"
                   fill="none"
                   viewBox="0 0 48 48"
@@ -332,10 +332,10 @@
                     stroke-linejoin="round"
                   />
                 </svg>
-                <div class="flex text-sm text-slate-600">
+                <div class="flex text-sm text-slate-600 dark:text-slate-400">
                   <label
                     for="file-upload"
-                    class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none"
+                    class="relative cursor-pointer bg-transparent rounded-md font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 focus-within:outline-none"
                   >
                     <span>Upload file</span>
                     <input
@@ -349,19 +349,19 @@
                   </label>
                   <p class="pl-1">atau seret dan lepas</p>
                 </div>
-                <p class="text-xs text-slate-500">PNG, JPG, PDF hingga 5MB</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">PNG, JPG, PDF hingga 5MB</p>
               </div>
 
               <!-- Selected File name/preview -->
               <div
                 v-if="selectedFile"
-                class="absolute inset-0 bg-white rounded-lg flex flex-col items-center justify-center p-4"
+                class="absolute inset-0 bg-white dark:bg-slate-800 rounded-lg flex flex-col items-center justify-center p-4"
               >
                 <div class="flex items-center gap-3 mb-3">
-                  <div class="p-2 bg-indigo-50 rounded-lg">
+                  <div class="p-2 bg-indigo-50 dark:bg-indigo-900/40 rounded-lg">
                     <svg
                       v-if="selectedFile.type === 'application/pdf'"
-                      class="w-8 h-8 text-indigo-600"
+                      class="w-8 h-8 text-indigo-600 dark:text-indigo-400"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -377,7 +377,7 @@
                     />
                     <svg
                       v-else
-                      class="w-8 h-8 text-indigo-600"
+                      class="w-8 h-8 text-indigo-600 dark:text-indigo-400"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -389,10 +389,10 @@
                     </svg>
                   </div>
                   <div class="text-left">
-                    <p class="text-sm font-medium text-slate-900 truncate max-w-[200px]">
+                    <p class="text-sm font-medium text-slate-900 dark:text-slate-100 truncate max-w-[200px]">
                       {{ selectedFile.name }}
                     </p>
-                    <p class="text-xs text-slate-500">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
                       {{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB
                     </p>
                   </div>
@@ -400,7 +400,7 @@
                 <button
                   type="button"
                   @click="removeFile"
-                  class="text-xs font-semibold text-red-600 hover:text-red-500"
+                  class="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300"
                 >
                   Hapus File
                 </button>
@@ -410,19 +410,19 @@
             <!-- PDF Preview (if applicable and small/safe) -->
             <div
               v-if="selectedFile && selectedFile.type === 'application/pdf'"
-              class="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200"
+              class="mt-4 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600"
             >
               <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-slate-700">Preview PDF</span>
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Preview PDF</span>
                 <a
                   :href="previewUrl || undefined"
                   target="_blank"
-                  class="text-xs text-indigo-600 hover:text-indigo-500 font-semibold"
+                  class="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 font-semibold"
                   >Buka di tab baru</a
                 >
               </div>
               <div
-                class="aspect-auto h-40 bg-slate-200 rounded flex items-center justify-center text-slate-500 overflow-hidden"
+                class="aspect-auto h-40 bg-slate-200 dark:bg-slate-700 rounded flex items-center justify-center text-slate-500 overflow-hidden"
               >
                 <iframe
                   v-if="previewUrl"
@@ -434,7 +434,7 @@
           </div>
 
           <!-- Errors -->
-          <div v-if="submissionError" class="rounded-md bg-red-50 p-4 border border-red-100">
+          <div v-if="submissionError" class="rounded-md bg-red-50 dark:bg-red-900/30 p-4 border border-red-100 dark:border-red-800">
             <div class="flex">
               <div class="flex-shrink-0">
                 <svg
@@ -452,8 +452,8 @@
                 </svg>
               </div>
               <div class="ml-3">
-                <h3 class="text-sm font-medium text-red-800">Terdapat kesalahan</h3>
-                <div class="mt-2 text-sm text-red-700">
+                <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Terdapat kesalahan</h3>
+                <div class="mt-2 text-sm text-red-700 dark:text-red-400">
                   <p>{{ submissionError }}</p>
                 </div>
               </div>
@@ -461,12 +461,12 @@
           </div>
         </div>
         <div
-          class="bg-slate-50 px-6 py-4 flex items-center justify-end border-t border-slate-200 gap-3"
+          class="bg-slate-50 dark:bg-slate-700/50 px-6 py-4 flex items-center justify-end border-t border-slate-200 dark:border-slate-700 gap-3"
         >
           <button
             type="button"
             @click="$router.back()"
-            class="px-4 py-2 bg-white border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            class="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
             :disabled="isSubmittingForm"
           >
             Batal

@@ -1,7 +1,7 @@
 <template>
-  <li class="bg-white rounded-md shadow">
+  <li class="bg-white rounded-md shadow dark:bg-slate-700">
     <div
-      class="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors"
+      class="flex items-center justify-between p-3 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
       :class="{ 'cursor-pointer': hasSubCategories }"
       @click="hasSubCategories ? toggleExpand() : null"
     >
@@ -10,7 +10,7 @@
         <button
           v-if="hasSubCategories"
           @click.stop="toggleExpand"
-          class="mr-2 p-0.5 text-slate-500 hover:text-slate-700 transition-transform duration-200"
+          class="mr-2 p-0.5 text-slate-500 hover:text-slate-700 dark:text-slate-200 transition-transform duration-200"
           :class="{ 'rotate-90': isExpanded }"
           title="Expand/Collapse"
         >
@@ -41,7 +41,7 @@
           }}</span>
         </span>
         <div class="flex items-center">
-          <span class="text-sm font-medium text-slate-700">{{ category.categoryName }}</span>
+          <span class="text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white">{{ category.categoryName }}</span>
           <span
             v-if="!category.userId"
             class="ml-2 text-xs bg-sky-100 text-sky-700 px-1.5 py-0.5 rounded-full"

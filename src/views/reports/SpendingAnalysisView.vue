@@ -8,7 +8,7 @@
       </div>
 
       <!-- Controls -->
-      <div class="flex flex-wrap items-center gap-3 flex-col md:flex-row">
+      <div class="flex flex-wrap items-center gap-3 justify-end flex-col md:flex-row">
         <!-- Month Selector -->
         <select
           v-model="selectedMonth"
@@ -26,7 +26,7 @@
         </select>
 
         <!-- Export Dropdown -->
-        <div class="flex flex-row w-full gap-2">
+        <div class="flex flex-row w-full gap-2 justify-end">
           <div v-if="!reportsStore.isLoading" class="relative w-full md:w-auto" ref="exportDropdownRef">
           <button
             @click.stop="isExportDropdownOpen = !isExportDropdownOpen"
