@@ -246,6 +246,8 @@
         </div>
       </header>
 
+      <AdBanner />
+
       <main
         class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 dark:bg-slate-900 p-4 sm:p-6 lg:p-8"
       >
@@ -445,12 +447,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { RouterLink, RouterView, useRoute, useRouter as vueUseRouter } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import AdBanner from '@/components/common/AdBanner.vue'
 
 const authStore = useAuthStore()
 const route = useRoute()
-const router = vueUseRouter()
 
 const isFreePlan = computed(() => authStore.currentUser?.subscriptionPlan === 'FREE')
 

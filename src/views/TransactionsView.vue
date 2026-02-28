@@ -117,7 +117,7 @@
               id="filter-search"
               v-model="localFilters.search"
               placeholder="Cari deskripsi, kategori, atau akun..."
-              class="input-field pl-10 p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
+              :class="[filterInputClass, 'pl-10']"
               @keyup.enter="applyCurrentFilters"
             />
           </div>
@@ -131,7 +131,7 @@
             type="date"
             id="filter-daterange-start"
             v-model="localFilters.startDate"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
+            :class="[filterInputClass, 'dark:[color-scheme:dark]']"
           />
         </div>
         <div>
@@ -142,7 +142,7 @@
             type="date"
             id="filter-daterange-end"
             v-model="localFilters.endDate"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
+            :class="[filterInputClass, 'dark:[color-scheme:dark]']"
           />
         </div>
         <div>
@@ -152,7 +152,7 @@
           <select
             id="filter-account"
             v-model="localFilters.accountId"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:bg-slate-800"
+            :class="filterInputClass"
           >
             <option :value="undefined">Semua Akun</option>
             <option v-for="acc in accountsForFilter" :key="acc.id" :value="acc.id">
@@ -168,7 +168,7 @@
           <select
             id="filter-category"
             v-model="localFilters.categoryId"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:text-slate-200 dark:bg-slate-800"
+            :class="filterInputClass"
           >
             <option :value="undefined">Semua Kategori</option>
             <option v-for="cat in categoriesForFilter" :key="cat.id" :value="cat.id">
@@ -186,7 +186,7 @@
           <select
             id="filter-type"
             v-model="localFilters.type"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:bg-slate-800"
+            :class="filterInputClass"
           >
             <option :value="undefined">Semua Tipe</option>
             <option value="INCOME">Pemasukan</option>
@@ -402,6 +402,9 @@ import type { FrontendTransactionType } from '@/types/enums'
 
 const router = useRouter()
 const transactionStore = useTransactionStore()
+
+const filterInputClass =
+  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
 
 // Export dropdown
 const isExportDropdownOpen = ref(false)

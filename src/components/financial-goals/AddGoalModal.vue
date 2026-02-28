@@ -36,7 +36,7 @@
                     id="goal-name"
                     v-model="form.name"
                     placeholder="misal: Liburan ke Bali"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600 dark:text-white py-2 px-3"
+                    :class="inputClass"
                   />
                 </div>
 
@@ -47,7 +47,7 @@
                     class="block text-sm font-medium text-slate-700 dark:text-slate-300"
                     >Target Nominal (IDR)</label
                   >
-                  <CurrencyInput id="goal-amount" v-model="form.targetAmount" class="mt-1" />
+                  <CurrencyInput id="goal-amount" v-model="form.targetAmount" :class="inputClass" />
                 </div>
 
                 <!-- Target Date -->
@@ -61,7 +61,7 @@
                     type="date"
                     id="goal-date"
                     v-model="form.targetDate"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600 dark:text-white py-2 px-3"
+                    :class="[inputClass, 'dark:[color-scheme:dark]']"
                   />
                 </div>
 
@@ -76,7 +76,7 @@
                     id="goal-desc"
                     v-model="form.description"
                     rows="3"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-slate-700 dark:border-slate-600 dark:text-white p-3"
+                    :class="inputClass"
                     placeholder="Kenapa Anda ingin mencapai goal ini?"
                   ></textarea>
                 </div>
@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted } from 'vue'
+import { computed, reactive, onMounted } from 'vue'
 import { useFinancialGoalStore } from '@/stores/financialGoals'
 import CurrencyInput from '@/components/common/CurrencyInput.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
@@ -138,6 +138,9 @@ const emit = defineEmits(['close', 'success'])
 const goalStore = useFinancialGoalStore()
 
 const isEdit = computed(() => !!props.goal)
+
+const inputClass =
+  'mt-1 block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder:text-slate-500 transition-colors'
 
 const form = reactive({
   name: '',

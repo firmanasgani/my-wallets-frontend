@@ -54,7 +54,7 @@
                 Upgrade ke Premium
               </button>
             </div>
-            <div v-else>
+            <div v-if="isPlanExpiring">
               <button
                 type="button"
                 @click="openPricingModal"
@@ -225,7 +225,6 @@
     </div>
 
     <!-- Recurring Transactions Sub-View -->
-    <!-- Recurring Transactions Sub-View -->
     <div v-else-if="currentView === 'recurring'" class="space-y-6">
       <RecurringTransactionsList @back="currentView = 'main'" />
     </div>
@@ -275,9 +274,22 @@ const openPricingModal = () => {
   isPricingModalOpen.value = true
 }
 
+const isPlanExpiring = computed(() => {
+  const user = authStore.currentUser
+  if(!user || user.subscriptionPlan === 'FREE') return false
+
+  const isActive = user.subscriptions?.find((s) => s.status === 'ACTIVE')
+  if (!isActive) return false
+  const endDate = new Date(isActive.endDate)
+  const now = new Date()
+  const msPerDay = 1000 * 60 * 60 * 24
+  const daysLeft = Math.ceil((endDate.getTime() - now.getTime()) / msPerDay)
+  if (daysLeft <= 7) return true
+  return false
+})
+
 const handleUpgradeSuccess = () => {
-  // User profile is already refreshed by the modal
-  // We can add a toast notification here if needed
+  // User profile is already refreshed by the mod
 }
 
 const onThemeChange = (event: Event) => {

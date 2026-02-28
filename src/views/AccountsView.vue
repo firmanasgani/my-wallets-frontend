@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex flex-col md:flex-row gap-2 justify-between items-center mb-6 print:hidden ">
-      <div class="flex items-center space-x-3 justify-between">
+      <div class="flex items-center space-x-3 w-full">
         <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Akun Saya</h1>
         <button
           @click="showBalance = !showBalance"
@@ -301,184 +301,94 @@
 
     <div
       v-if="!isLoading && accounts && accounts.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6"
+      class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
     >
-      <div
-        v-for="account in accounts"
-        :key="account.id"
-        class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden flex flex-col transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer"
-        @click="viewTransactions(account.id)"
-      >
-        <div :class="getHeaderColorClass(account.accountType)" class="text-white px-4 py-2">
-          <h3 class="text-md font-semibold truncate" :title="account.accountName">
-            {{ account.accountName }}
-          </h3>
-        </div>
+      <div v-for="account in accounts" :key="account.id" class="flex flex-col gap-2">
+        <!-- Card Face -->
+        <div
+          :class="getCardGradient(account.accountType)"
+          class="relative rounded-2xl p-5 text-white shadow-xl overflow-hidden cursor-pointer select-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl"
+          style="aspect-ratio: 1.586 / 1;"
+          @click="viewTransactions(account.id)"
+        >
+          <!-- Decorative background circles -->
+          <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/10 pointer-events-none"></div>
+          <div class="absolute -bottom-12 -left-10 w-56 h-56 rounded-full bg-white/10 pointer-events-none"></div>
 
-        <div class="p-4 space-y-2 flex-grow flex flex-col">
-          <div class="flex items-center text-xs text-slate-500 dark:text-slate-400 mb-2">
-            <span class="mr-1.5 w-4 h-4 text-slate-500">
-              <svg
-                v-if="account.accountType === 'BANK'"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-full h-full"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
-                />
-              </svg>
-              <svg
-                v-else-if="account.accountType === 'E_WALLET'"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-full h-full"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
-                />
-              </svg>
-              <svg
-                v-else-if="account.accountType === 'CASH'"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-full h-full"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
-                />
-              </svg>
-              <svg
-                v-else
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-full h-full"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.5 0 3.5-7.5h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0M6.75 7.5h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-5.25A2.25 2.25 0 0 0 4.5 13.5H6.75m-1.5-1.5h.75m-.75 3h.75m0-3a1.5 1.5 0 0 0-3 0m3 0V7.5"
-                />
-              </svg>
+          <!-- Top row: Chip + Type badge -->
+          <div class="flex items-start justify-between relative z-10">
+            <!-- EMV Chip -->
+            <svg width="38" height="28" viewBox="0 0 38 28" class="mt-0.5 flex-shrink-0">
+              <rect width="38" height="28" rx="4" fill="#C9A227"/>
+              <rect x="1" y="1" width="36" height="26" rx="3" fill="none" stroke="#A8811A" stroke-width="0.6"/>
+              <rect x="13" y="0" width="12" height="28" fill="#B8902A" opacity="0.55"/>
+              <rect x="0" y="9" width="38" height="10" fill="#B8902A" opacity="0.55"/>
+              <rect x="13" y="9" width="12" height="10" fill="#9A7520" opacity="0.7"/>
+            </svg>
+            <!-- Account type label -->
+            <span class="text-xs font-bold tracking-widest uppercase bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full">
+              {{ getCardTypeLabel(account.accountType) }}
             </span>
-            <span class="capitalize">{{
-              account.accountType.replace('_', ' ').toLowerCase()
-            }}</span>
-            <span
-              v-if="account.bank?.name"
-              class="ml-1 text-xs truncate"
-              :title="account.bank.name"
-            >
-              - {{ account.bank.name }}</span
-            >
           </div>
-          <div class="my-2">
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Saldo:</p>
-            <p
-              v-if="showBalance"
-              class="text-xl font-bold text-slate-800 dark:text-slate-100 transition-all duration-300"
-            >
+
+          <!-- Balance -->
+          <div class="mt-3 relative z-10">
+            <p class="text-xs text-white/60 uppercase tracking-wider mb-0.5">Saldo</p>
+            <p v-if="showBalance" class="text-xl font-bold tracking-tight drop-shadow">
               {{ formatCurrency(account.currentBalance, account.currency) }}
             </p>
-            <p
-              v-else
-              class="text-xl font-bold text-slate-300 tracking-widest transition-all duration-300"
-            >
-              Rp ••••••••
-            </p>
+            <p v-else class="text-xl font-bold tracking-widest drop-shadow">Rp ••••••</p>
           </div>
-          <div v-if="account.accountNumber" class="text-xs text-slate-500 dark:text-slate-400 mt-auto">
-            <span>No. Akun: ...{{ account.accountNumber.slice(-4) }}</span>
-          </div>
-          <div v-else class="mt-auto"></div>
 
-          <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-end space-x-2 mt-2 print:hidden">
-            <button
-              @click.stop="viewTransactions(account.id)"
-              title="Lihat Detail Akun"
-              class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-md hover:bg-indigo-50 transition-colors"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-            </button>
-            <RouterLink
-              :to="{ name: 'account-edit', params: { id: account.id } }"
-              @click.stop
-              title="Edit Akun"
-              class="p-1.5 text-slate-500 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                ></path>
-              </svg>
-            </RouterLink>
-            <button
-              @click.stop="promptDeleteAccount(account)"
-              title="Hapus Akun"
-              class="p-1.5 text-slate-500 hover:text-red-600 rounded-md hover:bg-red-50 transition-colors"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                ></path>
-              </svg>
-            </button>
+          <!-- Bottom row: account number + name -->
+          <div class="absolute bottom-5 left-5 right-5 flex items-end justify-between z-10">
+            <div>
+              <p class="text-xs text-white/60 uppercase tracking-wider mb-0.5">No. Akun</p>
+              <p class="font-mono text-sm tracking-widest">
+                {{ account.accountNumber ? `•••• ${account.accountNumber.slice(-4)}` : '•••• ••••' }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-white/60 uppercase tracking-wider mb-0.5">
+                {{ account.bank?.name || 'Akun' }}
+              </p>
+              <p class="text-sm font-semibold truncate max-w-[130px]" :title="account.accountName">
+                {{ account.accountName }}
+              </p>
+            </div>
           </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="flex justify-end space-x-1 print:hidden px-1">
+          <button
+            @click="viewTransactions(account.id)"
+            title="Lihat Transaksi"
+            class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+          <RouterLink
+            :to="{ name: 'account-edit', params: { id: account.id } }"
+            title="Edit Akun"
+            class="p-1.5 text-slate-500 hover:text-blue-600 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+          </RouterLink>
+          <button
+            @click="promptDeleteAccount(account)"
+            title="Hapus Akun"
+            class="p-1.5 text-slate-500 hover:text-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -558,19 +468,28 @@ const formatCurrency = (
   }).format(numericValue)
 }
 
-// Fungsi untuk mendapatkan warna header berdasarkan tipe akun
-const getHeaderColorClass = (accountType: string): string => {
+const getCardGradient = (accountType: string): string => {
   switch (accountType) {
     case 'BANK':
-      return 'bg-blue-600' // Rekening - Biru
+      return 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800'
     case 'CREDIT_CARD':
-      return 'bg-yellow-500' // Kartu Kredit - Kuning
+      return 'bg-gradient-to-br from-yellow-400 via-orange-500 to-rose-600'
     case 'CASH':
-      return 'bg-green-600' // Cash - Hijau
+      return 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-700'
     case 'E_WALLET':
-      return 'bg-red-600' // E-Wallet - Merah
+      return 'bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-700'
     default:
-      return 'bg-slate-700' // Default - Abu-abu
+      return 'bg-gradient-to-br from-slate-500 via-slate-600 to-slate-800'
+  }
+}
+
+const getCardTypeLabel = (accountType: string): string => {
+  switch (accountType) {
+    case 'BANK': return 'Bank'
+    case 'CREDIT_CARD': return 'Credit'
+    case 'CASH': return 'Cash'
+    case 'E_WALLET': return 'E-Wallet'
+    default: return 'Akun'
   }
 }
 

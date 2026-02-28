@@ -460,7 +460,6 @@ const subscriptionExpiryAlert = computed(() => {
   if (!activeSub?.endDate) return null
 
   const endDate = new Date(activeSub.endDate)
-  console.log('endDate', endDate)
   const now = new Date()
   const msPerDay = 1000 * 60 * 60 * 24
   const daysLeft = Math.ceil((endDate.getTime() - now.getTime()) / msPerDay)

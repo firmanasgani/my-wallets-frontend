@@ -46,7 +46,7 @@
                     id="name"
                     v-model="formData.name"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
+                    :class="inputClass"
                     placeholder="Mis: Belanja Bulanan"
                   />
                 </div>
@@ -59,7 +59,7 @@
                     id="type"
                     v-model="formData.type"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:bg-slate-800"
+                    :class="inputClass"
                     :disabled="isEditMode && hasTransactions"
                   >
                     <option disabled value="" >Pilih tipe...</option>
@@ -83,7 +83,7 @@
                   <select
                     id="parentId"
                     v-model="formData.parentId"
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:bg-slate-800"
+                    :class="inputClass"
                   >
                     <option :value="null">-- Tidak Ada Induk (Kategori Utama) --</option>
                     <option
@@ -107,7 +107,7 @@
                       <select
                         id="categoryIcon"
                         v-model="formData.icon"
-                        class="input-field p-2 pl-10 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 appearance-none dark:bg-slate-800 dark:text-slate-200"
+                        :class="[inputClass, 'pl-10 appearance-none']"
                       >
                         <option value="">Pilih Ikon...</option>
                         <option v-for="icon in iconOptions" :key="icon" :value="icon">
@@ -148,12 +148,12 @@
                       type="color"
                       id="categoryColorPicker"
                       v-model="formData.color"
-                      class="h-10 w-10 rounded-md border border-slate-300 cursor-pointer dark:text-slate-200"
+                      class="h-10 w-10 rounded-lg border border-slate-300 cursor-pointer dark:border-slate-600"
                     />
                     <input
                       type="text"
                       v-model="formData.color"
-                      class="input-field ml-2 flex-1 dark:text-slate-200"
+                      class="ml-2 flex-1 rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors"
                       placeholder="#FF0000"
                     />
                   </div>
@@ -225,6 +225,9 @@ const localError = ref<string | null>(null)
 
 const isEditMode = computed(() => !!props.categoryToEdit && !!props.categoryToEdit.id)
 const hasTransactions = computed(() => isEditMode.value)
+
+const inputClass =
+  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
 
 import { iconOptions } from '@/constants/icons'
 
