@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-bold text-gray-800">{{ title }}</h3>
+      <h3 class="text-lg font-bold text-gray-800 dark:text-slate-200">{{ title }}</h3>
     </div>
     <div class="flex-grow min-h-[300px] relative">
       <Line v-if="chartData" :data="chartData" :options="chartOptions" />

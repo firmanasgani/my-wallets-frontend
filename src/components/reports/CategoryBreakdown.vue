@@ -1,6 +1,6 @@
 <template>
   <div class="h-full flex flex-col">
-    <h3 class="text-lg font-bold text-gray-800 mb-6">Top Spending Categories</h3>
+    <h3 class="text-lg font-bold text-gray-800 mb-6 dark:text-slate-200">Top Spending Categories</h3>
 
     <div
       v-if="data && data.length > 0"
@@ -23,13 +23,13 @@
             <span v-else>🏷️</span>
           </div>
           <div>
-            <p class="font-semibold text-gray-800 text-sm">{{ item.categoryName }}</p>
-            <p class="text-xs text-gray-500">{{ item.transactionCount }} transactions</p>
+            <p class="font-semibold text-gray-800 text-sm dark:text-slate-200">{{ item.categoryName }}</p>
+            <p class="text-xs text-gray-500 dark:text-slate-200">{{ item.transactionCount }} transactions</p>
           </div>
         </div>
 
         <div class="text-right">
-          <p class="font-bold text-gray-800 text-sm">{{ formatCurrency(item.totalAmount) }}</p>
+          <p class="font-bold text-gray-800 text-sm dark:text-slate-200">{{ formatCurrency(item.totalAmount) }}</p>
           <p class="text-xs font-medium" :style="{ color: item.color || '#666' }">
             {{ item.percentage.toFixed(1) }}%
           </p>

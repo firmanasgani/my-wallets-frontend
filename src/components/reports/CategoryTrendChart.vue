@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col">
     <div class="flex justify-between items-center mb-6">
-      <h3 class="text-lg font-bold text-gray-800">Category Spending Distribution</h3>
+      <h3 class="text-lg font-bold text-gray-800 dark:text-slate-200">Category Spending Distribution</h3>
     </div>
 
     <div class="flex-grow min-h-[350px] relative flex items-center justify-center">
@@ -16,7 +16,7 @@
         class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
       >
         <span class="text-xs text-gray-500 font-medium">TOTAL</span>
-        <span class="text-lg font-bold text-gray-800">{{ formatCurrency(totalAmount) }}</span>
+        <span class="text-lg font-bold text-gray-800 dark:text-slate-200">{{ formatCurrency(totalAmount) }}</span>
       </div>
     </div>
   </div>

@@ -152,7 +152,7 @@
           <select
             id="filter-account"
             v-model="localFilters.accountId"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:bg-slate-800"
           >
             <option :value="undefined">Semua Akun</option>
             <option v-for="acc in accountsForFilter" :key="acc.id" :value="acc.id">
@@ -168,7 +168,7 @@
           <select
             id="filter-category"
             v-model="localFilters.categoryId"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:text-slate-200"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:text-slate-200 dark:bg-slate-800"
           >
             <option :value="undefined">Semua Kategori</option>
             <option v-for="cat in categoriesForFilter" :key="cat.id" :value="cat.id">
@@ -186,7 +186,7 @@
           <select
             id="filter-type"
             v-model="localFilters.type"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:text-slate-200 dark:bg-slate-800"
           >
             <option :value="undefined">Semua Tipe</option>
             <option value="INCOME">Pemasukan</option>

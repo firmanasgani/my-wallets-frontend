@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="text-lg font-bold text-gray-800 mb-6">Budget Health</h3>
+    <h3 class="text-lg font-bold text-gray-800 mb-6 dark:text-slate-200">Budget Health</h3>
 
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
