@@ -221,12 +221,12 @@
 
             <!-- Links -->
             <div class="flex flex-col space-y-3 pt-2 text-center">
-              <button
-                type="button"
+              <RouterLink
+                :to="{ name: 'forgot-password' }"
                 class="text-sm font-medium text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:underline"
               >
                 Lupa Password?
-              </button>
+              </RouterLink>
 
               <p class="text-sm text-gray-500 dark:text-slate-400">
                 Belum punya akun?

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import MainLayout from '@/layouts/mainLayout.vue'
 import LoginView from '../views/LoginView.vue'
+import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import AccountsView from '../views/AccountsView.vue'
@@ -42,6 +43,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'login',
     component: LoginView,
     meta: { requiresUnauth: true },
+  },
+  {
+    path: '/forgot-password',
+    name: 'forgot-password',
+    component: ForgotPasswordView,
+    meta: { title: 'Lupa Kata Sandi', requiresUnauth: true },
   },
   {
     path: '/register',
