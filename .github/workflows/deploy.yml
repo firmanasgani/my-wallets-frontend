@@ -1,0 +1,43 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy via SSH
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+
+            echo "==> Masuk ke direktori project"
+            cd ${{ secrets.PROJECT_PATH }}
+
+            echo "==> Git pull latest changes"
+            git pull origin main
+
+            echo "==> Install dependencies"
+            npm install
+
+            echo "==> Build untuk production"
+            npm run build
+
+            echo "==> Restart / start pm2"
+            pm2 reload ecosystem.config.cjs --env production || pm2 start ecosystem.config.cjs --env production
+
+            echo "==> Save pm2 process list"
+            pm2 save
+
+            echo "==> Deploy selesai!"
