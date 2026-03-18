@@ -269,7 +269,7 @@
 
     <div
       v-if="!isLoading && accounts && accounts.length === 0 && !accountStore.error"
-      class="text-center py-10 bg-white rounded-lg shadow-md print:hidden"
+      class="text-center py-10 bg-white dark:bg-slate-800 rounded-lg shadow-md print:hidden"
     >
       <svg
         class="mx-auto h-16 w-16 text-slate-400"
@@ -286,8 +286,8 @@
           d="M9.5 10.75A2.25 2.25 0 1 1 5 10.75a2.25 2.25 0 0 1 4.5 0Zm0 0H20m0 0A2.25 2.25 0 1 0 15.5 13a2.25 2.25 0 0 0 4.5 0V7.5A2.25 2.25 0 0 0 15.5 5a2.25 2.25 0 0 0-4.5 0v2.25m0 0h-5.5M9.5 10.75v8.25M16.25 13.5a2.25 2.25 0 1 1 0-4.5m0 4.5a2.25 2.25 0 1 0 0-4.5M2.75 7.5A2.25 2.25 0 0 1 5 5.25h14A2.25 2.25 0 0 1 21.25 7.5v9A2.25 2.25 0 0 1 19 18.75H5A2.25 2.25 0 0 1 2.75 16.5v-9Z"
         />
       </svg>
-      <h3 class="mt-4 text-lg font-medium text-slate-800">Anda Belum Memiliki Akun</h3>
-      <p class="mt-1 text-sm text-slate-500">
+      <h3 class="mt-4 text-lg font-medium text-slate-800 dark:text-slate-200">Anda Belum Memiliki Akun</h3>
+      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
         Mulai kelola keuangan Anda dengan menambahkan akun pertama.
       </p>
 

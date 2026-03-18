@@ -55,6 +55,14 @@ apiClient.interceptors.response.use(
         console.error('Error during automatic logout after 401:', logoutError)
       }
     }
+
+    // Handle 403 Forbidden for Business Plan
+    if (error.response?.status === 403 && originalRequest?.url?.includes('/business')) {
+      console.warn('Forbidden access to business module. Need active business subscription.')
+      // Redirect using window.location to avoid circular dependency with router
+      window.location.href = '/app/settings?upgrade=true'
+    }
+
     return Promise.reject(error)
   },
 )

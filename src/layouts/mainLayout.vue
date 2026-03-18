@@ -77,6 +77,35 @@
               </RouterLink>
             </div>
           </li>
+          <li v-if="isBusinessPlan">
+            <button
+              @click="toggleBusinessDropdown"
+              :class="`${navLinkBaseClasses} w-full justify-between ${isBusinessActive ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`"
+            >
+              Business
+              <svg
+                :class="isBusinessDropdownOpen ? 'transform rotate-180' : ''"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div
+              v-show="isBusinessDropdownOpen || isBusinessActive"
+              class="pl-4 space-y-1 mt-1 transition-all"
+            >
+              <RouterLink :to="{ name: 'business-settings' }" :class="navLinkClasses('business-settings')">
+                Profil Perusahaan
+              </RouterLink>
+              <RouterLink :to="{ name: 'business-coa' }" :class="navLinkClasses('business-coa')">
+                Chart of Accounts
+              </RouterLink>
+            </div>
+          </li>
           <li v-if="!isFreePlan">
             <RouterLink
               :to="{ name: 'spending-analysis' }"
@@ -163,6 +192,8 @@
                       authStore.currentUser?.subscriptionPlan === 'PREMIUM',
                     'bg-purple-50 text-purple-700 ring-purple-600/20':
                       authStore.currentUser?.subscriptionPlan === 'FAMILY',
+                    'bg-indigo-50 text-indigo-700 ring-indigo-600/20':
+                      authStore.currentUser?.subscriptionPlan?.startsWith('BUSINESS'),
                   }"
                 >
                   {{ authStore.currentUser?.subscriptionPlan || 'FREE' }}
@@ -378,6 +409,42 @@
                   </div>
                 </div>
 
+                <!-- Business dropdown -->
+                <div v-if="isBusinessPlan">
+                  <button
+                    @click="toggleBusinessDropdown"
+                    :class="`${navLinkBaseClasses} w-full justify-between ${isBusinessActive ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`"
+                  >
+                    Business
+                    <svg
+                      :class="isBusinessDropdownOpen ? 'transform rotate-180' : ''"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 transition-transform duration-200"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div v-show="isBusinessDropdownOpen || isBusinessActive" class="pl-4 space-y-1 mt-1">
+                    <RouterLink
+                      :to="{ name: 'business-settings' }"
+                      @click="closeMobileSidebar"
+                      :class="navLinkClassesMobile('business-settings')"
+                    >
+                      Profil Perusahaan
+                    </RouterLink>
+                    <RouterLink
+                      :to="{ name: 'business-coa' }"
+                      @click="closeMobileSidebar"
+                      :class="navLinkClassesMobile('business-coa')"
+                    >
+                      Chart of Accounts
+                    </RouterLink>
+                  </div>
+                </div>
+
                 <RouterLink
                   v-if="!isFreePlan"
                   :to="{ name: 'spending-analysis' }"
@@ -467,6 +534,16 @@ const isBudgetActive = computed(() => {
 })
 
 const toggleBudgetDropdown = () => (isBudgetDropdownOpen.value = !isBudgetDropdownOpen.value)
+
+const isBusinessDropdownOpen = ref(false)
+const isBusinessActive = computed(() => {
+  const currentRouteName = route.name?.toString() || ''
+  return currentRouteName.startsWith('business')
+})
+
+const toggleBusinessDropdown = () => (isBusinessDropdownOpen.value = !isBusinessDropdownOpen.value)
+
+const isBusinessPlan = computed(() => authStore.currentUser?.subscriptionPlan?.startsWith('BUSINESS'))
 
 const currentRouteTitle = computed(() => {
   if (route.meta && route.meta.title) {

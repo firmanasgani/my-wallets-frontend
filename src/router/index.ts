@@ -165,6 +165,18 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/financial-goals/GoalDetailView.vue'),
         meta: { title: 'Detail Goal', requiresPremium: true },
       },
+      {
+        path: 'business/settings',
+        name: 'business-settings',
+        component: () => import('@/views/business/BusinessSettingsView.vue'),
+        meta: { title: 'Profil Perusahaan', requiresBusiness: true },
+      },
+      {
+        path: 'business/chart-of-accounts',
+        name: 'business-coa',
+        component: () => import('@/views/business/ChartOfAccountsView.vue'),
+        meta: { title: 'Chart of Accounts', requiresBusiness: true },
+      },
       { path: '', redirect: { name: 'dashboard' } },
     ],
   },
@@ -208,6 +220,9 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'dashboard' })
   } else if (to.meta.requiresPremium && authStore.currentUser?.subscriptionPlan === 'FREE') {
     // Redirect FREE users trying to access Premium features
+    next({ name: 'settings', query: { upgrade: 'true' } })
+  } else if (to.meta.requiresBusiness && !authStore.currentUser?.subscriptionPlan?.startsWith('BUSINESS')) {
+    // Redirect non-business users trying to access Business features
     next({ name: 'settings', query: { upgrade: 'true' } })
   } else {
     next()

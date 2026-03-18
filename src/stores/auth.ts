@@ -30,7 +30,7 @@ interface UserProfile {
   fullName?: string | null
   profilePicture?: string | null
   profilePictureUrl?: string | null
-  subscriptionPlan: 'FREE' | 'PREMIUM' | 'FAMILY'
+  subscriptionPlan: 'FREE' | 'PREMIUM' | 'FAMILY' | 'BUSINESS_1M' | 'BUSINESS_6M' | 'BUSINESS_12M'
   createdAt?: string | null
   subscriptions?: UserSubscription[]
   activeSubscription?: {

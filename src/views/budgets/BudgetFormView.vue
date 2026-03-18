@@ -245,7 +245,7 @@ onMounted(async () => {
   }
 
   if (isEditing.value && budgetId.value) {
-    let budget = budgetStore.allBudgets.find((b) => b.id === budgetId.value)
+    const budget = budgetStore.allBudgets.find((b) => b.id === budgetId.value)
     if (!budget) {
     } else {
       formData.year = budget.year

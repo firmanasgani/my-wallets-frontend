@@ -95,9 +95,9 @@
 
     <div
       v-else-if="reportData.length === 0"
-      class="bg-white p-12 text-center rounded-lg shadow-sm border border-slate-200"
+      class="bg-white p-12 text-center rounded-lg shadow-sm border border-slate-200 dark:bg-slate-800 dark:border-slate-700"
     >
-      <p class="text-slate-500">Tidak ada data anggaran untuk periode ini.</p>
+      <p class="text-slate-500 dark:text-slate-400">Tidak ada data anggaran untuk periode ini.</p>
       <RouterLink
         :to="{ name: 'budget-setup' }"
         class="mt-4 inline-block text-indigo-600 hover:text-indigo-800 font-medium"

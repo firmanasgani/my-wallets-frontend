@@ -8,6 +8,7 @@
           'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200': authStore.currentUser.subscriptionPlan === 'FREE',
           'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300': authStore.currentUser.subscriptionPlan === 'PREMIUM',
           'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300': authStore.currentUser.subscriptionPlan === 'FAMILY',
+          'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300': authStore.currentUser.subscriptionPlan?.startsWith('BUSINESS'),
         }"
         class="px-3 py-1 rounded-full text-sm font-bold tracking-wide uppercase"
       >
