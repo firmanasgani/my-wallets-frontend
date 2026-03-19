@@ -5,7 +5,7 @@
         {{ !initialData ? 'Daftarkan Perusahaan' : 'Profil Perusahaan' }}
       </h2>
       <button
-        v-if="initialData && !isEditing"
+        v-if="initialData && !isEditing && !viewerMode"
         @click="startEditing"
         class="inline-flex items-center px-3 py-1.5 border border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded-md text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
       >
@@ -205,6 +205,7 @@ const props = defineProps<{
   initialData?: Company | null
   isSubmitting?: boolean
   defaultEditing?: boolean
+  viewerMode?: boolean
 }>()
 
 const emit = defineEmits<{

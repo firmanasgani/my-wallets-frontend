@@ -75,9 +75,33 @@
 
           <h2 class="text-2xl font-bold text-gray-800 dark:text-white text-center mb-6">Buat Akun Baru</h2>
 
+          <!-- Invite Success Panel -->
+          <div
+            v-if="registrationSuccess"
+            class="flex flex-col items-center gap-4 py-8 text-center"
+          >
+            <div class="bg-green-100 dark:bg-green-900/30 rounded-full p-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Akun Berhasil Dibuat!</h3>
+            <p class="text-sm text-gray-600 dark:text-slate-300 max-w-xs">
+              Hubungi admin yang mengundangmu untuk mengirim ulang undangan ke
+              <span class="font-semibold text-blue-700 dark:text-blue-400">{{ formData.email }}</span>.
+              Setelah undangan dikirim, cek emailmu untuk menerima akses ke company.
+            </p>
+            <button
+              @click="router.push({ name: 'login' })"
+              class="mt-2 bg-blue-700 hover:bg-blue-800 text-white font-bold py-2.5 px-6 rounded-lg transition-all"
+            >
+              Masuk ke Akun
+            </button>
+          </div>
+
           <!-- Error Message -->
           <div
-            v-if="authStore.authError || clientSideError"
+            v-if="!registrationSuccess && (authStore.authError || clientSideError)"
             class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 text-blue-700 dark:text-blue-300 p-3 text-sm rounded-r relative shadow-sm mb-4"
             role="alert"
           >
@@ -97,7 +121,7 @@
             </svg>
           </div>
 
-          <form @submit.prevent="handleRegister" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form v-if="!registrationSuccess" @submit.prevent="handleRegister" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Full Name -->
             <div>
               <label for="fullName" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-1"
@@ -137,9 +161,18 @@
                 id="email"
                 v-model="formData.email"
                 required
-                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                :readonly="emailReadonly"
+                :class="[
+                  'block w-full px-4 py-2.5 rounded-lg border text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
+                  emailReadonly
+                    ? 'border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-600 cursor-not-allowed'
+                    : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700',
+                ]"
                 placeholder="nama@email.com"
               />
+              <p v-if="emailReadonly" class="mt-1 text-xs text-gray-500 dark:text-slate-400">
+                Email ini ditetapkan dari undangan dan tidak dapat diubah.
+              </p>
             </div>
 
             <!-- Password -->
@@ -362,11 +395,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { reactive, ref, onMounted } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
+const route = useRoute()
+const router = useRouter()
 
 interface RegisterFormData {
   fullName?: string | null
@@ -382,6 +417,21 @@ const formData = reactive<RegisterFormData>({
   email: '',
   password: '',
   confirmPassword: '',
+})
+
+const isInviteFlow = ref(false)
+const emailReadonly = ref(false)
+const registrationSuccess = ref(false)
+
+onMounted(() => {
+  const emailParam = route.query.email as string | undefined
+  if (emailParam) {
+    formData.email = emailParam
+    emailReadonly.value = true
+  }
+  if (route.query.ref === 'invite') {
+    isInviteFlow.value = true
+  }
 })
 
 const clientSideError = ref<string | null>(null)
@@ -442,7 +492,10 @@ const handleRegister = async () => {
       password: formData.password,
       fullName: formData.fullName || null,
     }
-    await authStore.register(payload)
+    await authStore.register(payload, { skipRedirect: isInviteFlow.value })
+    if (isInviteFlow.value) {
+      registrationSuccess.value = true
+    }
   } catch (error) {
     console.error('Component-level registration error:', error)
   }

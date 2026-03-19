@@ -1,13 +1,23 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { BusinessService } from '@/services/business.service'
-import type { Company, CompanyPayload, ChartOfAccount } from '@/types/business'
+import { useAuthStore } from '@/stores/auth'
+import type { Company, CompanyPayload, ChartOfAccount, CompanyMember, CompanyMemberRole, InviteMemberPayload } from '@/types/business'
 
 export const useBusinessStore = defineStore('business', () => {
   const currentCompany = ref<Company | null>(null)
-  const chartOfAccounts = ref<ChartOfAccount[]>([])
+  const chartOfAccounts = ref<Record<string, ChartOfAccount[]>>({})
+  const members = ref<CompanyMember[]>([])
   const isLoading = ref(false)
   const isCompanyLoaded = ref(false)
+  const isMembersLoading = ref(false)
+
+  const myRole = computed<CompanyMemberRole | null>(() => {
+    const authStore = useAuthStore()
+    const userId = authStore.currentUser?.id
+    if (!userId) return null
+    return members.value.find((m) => m.userId === userId)?.role ?? null
+  })
 
   const fetchMyCompany = async () => {
     isLoading.value = true
@@ -61,21 +71,59 @@ export const useBusinessStore = defineStore('business', () => {
     }
   }
 
+  const fetchMembers = async () => {
+    isMembersLoading.value = true
+    try {
+      const list = await BusinessService.getMembers()
+      members.value = list
+      return list
+    } finally {
+      isMembersLoading.value = false
+    }
+  }
+
+  const inviteMember = async (payload: InviteMemberPayload) => {
+    const result = await BusinessService.inviteMember(payload)
+    await fetchMembers()
+    return result
+  }
+
+  const updateMemberRole = async (memberId: string, role: 'ADMIN' | 'STAFF' | 'VIEWER') => {
+    const updated = await BusinessService.updateMemberRole(memberId, role)
+    const idx = members.value.findIndex((m) => m.id === memberId)
+    if (idx !== -1) members.value[idx] = updated
+    return updated
+  }
+
+  const revokeMember = async (memberId: string) => {
+    const result = await BusinessService.revokeMember(memberId)
+    members.value = members.value.filter((m) => m.id !== memberId)
+    return result
+  }
+
   const clearStore = () => {
     currentCompany.value = null
-    chartOfAccounts.value = []
+    chartOfAccounts.value = {}
+    members.value = []
     isCompanyLoaded.value = false
   }
 
   return {
     currentCompany,
     chartOfAccounts,
+    members,
+    myRole,
     isLoading,
+    isMembersLoading,
     isCompanyLoaded,
     fetchMyCompany,
     createCompany,
     updateCompany,
     fetchChartOfAccounts,
+    fetchMembers,
+    inviteMember,
+    updateMemberRole,
+    revokeMember,
     clearStore,
   }
 })

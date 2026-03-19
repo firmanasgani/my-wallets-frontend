@@ -27,6 +27,7 @@
         :initial-data="businessStore.currentCompany"
         :is-submitting="businessStore.isLoading"
         :default-editing="!businessStore.currentCompany"
+        :viewer-mode="isViewer"
         @submit="handleSubmit"
       />
     </div>
@@ -34,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useBusinessStore } from '@/stores/business'
 import CompanyForm from '@/components/business/CompanyForm.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
@@ -45,14 +46,19 @@ const successMsg = ref('')
 const errorMsg = ref('')
 const companyFormRef = ref<InstanceType<typeof CompanyForm> | null>(null)
 
+const isViewer = computed(() => businessStore.myRole === 'VIEWER')
+
 onMounted(async () => {
-  if (!businessStore.isCompanyLoaded) {
-    try {
+  try {
+    if (!businessStore.isCompanyLoaded) {
       await businessStore.fetchMyCompany()
-    } catch (e: any) {
-      if (e.response?.status !== 404) {
-        errorMsg.value = 'Gagal memuat profil perusahaan.'
-      }
+    }
+    if (!businessStore.members.length) {
+      await businessStore.fetchMembers()
+    }
+  } catch (e: any) {
+    if (e.response?.status !== 404) {
+      errorMsg.value = 'Gagal memuat profil perusahaan.'
     }
   }
 })

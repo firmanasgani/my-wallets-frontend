@@ -117,6 +117,9 @@
               <RouterLink :to="{ name: 'business-coa' }" :class="navLinkClasses('business-coa')">
                 Chart of Accounts
               </RouterLink>
+              <RouterLink :to="{ name: 'business-members' }" :class="navLinkClasses('business-members')">
+                Manajemen Member
+              </RouterLink>
             </div>
           </li>
           <li v-if="!isFreePlan">
@@ -507,6 +510,13 @@
                       :class="navLinkClassesMobile('business-coa')"
                     >
                       Chart of Accounts
+                    </RouterLink>
+                    <RouterLink
+                      :to="{ name: 'business-members' }"
+                      @click="closeMobileSidebar"
+                      :class="navLinkClassesMobile('business-members')"
+                    >
+                      Manajemen Member
                     </RouterLink>
                   </div>
                 </div>

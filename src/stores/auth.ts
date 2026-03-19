@@ -80,7 +80,7 @@ export const useAuthStore = defineStore('auth', {
       this.user = userData
     },
 
-    async register(payload: RegisterPayload) {
+    async register(payload: RegisterPayload, options?: { skipRedirect?: boolean }) {
       this.isLoading = true
       this.error = null
       try {
@@ -101,7 +101,9 @@ export const useAuthStore = defineStore('auth', {
         // Ensure user state is set before navigating
         if (this.user) {
           this.isNewRegistration = true
-          router.push({ name: 'dashboard' })
+          if (!options?.skipRedirect) {
+            router.push({ name: 'dashboard' })
+          }
           return true
         } else {
           throw new Error('Login succesfull but user state missing')

@@ -177,8 +177,20 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/business/ChartOfAccountsView.vue'),
         meta: { title: 'Chart of Accounts', requiresBusiness: true },
       },
+      {
+        path: 'business/members',
+        name: 'business-members',
+        component: () => import('@/views/business/MembersView.vue'),
+        meta: { title: 'Manajemen Member', requiresBusiness: true },
+      },
       { path: '', redirect: { name: 'dashboard' } },
     ],
+  },
+  {
+    path: '/business/invite/accept',
+    name: 'business-invite-accept',
+    component: () => import('@/views/business/AcceptInviteView.vue'),
+    meta: { title: 'Terima Undangan', requiresAuth: true },
   },
   {
     path: '/payment/finish',
