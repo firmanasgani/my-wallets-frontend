@@ -56,7 +56,7 @@
                 Upgrade ke Premium
               </button>
             </div>
-            <div v-if="isPlanExpiring">
+            <div v-if="isPlanExpiring && !isBusiness">
               <button
                 type="button"
                 @click="openPricingModal"
@@ -313,6 +313,7 @@ const isBusiness = computed(() => {
 })
 
 const openPricingModal = () => {
+  if (isBusiness.value) return
   isPricingModalOpen.value = true
 }
 
