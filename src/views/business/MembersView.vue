@@ -50,8 +50,8 @@
           <!-- Avatar & Info -->
           <div class="flex items-center gap-3 min-w-0">
             <img
-              v-if="member.user.profilePicture"
-              :src="member.user.profilePicture"
+              v-if="member.user.profilePictureUrl"
+              :src="member.user.profilePictureUrl"
               :alt="member.user.fullName || member.user.username"
               class="w-9 h-9 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-600 flex-shrink-0"
             />

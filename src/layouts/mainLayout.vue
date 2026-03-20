@@ -120,6 +120,15 @@
               <RouterLink :to="{ name: 'business-members' }" :class="navLinkClasses('business-members')">
                 Manajemen Member
               </RouterLink>
+              <RouterLink :to="{ name: 'business-contacts' }" :class="navLinkClasses('business-contacts')">
+                Kontak
+              </RouterLink>
+              <RouterLink :to="{ name: 'business-invoices' }" :class="navLinkClasses(['business-invoices', 'invoice-create', 'invoice-detail', 'invoice-edit'])">
+                Invoice
+              </RouterLink>
+              <RouterLink :to="{ name: 'business-bank-accounts' }" :class="navLinkClasses('business-bank-accounts')">
+                Rekening
+              </RouterLink>
             </div>
           </li>
           <li v-if="!isFreePlan">
@@ -517,6 +526,13 @@
                       :class="navLinkClassesMobile('business-members')"
                     >
                       Manajemen Member
+                    </RouterLink>
+                    <RouterLink
+                      :to="{ name: 'business-bank-accounts' }"
+                      @click="closeMobileSidebar"
+                      :class="navLinkClassesMobile('business-bank-accounts')"
+                    >
+                      Rekening
                     </RouterLink>
                   </div>
                 </div>

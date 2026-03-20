@@ -183,6 +183,42 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/business/MembersView.vue'),
         meta: { title: 'Manajemen Member', requiresBusiness: true },
       },
+      {
+        path: 'business/contacts',
+        name: 'business-contacts',
+        component: () => import('@/views/business/ContactsView.vue'),
+        meta: { title: 'Kontak', requiresBusiness: true },
+      },
+      {
+        path: 'business/invoices',
+        name: 'business-invoices',
+        component: () => import('@/views/business/InvoicesView.vue'),
+        meta: { title: 'Invoice', requiresBusiness: true },
+      },
+      {
+        path: 'business/invoices/new',
+        name: 'invoice-create',
+        component: () => import('@/views/business/InvoiceFormView.vue'),
+        meta: { title: 'Buat Invoice', requiresBusiness: true },
+      },
+      {
+        path: 'business/invoices/:id',
+        name: 'invoice-detail',
+        component: () => import('@/views/business/InvoiceDetailView.vue'),
+        meta: { title: 'Detail Invoice', requiresBusiness: true },
+      },
+      {
+        path: 'business/invoices/:id/edit',
+        name: 'invoice-edit',
+        component: () => import('@/views/business/InvoiceFormView.vue'),
+        meta: { title: 'Edit Invoice', requiresBusiness: true },
+      },
+      {
+        path: 'business/bank-accounts',
+        name: 'business-bank-accounts',
+        component: () => import('@/views/business/BankAccountsView.vue'),
+        meta: { title: 'Rekening Perusahaan', requiresBusiness: true },
+      },
       { path: '', redirect: { name: 'dashboard' } },
     ],
   },
@@ -219,7 +255,7 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
 
   if (!authStore.authIsLoading && authStore.token && !authStore.user) {

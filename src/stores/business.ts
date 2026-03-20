@@ -2,7 +2,16 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { BusinessService } from '@/services/business.service'
 import { useAuthStore } from '@/stores/auth'
-import type { Company, CompanyPayload, ChartOfAccount, CompanyMember, CompanyMemberRole, InviteMemberPayload } from '@/types/business'
+import type {
+  Company,
+  CompanyPayload,
+  ChartOfAccount,
+  CompanyMember,
+  CompanyMemberRole,
+  InviteMemberPayload,
+  CreateCoaPayload,
+  UpdateCoaPayload,
+} from '@/types/business'
 
 export const useBusinessStore = defineStore('business', () => {
   const currentCompany = ref<Company | null>(null)
@@ -11,6 +20,7 @@ export const useBusinessStore = defineStore('business', () => {
   const isLoading = ref(false)
   const isCompanyLoaded = ref(false)
   const isMembersLoading = ref(false)
+  const isLogoUploading = ref(false)
 
   const myRole = computed<CompanyMemberRole | null>(() => {
     const authStore = useAuthStore()
@@ -71,6 +81,25 @@ export const useBusinessStore = defineStore('business', () => {
     }
   }
 
+  const createChartOfAccount = async (payload: CreateCoaPayload) => {
+    const account = await BusinessService.createChartOfAccount(payload)
+    // Refresh grouped list
+    await fetchChartOfAccounts()
+    return account
+  }
+
+  const updateChartOfAccount = async (id: string, payload: UpdateCoaPayload) => {
+    const account = await BusinessService.updateChartOfAccount(id, payload)
+    await fetchChartOfAccounts()
+    return account
+  }
+
+  const deleteChartOfAccount = async (id: string) => {
+    const result = await BusinessService.deleteChartOfAccount(id)
+    await fetchChartOfAccounts()
+    return result
+  }
+
   const fetchMembers = async () => {
     isMembersLoading.value = true
     try {
@@ -101,6 +130,28 @@ export const useBusinessStore = defineStore('business', () => {
     return result
   }
 
+  const uploadLogo = async (file: File) => {
+    isLogoUploading.value = true
+    try {
+      const company = await BusinessService.uploadCompanyLogo(file)
+      currentCompany.value = company
+      return company
+    } finally {
+      isLogoUploading.value = false
+    }
+  }
+
+  const deleteLogo = async () => {
+    isLogoUploading.value = true
+    try {
+      const company = await BusinessService.deleteCompanyLogo()
+      currentCompany.value = company
+      return company
+    } finally {
+      isLogoUploading.value = false
+    }
+  }
+
   const clearStore = () => {
     currentCompany.value = null
     chartOfAccounts.value = {}
@@ -114,12 +165,18 @@ export const useBusinessStore = defineStore('business', () => {
     members,
     myRole,
     isLoading,
+    isLogoUploading,
     isMembersLoading,
     isCompanyLoaded,
     fetchMyCompany,
     createCompany,
     updateCompany,
+    uploadLogo,
+    deleteLogo,
     fetchChartOfAccounts,
+    createChartOfAccount,
+    updateChartOfAccount,
+    deleteChartOfAccount,
     fetchMembers,
     inviteMember,
     updateMemberRole,

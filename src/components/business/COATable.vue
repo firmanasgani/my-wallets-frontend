@@ -5,7 +5,8 @@
       :key="type"
       class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden"
     >
-      <div 
+      <!-- Section Header -->
+      <div
         @click="toggleSection(type.toString())"
         class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors"
       >
@@ -33,13 +34,17 @@
           </svg>
         </div>
       </div>
+
+      <!-- Table -->
       <div v-show="expandedSections[type.toString()]" class="overflow-x-auto">
         <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400">
           <thead class="text-xs text-slate-700 uppercase bg-slate-100 dark:bg-slate-700/50 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
             <tr>
-              <th scope="col" class="px-6 py-3 w-32">Kode</th>
+              <th scope="col" class="px-6 py-3 w-28">Kode</th>
               <th scope="col" class="px-6 py-3">Nama Akun</th>
-              <th scope="col" class="px-6 py-3 w-40">Sistem Default</th>
+              <th scope="col" class="px-6 py-3 w-44 text-right">Saldo Awal</th>
+              <th scope="col" class="px-6 py-3 w-28 text-center">Tipe</th>
+              <th v-if="isAdmin" scope="col" class="px-6 py-3 w-28 text-center">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -54,16 +59,40 @@
               <td class="px-6 py-3 text-slate-700 dark:text-slate-200">
                 {{ account.name }}
               </td>
-              <td class="px-6 py-3">
+              <td class="px-6 py-3 text-right font-mono text-slate-700 dark:text-slate-200">
+                {{ formatCurrency(account.openingBalance) }}
+              </td>
+              <td class="px-6 py-3 text-center">
                 <span v-if="account.isSystem" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                  Ya
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                  Sistem
                 </span>
-                <span v-else class="text-slate-400 dark:text-slate-500 font-medium text-xs">-</span>
+                <span v-else class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400">
+                  Custom
+                </span>
+              </td>
+              <td v-if="isAdmin" class="px-6 py-3 text-center">
+                <div v-if="!account.isSystem" class="flex items-center justify-center gap-2">
+                  <button
+                    @click.stop="$emit('edit', account)"
+                    class="p-1.5 rounded-md text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
+                    title="Edit COA"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                  </button>
+                  <button
+                    @click.stop="$emit('delete', account)"
+                    class="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-colors"
+                    title="Hapus COA"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  </button>
+                </div>
+                <span v-else class="text-slate-300 dark:text-slate-600 text-xs">—</span>
               </td>
             </tr>
             <tr v-if="accountsList.length === 0">
-              <td colspan="3" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-800/50">
+              <td :colspan="isAdmin ? 5 : 4" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-800/50">
                 Belum ada akun untuk tipe ini.
               </td>
             </tr>
@@ -72,7 +101,7 @@
       </div>
     </div>
 
-    <!-- Empty State Global -->
+    <!-- Empty State -->
     <div v-if="Object.keys(accounts).length === 0" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-12 text-center text-slate-500 dark:text-slate-400">
       <div class="flex flex-col items-center justify-center">
         <svg class="w-12 h-12 mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
@@ -89,6 +118,12 @@ import type { ChartOfAccount } from '@/types/business'
 
 const props = defineProps<{
   accounts: Record<string, ChartOfAccount[]>
+  isAdmin?: boolean
+}>()
+
+defineEmits<{
+  edit: [account: ChartOfAccount]
+  delete: [account: ChartOfAccount]
 }>()
 
 const expandedSections = ref<Record<string, boolean>>({})
@@ -109,23 +144,29 @@ const toggleSection = (type: string) => {
 
 const formatTypeHeader = (type: string) => {
   const map: Record<string, string> = {
-    'ASSET': 'Aset (Harta)',
-    'LIABILITY': 'Kewajiban (Hutang)',
-    'EQUITY': 'Ekuitas (Modal)',
-    'REVENUE': 'Pendapatan',
-    'EXPENSE': 'Beban (Pengeluaran)'
+    ASSET: 'Aset (Harta)',
+    LIABILITY: 'Kewajiban (Hutang)',
+    EQUITY: 'Ekuitas (Modal)',
+    REVENUE: 'Pendapatan',
+    EXPENSE: 'Beban (Pengeluaran)',
   }
   return map[type] || type
 }
 
 const getBadgeClass = (type: string) => {
   const map: Record<string, string> = {
-    'ASSET': 'bg-blue-500',
-    'LIABILITY': 'bg-rose-500',
-    'EQUITY': 'bg-purple-500',
-    'REVENUE': 'bg-emerald-500',
-    'EXPENSE': 'bg-amber-500'
+    ASSET: 'bg-blue-500',
+    LIABILITY: 'bg-rose-500',
+    EQUITY: 'bg-purple-500',
+    REVENUE: 'bg-emerald-500',
+    EXPENSE: 'bg-amber-500',
   }
   return map[type] || 'bg-slate-500'
+}
+
+const formatCurrency = (value: string) => {
+  const num = parseFloat(value)
+  if (isNaN(num) || num === 0) return 'Rp 0'
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num)
 }
 </script>

@@ -21,7 +21,82 @@
       <LoadingSpinner :visible="true" />
     </div>
 
-    <div v-else>
+    <div v-else class="space-y-6">
+      <!-- ── Logo Section ──────────────────────────────── -->
+      <div v-if="businessStore.currentCompany" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100 mb-1">Logo Perusahaan</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Logo ditampilkan pada invoice PDF. Format: JPG, PNG, WebP. Maks 2MB.</p>
+
+        <div class="flex items-center gap-6 flex-wrap">
+          <!-- Preview -->
+          <div class="w-28 h-28 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center bg-slate-50 dark:bg-slate-700/50 overflow-hidden shrink-0">
+            <img
+              v-if="logoPreviewUrl"
+              :src="logoPreviewUrl"
+              alt="Logo perusahaan"
+              class="w-full h-full object-contain p-1"
+            />
+            <svg v-else class="w-10 h-10 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+
+          <!-- Controls -->
+          <div class="space-y-2" v-if="!isViewer">
+            <input
+              ref="logoInputRef"
+              type="file"
+              accept="image/jpeg,image/png,image/jpg,image/webp"
+              class="hidden"
+              @change="onLogoFileSelected"
+            />
+            <!-- If pending file not yet uploaded -->
+            <div v-if="pendingLogoFile" class="flex items-center gap-2">
+              <button
+                type="button"
+                @click="handleUploadLogo"
+                :disabled="businessStore.isLogoUploading"
+                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                <svg v-if="businessStore.isLogoUploading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Upload Logo
+              </button>
+              <button
+                type="button"
+                @click="cancelLogoSelection"
+                :disabled="businessStore.isLogoUploading"
+                class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+              >
+                Batal
+              </button>
+            </div>
+            <!-- Normal state -->
+            <div v-else class="flex items-center gap-2">
+              <button
+                type="button"
+                @click="logoInputRef?.click()"
+                class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              >
+                {{ businessStore.currentCompany?.logoUrl ? 'Ganti Logo' : 'Upload Logo' }}
+              </button>
+              <button
+                v-if="businessStore.currentCompany?.logoUrl"
+                type="button"
+                @click="handleDeleteLogo"
+                :disabled="businessStore.isLogoUploading"
+                class="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
+              >
+                Hapus Logo
+              </button>
+            </div>
+            <p v-if="logoErrorMsg" class="text-xs text-red-600 dark:text-red-400">{{ logoErrorMsg }}</p>
+          </div>
+        </div>
+      </div>
+
       <CompanyForm
         ref="companyFormRef"
         :initial-data="businessStore.currentCompany"
@@ -46,6 +121,22 @@ const successMsg = ref('')
 const errorMsg = ref('')
 const companyFormRef = ref<InstanceType<typeof CompanyForm> | null>(null)
 
+// ── Logo state ─────────────────────────────────────────────────────────────
+const logoInputRef = ref<HTMLInputElement | null>(null)
+const pendingLogoFile = ref<File | null>(null)
+const logoErrorMsg = ref('')
+
+// Cache-bust key — berubah setiap kali logo di-upload/hapus agar browser tidak pakai cache lama
+const logoCacheBust = ref(Date.now())
+
+const logoPreviewUrl = computed(() => {
+  if (pendingLogoFile.value) return URL.createObjectURL(pendingLogoFile.value)
+  const presigned = businessStore.currentCompany?.logoPresignedUrl
+  if (presigned) return presigned
+  if (businessStore.currentCompany?.logoUrl) return `${import.meta.env.VITE_API_BASE_URL}/business/company/logo?t=${logoCacheBust.value}`
+  return null
+})
+
 const isViewer = computed(() => businessStore.myRole === 'VIEWER')
 
 onMounted(async () => {
@@ -63,6 +154,50 @@ onMounted(async () => {
   }
 })
 
+const onLogoFileSelected = (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  logoErrorMsg.value = ''
+  if (file.size > 2 * 1024 * 1024) {
+    logoErrorMsg.value = 'Ukuran file maksimal 2MB.'
+    return
+  }
+  pendingLogoFile.value = file
+}
+
+const cancelLogoSelection = () => {
+  pendingLogoFile.value = null
+  logoErrorMsg.value = ''
+  if (logoInputRef.value) logoInputRef.value.value = ''
+}
+
+const handleUploadLogo = async () => {
+  if (!pendingLogoFile.value) return
+  logoErrorMsg.value = ''
+  try {
+    await businessStore.uploadLogo(pendingLogoFile.value)
+    pendingLogoFile.value = null
+    if (logoInputRef.value) logoInputRef.value.value = ''
+    logoCacheBust.value = Date.now()
+    successMsg.value = 'Logo perusahaan berhasil diperbarui.'
+    setTimeout(() => { successMsg.value = '' }, 3000)
+  } catch (err: any) {
+    logoErrorMsg.value = err.response?.data?.message || 'Gagal mengupload logo.'
+  }
+}
+
+const handleDeleteLogo = async () => {
+  logoErrorMsg.value = ''
+  try {
+    await businessStore.deleteLogo()
+    logoCacheBust.value = Date.now()
+    successMsg.value = 'Logo perusahaan berhasil dihapus.'
+    setTimeout(() => { successMsg.value = '' }, 3000)
+  } catch (err: any) {
+    logoErrorMsg.value = err.response?.data?.message || 'Gagal menghapus logo.'
+  }
+}
+
 const handleSubmit = async (payload: CompanyPayload) => {
   successMsg.value = ''
   errorMsg.value = ''
@@ -74,13 +209,7 @@ const handleSubmit = async (payload: CompanyPayload) => {
       await businessStore.createCompany(payload)
       successMsg.value = 'Perusahaan berhasil didaftarkan.'
     }
-    
-    // Auto hide success message after 3 detik
-    setTimeout(() => {
-      successMsg.value = ''
-    }, 3000)
-    
-    // Ensure form exits edit mode if it was in create mode
+    setTimeout(() => { successMsg.value = '' }, 3000)
     if (companyFormRef.value?.isEditing) {
       companyFormRef.value.isEditing = false
     }
