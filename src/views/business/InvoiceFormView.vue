@@ -28,8 +28,11 @@
 
     <form v-else @submit.prevent="handleSubmit" class="space-y-5">
 
+      <!-- ── TOP GRID: KLIEN + DETAIL ──────────────────── -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
+
       <!-- ── KLIEN ─────────────────────────────────────── -->
-      <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden h-full">
         <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2">
           <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
             <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +145,7 @@
       </section>
 
       <!-- ── DETAIL ─────────────────────────────────────── -->
-      <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden h-full">
         <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2">
           <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
             <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,6 +219,8 @@
           </div>
         </div>
       </section>
+
+      </div><!-- end top grid -->
 
       <!-- ── ITEMS ──────────────────────────────────────── -->
       <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">

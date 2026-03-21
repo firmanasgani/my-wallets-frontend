@@ -190,6 +190,18 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Kontak', requiresBusiness: true },
       },
       {
+        path: 'business/contacts/create',
+        name: 'business-contacts-create',
+        component: () => import('@/views/business/ContactFormView.vue'),
+        meta: { title: 'Tambah Kontak', requiresBusiness: true },
+      },
+      {
+        path: 'business/contacts/:id/edit',
+        name: 'business-contacts-edit',
+        component: () => import('@/views/business/ContactFormView.vue'),
+        meta: { title: 'Edit Kontak', requiresBusiness: true },
+      },
+      {
         path: 'business/invoices',
         name: 'business-invoices',
         component: () => import('@/views/business/InvoicesView.vue'),

@@ -8,7 +8,7 @@
       </div>
       <button
         v-if="canCreate"
-        @click="openCreateModal"
+        @click="router.push({ name: 'business-contacts-create' })"
         class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -88,7 +88,7 @@
             <div class="flex items-center gap-1 shrink-0 ml-4">
               <button
                 v-if="canCreate"
-                @click="openEditModal(contact)"
+                @click="router.push({ name: 'business-contacts-edit', params: { id: contact.id } })"
                 class="p-2 rounded-md text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
                 title="Edit"
               >
@@ -108,14 +108,6 @@
       </div>
     </div>
 
-    <!-- Contact Form Modal -->
-    <ContactFormModal
-      :is-open="isModalOpen"
-      :contact="selectedContact"
-      @close="isModalOpen = false"
-      @saved="onSaved"
-    />
-
     <!-- Delete Confirmation -->
     <ConfirmationModal
       :is-open="isDeleteModalOpen"
@@ -131,19 +123,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useContactsStore } from '@/stores/contacts'
 import { useBusinessStore } from '@/stores/business'
-import ContactFormModal from '@/components/business/ContactFormModal.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import type { Contact, ContactType } from '@/types/business'
 
+const router = useRouter()
 const contactsStore = useContactsStore()
 const businessStore = useBusinessStore()
 
 const errorMsg = ref('')
-const isModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
 const isDeleting = ref(false)
 const selectedContact = ref<Contact | null>(null)
@@ -188,23 +180,9 @@ onMounted(async () => {
   }
 })
 
-const openCreateModal = () => {
-  selectedContact.value = null
-  isModalOpen.value = true
-}
-
-const openEditModal = (contact: Contact) => {
-  selectedContact.value = contact
-  isModalOpen.value = true
-}
-
 const openDeleteConfirm = (contact: Contact) => {
   selectedContact.value = contact
   isDeleteModalOpen.value = true
-}
-
-const onSaved = () => {
-  errorMsg.value = ''
 }
 
 const handleDelete = async () => {

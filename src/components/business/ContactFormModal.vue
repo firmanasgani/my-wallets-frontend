@@ -9,7 +9,7 @@
   >
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto"
+      class="fixed inset-0 z-50 flex items-start justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto"
       @click.self="$emit('close')"
     >
       <Transition
@@ -22,7 +22,7 @@
       >
         <div
           v-if="isOpen"
-          class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg border border-slate-200 dark:border-slate-700 my-4"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg border border-slate-200 dark:border-slate-700 my-6 flex flex-col max-h-[calc(100vh-3rem)]"
         >
           <!-- Header -->
           <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
@@ -45,7 +45,7 @@
           </div>
 
           <!-- Form -->
-          <form @submit.prevent="handleSubmit" class="px-6 py-5 space-y-5">
+          <form @submit.prevent="handleSubmit" class="px-6 py-5 space-y-5 overflow-y-auto flex-1">
 
             <!-- Tipe Kontak -->
             <div>
@@ -118,7 +118,7 @@
             </div>
 
             <!-- Bank Info -->
-            <div class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div class="rounded-xl border border-slate-200 dark:border-slate-700">
               <button
                 type="button"
                 @click="showBankSection = !showBankSection"

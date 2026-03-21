@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="mb-6 flex items-center gap-3 border-b border-slate-200 dark:border-slate-700 pb-4">
       <RouterLink
@@ -24,41 +24,65 @@
       <p class="text-sm text-red-700 dark:text-red-300">{{ errorMsg }}</p>
     </div>
 
-    <form @submit.prevent="handleSubmit" class="space-y-5">
-      <!-- Card: Detail -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-        <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Detail Jurnal</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tanggal</label>
-            <input
-              v-model="form.transactionDate"
-              type="date"
-              required
-              class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+    <form @submit.prevent="handleSubmit">
+      <!-- Two-column grid: Detail | Baris Jurnal -->
+      <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5 items-start">
+        <!-- Card: Detail Jurnal -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Detail Jurnal</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tanggal</label>
+              <input
+                v-model="form.transactionDate"
+                type="date"
+                required
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Keterangan Jurnal</label>
+              <input
+                v-model="form.description"
+                type="text"
+                required
+                placeholder="Contoh: Gaji Maret 2026"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            <!-- Actions (desktop: inside detail card) -->
+            <div class="hidden lg:flex flex-col gap-2 pt-2">
+              <button
+                type="submit"
+                :disabled="isSubmitting"
+                class="w-full px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <svg v-if="isSubmitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                {{ isSubmitting ? 'Menyimpan...' : 'Simpan Jurnal' }}
+              </button>
+              <RouterLink
+                :to="{ name: 'business-transactions' }"
+                class="w-full px-5 py-2 text-sm font-medium text-center text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              >
+                Batal
+              </RouterLink>
+            </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Keterangan Jurnal</label>
-            <input
-              v-model="form.description"
-              type="text"
-              required
-              placeholder="Contoh: Gaji Maret 2026"
-              class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+        </div>
+
+        <!-- Card: Baris Jurnal -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 min-w-0">
+          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Baris Jurnal</h2>
+          <JournalLinesEditor ref="linesEditor" :coa-grouped="coaGrouped" :contacts="contacts" />
         </div>
       </div>
 
-      <!-- Card: Baris Jurnal -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-        <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Baris Jurnal</h2>
-        <JournalLinesEditor ref="linesEditor" :coa-grouped="coaGrouped" :contacts="contacts" />
-      </div>
-
-      <!-- Actions -->
-      <div class="flex justify-end gap-3">
+      <!-- Actions (mobile: below grid) -->
+      <div class="flex lg:hidden justify-end gap-3 mt-5">
         <RouterLink
           :to="{ name: 'business-transactions' }"
           class="px-5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
