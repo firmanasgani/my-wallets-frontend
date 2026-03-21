@@ -4,6 +4,7 @@ import LoginView from '../views/LoginView.vue'
 import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import PersonalDashboardView from '../views/PersonalDashboardView.vue'
 import AccountsView from '../views/AccountsView.vue'
 import AccountCreateView from '../views/AccountCreateView.vue'
 import AccountEditView from '../views/AccountEditView.vue'
@@ -66,6 +67,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'dashboard',
         component: DashboardView,
         meta: { title: 'Dashboard' },
+      },
+      {
+        path: 'personal-dashboard',
+        name: 'personal-dashboard',
+        component: PersonalDashboardView,
+        meta: { title: 'Dashboard Personal' },
       },
       {
         path: 'accounts',
@@ -242,6 +249,30 @@ const routes: Array<RouteRecordRaw> = [
         name: 'business-transaction-create',
         component: () => import('@/views/business/BusinessTransactionFormView.vue'),
         meta: { title: 'Transaksi Baru', requiresBusiness: true },
+      },
+      {
+        path: 'business/reports/profit-loss',
+        name: 'business-report-pl',
+        component: () => import('@/views/business/reports/ProfitLossView.vue'),
+        meta: { title: 'Laporan Laba Rugi', requiresBusiness: true },
+      },
+      {
+        path: 'business/reports/balance-sheet',
+        name: 'business-report-bs',
+        component: () => import('@/views/business/reports/BalanceSheetView.vue'),
+        meta: { title: 'Neraca Keuangan', requiresBusiness: true },
+      },
+      {
+        path: 'business/reports/cash-flow',
+        name: 'business-report-cf',
+        component: () => import('@/views/business/reports/CashFlowView.vue'),
+        meta: { title: 'Arus Kas', requiresBusiness: true },
+      },
+      {
+        path: 'business/reports/journal',
+        name: 'business-report-journal',
+        component: () => import('@/views/business/reports/JournalReportView.vue'),
+        meta: { title: 'Jurnal Umum', requiresBusiness: true },
       },
       { path: '', redirect: { name: 'dashboard' } },
     ],

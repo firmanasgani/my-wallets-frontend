@@ -203,6 +203,99 @@
         <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Catatan</h3>
         <p class="text-sm text-slate-700 dark:text-slate-300">{{ invoice.notes }}</p>
       </div>
+
+      <!-- Jurnal Pembayaran -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-semibold text-slate-800 dark:text-slate-100">Jurnal Pembayaran</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Jurnal akuntansi yang dibuat otomatis saat invoice dibayar.</p>
+          </div>
+          <RouterLink
+            :to="{ name: 'business-transactions' }"
+            class="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
+          >
+            Lihat semua →
+          </RouterLink>
+        </div>
+
+        <!-- Loading -->
+        <div v-if="journalsLoading" class="flex justify-center p-8">
+          <svg class="w-6 h-6 animate-spin text-indigo-400" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        </div>
+
+        <!-- Empty -->
+        <div v-else-if="invoiceJournals.length === 0" class="px-6 py-8 text-center">
+          <svg class="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Belum ada jurnal. Jurnal akan muncul setelah invoice dibayar.</p>
+        </div>
+
+        <!-- Journal entries -->
+        <div v-else class="divide-y divide-slate-100 dark:divide-slate-700">
+          <div v-for="tx in invoiceJournals" :key="tx.id" class="px-6 py-4">
+            <!-- Header -->
+            <div class="flex items-center gap-2 mb-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                Dari Invoice
+              </span>
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-100">{{ tx.description }}</span>
+              <span class="ml-auto text-xs text-slate-400 dark:text-slate-500">{{ formatDate(tx.transactionDate) }}</span>
+            </div>
+            <!-- Lines table -->
+            <div class="overflow-x-auto rounded-lg border border-slate-100 dark:border-slate-700">
+              <table class="w-full text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-700/50">
+                  <tr>
+                    <th class="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400 w-14">Tipe</th>
+                    <th class="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Akun</th>
+                    <th class="px-3 py-2 text-left font-medium text-slate-500 dark:text-slate-400">Keterangan</th>
+                    <th class="px-3 py-2 text-right font-medium text-slate-500 dark:text-slate-400">Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                  <tr v-for="line in tx.lines" :key="line.id" class="text-slate-700 dark:text-slate-300">
+                    <td class="px-3 py-2">
+                      <span
+                        :class="[
+                          'inline-flex items-center px-1.5 py-0.5 rounded font-bold tracking-wide',
+                          line.type === 'DEBIT'
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                            : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+                        ]"
+                      >
+                        {{ line.type === 'DEBIT' ? 'D' : 'C' }}
+                      </span>
+                    </td>
+                    <td class="px-3 py-2 font-mono">
+                      <span class="text-slate-500 dark:text-slate-400">{{ line.coa.code }}</span>
+                      <span class="ml-1 text-slate-700 dark:text-slate-300">{{ line.coa.name }}</span>
+                    </td>
+                    <td class="px-3 py-2 text-slate-500 dark:text-slate-400">
+                      <span v-if="line.description">{{ line.description }}</span>
+                      <span v-else-if="line.contact" class="italic">{{ line.contact.name }}</span>
+                      <span v-else class="text-slate-300 dark:text-slate-600">—</span>
+                    </td>
+                    <td class="px-3 py-2 text-right font-mono font-medium">{{ formatCurrency(line.amount) }}</td>
+                  </tr>
+                </tbody>
+                <tfoot class="bg-slate-50 dark:bg-slate-700/50 border-t border-slate-200 dark:border-slate-600">
+                  <tr>
+                    <td colspan="3" class="px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 text-right">Total</td>
+                    <td class="px-3 py-2 text-right font-mono font-bold text-slate-800 dark:text-slate-100">
+                      {{ formatCurrency(totalDebit(tx)) }}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Send Confirmation -->
@@ -245,12 +338,13 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useInvoicesStore } from '@/stores/invoices'
 import { useBusinessStore } from '@/stores/business'
+import { BusinessService } from '@/services/business.service'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import InvoiceStatusBadge from '@/components/business/InvoiceStatusBadge.vue'
 import PayInvoiceModal from '@/components/business/PayInvoiceModal.vue'
 import exportService from '@/services/exportService'
-import type { ContactType } from '@/types/business'
+import type { ContactType, BusinessTransaction } from '@/types/business'
 
 const route = useRoute()
 const router = useRouter()
@@ -262,6 +356,8 @@ const isSendModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
 const isPayModalOpen = ref(false)
 const isDuplicating = ref(false)
+const invoiceJournals = ref<BusinessTransaction[]>([])
+const journalsLoading = ref(false)
 
 const invoice = computed(() => invoicesStore.currentInvoice)
 
@@ -277,13 +373,26 @@ const canPay = computed(() => {
 
 const isOverdue = computed(() => invoice.value?.status === 'OVERDUE')
 
+async function loadJournals() {
+  const invoiceId = route.params.id as string
+  journalsLoading.value = true
+  try {
+    const res = await BusinessService.getBusinessTransactions({ limit: 100 })
+    invoiceJournals.value = res.data.filter((tx) => tx.invoiceId === invoiceId)
+  } catch {
+    // silent — journals are supplementary info
+  } finally {
+    journalsLoading.value = false
+  }
+}
+
 onMounted(async () => {
   try {
     const fetchList: Promise<any>[] = [
       invoicesStore.fetchInvoiceById(route.params.id as string),
       businessStore.fetchMyCompany().catch(() => {}),
+      loadJournals(),
     ]
-    console.log(businessStore.members.length)
     if (!businessStore.members.length) fetchList.push(businessStore.fetchMembers().catch(() => {}))
     await Promise.all(fetchList)
   } catch {
@@ -334,7 +443,11 @@ const handleDuplicate = async () => {
 const onPaid = () => {
   isPayModalOpen.value = false
   invoicesStore.fetchInvoiceById(route.params.id as string)
+  loadJournals()
 }
+
+const totalDebit = (tx: BusinessTransaction): number =>
+  tx.lines.filter((l) => l.type === 'DEBIT').reduce((s, l) => s + parseFloat(l.amount), 0)
 
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })

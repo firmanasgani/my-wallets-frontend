@@ -29,7 +29,7 @@
             class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50"
           >
             <h3 class="text-xl font-bold text-slate-800 dark:text-white">
-              {{ currentStep === 'SUCCESS' ? 'Pembayaran Berhasil' : 'Upgrade ke Premium' }}
+              {{ currentStep === 'SUCCESS' ? 'Pembayaran Berhasil' : modalTitle }}
             </h3>
             <button
               @click="closeModal"
@@ -68,10 +68,10 @@
             <div v-else-if="currentStep === 'PLAN_SELECTION'" class="space-y-8">
               <div class="text-center max-w-lg mx-auto">
                 <h4 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">
-                  Buka Potensi Penuh Keuanganmu
+                  {{ businessOnly ? 'Kelola Bisnis Lebih Profesional' : 'Buka Potensi Penuh Keuanganmu' }}
                 </h4>
                 <p class="text-slate-500 dark:text-slate-400">
-                  Pilih durasi yang paling cocok untukmu dan nikmati fitur premium tanpa batas.
+                  Pilih durasi yang paling cocok dan nikmati semua fitur tanpa batas.
                 </p>
               </div>
 
@@ -148,7 +148,7 @@
               <div class="bg-indigo-900 rounded-2xl p-8 text-white">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
                   <div
-                    v-for="feature in premiumFeatures"
+                    v-for="feature in displayedFeatures"
                     :key="feature"
                     class="flex items-start gap-3"
                   >
@@ -248,6 +248,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps<{
   isOpen: boolean
+  businessOnly?: boolean
 }>()
 
 const emit = defineEmits(['update:isOpen', 'success'])
@@ -261,6 +262,9 @@ const selectedPlanId = ref<string | null>(null)
 const isProcessing = ref(false)
 
 const premiumPlans = computed(() => {
+  if (props.businessOnly) {
+    return subscriptionStore.plans.filter((p) => p.code?.startsWith('BUSINESS'))
+  }
   return subscriptionStore.plans.filter((p) => p.code !== 'FREE')
 })
 
@@ -278,6 +282,20 @@ const premiumFeatures = [
   'Export Data (CSV/Excel)',
   'Dukungan Prioritas 24/7',
 ]
+
+const businessFeatures = [
+  'Invoice & Manajemen Klien',
+  'Chart of Accounts Lengkap',
+  'Jurnal Akuntansi Double-Entry',
+  'Laporan Keuangan Bisnis',
+  'Buku Besar per Akun',
+  'Manajemen Tim dengan Role RBAC',
+  'Pembayaran via Midtrans',
+  'Pajak PPN Otomatis',
+]
+
+const displayedFeatures = computed(() => props.businessOnly ? businessFeatures : premiumFeatures)
+const modalTitle = computed(() => props.businessOnly ? 'Upgrade ke Business' : 'Upgrade ke Premium')
 
 const formatNumber = (num: number) => {
   return new Intl.NumberFormat('id-ID').format(num)

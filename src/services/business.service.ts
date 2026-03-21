@@ -26,6 +26,13 @@ import type {
   BusinessTransactionsResponse,
   CreateBusinessTransactionPayload,
   BusinessTransactionsParams,
+  ProfitLossResponse,
+  BalanceSheetResponse,
+  CashFlowResponse,
+  JournalReportResponse,
+  ReportDateParams,
+  BalanceSheetParams,
+  JournalReportParams,
 } from '@/types/business'
 
 export const BusinessService = {
@@ -243,6 +250,27 @@ export const BusinessService = {
 
   async deleteBusinessTransaction(id: string): Promise<{ message: string }> {
     const response = await apiClient.delete<{ message: string }>(`/business/transactions/${id}`)
+    return response.data
+  },
+
+  // ─── Financial Reports ─────────────────────────────────────────────────────
+  async getProfitLoss(params?: ReportDateParams): Promise<ProfitLossResponse> {
+    const response = await apiClient.get<ProfitLossResponse>('/business/reports/profit-loss', { params })
+    return response.data
+  },
+
+  async getBalanceSheet(params?: BalanceSheetParams): Promise<BalanceSheetResponse> {
+    const response = await apiClient.get<BalanceSheetResponse>('/business/reports/balance-sheet', { params })
+    return response.data
+  },
+
+  async getCashFlow(params?: ReportDateParams): Promise<CashFlowResponse> {
+    const response = await apiClient.get<CashFlowResponse>('/business/reports/cash-flow', { params })
+    return response.data
+  },
+
+  async getJournalReport(params?: JournalReportParams): Promise<JournalReportResponse> {
+    const response = await apiClient.get<JournalReportResponse>('/business/reports/journal', { params })
     return response.data
   },
 }

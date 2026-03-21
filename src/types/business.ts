@@ -353,3 +353,112 @@ export interface BusinessTransactionsParams {
   page?: number
   limit?: number
 }
+
+// ─── Financial Reports (Phase 5) ─────────────────────────────────────────────
+
+export interface ReportAccountItem {
+  coaCode: string
+  coaName: string
+  amount: string
+}
+
+export interface ProfitLossResponse {
+  period: { startDate: string | null; endDate: string | null }
+  revenue: {
+    accounts: ReportAccountItem[]
+    total: string
+  }
+  expense: {
+    accounts: ReportAccountItem[]
+    total: string
+  }
+  netProfit: string   // Decimal string, bisa negatif
+  isProfit: boolean
+}
+
+export interface BalanceSheetAccountItem {
+  coaCode: string
+  coaName: string
+  balance: string
+}
+
+export interface BalanceSheetResponse {
+  asOfDate: string
+  assets: {
+    accounts: BalanceSheetAccountItem[]
+    total: string
+  }
+  liabilities: {
+    accounts: BalanceSheetAccountItem[]
+    total: string
+  }
+  equity: {
+    accounts: BalanceSheetAccountItem[]
+    currentPeriodProfit: string   // bisa negatif (rugi)
+    total: string
+  }
+  totalLiabilitiesAndEquity: string
+  isBalanced: boolean
+}
+
+export interface CashFlowAccountItem {
+  coaCode: string
+  coaName: string
+  amount: string
+}
+
+export interface CashFlowResponse {
+  period: { startDate: string | null; endDate: string | null }
+  openingCash: string
+  cashInflows: CashFlowAccountItem[]
+  totalInflow: string
+  cashOutflows: CashFlowAccountItem[]
+  totalOutflow: string
+  netCashFlow: string   // bisa negatif
+  endingCash: string
+}
+
+export interface JournalReportLine {
+  coaCode: string
+  coaName: string
+  amount: string
+  description: string | null
+  contact: string | null
+}
+
+export interface JournalReportEntry {
+  id: string
+  date: string
+  description: string
+  reference: string | null
+  contacts: string[] | null
+  isSystemGenerated: boolean
+  debitLines: JournalReportLine[]
+  creditLines: JournalReportLine[]
+  totalDebit: string
+  totalCredit: string
+}
+
+export interface JournalReportResponse {
+  data: JournalReportEntry[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface ReportDateParams {
+  startDate?: string
+  endDate?: string
+}
+
+export interface BalanceSheetParams {
+  date?: string
+}
+
+export interface JournalReportParams {
+  startDate?: string
+  endDate?: string
+  page?: number
+  limit?: number
+}
