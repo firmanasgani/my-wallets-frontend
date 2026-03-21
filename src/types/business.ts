@@ -275,3 +275,81 @@ export interface AcceptInviteResponse {
   companyName: string
   role: CompanyMemberRole
 }
+
+// ─── Business Transactions (Phase 4 - Compound Journal) ──────────────────────
+
+export interface CoaSummary {
+  id: string
+  code: string
+  name: string
+  type: CoaType
+}
+
+export interface ContactSummary {
+  id: string
+  name: string
+  type: ContactType
+}
+
+export interface InvoiceSummary {
+  id: string
+  invoiceNumber: string
+}
+
+export type JournalLineType = 'DEBIT' | 'CREDIT'
+
+export interface JournalLine {
+  id: string
+  journalEntryId: string
+  type: JournalLineType
+  amount: string           // Decimal as string — parse before arithmetic
+  description: string | null
+  coaId: string
+  contactId: string | null
+  coa: CoaSummary
+  contact: ContactSummary | null
+}
+
+export interface BusinessTransaction {
+  id: string
+  companyId: string
+  invoiceId: string | null
+  isSystemGenerated: boolean
+  transactionDate: string
+  description: string
+  createdByUserId: string
+  createdAt: string
+  lines: JournalLine[]
+  invoice: InvoiceSummary | null
+}
+
+export interface BusinessTransactionsResponse {
+  data: BusinessTransaction[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface CreateJournalLinePayload {
+  coaId: string
+  type: JournalLineType
+  amount: number
+  description?: string
+  contactId?: string
+}
+
+export interface CreateBusinessTransactionPayload {
+  description: string
+  transactionDate: string
+  lines: CreateJournalLinePayload[]
+}
+
+export interface BusinessTransactionsParams {
+  startDate?: string
+  endDate?: string
+  coaId?: string
+  contactId?: string
+  page?: number
+  limit?: number
+}

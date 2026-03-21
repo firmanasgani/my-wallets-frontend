@@ -219,6 +219,18 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/business/BankAccountsView.vue'),
         meta: { title: 'Rekening Perusahaan', requiresBusiness: true },
       },
+      {
+        path: 'business/transactions',
+        name: 'business-transactions',
+        component: () => import('@/views/business/BusinessTransactionsView.vue'),
+        meta: { title: 'Transaksi Bisnis', requiresBusiness: true },
+      },
+      {
+        path: 'business/transactions/new',
+        name: 'business-transaction-create',
+        component: () => import('@/views/business/BusinessTransactionFormView.vue'),
+        meta: { title: 'Transaksi Baru', requiresBusiness: true },
+      },
       { path: '', redirect: { name: 'dashboard' } },
     ],
   },

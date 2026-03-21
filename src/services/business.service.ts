@@ -22,6 +22,10 @@ import type {
   PayInvoiceResponse,
   CompanyBankAccount,
   BankAccountPayload,
+  BusinessTransaction,
+  BusinessTransactionsResponse,
+  CreateBusinessTransactionPayload,
+  BusinessTransactionsParams,
 } from '@/types/business'
 
 export const BusinessService = {
@@ -223,6 +227,22 @@ export const BusinessService = {
 
   async deleteCompanyLogo(): Promise<Company> {
     const response = await apiClient.delete<Company>('/business/company/logo')
+    return response.data
+  },
+
+  // ─── Business Transactions ─────────────────────────────────────────────────
+  async getBusinessTransactions(params?: BusinessTransactionsParams): Promise<BusinessTransactionsResponse> {
+    const response = await apiClient.get<BusinessTransactionsResponse>('/business/transactions', { params })
+    return response.data
+  },
+
+  async createBusinessTransaction(payload: CreateBusinessTransactionPayload): Promise<BusinessTransaction> {
+    const response = await apiClient.post<BusinessTransaction>('/business/transactions', payload)
+    return response.data
+  },
+
+  async deleteBusinessTransaction(id: string): Promise<{ message: string }> {
+    const response = await apiClient.delete<{ message: string }>(`/business/transactions/${id}`)
     return response.data
   },
 }
