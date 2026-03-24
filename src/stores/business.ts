@@ -117,7 +117,7 @@ export const useBusinessStore = defineStore('business', () => {
     return result
   }
 
-  const updateMemberRole = async (memberId: string, role: 'ADMIN' | 'STAFF' | 'VIEWER') => {
+  const updateMemberRole = async (memberId: string, role: 'ADMIN' | 'CHECKER' | 'STAFF' | 'VIEWER') => {
     const updated = await BusinessService.updateMemberRole(memberId, role)
     const idx = members.value.findIndex((m) => m.id === memberId)
     if (idx !== -1) members.value[idx] = updated

@@ -26,6 +26,7 @@ import type {
   BusinessTransactionsResponse,
   CreateBusinessTransactionPayload,
   BusinessTransactionsParams,
+  JournalAttachment,
   ProfitLossResponse,
   BalanceSheetResponse,
   CashFlowResponse,
@@ -34,6 +35,20 @@ import type {
   BalanceSheetParams,
   JournalReportParams,
   KpiDashboardResponse,
+  TaxConfig,
+  TaxConfigPayload,
+  TaxSuggestPayload,
+  TaxSuggestResponse,
+  TaxSuggestionRule,
+  TaxSuggestionRulePayload,
+  Asset,
+  AssetPayload,
+  DisposeAssetPayload,
+  DisposeAssetResponse,
+  DepreciationScheduleResponse,
+  AssetDepreciation,
+  RunDepreciationPayload,
+  RunDepreciationResponse,
 } from '@/types/business'
 
 export const BusinessService = {
@@ -95,7 +110,7 @@ export const BusinessService = {
     return response.data
   },
 
-  async updateMemberRole(memberId: string, role: 'ADMIN' | 'STAFF' | 'VIEWER'): Promise<CompanyMember> {
+  async updateMemberRole(memberId: string, role: 'ADMIN' | 'CHECKER' | 'STAFF' | 'VIEWER'): Promise<CompanyMember> {
     const response = await apiClient.put<CompanyMember>(`/business/members/${memberId}/role`, { role })
     return response.data
   },
@@ -255,7 +270,13 @@ export const BusinessService = {
   },
 
   async createBusinessTransaction(payload: CreateBusinessTransactionPayload): Promise<BusinessTransaction> {
-    const response = await apiClient.post<BusinessTransaction>('/business/transactions', payload)
+    const { files, ...data } = payload
+    const formData = new FormData()
+    formData.append('data', JSON.stringify(data))
+    files?.forEach(f => formData.append('files', f))
+    const response = await apiClient.post<BusinessTransaction>('/business/transactions', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
     return response.data
   },
 
@@ -288,6 +309,144 @@ export const BusinessService = {
   // ─── KPI Dashboard ─────────────────────────────────────────────────────────
   async getKpiDashboard(): Promise<KpiDashboardResponse> {
     const response = await apiClient.get<KpiDashboardResponse>('/business/kpi')
+    return response.data
+  },
+
+  // ─── Approval Workflow (Phase 8) ───────────────────────────────────────────
+  async submitTransaction(id: string): Promise<BusinessTransaction> {
+    const response = await apiClient.post<BusinessTransaction>(`/business/transactions/${id}/submit`)
+    return response.data
+  },
+
+  async checkTransaction(id: string): Promise<BusinessTransaction> {
+    const response = await apiClient.post<BusinessTransaction>(`/business/transactions/${id}/check`)
+    return response.data
+  },
+
+  async approveTransaction(id: string): Promise<BusinessTransaction> {
+    const response = await apiClient.post<BusinessTransaction>(`/business/transactions/${id}/approve`)
+    return response.data
+  },
+
+  async rejectTransaction(id: string, note?: string): Promise<BusinessTransaction> {
+    const response = await apiClient.post<BusinessTransaction>(`/business/transactions/${id}/reject`, { note })
+    return response.data
+  },
+
+  // ─── Journal Attachments (Phase 8) ─────────────────────────────────────────
+  async getJournalAttachments(entryId: string): Promise<JournalAttachment[]> {
+    const response = await apiClient.get<JournalAttachment[]>(`/business/transactions/${entryId}/attachments`)
+    return response.data
+  },
+
+  async uploadJournalAttachment(entryId: string, file: File): Promise<JournalAttachment> {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await apiClient.post<JournalAttachment>(`/business/transactions/${entryId}/attachments`, formData)
+    return response.data
+  },
+
+  async deleteJournalAttachment(entryId: string, attachmentId: string): Promise<{ message: string }> {
+    const response = await apiClient.delete<{ message: string }>(`/business/transactions/${entryId}/attachments/${attachmentId}`)
+    return response.data
+  },
+
+  // ─── Tax Config (Phase 8) ──────────────────────────────────────────────────
+  async getTaxConfigs(): Promise<TaxConfig[]> {
+    const response = await apiClient.get<TaxConfig[]>('/business/tax')
+    return response.data
+  },
+
+  async createTaxConfig(payload: TaxConfigPayload): Promise<TaxConfig> {
+    const response = await apiClient.post<TaxConfig>('/business/tax', payload)
+    return response.data
+  },
+
+  async updateTaxConfig(id: string, payload: Partial<TaxConfigPayload>): Promise<TaxConfig> {
+    const response = await apiClient.put<TaxConfig>(`/business/tax/${id}`, payload)
+    return response.data
+  },
+
+  async deleteTaxConfig(id: string): Promise<{ message: string }> {
+    const response = await apiClient.delete<{ message: string }>(`/business/tax/${id}`)
+    return response.data
+  },
+
+  async getTaxSuggestions(payload: TaxSuggestPayload): Promise<TaxSuggestResponse> {
+    const response = await apiClient.post<TaxSuggestResponse>('/business/tax/suggest', payload)
+    return response.data
+  },
+
+  // ─── Tax Suggestion Rules (Phase 8) ────────────────────────────────────────
+  async getTaxSuggestionRules(): Promise<TaxSuggestionRule[]> {
+    const response = await apiClient.get<TaxSuggestionRule[]>('/business/tax/suggestion-rules')
+    return response.data
+  },
+
+  async createTaxSuggestionRule(payload: TaxSuggestionRulePayload): Promise<TaxSuggestionRule> {
+    const response = await apiClient.post<TaxSuggestionRule>('/business/tax/suggestion-rules', payload)
+    return response.data
+  },
+
+  async updateTaxSuggestionRule(id: string, payload: Partial<TaxSuggestionRulePayload>): Promise<TaxSuggestionRule> {
+    const response = await apiClient.put<TaxSuggestionRule>(`/business/tax/suggestion-rules/${id}`, payload)
+    return response.data
+  },
+
+  async deleteTaxSuggestionRule(id: string): Promise<{ message: string }> {
+    const response = await apiClient.delete<{ message: string }>(`/business/tax/suggestion-rules/${id}`)
+    return response.data
+  },
+
+  // ─── Asset Management (Phase 8) ────────────────────────────────────────────
+  async getAssets(params?: { status?: string }): Promise<Asset[]> {
+    const response = await apiClient.get<Asset[]>('/business/assets', { params })
+    return response.data
+  },
+
+  async getAssetById(id: string): Promise<Asset> {
+    const response = await apiClient.get<Asset>(`/business/assets/${id}`)
+    return response.data
+  },
+
+  async createAsset(payload: AssetPayload): Promise<Asset> {
+    const response = await apiClient.post<Asset>('/business/assets', payload)
+    return response.data
+  },
+
+  async updateAsset(id: string, payload: { name?: string; notes?: string }): Promise<Asset> {
+    const response = await apiClient.put<Asset>(`/business/assets/${id}`, payload)
+    return response.data
+  },
+
+  async deleteAsset(id: string): Promise<{ message: string }> {
+    const response = await apiClient.delete<{ message: string }>(`/business/assets/${id}`)
+    return response.data
+  },
+
+  async disposeAsset(id: string, payload: DisposeAssetPayload): Promise<DisposeAssetResponse> {
+    const response = await apiClient.post<DisposeAssetResponse>(`/business/assets/${id}/dispose`, payload)
+    return response.data
+  },
+
+  // ─── Depreciation (Phase 8) ────────────────────────────────────────────────
+  async getDepreciationSchedule(assetId: string): Promise<DepreciationScheduleResponse> {
+    const response = await apiClient.get<DepreciationScheduleResponse>(`/business/assets/${assetId}/schedule`)
+    return response.data
+  },
+
+  async getDepreciationHistory(assetId: string): Promise<AssetDepreciation[]> {
+    const response = await apiClient.get<AssetDepreciation[]>(`/business/assets/${assetId}/depreciations`)
+    return response.data
+  },
+
+  async runDepreciation(payload: RunDepreciationPayload): Promise<RunDepreciationResponse> {
+    const response = await apiClient.post<RunDepreciationResponse>('/business/assets/run-depreciation', payload)
+    return response.data
+  },
+
+  async recordUnitProduction(assetId: string, payload: { year: number; month: number; unitsProduced: number }): Promise<RunDepreciationResponse['results'][0] | { message: string }> {
+    const response = await apiClient.post(`/business/assets/${assetId}/units`, payload)
     return response.data
   },
 }

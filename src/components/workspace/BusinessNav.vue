@@ -27,6 +27,12 @@
     <li>
       <RouterLink :to="{ name: 'business-transactions' }" @click="emit('navigate')" :class="link('business-transactions')">Transaksi</RouterLink>
     </li>
+    <li>
+      <RouterLink :to="{ name: 'business-tax' }" @click="emit('navigate')" :class="link('business-tax')">Konfigurasi Pajak</RouterLink>
+    </li>
+    <li>
+      <RouterLink :to="{ name: 'business-assets' }" @click="emit('navigate')" :class="link(['business-assets', 'business-asset-create', 'business-asset-detail', 'business-asset-edit'])">Manajemen Aset</RouterLink>
+    </li>
 
     <!-- Laporan Keuangan -->
     <li class="pt-2 mt-2 border-t border-slate-700">

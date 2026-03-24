@@ -86,6 +86,21 @@
             </optgroup>
           </select>
         </div>
+        <!-- Status Filter (Phase 8) -->
+        <div>
+          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Status</label>
+          <select
+            v-model="filters.status"
+            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="">Semua Status</option>
+            <option value="DRAFT">Draft</option>
+            <option value="PENDING_CHECK">Pending Check</option>
+            <option value="PENDING_APPROVAL">Pending Approval</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+        </div>
         <!-- Actions -->
         <div class="flex items-end gap-2">
           <button
@@ -333,6 +348,7 @@ const filters = ref({
   startDate: firstOfMonth,
   endDate: today.toISOString().slice(0, 10),
   coaId: '',
+  status: '',
 })
 
 const isExporting = ref(false)
@@ -389,6 +405,7 @@ async function loadTransactions() {
     startDate: filters.value.startDate || undefined,
     endDate: filters.value.endDate || undefined,
     coaId: filters.value.coaId || undefined,
+    status: (filters.value.status || undefined) as any,
     page: currentPage.value,
     limit: 20,
   })
@@ -409,6 +426,7 @@ function resetFilters() {
     startDate: firstOfMonth,
     endDate: today.toISOString().slice(0, 10),
     coaId: '',
+    status: '',
   }
   currentPage.value = 1
   loadTransactions()

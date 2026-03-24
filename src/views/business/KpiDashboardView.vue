@@ -148,6 +148,62 @@
         </div>
       </div>
 
+      <!-- Row 2b: P&L Detail (Phase 8) -->
+      <div v-if="data.profitLossDetail" class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="px-5 py-3 bg-teal-50 dark:bg-teal-900/20 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <h2 class="text-xs font-semibold text-teal-700 dark:text-teal-400 uppercase tracking-wide">Detail Laba Rugi</h2>
+          <span v-if="data.profitLossDetail.note" class="text-xs text-amber-600 dark:text-amber-400">{{ data.profitLossDetail.note }}</span>
+        </div>
+        <div class="px-5 py-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Laba Kotor -->
+            <div class="space-y-2.5">
+              <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase mb-1">Laba Kotor</p>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-500 dark:text-slate-400">Pendapatan Operasional</span>
+                <span class="font-medium text-emerald-600 dark:text-emerald-400 tabular-nums">{{ formatRp(data.profitLossDetail.operatingRevenue) }}</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-500 dark:text-slate-400">HPP (Cost of Goods Sold)</span>
+                <span class="font-medium text-red-500 dark:text-red-400 tabular-nums">{{ formatRp(data.profitLossDetail.costOfGoodsSold) }}</span>
+              </div>
+              <div class="flex justify-between items-center text-sm border-t border-slate-100 dark:border-slate-700 pt-2">
+                <span :class="['font-semibold', data.profitLossDetail.isGrossProfit ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400']">
+                  {{ data.profitLossDetail.isGrossProfit ? 'Laba Kotor' : 'Rugi Kotor' }}
+                </span>
+                <span :class="['font-bold tabular-nums', data.profitLossDetail.isGrossProfit ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400']">
+                  {{ formatRp(data.profitLossDetail.grossProfit) }}
+                </span>
+              </div>
+            </div>
+            <!-- Laba Bersih -->
+            <div class="space-y-2.5">
+              <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase mb-1">Laba Bersih</p>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-500 dark:text-slate-400">Beban Operasional</span>
+                <span class="font-medium text-red-500 dark:text-red-400 tabular-nums">{{ formatRp(data.profitLossDetail.operatingExpenses) }}</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-500 dark:text-slate-400">Pendapatan Non-Operasional</span>
+                <span class="font-medium text-emerald-600 dark:text-emerald-400 tabular-nums">{{ formatRp(data.profitLossDetail.nonOperatingIncome) }}</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-slate-500 dark:text-slate-400">Beban Non-Operasional</span>
+                <span class="font-medium text-red-500 dark:text-red-400 tabular-nums">{{ formatRp(data.profitLossDetail.nonOperatingExpenses) }}</span>
+              </div>
+              <div class="flex justify-between items-center text-sm border-t border-slate-100 dark:border-slate-700 pt-2">
+                <span :class="['font-semibold', data.profitLossDetail.isNetProfit ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400']">
+                  {{ data.profitLossDetail.isNetProfit ? 'Laba Bersih' : 'Rugi Bersih' }}
+                </span>
+                <span :class="['font-bold tabular-nums', data.profitLossDetail.isNetProfit ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400']">
+                  {{ formatRp(data.profitLossDetail.netProfit) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Row 3: Breakdown Top Accounts -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 

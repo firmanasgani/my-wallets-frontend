@@ -10,6 +10,7 @@ export interface Company {
   currency: string
   logoUrl?: string | null
   logoPresignedUrl?: string | null
+  requiresApprovalWorkflow: boolean
   createdAt: string
   updatedAt: string
 }
@@ -234,7 +235,7 @@ export interface BankAccountPayload {
   isDefault?: boolean
 }
 
-export type CompanyMemberRole = 'OWNER' | 'ADMIN' | 'STAFF' | 'VIEWER'
+export type CompanyMemberRole = 'OWNER' | 'ADMIN' | 'CHECKER' | 'STAFF' | 'VIEWER'
 export type CompanyMemberStatus = 'PENDING' | 'ACTIVE' | 'REVOKED'
 
 export interface CompanyMemberUser {
@@ -261,7 +262,7 @@ export interface CompanyMember {
 
 export interface InviteMemberPayload {
   email: string
-  role: 'ADMIN' | 'STAFF' | 'VIEWER'
+  role: 'ADMIN' | 'CHECKER' | 'STAFF' | 'VIEWER'
 }
 
 export interface InviteMemberResponse {
@@ -296,6 +297,23 @@ export interface InvoiceSummary {
   invoiceNumber: string
 }
 
+// ─── Phase 8 — Approval Workflow & Attachments ───────────────────────────────
+
+export type JournalEntryStatus = 'DRAFT' | 'PENDING_CHECK' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED'
+
+export interface JournalAttachment {
+  id: string
+  journalEntryId: string
+  companyId: string
+  fileName: string
+  fileUrl: string
+  fileSize: number
+  mimeType: string
+  createdAt: string
+  presignedUrl: string | null
+  uploadedBy: { id: string; fullName: string; email: string } | null
+}
+
 export type JournalLineType = 'DEBIT' | 'CREDIT'
 
 export interface JournalLine {
@@ -310,6 +328,12 @@ export interface JournalLine {
   contact: ContactSummary | null
 }
 
+export interface UserSummary {
+  id: string
+  fullName: string | null
+  email: string
+}
+
 export interface BusinessTransaction {
   id: string
   companyId: string
@@ -317,10 +341,21 @@ export interface BusinessTransaction {
   isSystemGenerated: boolean
   transactionDate: string
   description: string
+  status: JournalEntryStatus
   createdByUserId: string
+  checkerUserId: string | null
+  checkedAt: string | null
+  approverUserId: string | null
+  approvedAt: string | null
+  rejectedAt: string | null
+  rejectionNote: string | null
   createdAt: string
+  updatedAt: string
   lines: JournalLine[]
   invoice: InvoiceSummary | null
+  attachments: JournalAttachment[]
+  checker: UserSummary | null
+  approver: UserSummary | null
 }
 
 export interface BusinessTransactionsResponse {
@@ -343,6 +378,7 @@ export interface CreateBusinessTransactionPayload {
   description: string
   transactionDate: string
   lines: CreateJournalLinePayload[]
+  files?: File[]
 }
 
 export interface BusinessTransactionsParams {
@@ -350,6 +386,7 @@ export interface BusinessTransactionsParams {
   endDate?: string
   coaId?: string
   contactId?: string
+  status?: JournalEntryStatus
   page?: number
   limit?: number
 }
@@ -463,7 +500,7 @@ export interface JournalReportParams {
   limit?: number
 }
 
-// ─── KPI Dashboard (Phase 6) ─────────────────────────────────────────────────
+// ─── KPI Dashboard (Phase 6 + Phase 8) ───────────────────────────────────────
 
 export interface KpiCoaItem {
   coaCode: string
@@ -481,6 +518,19 @@ export interface KpiDashboardResponse {
     profitMargin: string
     revenueGrowth: string | null
   }
+  profitLossDetail: {
+    period: { month: number; year: number }
+    operatingRevenue: string
+    costOfGoodsSold: string
+    grossProfit: string
+    isGrossProfit: boolean
+    operatingExpenses: string
+    nonOperatingIncome: string
+    nonOperatingExpenses: string
+    netProfit: string
+    isNetProfit: boolean
+    note: string | null
+  } | null
   liquidity: {
     cashPosition: string
     totalReceivable: string
@@ -497,4 +547,212 @@ export interface KpiDashboardResponse {
     topRevenueAccounts: KpiCoaItem[]
     topExpenseAccounts: KpiCoaItem[]
   }
+}
+
+// ─── Tax Config (Phase 8) ─────────────────────────────────────────────────────
+
+export type TaxType = 'PPN' | 'PPH_21' | 'PPH_22' | 'PPH_23' | 'PPH_4_2' | 'PPH_15'
+
+export interface TaxConfig {
+  id: string
+  companyId: string
+  type: TaxType
+  name: string
+  rate: string
+  isActive: boolean
+  description: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TaxConfigPayload {
+  type: TaxType
+  name: string
+  rate: number
+  isActive?: boolean
+  description?: string
+}
+
+export interface TaxSuggestion {
+  taxConfigId: string
+  type: TaxType
+  name: string
+  rate: string
+  taxAmount: string | null
+  netAmount: string | null
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW'
+  reason: string
+  source: 'SYSTEM_RULE' | 'CUSTOM_RULE'
+}
+
+export interface TaxSuggestPayload {
+  debitCoaId?: string
+  creditCoaId?: string
+  contactId?: string
+  amount?: number
+  description?: string
+}
+
+export interface TaxSuggestResponse {
+  suggestions: TaxSuggestion[]
+  notes: string | null
+}
+
+export interface TaxSuggestionRule {
+  id: string
+  companyId: string
+  taxConfigId: string
+  triggerCoaIds: string[]
+  triggerContactType: ContactType | null
+  triggerKeywords: string[]
+  minAmount: string | null
+  priority: number
+  note: string | null
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+  taxConfig: Pick<TaxConfig, 'id' | 'name' | 'type' | 'rate'>
+}
+
+export interface TaxSuggestionRulePayload {
+  taxConfigId: string
+  triggerCoaIds?: string[]
+  triggerContactType?: ContactType
+  triggerKeywords?: string[]
+  minAmount?: number
+  priority?: number
+  note?: string
+  isActive?: boolean
+}
+
+// ─── Asset Management (Phase 8) ───────────────────────────────────────────────
+
+export type AssetType = 'TANGIBLE' | 'INTANGIBLE'
+export type AssetStatus = 'ACTIVE' | 'FULLY_DEPRECIATED' | 'DISPOSED'
+export type DepreciationMethod = 'STRAIGHT_LINE' | 'DECLINING_BALANCE' | 'DOUBLE_DECLINING' | 'UNITS_OF_PRODUCTION'
+
+export interface AssetDepreciation {
+  id: string
+  assetId: string
+  companyId: string
+  periodYear: number
+  periodMonth: number
+  depreciationAmount: string
+  accumulatedDepreciation: string
+  bookValue: string
+  unitsProduced: number | null
+  journalEntryId: string | null
+  createdAt: string
+  journalEntry: { id: string; description: string; transactionDate: string } | null
+}
+
+export interface Asset {
+  id: string
+  companyId: string
+  assetType: AssetType
+  name: string
+  code: string
+  acquisitionDate: string
+  acquisitionCost: string
+  residualValue: string
+  usefulLifeMonths: number
+  depreciationMethod: DepreciationMethod
+  unitsTotal: number | null
+  status: AssetStatus
+  disposalDate: string | null
+  disposalAmount: string | null
+  disposalCoaId: string | null
+  notes: string | null
+  createdByUserId: string
+  createdAt: string
+  updatedAt: string
+  assetCoa: CoaSummary
+  accumulatedCoa: CoaSummary
+  depreciationExpenseCoa: CoaSummary
+  disposalCoa?: CoaSummary | null
+  depreciationCount: number
+  totalDepreciated: string
+  currentBookValue: string
+  depreciations?: AssetDepreciation[]
+}
+
+export interface AssetPayload {
+  assetType: AssetType
+  name: string
+  code: string
+  acquisitionDate: string
+  acquisitionCost: number
+  residualValue?: number
+  usefulLifeMonths: number
+  depreciationMethod: DepreciationMethod
+  unitsTotal?: number | null
+  assetCoaId: string
+  accumulatedCoaId: string
+  depreciationExpenseCoaId: string
+  notes?: string
+}
+
+export interface DisposeAssetPayload {
+  disposalDate: string
+  disposalAmount: number
+  disposalCoaId: string
+  gainCoaId?: string
+  lossCoaId?: string
+}
+
+export interface DisposeAssetResponse {
+  asset: Asset
+  journalEntry: { id: string; description: string; status: string }
+  bookValue: string
+  gain: string
+}
+
+export interface DepreciationScheduleItem {
+  periodYear: number
+  periodMonth: number
+  depreciationAmount: string
+  accumulatedDepreciation: string
+  bookValue: string
+}
+
+export interface DepreciationScheduleResponse {
+  asset: {
+    id: string
+    code: string
+    name: string
+    depreciationMethod: DepreciationMethod
+    acquisitionCost: string
+    residualValue: string
+    usefulLifeMonths: number
+    currentBookValue: string
+    totalDepreciated: string
+    periodsAlreadyRun: number
+  }
+  projectedSchedule: DepreciationScheduleItem[]
+}
+
+export interface RunDepreciationPayload {
+  year: number
+  month: number
+  assetIds?: string[]
+}
+
+export interface RunDepreciationResult {
+  assetId: string
+  assetCode: string
+  assetName: string
+  period: { year: number; month: number }
+  depreciationAmount: string
+  accumulatedDepreciation: string
+  bookValue: string
+  isFullyDepreciated: boolean
+  journalEntryId: string
+}
+
+export interface RunDepreciationResponse {
+  period: { year: number; month: number }
+  total: number
+  processed: number
+  skipped: number
+  results: RunDepreciationResult[]
 }

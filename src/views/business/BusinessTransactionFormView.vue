@@ -51,6 +51,32 @@
               />
             </div>
 
+            <!-- Attachments -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Lampiran <span class="text-xs font-normal text-slate-400">(opsional, maks 5)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer w-full px-3 py-2 rounded-lg border border-dashed border-slate-300 dark:border-slate-600 hover:border-indigo-400 dark:hover:border-indigo-500 bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-sm transition-colors">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                </svg>
+                <span>Pilih file...</span>
+                <input type="file" class="sr-only" accept=".pdf,.jpg,.jpeg,.png,.webp" multiple @change="onFilesSelected" />
+              </label>
+              <ul v-if="attachmentFiles.length" class="mt-2 space-y-1">
+                <li v-for="(f, i) in attachmentFiles" :key="i"
+                  class="flex items-center justify-between gap-2 text-xs px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700">
+                  <span class="truncate text-slate-700 dark:text-slate-200">{{ f.name }}</span>
+                  <button type="button" @click="removeFile(i)" class="text-slate-400 hover:text-red-500 transition-colors shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </li>
+              </ul>
+              <p class="text-xs text-slate-400 dark:text-slate-500 mt-1.5">PDF, JPG, PNG, WebP · maks 10MB/file</p>
+            </div>
+
             <!-- Actions (desktop: inside detail card) -->
             <div class="hidden lg:flex flex-col gap-2 pt-2">
               <button
@@ -127,6 +153,20 @@ const form = ref({
   description: '',
 })
 
+const attachmentFiles = ref<File[]>([])
+
+function onFilesSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  const selected = Array.from(input.files ?? [])
+  const remaining = 5 - attachmentFiles.value.length
+  attachmentFiles.value.push(...selected.slice(0, remaining))
+  input.value = ''
+}
+
+function removeFile(index: number) {
+  attachmentFiles.value.splice(index, 1)
+}
+
 const coaGrouped = computed(() => businessStore.chartOfAccounts)
 const contacts = computed(() => contactsStore.contacts)
 
@@ -167,6 +207,7 @@ async function handleSubmit() {
       description: form.value.description,
       transactionDate: form.value.transactionDate,
       lines,
+      files: attachmentFiles.value.length ? attachmentFiles.value : undefined,
     })
     router.push({ name: 'business-transactions' })
   } catch (err: any) {

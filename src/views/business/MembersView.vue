@@ -141,8 +141,9 @@
               v-model="inviteForm.role"
               class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="ADMIN">ADMIN — Akses penuh kecuali hapus company</option>
-              <option value="STAFF">STAFF — Bisa buat invoice & transaksi</option>
+              <option value="ADMIN">ADMIN — Approve, manage aset & pajak</option>
+              <option value="CHECKER">CHECKER — Check (gate pertama) & reject</option>
+              <option value="STAFF">STAFF — Buat transaksi, submit untuk review</option>
               <option value="VIEWER">VIEWER — Read-only</option>
             </select>
           </div>
@@ -193,6 +194,7 @@
             class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="ADMIN">ADMIN</option>
+            <option value="CHECKER">CHECKER</option>
             <option value="STAFF">STAFF</option>
             <option value="VIEWER">VIEWER</option>
           </select>
@@ -252,7 +254,7 @@ const myRole = computed<CompanyMemberRole | null>(() => {
   return me?.role ?? null
 })
 
-const roleOrder: Record<CompanyMemberRole, number> = { OWNER: 0, ADMIN: 1, STAFF: 2, VIEWER: 3 }
+const roleOrder: Record<CompanyMemberRole, number> = { OWNER: 0, ADMIN: 1, CHECKER: 2, STAFF: 3, VIEWER: 4 }
 
 const sortedMembers = computed(() => {
   return [...businessStore.members].sort((a, b) => {
@@ -287,8 +289,10 @@ function roleBadgeClass(role: CompanyMemberRole): string {
   switch (role) {
     case 'OWNER': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
     case 'ADMIN': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+    case 'CHECKER': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
     case 'STAFF': return 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
     case 'VIEWER': return 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+    default: return 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
   }
 }
 
@@ -296,8 +300,10 @@ function roleIcon(role: CompanyMemberRole): string {
   switch (role) {
     case 'OWNER': return '👑'
     case 'ADMIN': return '🛡️'
+    case 'CHECKER': return '🔍'
     case 'STAFF': return '✏️'
     case 'VIEWER': return '👁️'
+    default: return '👤'
   }
 }
 
@@ -314,7 +320,7 @@ onMounted(async () => {
 const isInviteModalOpen = ref(false)
 const isInviting = ref(false)
 const inviteError = ref('')
-const inviteForm = ref({ email: '', role: 'STAFF' as 'ADMIN' | 'STAFF' | 'VIEWER' })
+const inviteForm = ref({ email: '', role: 'STAFF' as 'ADMIN' | 'CHECKER' | 'STAFF' | 'VIEWER' })
 
 function openInviteModal() {
   inviteForm.value = { email: '', role: 'STAFF' }
@@ -352,11 +358,11 @@ const isEditRoleModalOpen = ref(false)
 const isUpdatingRole = ref(false)
 const editRoleError = ref('')
 const selectedMember = ref<CompanyMember | null>(null)
-const newRole = ref<'ADMIN' | 'STAFF' | 'VIEWER'>('STAFF')
+const newRole = ref<'ADMIN' | 'CHECKER' | 'STAFF' | 'VIEWER'>('STAFF')
 
 function openEditRoleModal(member: CompanyMember) {
   selectedMember.value = member
-  newRole.value = member.role === 'OWNER' ? 'ADMIN' : member.role as 'ADMIN' | 'STAFF' | 'VIEWER'
+  newRole.value = member.role === 'OWNER' ? 'ADMIN' : member.role as 'ADMIN' | 'CHECKER' | 'STAFF' | 'VIEWER'
   editRoleError.value = ''
   isEditRoleModalOpen.value = true
 }

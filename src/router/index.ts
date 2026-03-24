@@ -292,6 +292,37 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/business/reports/JournalReportView.vue'),
         meta: { title: 'Jurnal Umum', requiresBusiness: true },
       },
+      // ── Phase 8 ─────────────────────────────────────────────────────────────
+      {
+        path: 'business/tax',
+        name: 'business-tax',
+        component: () => import('@/views/business/TaxConfigView.vue'),
+        meta: { title: 'Konfigurasi Pajak', requiresBusiness: true },
+      },
+      {
+        path: 'business/assets',
+        name: 'business-assets',
+        component: () => import('@/views/business/AssetsView.vue'),
+        meta: { title: 'Manajemen Aset', requiresBusiness: true },
+      },
+      {
+        path: 'business/assets/new',
+        name: 'business-asset-create',
+        component: () => import('@/views/business/AssetFormView.vue'),
+        meta: { title: 'Tambah Aset', requiresBusiness: true },
+      },
+      {
+        path: 'business/assets/:id',
+        name: 'business-asset-detail',
+        component: () => import('@/views/business/AssetDetailView.vue'),
+        meta: { title: 'Detail Aset', requiresBusiness: true },
+      },
+      {
+        path: 'business/assets/:id/edit',
+        name: 'business-asset-edit',
+        component: () => import('@/views/business/AssetFormView.vue'),
+        meta: { title: 'Edit Aset', requiresBusiness: true },
+      },
       { path: '', redirect: { name: 'dashboard' } },
     ],
   },
@@ -326,6 +357,9 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  scrollBehavior() {
+    return { top: 0, behavior: 'instant' }
+  },
 })
 
 router.beforeEach(async (to, _from, next) => {

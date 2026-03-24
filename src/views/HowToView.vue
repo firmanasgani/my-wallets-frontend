@@ -72,21 +72,21 @@
             </RouterLink>
           </div>
 
-          <!-- Family Plan -->
+          <!-- Business Plan -->
           <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col transition-transform hover:scale-[1.02]">
-            <h3 class="text-xl font-bold mb-2">Pro/Keluarga</h3>
-            <p class="text-slate-500 mb-6 text-sm">Pengelolaan keuangan bersama keluarga.</p>
+            <h3 class="text-xl font-bold mb-2">Bisnis</h3>
+            <p class="text-slate-500 mb-6 text-sm">Solusi akuntansi lengkap untuk usaha dan profesional.</p>
             <ul class="space-y-4 flex-grow mb-8">
-              <li v-for="f in familyFeatures" :key="f" class="flex items-start gap-3">
+              <li v-for="f in businessFeatures" :key="f" class="flex items-start gap-3">
                 <svg class="h-5 w-5 text-green-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
                 <span class="text-sm">{{ f }}</span>
               </li>
             </ul>
-            <div class="w-full py-3 bg-slate-50 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 text-center font-bold rounded-lg cursor-not-allowed">
-              Segera Hadir
-            </div>
+            <RouterLink v-if="!authStore.isAuthenticated" :to="{ name: 'register' }" class="w-full py-3 bg-slate-100 dark:bg-slate-700 text-center font-bold rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              Pilih Bisnis
+            </RouterLink>
           </div>
         </div>
       </section>
@@ -294,12 +294,15 @@ const premiumFeatures = [
   'Dukungan Prioritas'
 ]
 
-const familyFeatures = [
+const businessFeatures = [
   'Semua di paket Premium',
-  'Akun Bersama (Family Sharing)',
-  'Laporan Keluarga Terkonsolidasi',
-  'Budgeting Keluarga',
-  'Analisis Kekayaan Bersih'
+  'Manajemen Perusahaan',
+  'Bagan Akun (Chart of Accounts)',
+  'Manajemen Kontak (Pelanggan & Pemasok)',
+  'Pembuatan & Pengelolaan Invoice',
+  'Laporan Keuangan (Laba Rugi, Neraca, Arus Kas)',
+  'Multi-user dengan Role (Owner, Admin, Staff)',
+  'Manajemen Pajak (PPN)',
 ]
 </script>
 

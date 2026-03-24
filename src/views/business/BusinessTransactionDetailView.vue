@@ -162,6 +162,127 @@
         </div>
       </div>
 
+      <!-- ── Approval Workflow (Phase 8) ──────────────────────────────────── -->
+      <div v-if="tx.status" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Status Persetujuan
+          </h2>
+          <span :class="statusBadgeClass(tx.status)" class="px-2.5 py-1 rounded-full text-xs font-semibold">{{ statusLabel(tx.status) }}</span>
+        </div>
+
+        <!-- Rejection note -->
+        <div v-if="tx.status === 'REJECTED' && tx.rejectionNote" class="mx-6 mt-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <p class="text-xs font-medium text-red-700 dark:text-red-300">Alasan Penolakan:</p>
+          <p class="text-sm text-red-600 dark:text-red-400 mt-0.5">{{ tx.rejectionNote }}</p>
+        </div>
+
+        <!-- Timeline -->
+        <div class="px-6 py-4 space-y-3">
+          <!-- No-workflow: jurnal dibuat saat workflow nonaktif, tampilkan simplified -->
+          <template v-if="!businessStore.currentCompany?.requiresApprovalWorkflow && !tx.checkerUserId && !tx.approverUserId">
+            <div class="flex items-center gap-3 text-sm">
+              <div :class="tx.status === 'APPROVED' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'"
+                class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">✓</div>
+              <div>
+                <span class="font-medium text-slate-700 dark:text-slate-300">
+                  {{ tx.status === 'APPROVED' ? 'Disetujui otomatis (tanpa workflow)' : 'Menunggu persetujuan' }}
+                </span>
+              </div>
+            </div>
+          </template>
+          <!-- With-workflow: tampilkan langkah CHECKER & ADMIN -->
+          <template v-else>
+            <div class="flex items-center gap-3 text-sm">
+              <div :class="tx.checkerUserId ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'"
+                class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">✓</div>
+              <div>
+                <span class="font-medium text-slate-700 dark:text-slate-300">Dicek oleh CHECKER</span>
+                <span v-if="tx.checker" class="text-slate-500 dark:text-slate-400 ml-1">— {{ tx.checker.fullName ?? tx.checker.email }}</span>
+                <span v-if="tx.checkedAt" class="text-slate-400 dark:text-slate-500 ml-1 text-xs">{{ formatDateTime(tx.checkedAt) }}</span>
+                <span v-if="!tx.checkerUserId" class="text-slate-400 dark:text-slate-500 ml-1">— Menunggu</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+              <div :class="tx.approverUserId ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'"
+                class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">✓</div>
+              <div>
+                <span class="font-medium text-slate-700 dark:text-slate-300">Disetujui oleh ADMIN</span>
+                <span v-if="tx.approver" class="text-slate-500 dark:text-slate-400 ml-1">— {{ tx.approver.fullName ?? tx.approver.email }}</span>
+                <span v-if="tx.approvedAt" class="text-slate-400 dark:text-slate-500 ml-1 text-xs">{{ formatDateTime(tx.approvedAt) }}</span>
+                <span v-if="!tx.approverUserId" class="text-slate-400 dark:text-slate-500 ml-1">— Menunggu</span>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Action Buttons -->
+        <div v-if="!tx.isSystemGenerated" class="px-6 pb-4 flex flex-wrap gap-2">
+          <!-- Staff: submit DRAFT/REJECTED -->
+          <button v-if="canSubmit" @click="doAction('submit')" :disabled="isActioning" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Submit untuk Review
+          </button>
+          <!-- Checker: check PENDING_CHECK -->
+          <button v-if="canCheck" @click="doAction('check')" :disabled="isActioning" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Check (Gate 1)
+          </button>
+          <!-- Admin: approve PENDING_APPROVAL -->
+          <button v-if="canApprove" @click="doAction('approve')" :disabled="isActioning" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Approve
+          </button>
+          <!-- Checker/Admin: reject -->
+          <button v-if="canReject" @click="showRejectModal = true" class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors">
+            Tolak
+          </button>
+          <span v-if="isActioning" class="text-xs text-slate-500 dark:text-slate-400 self-center">Memproses...</span>
+          <p v-if="actionError" class="text-xs text-red-500 w-full mt-1">{{ actionError }}</p>
+        </div>
+      </div>
+
+      <!-- ── Lampiran (Phase 8) ──────────────────────────────────────────────── -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+            </svg>
+            Lampiran ({{ tx.attachments?.length ?? 0 }}/5)
+          </h2>
+          <label v-if="canUploadAttachment" class="cursor-pointer flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Upload
+            <input type="file" class="sr-only" accept=".pdf,.jpg,.jpeg,.png,.webp" @change="uploadAttachment" :disabled="isUploadingAttachment" />
+          </label>
+        </div>
+        <div class="px-6 py-4">
+          <div v-if="isUploadingAttachment" class="text-xs text-slate-500 dark:text-slate-400 mb-3">Mengupload...</div>
+          <div v-if="!tx.attachments?.length" class="text-sm text-slate-400 dark:text-slate-500">Belum ada lampiran.</div>
+          <div v-else class="space-y-2">
+            <div v-for="att in tx.attachments" :key="att.id"
+              class="flex items-center justify-between gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+              <div class="flex items-center gap-2 min-w-0">
+                <svg class="w-5 h-5 text-slate-400 dark:text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{{ att.fileName }}</p>
+                  <p class="text-xs text-slate-400 dark:text-slate-500">{{ formatFileSize(att.fileSize) }} · {{ formatDateTime(att.createdAt) }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <a v-if="att.presignedUrl" :href="att.presignedUrl" target="_blank" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">Buka</a>
+                <button @click="deleteAttachment(att.id)" class="text-xs text-red-500 hover:underline">Hapus</button>
+              </div>
+            </div>
+          </div>
+          <p v-if="attachmentError" class="text-xs text-red-500 mt-2">{{ attachmentError }}</p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">Format: PDF, JPG, PNG, WebP. Maks 10MB per file.</p>
+        </div>
+      </div>
+
       <!-- Footer Actions -->
       <div class="flex items-center justify-between gap-3">
         <div></div>
@@ -221,6 +342,25 @@
       </button>
     </div>
 
+    <!-- Reject Modal -->
+    <Teleport to="body">
+      <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+          <h3 class="font-semibold text-slate-800 dark:text-slate-100">Tolak Jurnal</h3>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Alasan Penolakan</label>
+            <textarea v-model="rejectNote" rows="3" maxlength="1000" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Jelaskan alasan penolakan..."></textarea>
+          </div>
+          <div class="flex justify-end gap-3">
+            <button @click="showRejectModal = false" class="px-4 py-2 text-sm font-medium border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">Batal</button>
+            <button @click="doAction('reject')" :disabled="isActioning" class="px-4 py-2 text-sm font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg disabled:opacity-50">
+              {{ isActioning ? 'Memproses...' : 'Konfirmasi Tolak' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Delete Confirmation -->
     <ConfirmationModal
       v-model:isOpen="showDeleteConfirm"
@@ -240,6 +380,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBusinessTransactionsStore } from '@/stores/businessTransactions'
 import { useBusinessStore } from '@/stores/business'
+import { BusinessService } from '@/services/business.service'
 import ExportService from '@/services/exportService'
 import type { BusinessTransaction } from '@/types/business'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
@@ -255,6 +396,8 @@ const isDeleting = ref(false)
 const isExporting = ref(false)
 const showDeleteConfirm = ref(false)
 
+const myRole = computed(() => businessStore.myRole)
+
 const totalDebit = computed(() =>
   (tx.value?.lines ?? [])
     .filter((l) => l.type === 'DEBIT')
@@ -269,6 +412,119 @@ const totalCredit = computed(() =>
 
 const isBalanced = computed(() => Math.abs(totalDebit.value - totalCredit.value) < 0.01)
 
+// ── Approval Workflow ─────────────────────────────────────────────────────────
+const isActioning = ref(false)
+const actionError = ref('')
+const showRejectModal = ref(false)
+const rejectNote = ref('')
+
+const ROLE_LEVEL: Record<string, number> = { VIEWER: 0, STAFF: 1, CHECKER: 2, ADMIN: 3, OWNER: 4 }
+const roleLevel = computed(() => ROLE_LEVEL[myRole.value ?? ''] ?? 0)
+
+const canSubmit = computed(() =>
+  !tx.value?.isSystemGenerated &&
+  roleLevel.value >= 1 &&
+  (tx.value?.status === 'DRAFT' || tx.value?.status === 'REJECTED')
+)
+const canCheck = computed(() =>
+  !tx.value?.isSystemGenerated &&
+  roleLevel.value >= 2 &&
+  tx.value?.status === 'PENDING_CHECK'
+)
+const canApprove = computed(() =>
+  !tx.value?.isSystemGenerated &&
+  roleLevel.value >= 3 &&
+  tx.value?.status === 'PENDING_APPROVAL'
+)
+const canReject = computed(() =>
+  !tx.value?.isSystemGenerated &&
+  roleLevel.value >= 2 &&
+  (tx.value?.status === 'PENDING_CHECK' || tx.value?.status === 'PENDING_APPROVAL')
+)
+
+async function doAction(action: 'submit' | 'check' | 'approve' | 'reject') {
+  if (!tx.value) return
+  isActioning.value = true
+  actionError.value = ''
+  try {
+    let updated: BusinessTransaction
+    if (action === 'submit') updated = await BusinessService.submitTransaction(tx.value.id)
+    else if (action === 'check') updated = await BusinessService.checkTransaction(tx.value.id)
+    else if (action === 'approve') updated = await BusinessService.approveTransaction(tx.value.id)
+    else updated = await BusinessService.rejectTransaction(tx.value.id, rejectNote.value || undefined)
+    tx.value = { ...tx.value, ...updated }
+    showRejectModal.value = false
+    rejectNote.value = ''
+  } catch (e: any) {
+    actionError.value = e.response?.data?.message ?? 'Terjadi kesalahan.'
+  } finally {
+    isActioning.value = false
+  }
+}
+
+function statusLabel(status: string) {
+  return { DRAFT: 'Draft', PENDING_CHECK: 'Menunggu Check', PENDING_APPROVAL: 'Menunggu Approve', APPROVED: 'Disetujui', REJECTED: 'Ditolak' }[status] ?? status
+}
+function statusBadgeClass(status: string) {
+  return {
+    DRAFT: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300',
+    PENDING_CHECK: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
+    PENDING_APPROVAL: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+    APPROVED: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
+    REJECTED: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
+  }[status] ?? ''
+}
+
+// ── Attachments ───────────────────────────────────────────────────────────────
+const isUploadingAttachment = ref(false)
+const attachmentError = ref('')
+
+const canUploadAttachment = computed(() => {
+  if (!tx.value) return false
+  if ((tx.value.attachments?.length ?? 0) >= 5) return false
+  const status = tx.value.status
+  // PENDING_CHECK / PENDING_APPROVAL: tidak bisa upload siapapun
+  if (status === 'PENDING_CHECK' || status === 'PENDING_APPROVAL') return false
+  // APPROVED: hanya ADMIN / OWNER
+  if (status === 'APPROVED') return roleLevel.value >= 3
+  // DRAFT / REJECTED: STAFF+
+  return roleLevel.value >= 1
+})
+
+async function uploadAttachment(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file || !tx.value) return
+  isUploadingAttachment.value = true
+  attachmentError.value = ''
+  try {
+    const att = await BusinessService.uploadJournalAttachment(tx.value.id, file)
+    if (!tx.value.attachments) tx.value.attachments = []
+    tx.value.attachments.push(att as any)
+  } catch (e: any) {
+    attachmentError.value = e.response?.data?.message ?? 'Gagal upload lampiran.'
+  } finally {
+    isUploadingAttachment.value = false
+    ;(event.target as HTMLInputElement).value = ''
+  }
+}
+
+async function deleteAttachment(attachmentId: string) {
+  if (!tx.value || !confirm('Hapus lampiran ini?')) return
+  try {
+    await BusinessService.deleteJournalAttachment(tx.value.id, attachmentId)
+    tx.value.attachments = tx.value.attachments?.filter(a => a.id !== attachmentId) ?? []
+  } catch (e: any) {
+    attachmentError.value = e.response?.data?.message ?? 'Gagal menghapus lampiran.'
+  }
+}
+
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+}
+
+// ── Load ──────────────────────────────────────────────────────────────────────
 const loadTransaction = async () => {
   isLoading.value = true
   const id = route.params.id as string
@@ -319,5 +575,8 @@ const formatDate = (d: string) =>
 const formatDateTime = (d: string) =>
   new Date(d).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 
-onMounted(() => loadTransaction())
+onMounted(async () => {
+  await businessStore.fetchMembers()
+  await loadTransaction()
+})
 </script>

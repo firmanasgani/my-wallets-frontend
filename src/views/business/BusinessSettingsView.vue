@@ -121,6 +121,42 @@
         :viewer-mode="isViewer"
         @submit="handleSubmit"
       />
+
+      <!-- ── Approval Workflow Toggle (Phase 8) ─────────────────────────── -->
+      <div v-if="businessStore.currentCompany" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm mt-6 border border-slate-200 dark:border-slate-700 p-6">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1">
+            <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100 mb-1">Approval Workflow</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+              Aktifkan untuk mewajibkan jurnal manual melalui alur persetujuan:
+              <strong class="text-slate-700 dark:text-slate-300">DRAFT → PENDING_CHECK → PENDING_APPROVAL → APPROVED</strong>.
+            </p>
+            <p class="text-xs text-amber-600 dark:text-amber-400 mt-2">
+              Perubahan ini hanya berlaku untuk jurnal yang dibuat setelah setting diubah.
+            </p>
+          </div>
+          <div class="shrink-0 pt-1">
+            <button
+              v-if="!isViewer"
+              @click="toggleApprovalWorkflow"
+              :disabled="isTogglingWorkflow"
+              :class="businessStore.currentCompany.requiresApprovalWorkflow
+                ? 'bg-indigo-600'
+                : 'bg-slate-300 dark:bg-slate-600'"
+              class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+            >
+              <span
+                :class="businessStore.currentCompany.requiresApprovalWorkflow ? 'translate-x-6' : 'translate-x-1'"
+                class="inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform"
+              />
+            </button>
+            <span v-if="businessStore.currentCompany.requiresApprovalWorkflow" class="block text-xs text-emerald-600 dark:text-emerald-400 font-medium text-center mt-1">Aktif</span>
+            <span v-else class="block text-xs text-slate-400 dark:text-slate-500 font-medium text-center mt-1">Nonaktif</span>
+          </div>
+        </div>
+        <p v-if="workflowMsg" class="mt-3 text-sm text-emerald-700 dark:text-emerald-300">{{ workflowMsg }}</p>
+        <p v-if="workflowError" class="mt-3 text-sm text-red-600 dark:text-red-400">{{ workflowError }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -231,6 +267,28 @@ const handleSubmit = async (payload: CompanyPayload) => {
     }
   } catch (err: any) {
     errorMsg.value = err.response?.data?.message || 'Gagal menyimpan data. Silakan coba lagi.'
+  }
+}
+
+// ── Approval Workflow Toggle (Phase 8) ────────────────────────────────────────
+const isTogglingWorkflow = ref(false)
+const workflowMsg = ref('')
+const workflowError = ref('')
+
+const toggleApprovalWorkflow = async () => {
+  if (!businessStore.currentCompany) return
+  workflowMsg.value = ''
+  workflowError.value = ''
+  isTogglingWorkflow.value = true
+  const newVal = !businessStore.currentCompany.requiresApprovalWorkflow
+  try {
+    await businessStore.updateCompany({ requiresApprovalWorkflow: newVal } as any)
+    workflowMsg.value = newVal ? 'Approval workflow diaktifkan.' : 'Approval workflow dinonaktifkan.'
+    setTimeout(() => { workflowMsg.value = '' }, 3000)
+  } catch (err: any) {
+    workflowError.value = err.response?.data?.message || 'Gagal mengubah pengaturan.'
+  } finally {
+    isTogglingWorkflow.value = false
   }
 }
 </script>
