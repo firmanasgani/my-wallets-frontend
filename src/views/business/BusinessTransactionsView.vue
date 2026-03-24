@@ -6,16 +6,43 @@
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Transaksi Bisnis</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Jurnal double-entry perusahaan.</p>
       </div>
-      <RouterLink
-        v-if="canCreate"
-        :to="{ name: 'business-transaction-create' }"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm shrink-0"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Transaksi Baru
-      </RouterLink>
+      <div class="flex items-center gap-2 shrink-0">
+        <!-- Export buttons -->
+        <div v-if="txStore.transactions.length > 0" class="flex items-center gap-1.5">
+          <button
+            @click="doExportExcel"
+            :disabled="isExporting"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50"
+            title="Export Excel"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span class="hidden sm:inline">Excel</span>
+          </button>
+          <button
+            @click="doExportPDF"
+            :disabled="isExporting"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors disabled:opacity-50"
+            title="Export PDF"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <span class="hidden sm:inline">PDF</span>
+          </button>
+        </div>
+        <RouterLink
+          v-if="canCreate"
+          :to="{ name: 'business-transaction-create' }"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Transaksi Baru
+        </RouterLink>
+      </div>
     </div>
 
     <!-- Error -->
@@ -196,6 +223,15 @@
               <p class="text-base font-bold text-slate-800 dark:text-slate-100">{{ formatRp(totalDebitAmount(tx)) }}</p>
             </div>
             <button
+              @click="openDetail(tx)"
+              class="p-2 rounded-md text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
+              title="Lihat Detail"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </button>
+            <button
               v-if="canDelete && !tx.isSystemGenerated"
               @click="openDeleteConfirm(tx)"
               class="p-2 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-colors"
@@ -266,14 +302,17 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useBusinessTransactionsStore } from '@/stores/businessTransactions'
 import { useBusinessStore } from '@/stores/business'
 import { useContactsStore } from '@/stores/contacts'
+import ExportService from '@/services/exportService'
 import TransactionFormModal from '@/components/business/TransactionFormModal.vue'
 import GeneralLedgerModal from '@/components/business/GeneralLedgerModal.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import type { BusinessTransaction, ChartOfAccount } from '@/types/business'
 
+const router = useRouter()
 const txStore = useBusinessTransactionsStore()
 const businessStore = useBusinessStore()
 const contactsStore = useContactsStore()
@@ -295,6 +334,29 @@ const filters = ref({
   endDate: today.toISOString().slice(0, 10),
   coaId: '',
 })
+
+const isExporting = ref(false)
+
+async function doExportExcel() {
+  isExporting.value = true
+  try {
+    await ExportService.exportBusinessTransactionsToExcel(
+      txStore.transactions,
+      businessStore.currentCompany?.name,
+      { startDate: filters.value.startDate, endDate: filters.value.endDate },
+    )
+  } finally {
+    isExporting.value = false
+  }
+}
+
+function doExportPDF() {
+  ExportService.exportBusinessTransactionsToPDF(
+    txStore.transactions,
+    businessStore.currentCompany?.name,
+    { startDate: filters.value.startDate, endDate: filters.value.endDate },
+  )
+}
 
 const canCreate = computed(() => {
   const role = businessStore.myRole
@@ -356,6 +418,10 @@ async function goToPage(page: number) {
   currentPage.value = page
   await loadTransactions()
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function openDetail(tx: BusinessTransaction) {
+  router.push({ name: 'business-transaction-detail', params: { id: tx.id } })
 }
 
 function openDeleteConfirm(tx: BusinessTransaction) {

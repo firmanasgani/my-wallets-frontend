@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Invoice {{invoiceNumber}}</title>
+  <!--
+    ==========================================================
+    INVOICE EMAIL TEMPLATE — MyWallets
+    ==========================================================
+    Template Variables (replace before sending):
+      {{companyName}}           — Nama perusahaan
+      {{companyAddress}}        — Alamat perusahaan (opsional)
+      {{companyPhone}}          — Telepon perusahaan (opsional)
+      {{companyEmail}}          — Email perusahaan (opsional)
+      {{companyNpwp}}           — NPWP perusahaan (opsional)
+      {{companyLogoUrl}}        — URL logo perusahaan (opsional, gunakan tag img)
+      {{invoiceNumber}}         — Nomor invoice, e.g. INV-2024-001
+      {{invoiceStatus}}         — Status: DRAFT | SENT | PAID | OVERDUE
+      {{invoiceStatusLabel}}    — Label status: DRAFT | TERKIRIM | LUNAS | TERLAMBAT
+      {{issueDate}}             — Tanggal terbit, e.g. 22 Maret 2026
+      {{dueDate}}               — Jatuh tempo, e.g. 22 April 2026
+      {{clientName}}            — Nama klien
+      {{clientEmail}}           — Email klien (opsional)
+      {{clientAddress}}         — Alamat klien (opsional)
+      {{itemsRows}}             — HTML rows untuk tabel item (lihat format di bawah)
+      {{subtotal}}              — Subtotal, e.g. Rp 1.000.000
+      {{taxAmount}}             — Jumlah PPN, e.g. Rp 110.000
+      {{totalAmount}}           — Total tagihan, e.g. Rp 1.110.000
+      {{amountPaid}}            — Jumlah yang sudah dibayar (opsional)
+      {{remainingAmount}}       — Sisa tagihan (opsional)
+      {{showPartialPayment}}    — true/false untuk menampilkan bagian partial payment
+      {{bankName}}              — Nama bank tujuan transfer (opsional)
+      {{bankAccountNumber}}     — Nomor rekening (opsional)
+      {{bankAccountHolder}}     — Nama pemilik rekening (opsional)
+      {{notes}}                 — Catatan invoice (opsional)
+      {{printedAt}}             — Tanggal cetak, e.g. 22 Maret 2026, 10:00
+
+    Format itemsRows (satu baris):
+    <tr>
+      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#1e293b;">Nama Item / Deskripsi</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#1e293b;text-align:right;white-space:nowrap;">2</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#1e293b;text-align:right;white-space:nowrap;">Rp 500.000</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#dc2626;text-align:right;white-space:nowrap;">-Rp 50.000</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#059669;text-align:center;white-space:nowrap;">11%</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#1e293b;text-align:right;font-weight:600;white-space:nowrap;">Rp 1.000.000</td>
+    </tr>
+    ==========================================================
+  -->
+  <style type="text/css">
+    /* Reset */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+
+    /* Responsive */
+    @media only screen and (max-width: 600px) {
+      .email-wrapper { width: 100% !important; }
+      .email-container { width: 100% !important; border-radius: 0 !important; }
+      .header-table td { display: block !important; width: 100% !important; text-align: center !important; }
+      .header-logo-cell { margin-bottom: 8px !important; }
+      .header-invoice-cell { text-align: center !important; }
+      .two-col-left, .two-col-right { display: block !important; width: 100% !important; }
+      .items-table th, .items-table td { padding: 8px 8px !important; font-size: 11px !important; }
+      .items-col-discount, .items-col-tax { display: none !important; }
+      .totals-table { width: 100% !important; }
+      .footer-bank, .footer-notes { display: block !important; width: 100% !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+
+<!-- Outer wrapper -->
+<table class="email-wrapper" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;">
+  <tr>
+    <td align="center" style="padding:32px 16px;">
+
+      <!-- Email Container -->
+      <table class="email-container" role="presentation" border="0" cellpadding="0" cellspacing="0" width="620" style="background-color:#ffffff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.07);overflow:hidden;">
+
+        <!-- ═══════════════════════════════════════════
+             HEADER
+        ═══════════════════════════════════════════ -->
+        <tr>
+          <td style="background-color:#4f46e5;padding:0;">
+            <table class="header-table" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+              <tr>
+                <!-- Logo + Company Info -->
+                <td class="header-logo-cell" valign="middle" style="padding:20px 28px;">
+                  <!-- Logo (opsional, uncomment jika ada logo) -->
+                  <!-- <img src="{{companyLogoUrl}}" alt="{{companyName}}" width="48" height="48"
+                       style="border-radius:8px;display:block;margin-bottom:8px;object-fit:contain;" /> -->
+                  <p style="margin:0;font-size:18px;font-weight:700;color:#ffffff;line-height:1.2;">{{companyName}}</p>
+                  <p style="margin:4px 0 0;font-size:11px;color:#c7d2fe;line-height:1.5;">
+                    <!-- show only if available -->
+                    {{companyAddress}}
+                    <!-- {{companyPhone}} -->
+                  </p>
+                </td>
+
+                <!-- INVOICE label + number -->
+                <td class="header-invoice-cell" valign="middle" align="right" style="padding:20px 28px;">
+                  <p style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:2px;line-height:1;">INVOICE</p>
+                  <p style="margin:4px 0 0;font-size:13px;color:#c7d2fe;letter-spacing:0.5px;">{{invoiceNumber}}</p>
+                  <!-- Status Badge -->
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="right" style="margin-top:10px;">
+                    <tr>
+                      <td style="background-color:{{statusBgColor}};border-radius:100px;padding:3px 12px;">
+                        <span style="font-size:10px;font-weight:700;color:#ffffff;letter-spacing:1px;text-transform:uppercase;">{{invoiceStatusLabel}}</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ═══════════════════════════════════════════
+             DATES ROW
+        ═══════════════════════════════════════════ -->
+        <tr>
+          <td style="background-color:#eef2ff;padding:14px 28px;border-bottom:1px solid #e0e7ff;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+              <tr>
+                <td style="width:50%;">
+                  <p style="margin:0;font-size:10px;font-weight:600;color:#6366f1;text-transform:uppercase;letter-spacing:0.8px;">Tanggal Terbit</p>
+                  <p style="margin:3px 0 0;font-size:13px;font-weight:600;color:#1e293b;">{{issueDate}}</p>
+                </td>
+                <td style="width:50%;">
+                  <p style="margin:0;font-size:10px;font-weight:600;color:#6366f1;text-transform:uppercase;letter-spacing:0.8px;">Jatuh Tempo</p>
+                  <p style="margin:3px 0 0;font-size:13px;font-weight:600;color:#1e293b;">{{dueDate}}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ═══════════════════════════════════════════
+             CLIENT INFO
+        ═══════════════════════════════════════════ -->
+        <tr>
+          <td style="padding:20px 28px 0;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+              <tr>
+                <td style="padding:16px 18px;">
+                  <p style="margin:0 0 6px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;">Ditagihkan Kepada</p>
+                  <p style="margin:0;font-size:15px;font-weight:700;color:#0f172a;">{{clientName}}</p>
+                  <!-- Opsional: Email klien -->
+                  <p style="margin:3px 0 0;font-size:12px;color:#64748b;">{{clientEmail}}</p>
+                  <!-- Opsional: Alamat klien -->
+                  <p style="margin:3px 0 0;font-size:12px;color:#64748b;">{{clientAddress}}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ═══════════════════════════════════════════
+             ITEMS TABLE
+        ═══════════════════════════════════════════ -->
+        <tr>
+          <td style="padding:20px 28px 0;">
+            <table class="items-table" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-radius:8px;border:1px solid #e2e8f0;overflow:hidden;">
+              <!-- Table Header -->
+              <thead>
+                <tr style="background-color:#4f46e5;">
+                  <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#ffffff;letter-spacing:0.5px;text-transform:uppercase;">Deskripsi</th>
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:700;color:#ffffff;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap;">Qty</th>
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:700;color:#ffffff;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap;">Harga Satuan</th>
+                  <th class="items-col-discount" style="padding:10px 14px;text-align:right;font-size:11px;font-weight:700;color:#ffffff;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap;">Diskon</th>
+                  <th class="items-col-tax" style="padding:10px 14px;text-align:center;font-size:11px;font-weight:700;color:#ffffff;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap;">PPN</th>
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:700;color:#ffffff;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap;">Total</th>
+                </tr>
+              </thead>
+              <!-- Table Body — ganti dengan {{itemsRows}} -->
+              <tbody>
+                {{itemsRows}}
+              </tbody>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ═══════════════════════════════════════════
+             TOTALS + BANK ACCOUNT
+        ═══════════════════════════════════════════ -->
+        <tr>
+          <td style="padding:16px 28px 0;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+              <tr>
+                <!-- Left: Bank Account + Notes -->
+                <td class="two-col-left" valign="top" style="width:50%;padding-right:16px;">
+
+                  <!-- Bank Account (tampilkan jika ada) -->
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#eef2ff;border-radius:8px;border:1px solid #e0e7ff;">
+                    <tr>
+                      <td style="padding:14px 16px;">
+                        <p style="margin:0 0 8px;font-size:10px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:0.8px;">Rekening Tujuan Transfer</p>
+                        <p style="margin:0;font-size:14px;font-weight:700;color:#1e293b;">{{bankName}}</p>
+                        <p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#0f172a;letter-spacing:0.5px;font-family:'Courier New',Courier,monospace;">{{bankAccountNumber}}</p>
+                        <p style="margin:4px 0 0;font-size:11px;color:#64748b;">a/n {{bankAccountHolder}}</p>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Notes (tampilkan jika ada) -->
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:12px;">
+                    <tr>
+                      <td>
+                        <p style="margin:0 0 6px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;">Catatan</p>
+                        <p style="margin:0;font-size:12px;color:#475569;line-height:1.6;">{{notes}}</p>
+                      </td>
+                    </tr>
+                  </table>
+
+                </td>
+
+                <!-- Right: Totals -->
+                <td class="two-col-right" valign="top" style="width:50%;">
+                  <table class="totals-table" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+
+                    <!-- Subtotal -->
+                    <tr>
+                      <td style="padding:5px 0;font-size:13px;color:#64748b;">Subtotal</td>
+                      <td style="padding:5px 0;font-size:13px;color:#334155;text-align:right;font-family:'Courier New',Courier,monospace;">{{subtotal}}</td>
+                    </tr>
+
+                    <!-- PPN -->
+                    <tr>
+                      <td style="padding:5px 0;font-size:13px;color:#64748b;">PPN</td>
+                      <td style="padding:5px 0;font-size:13px;color:#334155;text-align:right;font-family:'Courier New',Courier,monospace;">{{taxAmount}}</td>
+                    </tr>
+
+                    <!-- Divider -->
+                    <tr>
+                      <td colspan="2" style="padding:4px 0;">
+                        <div style="height:1px;background-color:#e2e8f0;"></div>
+                      </td>
+                    </tr>
+
+                    <!-- Total -->
+                    <tr>
+                      <td colspan="2" style="padding:0;">
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#eef2ff;border-radius:8px;padding:0;">
+                          <tr>
+                            <td style="padding:10px 14px;font-size:14px;font-weight:700;color:#4f46e5;">Total</td>
+                            <td style="padding:10px 14px;font-size:14px;font-weight:700;color:#4f46e5;text-align:right;font-family:'Courier New',Courier,monospace;">{{totalAmount}}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+
+                    <!-- Partial Payment (tampilkan jika amountPaid > 0) -->
+                    <!-- {{#if showPartialPayment}} -->
+                    <tr>
+                      <td style="padding:6px 0 2px;font-size:12px;color:#f59e0b;">Sudah Dibayar</td>
+                      <td style="padding:6px 0 2px;font-size:12px;color:#f59e0b;text-align:right;font-family:'Courier New',Courier,monospace;">{{amountPaid}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:2px 0;font-size:13px;font-weight:700;color:#dc2626;">Sisa Tagihan</td>
+                      <td style="padding:2px 0;font-size:13px;font-weight:700;color:#dc2626;text-align:right;font-family:'Courier New',Courier,monospace;">{{remainingAmount}}</td>
+                    </tr>
+                    <!-- {{/if}} -->
+
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ═══════════════════════════════════════════
+             DIVIDER
+        ═══════════════════════════════════════════ -->
+        <tr>
+          <td style="padding:24px 28px 0;">
+            <div style="height:1px;background-color:#e2e8f0;"></div>
+          </td>
+        </tr>
+
+        <!-- ═══════════════════════════════════════════
+             FOOTER
+        ═══════════════════════════════════════════ -->
+        <tr>
+          <td style="padding:16px 28px 24px;text-align:center;">
+            <p style="margin:0;font-size:11px;color:#94a3b8;line-height:1.6;">
+              Invoice ini dibuat otomatis oleh <strong style="color:#6366f1;">MyWallets</strong>.<br />
+              Dicetak pada {{printedAt}}
+            </p>
+          </td>
+        </tr>
+
+      </table>
+      <!-- /Email Container -->
+
+    </td>
+  </tr>
+</table>
+<!-- /Outer wrapper -->
+
+</body>
+</html>

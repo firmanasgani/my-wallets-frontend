@@ -287,21 +287,39 @@
             </tbody>
           </table>
 
-          <!-- Pagination / Load More -->
-          <div v-if="hasMorePages" class="px-6 py-4 border-t border-slate-200 flex justify-center">
+          <!-- Pagination -->
+          <div v-if="hasPrevPage || hasMorePages" class="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+            <button
+              @click="loadPrevTransactions"
+              :disabled="isLoadingMore || !hasPrevPage"
+              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              Sebelumnya
+            </button>
+
+            <span class="text-xs text-slate-500">
+              Halaman {{ transactionMeta.page }} dari {{ transactionMeta.lastPage }}
+            </span>
+
             <button
               @click="loadMoreTransactions"
-              :disabled="isLoadingMore"
-              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="isLoadingMore || !hasMorePages"
+              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <LoadingSpinner
                 v-if="isLoadingMore"
                 :visible="true"
                 size="xs"
                 color="text-indigo-600"
-                class="mr-2"
+                class="mr-1"
               />
-              {{ isLoadingMore ? 'Memuat...' : 'Halaman Berikutnya' }}
+              Berikutnya
+              <svg v-if="!isLoadingMore" class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           </div>
         </div>
@@ -359,6 +377,10 @@ const currentAccountId = computed(() => route.params.id as string)
 
 const hasMorePages = computed(() => {
   return transactionMeta.value.page < transactionMeta.value.lastPage
+})
+
+const hasPrevPage = computed(() => {
+  return transactionMeta.value.page > 1
 })
 
 // Formatters
@@ -500,6 +522,23 @@ const loadMoreTransactions = async () => {
   try {
     await transactionStore.fetchTransactionsByAccount(currentAccountId.value, {
       page: nextPage,
+      limit: 10,
+    })
+  } catch (err) {
+    console.error(err)
+  } finally {
+    isLoadingMore.value = false
+  }
+}
+
+const loadPrevTransactions = async () => {
+  if (isLoadingMore.value || !hasPrevPage.value) return
+
+  isLoadingMore.value = true
+  const prevPage = transactionMeta.value.page - 1
+  try {
+    await transactionStore.fetchTransactionsByAccount(currentAccountId.value, {
+      page: prevPage,
       limit: 10,
     })
   } catch (err) {

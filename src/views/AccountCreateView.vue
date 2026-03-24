@@ -72,14 +72,14 @@
         <label for="currency" class="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-200"
           >Mata Uang (Opsional, default IDR)</label
         >
-        <input
-          type="text"
+        <select
           id="currency"
           v-model="formData.currency"
           maxlength="5"
           class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:text-slate-200"
-          placeholder="IDR"
-        />
+        >
+        <option value="IDR" selected>IDR</option>
+      </select>
       </div>
 
       <div>

@@ -354,7 +354,7 @@ onMounted(() => {
   }, 700)
 })
 
-const pricingPlans = ref(PRICING_PLANS)
+const pricingPlans = ref(PRICING_PLANS.filter((p) => !p.hidden))
 </script>
 
 <style scoped>

@@ -8,7 +8,7 @@
     @click.self="overlay && closeOnOverlayClick ? handleOverlayClick() : null"
   >
     <div
-      :class="['p-4 rounded-lg', overlay && !transparentOverlayContent ? 'bg-white shadow-xl' : '']"
+      :class="['flex', 'gap-4', 'p-4 rounded-lg', overlay && !transparentOverlayContent ? 'bg-white shadow-xl' : '']"
     >
       <svg
         :class="['animate-spin', spinnerSizeClass, color]"

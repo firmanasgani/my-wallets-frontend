@@ -107,12 +107,15 @@
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Metode</label>
-                  <input
+                  <select
                     v-model="form.paymentMethod"
-                    type="text"
-                    placeholder="Transfer, Cash, Cek..."
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
+                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">-- Pilih --</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Transfer">Transfer</option>
+                    <option value="Cheque">Cheque</option>
+                  </select>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Referensi</label>

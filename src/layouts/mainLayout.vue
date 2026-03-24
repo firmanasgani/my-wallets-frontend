@@ -13,7 +13,7 @@
         </RouterLink>
       </div>
       <WorkspaceSwitcher class="mb-4" />
-      <nav class="flex-grow overflow-y-auto">
+      <nav class="flex-grow overflow-y-auto no-scrollbar">
         <PersonalNav v-if="wsStore.mode === 'personal'" />
         <BusinessNav v-else-if="wsStore.mode === 'business' && isBusinessPlan" />
       </nav>
@@ -217,7 +217,7 @@
                 </svg>
               </button>
             </div>
-            <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+            <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto no-scrollbar">
               <div class="flex-shrink-0 flex items-center px-4">
                 <RouterLink
                   :to="{ name: 'dashboard' }"
@@ -342,5 +342,12 @@ main.flex-1.overflow-x-hidden.overflow-y-auto {
 .md\:flex-col {
   /* Pastikan sidebar desktop bisa scroll jika menunya panjang */
   overflow-y: auto;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 </style>

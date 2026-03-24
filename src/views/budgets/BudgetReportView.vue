@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
+      <div class="w-full">
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Laporan Anggaran</h1>
         <p class="text-sm text-slate-500 mt-1 dark:text-white">Pantau realisasi anggaran Anda.</p>
       </div>

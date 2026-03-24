@@ -97,15 +97,10 @@
                   </div>
                   <div v-if="isEditing" class="w-full">
                     <p class="text-xs text-slate-400 font-medium mb-0.5">Kategori</p>
-                    <select
+                    <CategorySelect
                       v-model="editForm.categoryId"
-                      class="w-full border-b border-slate-300 dark:border-slate-600 focus:border-indigo-500 outline-none py-1 text-slate-900 dark:text-slate-100 font-semibold bg-transparent dark:bg-slate-800"
-                    >
-                      <option value="" disabled>Pilih Kategori</option>
-                      <option v-for="cat in availableCategories" :key="cat.id" :value="cat.id">
-                        {{ cat.categoryName }}
-                      </option>
-                    </select>
+                      :categories="availableCategories"
+                    />
                   </div>
                   <div v-else-if="transaction.category">
                     <p class="text-xs text-slate-400 font-medium mb-0.5">Kategori</p>
@@ -146,9 +141,9 @@
                 </div>
 
                 <!-- Arrow for transfer -->
-                <div v-if="isTransfer" class="flex justify-center -my-3 relative z-10">
+                <div v-if="isTransfer" class="flex justify-center">
                   <div
-                    class="bg-white dark:bg-slate-700 p-2 rounded-full border border-slate-100 dark:border-slate-600 shadow-sm text-blue-500"
+                    class="bg-slate-100 dark:bg-slate-700 p-2 rounded-full text-blue-500"
                   >
                     <i class="fa-solid fa-arrow-down"></i>
                   </div>
@@ -346,6 +341,7 @@ import type { Transaction } from '@/types/transaction'
 import { FrontendTransactionType } from '@/types/enums'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+import CategorySelect from '@/components/transactions/CategorySelect.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -472,17 +468,27 @@ const formatDateTime = (dateString: string) => {
 const availableCategories = computed(() => {
   if (!transaction.value) return []
 
-  // Tampilkan semua kategori berdasarkan tipe transaksi
-  // Jika transfer, tidak perlu kategori (biasanya)
+  // Jika transfer, tidak perlu kategori
   if (isTransfer.value) return []
 
-  const allCats = categoryStore.allCategories
-  if (isIncome.value) {
-    return allCats.filter((c) => c.categoryType === 'INCOME')
-  } else if (isExpense.value) {
-    return allCats.filter((c) => c.categoryType === 'EXPENSE')
+  const targetType = isIncome.value ? 'INCOME' : isExpense.value ? 'EXPENSE' : null
+  if (!targetType) return []
+
+  const result: { id: string; categoryName: string; icon?: string | null; color?: string | null; parentPrefix?: string }[] = []
+
+  function flatten(items: typeof categoryStore.allCategories, prefix = '') {
+    items.forEach((item) => {
+      if (item.categoryType === targetType) {
+        result.push({ id: item.id, categoryName: item.categoryName, icon: item.icon, color: item.color, parentPrefix: prefix })
+      }
+      if (item.subCategories && item.subCategories.length > 0) {
+        flatten(item.subCategories, prefix + '- ')
+      }
+    })
   }
-  return []
+
+  flatten(categoryStore.allCategories)
+  return result
 })
 
 const startEditing = () => {

@@ -1,9 +1,21 @@
 <template>
   <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="mb-6 border-b border-slate-200 dark:border-slate-700 pb-4">
-      <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Neraca Keuangan</h1>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Balance Sheet — posisi aset, liabilitas, dan ekuitas per tanggal tertentu.</p>
+    <div class="mb-6 border-b border-slate-200 dark:border-slate-700 pb-4 flex justify-between items-start gap-4">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Neraca Keuangan</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Balance Sheet — posisi aset, liabilitas, dan ekuitas per tanggal tertentu.</p>
+      </div>
+      <div v-if="data" class="flex items-center gap-1.5 shrink-0">
+        <button @click="doExportExcel" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          <span class="hidden sm:inline">Excel</span>
+        </button>
+        <button @click="doExportPDF" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors disabled:opacity-50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+          <span class="hidden sm:inline">PDF</span>
+        </button>
+      </div>
     </div>
 
     <!-- Disclaimer -->
@@ -192,8 +204,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useBusinessReportsStore } from '@/stores/businessReports'
+import { useBusinessStore } from '@/stores/business'
+import ExportService from '@/services/exportService'
 
 const reportsStore = useBusinessReportsStore()
+const businessStore = useBusinessStore()
+const isExporting = ref(false)
 
 const errorMsg = ref('')
 
@@ -213,6 +229,19 @@ async function loadReport() {
   } catch {
     errorMsg.value = 'Gagal memuat neraca keuangan.'
   }
+}
+
+async function doExportExcel() {
+  if (!data.value) return
+  isExporting.value = true
+  try {
+    await ExportService.exportBalanceSheetToExcel(data.value, businessStore.currentCompany?.name)
+  } finally { isExporting.value = false }
+}
+
+function doExportPDF() {
+  if (!data.value) return
+  ExportService.exportBalanceSheetToPDF(data.value, businessStore.currentCompany?.name)
 }
 
 function resetFilters() {

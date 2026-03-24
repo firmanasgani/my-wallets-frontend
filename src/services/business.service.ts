@@ -33,6 +33,7 @@ import type {
   ReportDateParams,
   BalanceSheetParams,
   JournalReportParams,
+  KpiDashboardResponse,
 } from '@/types/business'
 
 export const BusinessService = {
@@ -161,6 +162,11 @@ export const BusinessService = {
     return response.data
   },
 
+  async sendInvoiceEmail(id: string): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>(`/business/invoices/${id}/send-email`)
+    return response.data
+  },
+
   async payInvoice(id: string, payload: PayInvoicePayload): Promise<PayInvoiceResponse> {
     const response = await apiClient.post<PayInvoiceResponse>(`/business/invoices/${id}/pay`, payload)
     return response.data
@@ -243,6 +249,11 @@ export const BusinessService = {
     return response.data
   },
 
+  async getBusinessTransactionById(id: string): Promise<BusinessTransaction> {
+    const response = await apiClient.get<BusinessTransaction>(`/business/transactions/${id}`)
+    return response.data
+  },
+
   async createBusinessTransaction(payload: CreateBusinessTransactionPayload): Promise<BusinessTransaction> {
     const response = await apiClient.post<BusinessTransaction>('/business/transactions', payload)
     return response.data
@@ -271,6 +282,12 @@ export const BusinessService = {
 
   async getJournalReport(params?: JournalReportParams): Promise<JournalReportResponse> {
     const response = await apiClient.get<JournalReportResponse>('/business/reports/journal', { params })
+    return response.data
+  },
+
+  // ─── KPI Dashboard ─────────────────────────────────────────────────────────
+  async getKpiDashboard(): Promise<KpiDashboardResponse> {
+    const response = await apiClient.get<KpiDashboardResponse>('/business/kpi')
     return response.data
   },
 }

@@ -1,5 +1,30 @@
 <template>
   <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Toast Notification -->
+    <Transition name="toast">
+      <div
+        v-if="toast"
+        class="fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm font-medium"
+        :class="toast.type === 'success'
+          ? 'bg-emerald-50 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-700'
+          : 'bg-red-50 dark:bg-red-900/80 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-700'"
+      >
+        <!-- Icon -->
+        <svg v-if="toast.type === 'success'" class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <svg v-else class="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        {{ toast.message }}
+        <button @click="toast = null" class="ml-2 opacity-60 hover:opacity-100 transition-opacity">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </Transition>
+
     <!-- Back -->
     <div class="mb-6 flex items-center gap-3">
       <RouterLink :to="{ name: 'business-invoices' }" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
@@ -38,6 +63,18 @@
 
           <!-- Action Buttons -->
           <div class="flex flex-wrap gap-2">
+            <!-- Export / Print page -->
+            <RouterLink
+              :to="{ name: 'invoice-export', params: { id: invoice.id } }"
+              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              title="Export / Cetak Invoice"
+            >
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export
+            </RouterLink>
+
             <!-- Print PDF — always visible -->
             <button
               @click="handlePrintPDF"
@@ -80,6 +117,13 @@
               class="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Kirim Invoice
+            </button>
+            <button
+              v-if="(invoice.status === 'SENT' || invoice.status === 'OVERDUE') && canCreate"
+              @click="isSendEmailModalOpen = true"
+              class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Kirim Email
             </button>
             <button
               v-if="(invoice.status === 'SENT' || invoice.status === 'OVERDUE') && canPay"
@@ -156,7 +200,7 @@
                 <th class="px-6 py-3">Deskripsi</th>
                 <th class="px-6 py-3 text-right w-20">Qty</th>
                 <th class="px-6 py-3 text-right w-36">Harga Satuan</th>
-                <th class="px-6 py-3 text-right w-28">Diskon</th>
+                <th class="px-6 py-3 text-right w-32">Diskon</th>
                 <th class="px-6 py-3 text-center w-16">PPN</th>
                 <th class="px-6 py-3 text-right w-36">Total</th>
               </tr>
@@ -166,7 +210,7 @@
                 <td class="px-6 py-3">{{ item.description }}</td>
                 <td class="px-6 py-3 text-right font-mono">{{ parseFloat(item.quantity) }}</td>
                 <td class="px-6 py-3 text-right font-mono">{{ formatCurrency(item.unitPrice) }}</td>
-                <td class="px-6 py-3 text-right font-mono">
+                <td class="px-6 py-3 text-right font-mono whitespace-nowrap">
                   <span v-if="parseFloat(item.discountAmount) > 0" class="text-red-500">-{{ formatCurrency(item.discountAmount) }}</span>
                   <span v-else class="text-slate-300 dark:text-slate-600">—</span>
                 </td>
@@ -311,6 +355,19 @@
       @confirm="handleSend"
     />
 
+    <!-- Send Email Confirmation -->
+    <ConfirmationModal
+      :is-open="isSendEmailModalOpen"
+      title="Kirim Email Invoice"
+      message="Email invoice akan dikirim ulang ke klien. Lanjutkan?"
+      confirm-button-text="Ya, Kirim"
+      confirm-button-class="bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
+      icon-type="info"
+      :is-confirming="invoicesStore.isSubmitting"
+      @update:is-open="isSendEmailModalOpen = $event"
+      @confirm="handleSendEmail"
+    />
+
     <!-- Delete Confirmation -->
     <ConfirmationModal
       :is-open="isDeleteModalOpen"
@@ -352,7 +409,9 @@ const invoicesStore = useInvoicesStore()
 const businessStore = useBusinessStore()
 
 const errorMsg = ref('')
+const toast = ref<{ type: 'success' | 'error'; message: string } | null>(null)
 const isSendModalOpen = ref(false)
+const isSendEmailModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
 const isPayModalOpen = ref(false)
 const isDuplicating = ref(false)
@@ -408,6 +467,25 @@ const handleSend = async () => {
   } catch (err: any) {
     errorMsg.value = err.response?.data?.message || 'Gagal mengirim invoice.'
     isSendModalOpen.value = false
+  }
+}
+
+const showToast = (type: 'success' | 'error', message: string) => {
+  toast.value = { type, message }
+  setTimeout(() => { toast.value = null }, 4000)
+}
+
+const handleSendEmail = async () => {
+  if (!invoice.value) return
+  try {
+    await invoicesStore.sendInvoiceEmail(invoice.value.id)
+    isSendEmailModalOpen.value = false
+    showToast('success', 'Email invoice berhasil dikirim.')
+  } catch (err: any) {
+    const status = err.response?.status
+    const msg = err.response?.data?.message
+    isSendEmailModalOpen.value = false
+    showToast('error', msg || (status === 404 ? 'Endpoint belum tersedia di server.' : `Gagal mengirim email. (${status ?? 'network error'})`))
   }
 }
 
@@ -471,3 +549,8 @@ const contactTypeClass = (type: ContactType) => {
   return map[type]
 }
 </script>
+
+<style scoped>
+.toast-enter-active, .toast-leave-active { transition: all 0.3s ease; }
+.toast-enter-from, .toast-leave-to { opacity: 0; transform: translateX(1rem); }
+</style>

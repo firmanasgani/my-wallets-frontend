@@ -462,3 +462,39 @@ export interface JournalReportParams {
   page?: number
   limit?: number
 }
+
+// ─── KPI Dashboard (Phase 6) ─────────────────────────────────────────────────
+
+export interface KpiCoaItem {
+  coaCode: string
+  coaName: string
+  amount: string
+}
+
+export interface KpiDashboardResponse {
+  profitability: {
+    period: { month: number; year: number }
+    totalRevenue: string
+    totalExpense: string
+    netProfit: string
+    isProfit: boolean
+    profitMargin: string
+    revenueGrowth: string | null
+  }
+  liquidity: {
+    cashPosition: string
+    totalReceivable: string
+    totalPayable: string
+  }
+  invoiceActivity: {
+    totalSentThisMonth: number
+    totalPaidThisMonth: number
+    totalOverdue: number
+    overdueAmount: string
+    outstandingAmount: string
+  }
+  breakdown: {
+    topRevenueAccounts: KpiCoaItem[]
+    topExpenseAccounts: KpiCoaItem[]
+  }
+}

@@ -39,6 +39,10 @@ export const useBusinessTransactionsStore = defineStore('businessTransactions', 
     }
   }
 
+  const fetchTransactionById = async (id: string): Promise<BusinessTransaction> => {
+    return await BusinessService.getBusinessTransactionById(id)
+  }
+
   const deleteTransaction = async (id: string) => {
     const result = await BusinessService.deleteBusinessTransaction(id)
     transactions.value = transactions.value.filter((t) => t.id !== id)
@@ -61,6 +65,7 @@ export const useBusinessTransactionsStore = defineStore('businessTransactions', 
     isLoading,
     isSubmitting,
     fetchTransactions,
+    fetchTransactionById,
     createTransaction,
     deleteTransaction,
     clearStore,

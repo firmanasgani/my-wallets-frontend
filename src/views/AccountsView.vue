@@ -168,10 +168,10 @@
 
     <!-- Account Statistics Cards -->
     <div
-      v-if="!isLoading && accounts && accounts.length > 0"
+      v-if="!isLoading"
       class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
     >
-      <StatsCard title="Total Akun" :value="accounts.length" variant="indigo">
+      <StatsCard title="Total Akun" :value="accountStore.accounts.length" variant="indigo" @click="filtersAccountsByType(null)" :class="activeTypeFilter === null ? 'ring-2 ring-indigo-500 cursor-pointer' : 'cursor-pointer'">
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -190,7 +190,7 @@
         </template>
       </StatsCard>
 
-      <StatsCard title="Rekening Bank" :value="accountStore.totalBanks" variant="blue">
+      <StatsCard title="Rekening Bank" :value="accountStore.totalBanks" variant="blue" @click="filtersAccountsByType('BANK')" :class="activeTypeFilter === 'BANK' ? 'ring-2 ring-blue-500 cursor-pointer' : 'cursor-pointer'">
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -209,7 +209,7 @@
         </template>
       </StatsCard>
 
-      <StatsCard title="E-Wallet" :value="accountStore.totalWallets" variant="red">
+      <StatsCard title="E-Wallet" :value="accountStore.totalWallets" variant="red" @click="filtersAccountsByType('E_WALLET')" :class="activeTypeFilter === 'E_WALLET' ? 'ring-2 ring-red-500 cursor-pointer' : 'cursor-pointer'">
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -228,7 +228,7 @@
         </template>
       </StatsCard>
 
-      <StatsCard title="Kartu Kredit" :value="accountStore.totalCards" variant="yellow">
+      <StatsCard title="Kartu Kredit" :value="accountStore.totalCards" variant="yellow" @click="filtersAccountsByType('CREDIT_CARD')" :class="activeTypeFilter === 'CREDIT_CARD' ? 'ring-2 ring-yellow-500 cursor-pointer' : 'cursor-pointer'">
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -307,7 +307,7 @@
         <!-- Card Face -->
         <div
           :class="getCardGradient(account.accountType)"
-          class="relative rounded-2xl p-5 text-white shadow-xl overflow-hidden cursor-pointer select-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl"
+          class="relative rounded-2xl p-4 sm:p-5 text-white shadow-xl overflow-hidden cursor-pointer select-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl"
           style="aspect-ratio: 1.586 / 1;"
           @click="viewTransactions(account.id)"
         >
@@ -341,18 +341,18 @@
           </div>
 
           <!-- Bottom row: account number + name -->
-          <div class="absolute bottom-5 left-5 right-5 flex items-end justify-between z-10">
-            <div>
-              <p class="text-xs text-white/60 uppercase tracking-wider mb-0.5">No. Akun</p>
-              <p class="font-mono text-sm tracking-widest">
+          <div class="absolute bottom-4 sm:bottom-5 left-4 sm:left-5 right-4 sm:right-5 flex items-end justify-between z-10 gap-2">
+            <div class="flex-shrink-0">
+              <p class="text-[10px] sm:text-xs text-white/60 uppercase tracking-wider mb-0.5 whitespace-nowrap">No. Akun</p>
+              <p class="font-mono text-xs sm:text-sm tracking-widest whitespace-nowrap">
                 {{ account.accountNumber ? `•••• ${account.accountNumber.slice(-4)}` : '•••• ••••' }}
               </p>
             </div>
-            <div class="text-right">
-              <p class="text-xs text-white/60 uppercase tracking-wider mb-0.5">
+            <div class="text-right min-w-0">
+              <p class="text-[10px] sm:text-xs text-white/60 uppercase tracking-wider mb-0.5 truncate">
                 {{ account.bank?.name || 'Akun' }}
               </p>
-              <p class="text-sm font-semibold truncate max-w-[130px]" :title="account.accountName">
+              <p class="text-xs sm:text-sm font-semibold truncate" :title="account.accountName">
                 {{ account.accountName }}
               </p>
             </div>
@@ -437,7 +437,11 @@ watch(showBalance, (val) => {
   localStorage.setItem('show_balance', val.toString())
 })
 
-const accounts = computed(() => accountStore.accounts)
+const activeTypeFilter = ref<string | null>(null)
+const accounts = computed(() => {
+  if (!activeTypeFilter.value) return accountStore.accounts
+  return accountStore.accounts.filter((a) => a.accountType === activeTypeFilter.value)
+})
 const isLoading = computed(() => accountStore.isLoading)
 
 const canAddAccount = computed(() => {
@@ -453,6 +457,10 @@ onMounted(async () => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutsideExport)
 })
+
+const filtersAccountsByType = (type: string | null) => {
+  activeTypeFilter.value = activeTypeFilter.value === type ? null : type
+}
 
 const formatCurrency = (
   value: number | string | null | undefined,

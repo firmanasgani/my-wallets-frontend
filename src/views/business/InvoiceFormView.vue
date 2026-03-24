@@ -248,161 +248,97 @@
           </button>
         </div>
 
-        <!-- Column Headers (desktop only) -->
-        <div class="hidden md:grid md:grid-cols-12 gap-3 px-5 pt-4 pb-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-          <div class="col-span-4">Deskripsi</div>
-          <div class="col-span-2 text-right">Qty</div>
-          <div class="col-span-2 text-right">Harga Satuan</div>
-          <div class="col-span-1 text-right">Diskon</div>
-          <div class="col-span-1 text-center">PPN</div>
-          <div class="col-span-1 text-right">Total</div>
-          <div class="col-span-1"></div>
-        </div>
-
         <!-- Item List -->
-        <div class="px-5 pb-5 space-y-3">
+        <div class="px-5 pb-5 space-y-2">
           <div
             v-for="(item, idx) in form.items"
             :key="idx"
+            class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/40 overflow-hidden group"
           >
-            <!-- Desktop: single-row grid -->
-            <div class="hidden md:grid md:grid-cols-12 gap-3 items-center group">
-              <!-- Description -->
-              <div class="col-span-4">
-                <input
-                  v-model="item.description"
-                  type="text"
-                  placeholder="Nama produk / layanan"
-                  required
-                  class="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm bg-slate-50 dark:bg-slate-700/60 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
-                />
-              </div>
+            <!-- Row 1: Nomor item + Deskripsi + Hapus -->
+            <div class="flex items-center gap-3 px-4 pt-3 pb-2">
+              <span class="shrink-0 w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 text-xs font-bold flex items-center justify-center">
+                {{ idx + 1 }}
+              </span>
+              <input
+                v-model="item.description"
+                type="text"
+                placeholder="Nama produk / layanan"
+                required
+                class="flex-1 min-w-0 px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
+              />
+              <button
+                v-if="form.items.length > 1"
+                type="button"
+                @click="removeItem(idx)"
+                class="shrink-0 p-1.5 rounded-lg text-slate-300 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                title="Hapus item"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Row 2: Qty | Harga Satuan | Diskon | PPN | Total -->
+            <div class="flex flex-wrap items-end gap-x-3 gap-y-2 px-4 pb-3 pt-1 border-t border-slate-200 dark:border-slate-600/50 bg-white/50 dark:bg-slate-800/30">
+
               <!-- Qty -->
-              <div class="col-span-2">
+              <div class="flex flex-col gap-1 w-20">
+                <label class="text-xs font-medium text-slate-400 dark:text-slate-500">Qty</label>
                 <input
                   v-model.number="item.quantity"
                   type="number"
                   min="0.0001"
                   step="any"
                   required
-                  class="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-right bg-slate-50 dark:bg-slate-700/60 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
+                  class="w-full px-2.5 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-right bg-slate-50 dark:bg-slate-700/60 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
                 />
               </div>
-              <!-- Unit Price -->
-              <div class="col-span-2">
+
+              <!-- Harga Satuan -->
+              <div class="flex flex-col gap-1 w-36">
+                <label class="text-xs font-medium text-slate-400 dark:text-slate-500">Harga Satuan</label>
                 <CurrencyInput
                   v-model="item.unitPrice"
-                  class="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 !rounded-xl text-sm text-right bg-slate-50 dark:bg-slate-700/60 focus:bg-white dark:focus:bg-slate-700 transition-all"
+                  class="w-full px-2.5 py-2 border border-slate-200 dark:border-slate-600 !rounded-lg text-sm text-right bg-slate-50 dark:bg-slate-700/60 focus:bg-white dark:focus:bg-slate-700 transition-all"
                 />
               </div>
-              <!-- Discount -->
-              <div class="col-span-1">
+
+              <!-- Diskon -->
+              <div class="flex flex-col gap-1 w-32">
+                <label class="text-xs font-medium text-slate-400 dark:text-slate-500">Diskon</label>
                 <CurrencyInput
                   v-model="item.discountAmount"
-                  class="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 !rounded-xl text-sm text-right bg-slate-50 dark:bg-slate-700/60 focus:bg-white dark:focus:bg-slate-700 transition-all"
+                  class="w-full px-2.5 py-2 border border-slate-200 dark:border-slate-600 !rounded-lg text-sm text-right bg-slate-50 dark:bg-slate-700/60 focus:bg-white dark:focus:bg-slate-700 transition-all"
                 />
               </div>
-              <!-- PPN Checkbox -->
-              <div class="col-span-1 flex justify-center">
-                <label class="relative inline-flex items-center cursor-pointer">
+
+              <!-- PPN -->
+              <div class="flex flex-col gap-1 items-start">
+                <label class="text-xs font-medium text-slate-400 dark:text-slate-500">PPN</label>
+                <label class="relative inline-flex items-center cursor-pointer h-[34px]">
                   <input type="checkbox" v-model="item.taxable" class="sr-only peer" />
                   <div class="w-9 h-5 bg-slate-200 peer-focus:ring-2 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-slate-600 peer-checked:bg-indigo-600 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
                 </label>
               </div>
-              <!-- Total -->
-              <div class="col-span-1 text-right">
-                <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  {{ formatCurrencyShort(calcItemTotal(item)) }}
-                </span>
-              </div>
-              <!-- Remove -->
-              <div class="col-span-1 flex justify-center">
-                <button
-                  v-if="form.items.length > 1"
-                  type="button"
-                  @click="removeItem(idx)"
-                  class="p-1.5 rounded-lg text-slate-300 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-            </div>
 
-            <!-- Mobile: card layout -->
-            <div class="md:hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/40 p-4 space-y-3">
-              <div class="flex items-center justify-between mb-1">
-                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Item {{ idx + 1 }}</span>
-                <button
-                  v-if="form.items.length > 1"
-                  type="button"
-                  @click="removeItem(idx)"
-                  class="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-              <!-- Deskripsi -->
-              <div>
-                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Deskripsi *</label>
-                <input
-                  v-model="item.description"
-                  type="text"
-                  placeholder="Nama produk / layanan"
-                  required
-                  class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                />
-              </div>
-              <!-- Qty + Harga -->
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Qty *</label>
-                  <input
-                    v-model.number="item.quantity"
-                    type="number"
-                    min="0.0001"
-                    step="any"
-                    required
-                    class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm text-right bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  />
-                </div>
-                <div>
-                  <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Harga Satuan *</label>
-                  <CurrencyInput
-                    v-model="item.unitPrice"
-                    class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 !rounded-xl text-sm text-right"
-                  />
-                </div>
-              </div>
-              <!-- Diskon -->
-              <div>
-                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Diskon</label>
-                <CurrencyInput
-                  v-model="item.discountAmount"
-                  class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 !rounded-xl text-sm text-right"
-                />
-              </div>
-              <!-- PPN + Total -->
-              <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-600">
-                <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                  <div class="relative">
-                    <input type="checkbox" v-model="item.taxable" class="sr-only peer" />
-                    <div class="w-9 h-5 bg-slate-200 rounded-full peer dark:bg-slate-600 peer-checked:bg-indigo-600 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
-                  </div>
-                  <span class="text-sm text-slate-600 dark:text-slate-400">
-                    PPN {{ taxEnabled ? `(${taxRate}%)` : '(dinonaktifkan)' }}
+              <!-- Spacer -->
+              <div class="flex-1 hidden sm:block"></div>
+
+              <!-- Total -->
+              <div class="flex flex-col gap-1 items-end ml-auto">
+                <label class="text-xs font-medium text-slate-400 dark:text-slate-500">Total</label>
+                <div class="h-[34px] flex items-center px-2">
+                  <span class="text-sm font-bold tabular-nums whitespace-nowrap" :class="calcItemTotal(item) < 0 ? 'text-red-500 dark:text-red-400' : 'text-slate-800 dark:text-slate-100'">
+                    {{ formatCurrency(calcItemTotal(item)) }}
                   </span>
-                </label>
-                <div class="text-right">
-                  <p class="text-xs text-slate-400 dark:text-slate-500">Total</p>
-                  <p class="text-sm font-bold text-slate-800 dark:text-slate-100">{{ formatCurrency(calcItemTotal(item)) }}</p>
                 </div>
               </div>
+
             </div>
           </div>
+
 
           <!-- Empty state -->
           <div v-if="form.items.length === 0" class="py-8 text-center text-slate-400 dark:text-slate-500 text-sm">
@@ -429,7 +365,18 @@
             </div>
             <div class="flex justify-between items-center pt-2.5 border-t border-slate-200 dark:border-slate-700">
               <span class="font-bold text-slate-700 dark:text-slate-200">Total</span>
-              <span class="font-bold text-lg text-indigo-600 dark:text-indigo-400 tabular-nums">{{ formatCurrency(grandTotal) }}</span>
+              <span :class="['font-bold text-lg tabular-nums', grandTotal < 0 ? 'text-red-600 dark:text-red-400' : 'text-indigo-600 dark:text-indigo-400']">
+                {{ formatCurrency(grandTotal) }}
+              </span>
+            </div>
+            <!-- Warning: total minus -->
+            <div v-if="grandTotal < 0" class="flex items-start gap-2 mt-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800">
+              <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-xs text-red-700 dark:text-red-300 leading-relaxed">
+                Total invoice tidak boleh minus. Periksa kembali <strong>diskon</strong> yang melebihi harga satuan × qty.
+              </p>
             </div>
           </div>
         </div>
@@ -455,7 +402,7 @@
         </button>
         <button
           type="submit"
-          :disabled="isSubmitting || form.items.length === 0"
+          :disabled="isSubmitting || form.items.length === 0 || grandTotal < 0"
           class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2"
         >
           <svg v-if="isSubmitting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -603,6 +550,10 @@ const handleSubmit = async () => {
   errorMsg.value = ''
   if (form.value.items.length === 0) {
     errorMsg.value = 'Minimal satu item harus diisi.'
+    return
+  }
+  if (grandTotal.value < 0) {
+    errorMsg.value = 'Total invoice tidak boleh minus. Periksa kembali harga, qty, atau diskon yang diisi.'
     return
   }
   isSubmitting.value = true

@@ -2,6 +2,7 @@ export enum SubscriptionPlan {
   FREE = 'FREE',
   PREMIUM = 'PREMIUM',
   FAMILY = 'FAMILY', // Maps to 'Pro/Keluarga' in UI
+  BUSINESS = 'BUSINESS',
 }
 
 export interface PricingPlanDetails {
@@ -16,7 +17,8 @@ export interface PricingPlanDetails {
     link: { name: string }
   }
   recommended: boolean
-  disabled?: boolean // For 'Segera Hadir' logic
+  disabled?: boolean
+  hidden?: boolean // Hide plan from landing page pricing section
 }
 
 export const PRICING_PLANS: PricingPlanDetails[] = [
@@ -37,6 +39,27 @@ export const PRICING_PLANS: PricingPlanDetails[] = [
     recommended: false,
   },
   {
+    key: SubscriptionPlan.BUSINESS,
+    name: 'Bisnis',
+    description: 'Solusi akuntansi lengkap untuk usaha dan profesional.',
+    price: 'Rp 199rb',
+    billingPeriod: '/bulan',
+    features: [
+      'Semua di paket Premium',
+      'Manajemen Perusahaan',
+      'Bagan Akun (Chart of Accounts) Otomatis',
+      'Manajemen Kontak (Pelanggan & Pemasok)',
+      'Pembuatan & Pengelolaan Invoice',
+      'Pencatatan Jurnal Double-Entry',
+      'Laporan Keuangan (Laba Rugi, Neraca, Arus Kas)',
+      'KPI Dashboard Bisnis',
+      'Multi-user dengan Role (Owner, Admin, Staff, Viewer)',
+      'Manajemen Pajak (PPN)',
+    ],
+    cta: { text: 'Pilih Bisnis', link: { name: 'register' } },
+    recommended: true,
+  },
+  {
     key: SubscriptionPlan.PREMIUM,
     name: 'Premium',
     description: 'Fitur lengkap untuk kontrol finansial yang lebih mendalam.',
@@ -53,7 +76,7 @@ export const PRICING_PLANS: PricingPlanDetails[] = [
       'Dukungan Prioritas',
     ],
     cta: { text: 'Pilih Premium', link: { name: 'register' } },
-    recommended: true,
+    recommended: false,
   },
   {
     key: SubscriptionPlan.FAMILY,
@@ -71,11 +94,7 @@ export const PRICING_PLANS: PricingPlanDetails[] = [
     ],
     cta: { text: 'Pilih Pro (Menyusul)', link: { name: 'register' } },
     recommended: false,
-    disabled: true, // HomeView implies it's available (link to register), but PricingModal previously had it disabled.
-    // User said "Buat yang ada di HomeView sebagai patokannya". HomeView links to register.
-    // However, if the features aren't built, maybe I should keep it disabled in Modal?
-    // But instructions say "HomeView sebagai patokannya".
-    // I will set disabled to false, or let the Modal decide based on logic.
-    // For now I'll stick to HomeView data.
+    disabled: true,
+    hidden: true, // Sementara disembunyikan dari halaman landing
   },
 ]

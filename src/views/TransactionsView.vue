@@ -66,12 +66,12 @@
     <!-- Free Plan Alert -->
     <div
       v-if="authStore.user?.subscriptionPlan === 'FREE'"
-      class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4"
+      class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4"
     >
       <div class="flex">
         <div class="flex-shrink-0">
           <svg
-            class="h-5 w-5 text-blue-400"
+            class="h-5 w-5 text-yellow-400"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -85,12 +85,12 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-blue-700">
+          <p class="text-sm text-yellow-700">
             <span class="font-bold">Info Paket Free:</span>
             Anda hanya dapat melihat riwayat transaksi selama 12 bulan terakhir.
             <RouterLink
               :to="{ name: 'settings' }"
-              class="font-medium underline hover:text-blue-600"
+              class="font-medium underline hover:text-yellow-600"
             >
               Upgrade ke Premium
             </RouterLink>

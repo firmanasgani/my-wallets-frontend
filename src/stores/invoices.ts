@@ -81,6 +81,15 @@ export const useInvoicesStore = defineStore('invoices', () => {
     }
   }
 
+  const sendInvoiceEmail = async (id: string) => {
+    isSubmitting.value = true
+    try {
+      return await BusinessService.sendInvoiceEmail(id)
+    } finally {
+      isSubmitting.value = false
+    }
+  }
+
   const payInvoice = async (id: string, payload: PayInvoicePayload) => {
     isSubmitting.value = true
     try {
@@ -124,6 +133,7 @@ export const useInvoicesStore = defineStore('invoices', () => {
     updateInvoice,
     deleteInvoice,
     sendInvoice,
+    sendInvoiceEmail,
     payInvoice,
     duplicateInvoice,
     clearStore,

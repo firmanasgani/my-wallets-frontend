@@ -173,6 +173,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Detail Goal', requiresPremium: true },
       },
       {
+        path: 'business/kpi',
+        name: 'business-kpi',
+        component: () => import('@/views/business/KpiDashboardView.vue'),
+        meta: { title: 'KPI Dashboard', requiresBusiness: true },
+      },
+      {
         path: 'business/settings',
         name: 'business-settings',
         component: () => import('@/views/business/BusinessSettingsView.vue'),
@@ -233,6 +239,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Edit Invoice', requiresBusiness: true },
       },
       {
+        path: 'business/invoices/:id/export',
+        name: 'invoice-export',
+        component: () => import('@/views/business/InvoiceExportView.vue'),
+        meta: { title: 'Export Invoice', requiresBusiness: true },
+      },
+      {
         path: 'business/bank-accounts',
         name: 'business-bank-accounts',
         component: () => import('@/views/business/BankAccountsView.vue'),
@@ -249,6 +261,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'business-transaction-create',
         component: () => import('@/views/business/BusinessTransactionFormView.vue'),
         meta: { title: 'Transaksi Baru', requiresBusiness: true },
+      },
+      {
+        path: 'business/transactions/:id',
+        name: 'business-transaction-detail',
+        component: () => import('@/views/business/BusinessTransactionDetailView.vue'),
+        meta: { title: 'Detail Jurnal', requiresBusiness: true },
       },
       {
         path: 'business/reports/profit-loss',

@@ -1,9 +1,22 @@
 <template>
   <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="mb-6 border-b border-slate-200 dark:border-slate-700 pb-4">
-      <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Jurnal Umum</h1>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">General Journal — audit trail seluruh entri jurnal akuntansi secara kronologis.</p>
+    <div class="mb-6 border-b border-slate-200 dark:border-slate-700 pb-4 flex justify-between items-start gap-4">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Jurnal Umum</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">General Journal — audit trail seluruh entri jurnal akuntansi secara kronologis.</p>
+      </div>
+      <div v-if="data && data.data.length > 0" class="flex items-center gap-1.5 shrink-0">
+        <button @click="doExportExcel" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50">
+          <svg v-if="!isExporting" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+          <span class="hidden sm:inline">Excel</span>
+        </button>
+        <button @click="doExportPDF" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors disabled:opacity-50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+          <span class="hidden sm:inline">PDF</span>
+        </button>
+      </div>
     </div>
 
     <!-- Filters -->
@@ -70,17 +83,16 @@
     </div>
 
     <!-- Journal Entries -->
-    <div v-else class="space-y-3">
+    <div v-else class="space-y-2">
       <div
         v-for="entry in data.data"
         :key="entry.id"
-        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-sm transition-all"
+        @click="router.push({ name: 'business-transaction-detail', params: { id: entry.id } })"
       >
-        <!-- Entry Header -->
-        <div class="flex items-start justify-between gap-4 px-5 py-3 bg-slate-50 dark:bg-slate-700/40 border-b border-slate-200 dark:border-slate-700">
+        <div class="flex items-center justify-between gap-4 px-5 py-3.5">
           <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2 flex-wrap">
-              <!-- Badge: From Invoice or Manual -->
               <span
                 v-if="entry.isSystemGenerated"
                 class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 shrink-0"
@@ -93,79 +105,23 @@
               >
                 Manual
               </span>
-              <!-- Reference -->
               <span v-if="entry.reference" class="text-xs font-mono text-indigo-600 dark:text-indigo-400 shrink-0">{{ entry.reference }}</span>
-              <!-- Description -->
               <span class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{{ entry.description }}</span>
             </div>
-            <!-- Contacts + Date -->
             <div class="flex items-center gap-3 mt-1 text-xs text-slate-400 dark:text-slate-500 flex-wrap">
               <span>{{ formatDate(entry.date) }}</span>
-              <span v-if="entry.contacts && entry.contacts.length > 0">
-                · {{ entry.contacts.join(', ') }}
-              </span>
+              <span v-if="entry.contacts && entry.contacts.length > 0">· {{ entry.contacts.join(', ') }}</span>
             </div>
           </div>
-          <div class="text-right shrink-0">
-            <p class="text-xs text-slate-400 dark:text-slate-500">Total</p>
-            <p class="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">{{ formatRp(entry.totalDebit) }}</p>
+          <div class="flex items-center gap-3 shrink-0">
+            <div class="text-right">
+              <p class="text-xs text-slate-400 dark:text-slate-500">Total</p>
+              <p class="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">{{ formatRp(entry.totalDebit) }}</p>
+            </div>
+            <svg class="w-4 h-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
           </div>
-        </div>
-
-        <!-- Debit + Credit Lines Table -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-slate-100 dark:border-slate-700">
-                <th class="text-left px-5 py-2 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide w-16">Tipe</th>
-                <th class="text-left px-3 py-2 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide">Akun</th>
-                <th class="text-left px-3 py-2 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide hidden sm:table-cell">Keterangan</th>
-                <th class="text-right px-5 py-2 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide">Jumlah</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-50 dark:divide-slate-700/50">
-              <!-- Debit lines -->
-              <tr
-                v-for="(line, i) in entry.debitLines"
-                :key="'d-' + i"
-                class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"
-              >
-                <td class="px-5 py-2">
-                  <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-700 dark:text-green-400">
-                    <span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
-                    D
-                  </span>
-                </td>
-                <td class="px-3 py-2 text-slate-700 dark:text-slate-300">
-                  <span class="font-mono text-xs text-slate-400 dark:text-slate-500 mr-1">{{ line.coaCode }}</span>
-                  {{ line.coaName }}
-                  <span v-if="line.contact" class="text-xs text-slate-400 dark:text-slate-500 ml-1">({{ line.contact }})</span>
-                </td>
-                <td class="px-3 py-2 text-slate-400 dark:text-slate-500 hidden sm:table-cell text-xs">{{ line.description || '—' }}</td>
-                <td class="px-5 py-2 text-right font-medium text-green-700 dark:text-green-400 tabular-nums">{{ formatRp(line.amount) }}</td>
-              </tr>
-              <!-- Credit lines -->
-              <tr
-                v-for="(line, i) in entry.creditLines"
-                :key="'c-' + i"
-                class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"
-              >
-                <td class="px-5 py-2 pl-8">
-                  <span class="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400">
-                    <span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>
-                    K
-                  </span>
-                </td>
-                <td class="px-3 py-2 text-slate-500 dark:text-slate-400 italic">
-                  <span class="font-mono text-xs text-slate-400 dark:text-slate-500 mr-1">{{ line.coaCode }}</span>
-                  {{ line.coaName }}
-                  <span v-if="line.contact" class="text-xs text-slate-400 dark:text-slate-500 ml-1">({{ line.contact }})</span>
-                </td>
-                <td class="px-3 py-2 text-slate-400 dark:text-slate-500 hidden sm:table-cell text-xs">{{ line.description || '—' }}</td>
-                <td class="px-5 py-2 text-right font-medium text-red-600 dark:text-red-400 tabular-nums">{{ formatRp(line.amount) }}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -200,9 +156,17 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useBusinessReportsStore } from '@/stores/businessReports'
+import { useBusinessStore } from '@/stores/business'
+import { BusinessService } from '@/services/business.service'
+import ExportService from '@/services/exportService'
+
+const router = useRouter()
 
 const reportsStore = useBusinessReportsStore()
+const businessStore = useBusinessStore()
+const isExporting = ref(false)
 
 const errorMsg = ref('')
 const currentPage = ref(1)
@@ -231,6 +195,32 @@ async function loadReport() {
   } catch {
     errorMsg.value = 'Gagal memuat jurnal umum.'
   }
+}
+
+async function fetchAllForExport() {
+  const res = await BusinessService.getJournalReport({
+    startDate: filters.value.startDate || undefined,
+    endDate: filters.value.endDate || undefined,
+    page: 1,
+    limit: 9999,
+  })
+  return res.data
+}
+
+async function doExportExcel() {
+  isExporting.value = true
+  try {
+    const entries = await fetchAllForExport()
+    await ExportService.exportJournalReportToExcel(entries, businessStore.currentCompany?.name, filters.value)
+  } finally { isExporting.value = false }
+}
+
+async function doExportPDF() {
+  isExporting.value = true
+  try {
+    const entries = await fetchAllForExport()
+    ExportService.exportJournalReportToPDF(entries, businessStore.currentCompany?.name, filters.value)
+  } finally { isExporting.value = false }
 }
 
 async function applyFilters() {

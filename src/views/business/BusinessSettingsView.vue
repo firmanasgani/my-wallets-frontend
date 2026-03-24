@@ -21,22 +21,24 @@
       <LoadingSpinner :visible="true" />
     </div>
 
-    <div v-else class="space-y-6">
-      <!-- ── Logo Section ──────────────────────────────── -->
-      <div v-if="businessStore.currentCompany" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-        <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100 mb-1">Logo Perusahaan</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Logo ditampilkan pada invoice PDF. Format: JPG, PNG, WebP. Maks 2MB.</p>
+    <!-- Two-column grid when company data exists, single column otherwise -->
+    <div v-else>
+      <!-- Grid layout: logo left, form right -->
+      <div v-if="businessStore.currentCompany" class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        <!-- ── Logo Column ──────────────────────────────── -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 h-full">
+          <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100 mb-1">Logo Perusahaan</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Logo ditampilkan pada invoice PDF. Format: JPG, PNG, WebP. Maks 2MB.</p>
 
-        <div class="flex items-center gap-6 flex-wrap">
           <!-- Preview -->
-          <div class="w-28 h-28 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center bg-slate-50 dark:bg-slate-700/50 overflow-hidden shrink-0">
+          <div class="w-full aspect-square max-w-[160px] mx-auto rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center bg-slate-50 dark:bg-slate-700/50 overflow-hidden mb-4">
             <img
               v-if="logoPreviewUrl"
               :src="logoPreviewUrl"
               alt="Logo perusahaan"
-              class="w-full h-full object-contain p-1"
+              class="w-full h-full object-contain p-2"
             />
-            <svg v-else class="w-10 h-10 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg v-else class="w-12 h-12 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
@@ -51,12 +53,12 @@
               @change="onLogoFileSelected"
             />
             <!-- If pending file not yet uploaded -->
-            <div v-if="pendingLogoFile" class="flex items-center gap-2">
+            <div v-if="pendingLogoFile" class="flex flex-col gap-2">
               <button
                 type="button"
                 @click="handleUploadLogo"
                 :disabled="businessStore.isLogoUploading"
-                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                class="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <svg v-if="businessStore.isLogoUploading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -68,17 +70,17 @@
                 type="button"
                 @click="cancelLogoSelection"
                 :disabled="businessStore.isLogoUploading"
-                class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+                class="w-full px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
               >
                 Batal
               </button>
             </div>
             <!-- Normal state -->
-            <div v-else class="flex items-center gap-2">
+            <div v-else class="flex flex-col gap-2">
               <button
                 type="button"
                 @click="logoInputRef?.click()"
-                class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                class="w-full px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
               >
                 {{ businessStore.currentCompany?.logoUrl ? 'Ganti Logo' : 'Upload Logo' }}
               </button>
@@ -87,7 +89,7 @@
                 type="button"
                 @click="handleDeleteLogo"
                 :disabled="businessStore.isLogoUploading"
-                class="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
+                class="w-full px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
               >
                 Hapus Logo
               </button>
@@ -95,13 +97,27 @@
             <p v-if="logoErrorMsg" class="text-xs text-red-600 dark:text-red-400">{{ logoErrorMsg }}</p>
           </div>
         </div>
+
+        <!-- ── Profile Form Column ──────────────────────── -->
+        <div class="lg:col-span-2">
+          <CompanyForm
+            ref="companyFormRef"
+            :initial-data="businessStore.currentCompany"
+            :is-submitting="businessStore.isLoading"
+            :default-editing="false"
+            :viewer-mode="isViewer"
+            @submit="handleSubmit"
+          />
+        </div>
       </div>
 
+      <!-- No company yet: full-width form only -->
       <CompanyForm
+        v-else
         ref="companyFormRef"
-        :initial-data="businessStore.currentCompany"
+        :initial-data="null"
         :is-submitting="businessStore.isLoading"
-        :default-editing="!businessStore.currentCompany"
+        :default-editing="true"
         :viewer-mode="isViewer"
         @submit="handleSubmit"
       />

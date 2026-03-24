@@ -188,38 +188,11 @@
             "
             class="space-y-2"
           >
-            <label for="txCategory" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
-              >Kategori</label
-            >
-            <div class="relative">
-              <select
-                id="txCategory"
-                v-model="accountFormFields.categoryId"
-                required
-                class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              >
-                <option disabled value="">Pilih kategori...</option>
-                <option v-for="cat in relevantCategories" :key="cat.id" :value="cat.id">
-                  {{ cat.parentPrefix || '' }}{{ cat.categoryName }}
-                </option>
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400"
-              >
-                <svg
-                  class="h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </div>
-            </div>
+            <label class="block text-sm font-medium text-slate-900 dark:text-slate-100">Kategori</label>
+            <CategorySelect
+              v-model="accountFormFields.categoryId"
+              :categories="relevantCategories"
+            />
           </div>
 
           <div class="border-t border-slate-100 dark:border-slate-700 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -533,8 +506,8 @@ import { useCategoryStore } from '@/stores/categories'
 import { useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import CurrencyInput from '@/components/common/CurrencyInput.vue'
-
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+import CategorySelect from '@/components/transactions/CategorySelect.vue'
 
 const router = useRouter()
 const transactionStore = useTransactionStore()
@@ -617,7 +590,7 @@ const removeFile = () => {
 // Computed properties untuk dropdown
 const availableAccounts = computed(() => accountStore.allAccounts)
 const relevantCategories = computed(() => {
-  const allCats: { id: string; categoryName: string; parentPrefix?: string }[] = []
+  const allCats: { id: string; categoryName: string; icon: string | null; parentPrefix?: string }[] = []
   function flatten(items: Category[], prefix = '') {
     items.forEach((item) => {
       // Hanya tampilkan kategori yang sesuai dengan tipe transaksi yang dipilih
@@ -625,15 +598,15 @@ const relevantCategories = computed(() => {
         selectedTransactionType.value === FrontendTransactionType.INCOME &&
         item.categoryType === FrontendCategoryType.INCOME
       ) {
-        allCats.push({ id: item.id, categoryName: item.categoryName, parentPrefix: prefix })
+        allCats.push({ id: item.id, categoryName: item.categoryName, icon: item.icon, parentPrefix: prefix })
       } else if (
         selectedTransactionType.value === FrontendTransactionType.EXPENSE &&
         item.categoryType === FrontendCategoryType.EXPENSE
       ) {
-        allCats.push({ id: item.id, categoryName: item.categoryName, parentPrefix: prefix })
+        allCats.push({ id: item.id, categoryName: item.categoryName, icon: item.icon, parentPrefix: prefix })
       }
       if (item.subCategories && item.subCategories.length > 0) {
-        flatten(item.subCategories, prefix + '- ')
+        flatten(item.subCategories, prefix + '- ', item.icon)
       }
     })
   }
@@ -689,6 +662,7 @@ const resetForm = () => {
   recurringForm.endDate = ''
   submissionError.value = null
   removeFile()
+  accountStore.fetchAccounts()
 }
 
 const handleSubmit = async () => {

@@ -1,6 +1,11 @@
 <template>
   <ul class="space-y-1">
     <li>
+      <RouterLink :to="{ name: 'dashboard' }" @click="emit('navigate')" :class="link('dashboard')">
+        Workspace
+      </RouterLink>
+    </li>
+    <li>
       <RouterLink :to="{ name: 'personal-dashboard' }" @click="emit('navigate')" :class="link('personal-dashboard')">
         Dashboard
       </RouterLink>

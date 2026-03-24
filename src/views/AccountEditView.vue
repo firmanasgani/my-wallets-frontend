@@ -29,7 +29,7 @@
 
   <div v-else-if="accountData" class="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-lg">
     <h1 class="text-2xl sm:text-3xl font-semibold text-slate-800 mb-6 border-b pb-4">
-      Edit Akun: <span class="text-indigo-600">{{ originalAccountName }}</span>
+      Edit Akun
     </h1>
 
     <form @submit.prevent="handleSubmitUpdate" class="space-y-6">

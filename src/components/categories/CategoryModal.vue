@@ -123,20 +123,16 @@
                     </div>
 
                     <div
-                      class="h-10 w-10 flex items-center justify-center rounded-md border border-slate-300 bg-slate-50 text-slate-700 flex-shrink-0 transition-all duration-200"
-                      :class="{ 'bg-indigo-50 border-indigo-300 text-indigo-600': formData.icon }"
+                      class="h-10 w-10 flex items-center justify-center rounded-md border border-indigo-300 text-indigo-600 flex-shrink-0 transition-all duration-200"
+                      :style="{ backgroundColor: formData.color || '#CBD5E1' }"
                     >
                       <i
                         v-if="formData.icon"
-                        :class="['fa-solid', `fa-${formData.icon}`, 'text-lg']"
+                        :class="['fa-solid', `fa-${formData.icon}`, 'text-lg', 'text-white']"
                       ></i>
                       <i v-else class="fa-regular fa-image text-slate-400 text-lg"></i>
                     </div>
                   </div>
-                  <p v-if="formData.icon" class="mt-1 text-xs text-slate-500">
-                    Preview: <i :class="['fa-solid', `fa-${formData.icon}`]"></i>
-                    {{ formData.icon }}
-                  </p>
                 </div>
 
                 <div>
@@ -317,10 +313,11 @@ const availableParentCategories = computed(() => {
     categoryType: FrontendCategoryType
     prefix: string
   }[] = []
-  function flatten(categories: Category[], level = 0) {
+  function flatten(categories: Category[], level = 0, type: string = '') {
     for (const cat of categories) {
       if (isEditMode.value && props.categoryToEdit?.id === cat.id) continue
-
+      // make sure if type INCOME then only show INCOME categories and vice versa
+      if (type && cat.categoryType !== type) continue
       flatCategories.push({
         id: cat.id,
         categoryName: cat.categoryName,
@@ -332,7 +329,7 @@ const availableParentCategories = computed(() => {
       }
     }
   }
-  flatten(categoryStore.allCategories)
+  flatten(categoryStore.allCategories, 0, formData.type)
   return flatCategories
 })
 onMounted(() => {

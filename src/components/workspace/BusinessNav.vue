@@ -1,6 +1,12 @@
 <template>
   <ul class="space-y-1">
     <li>
+      <RouterLink :to="{ name: 'dashboard' }" @click="emit('navigate')" :class="link('dashboard')">Workspace</RouterLink>
+    </li>
+    <li>
+      <RouterLink :to="{ name: 'business-kpi' }" @click="emit('navigate')" :class="link('business-kpi')">KPI Dashboard</RouterLink>
+    </li>
+    <li>
       <RouterLink :to="{ name: 'business-settings' }" @click="emit('navigate')" :class="link('business-settings')">Profil Perusahaan</RouterLink>
     </li>
     <li>

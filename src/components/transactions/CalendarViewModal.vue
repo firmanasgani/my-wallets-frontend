@@ -375,7 +375,8 @@ const fetchTransactionsForMonth = async () => {
 
     // API might return standard paginated structure
     if (response.data && Array.isArray(response.data.data)) {
-      transactions.value = response.data.data
+      // Takeout Transaction Type Transfer
+      transactions.value = response.data.data.filter((tx: Transaction) => tx.transactionType !== 'TRANSFER')
     } else {
       transactions.value = []
     }
