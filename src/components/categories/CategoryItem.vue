@@ -59,7 +59,7 @@
         <button
           @click="$emit('edit', category)"
           title="Edit Kategori"
-          class="p-1 text-slate-500 hover:text-blue-600 rounded-md hover:bg-blue-50"
+          class="p-1 text-slate-500 hover:text-emerald-600 rounded-md hover:bg-emerald-50"
         >
           <svg
             class="w-4 h-4"

@@ -40,13 +40,13 @@
           @click="openCalendarModal"
           class="w-full sm:w-auto bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
         >
-          <i class="fa-regular fa-calendar-days mr-2 text-indigo-500"></i>
+          <i class="fa-regular fa-calendar-days mr-2 text-emerald-500"></i>
           Kalender
         </button>
 
         <button
           @click="openAddTransactionModal"
-          class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
+          class="w-full sm:w-auto bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -66,12 +66,12 @@
     <!-- Free Plan Alert -->
     <div
       v-if="authStore.user?.subscriptionPlan === 'FREE'"
-      class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4"
+      class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4"
     >
       <div class="flex">
         <div class="flex-shrink-0">
           <svg
-            class="h-5 w-5 text-blue-400"
+            class="h-5 w-5 text-yellow-400"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -85,12 +85,12 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-blue-700">
+          <p class="text-sm text-yellow-700">
             <span class="font-bold">Info Paket Free:</span>
             Anda hanya dapat melihat riwayat transaksi selama 12 bulan terakhir.
             <RouterLink
               :to="{ name: 'settings' }"
-              class="font-medium underline hover:text-blue-600"
+              class="font-medium underline hover:text-yellow-600"
             >
               Upgrade ke Premium
             </RouterLink>
@@ -204,7 +204,7 @@
         </button>
         <button
           @click="applyCurrentFilters"
-          class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors w-full sm:w-auto"
+          class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#2E8B57] text-sm font-medium text-white hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors w-full sm:w-auto"
         >
           Terapkan
         </button>
@@ -230,7 +230,7 @@
           <p
             :class="[
               'text-xl font-semibold',
-              summary.net >= 0 ? 'text-blue-600' : 'text-orange-600',
+              summary.net >= 0 ? 'text-emerald-600' : 'text-orange-600',
             ]"
           >
             {{ formatCurrency(summary.net, 'IDR') }}
@@ -261,7 +261,7 @@
         transactionStore.transactionList.length === 0 &&
         !transactionStore.transactionError
       "
-      class="text-center py-10 bg-white rounded-lg shadow-md"
+      class="text-center py-10 bg-white rounded-lg shadow-md dark:bg-slate-800 dark:border-slate-700"
     >
       <svg
         class="mx-auto h-16 w-16 text-slate-400"
@@ -276,13 +276,13 @@
           d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
         />
       </svg>
-      <h3 class="mt-4 text-lg font-medium text-slate-800">Belum Ada Transaksi</h3>
-      <p class="mt-1 text-sm text-slate-500">
+      <h3 class="mt-4 text-lg font-medium text-slate-800 dark:text-slate-200">Belum Ada Transaksi</h3>
+      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
         Tidak ada transaksi yang cocok dengan filter ini, atau Anda belum membuat transaksi.
       </p>
       <button
         @click="openAddTransactionModal"
-        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#2E8B57] hover:bg-[#236B43]"
       >
         + Tambah Transaksi
       </button>
@@ -404,7 +404,7 @@ const router = useRouter()
 const transactionStore = useTransactionStore()
 
 const filterInputClass =
-  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
+  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
 
 // Export dropdown
 const isExportDropdownOpen = ref(false)

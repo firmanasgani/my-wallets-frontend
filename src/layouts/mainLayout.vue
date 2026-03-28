@@ -1,117 +1,30 @@
 // src/layouts/MainLayout.vue
 <template>
-  <div v-if="authStore.isAuthenticated" class="flex h-screen bg-slate-100 dark:bg-slate-900">
+  <div v-if="authStore.isAuthenticated" class="flex h-screen bg-[#F8FFFF] dark:bg-slate-900">
     <aside
-      class="w-64 bg-slate-800 text-slate-100 p-4 space-y-6 hidden md:flex md:flex-col shadow-lg print:hidden"
+      class="w-64 bg-[#1B5E3B] text-slate-100 p-4 space-y-6 hidden md:flex md:flex-col shadow-lg print:hidden"
     >
       <div class="text-center py-4">
         <RouterLink
           :to="{ name: 'dashboard' }"
           class="text-2xl font-bold text-white hover:opacity-80 transition-opacity"
         >
-          MyWallets
+          Moneytory Ledger
         </RouterLink>
       </div>
-      <nav class="flex-grow">
-        <ul class="space-y-1">
-          <li>
-            <RouterLink :to="{ name: 'dashboard' }" :class="navLinkClasses('dashboard')">
-              Dashboard
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink
-              :to="{ name: 'accounts-list' }"
-              :class="navLinkClasses(['accounts-list', 'account-create', 'account-edit'])"
-            >
-              Akun
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink
-              :to="{ name: 'categories-list' }"
-              :class="navLinkClasses('categories-list')"
-            >
-              Kategori
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink
-              :to="{ name: 'transactions-list' }"
-              :class="navLinkClasses('transactions-list')"
-            >
-              Transaksi
-            </RouterLink>
-          </li>
-          <li v-if="!isFreePlan">
-            <button
-              @click="toggleBudgetDropdown"
-              :class="`${navLinkBaseClasses} w-full justify-between ${isBudgetActive ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`"
-            >
-              Budget
-              <svg
-                :class="isBudgetDropdownOpen ? 'transform rotate-180' : ''"
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 transition-transform duration-200"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-            <div
-              v-show="isBudgetDropdownOpen || isBudgetActive"
-              class="pl-4 space-y-1 mt-1 transition-all"
-            >
-              <RouterLink :to="{ name: 'budget-setup' }" :class="navLinkClasses('budget-setup')">
-                Setup
-              </RouterLink>
-              <RouterLink :to="{ name: 'budget-report' }" :class="navLinkClasses('budget-report')">
-                Laporan
-              </RouterLink>
-            </div>
-          </li>
-          <li v-if="!isFreePlan">
-            <RouterLink
-              :to="{ name: 'spending-analysis' }"
-              :class="navLinkClasses('spending-analysis')"
-            >
-              Spending Analysis
-            </RouterLink>
-          </li>
-          <li v-if="!isFreePlan">
-            <RouterLink
-              :to="{ name: 'financial-goals-list' }"
-              :class="navLinkClasses(['financial-goals-list', 'financial-goal-detail'])"
-            >
-              Financial Goals
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink :to="{ name: 'settings' }" :class="navLinkClasses('settings')">
-              Pengaturan
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink :to="{ name: 'how-to' }" :class="navLinkClasses('how-to')">
-              Cara Penggunaan
-            </RouterLink>
-          </li>
-        </ul>
+      <WorkspaceSwitcher class="mb-4" />
+      <nav class="flex-grow overflow-y-auto no-scrollbar">
+        <PersonalNav v-if="wsStore.mode === 'personal'" />
+        <BusinessNav v-else-if="wsStore.mode === 'business' && isBusinessPlan" />
       </nav>
-      <div class="mt-auto pt-4 border-t border-slate-700">
+      <div class="mt-auto pt-4 border-t border-emerald-800">
         <button
           @click="handleLogout"
           class="flex items-center w-full py-2.5 px-4 rounded-md text-slate-300 hover:bg-red-600 hover:text-white transition-colors"
         >
           Keluar
         </button>
+        <p class="mt-3 text-center text-[10px] text-emerald-400/60">Made with ❤️ by Firmanasgani</p>
       </div>
     </aside>
 
@@ -143,11 +56,28 @@
             </h1>
           </div>
 
+          <div class="flex items-center gap-2">
+          <!-- Dark / Light Toggle -->
+          <button
+            @click="toggleTheme"
+            class="p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            :title="themeStore.isDark ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'"
+          >
+            <!-- Sun icon (shown in dark mode) -->
+            <svg v-if="themeStore.isDark" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+            </svg>
+            <!-- Moon icon (shown in light mode) -->
+            <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+            </svg>
+          </button>
+
           <div class="relative">
             <button
               @click="toggleProfileDropdown"
               type="button"
-              class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
               id="user-menu-button"
               aria-expanded="false"
               aria-haspopup="true"
@@ -163,6 +93,8 @@
                       authStore.currentUser?.subscriptionPlan === 'PREMIUM',
                     'bg-purple-50 text-purple-700 ring-purple-600/20':
                       authStore.currentUser?.subscriptionPlan === 'FAMILY',
+                    'bg-indigo-50 text-indigo-700 ring-indigo-600/20':
+                      authStore.currentUser?.subscriptionPlan?.startsWith('BUSINESS'),
                   }"
                 >
                   {{ authStore.currentUser?.subscriptionPlan || 'FREE' }}
@@ -175,7 +107,7 @@
                 />
                 <div
                   v-else
-                  class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold ring-1 ring-indigo-700"
+                  class="w-8 h-8 bg-[#2E8B57] rounded-full flex items-center justify-center text-white font-semibold ring-1 ring-emerald-700"
                 >
                   {{ authStore.currentUser?.username?.charAt(0).toUpperCase() || 'U' }}
                 </div>
@@ -243,13 +175,14 @@
               </div>
             </Transition>
           </div>
+          </div>
         </div>
       </header>
 
       <AdBanner />
 
       <main
-        class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 dark:bg-slate-900 p-4 sm:p-6 lg:p-8"
+        class="flex-1 overflow-x-hidden overflow-y-auto bg-[#F8FFFF] dark:bg-slate-900 p-4 sm:p-6 lg:p-8"
       >
         <RouterView />
       </main>
@@ -282,7 +215,7 @@
           leave-from-class="translate-x-0"
           leave-to-class="-translate-x-full"
         >
-          <div class="relative flex-1 flex flex-col max-w-xs w-full bg-slate-800 text-slate-100">
+          <div class="relative flex-1 flex flex-col max-w-xs w-full bg-[#1B5E3B] text-slate-100">
             <div class="absolute top-0 right-0 -mr-12 pt-2">
               <button
                 type="button"
@@ -303,114 +236,25 @@
                 </svg>
               </button>
             </div>
-            <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+            <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto no-scrollbar">
               <div class="flex-shrink-0 flex items-center px-4">
                 <RouterLink
                   :to="{ name: 'dashboard' }"
                   @click="closeMobileSidebar"
                   class="text-2xl font-bold text-white"
                 >
-                  MyWallets
+                  Moneytory Ledger
                 </RouterLink>
               </div>
-              <nav class="mt-5 px-2 space-y-1">
-                <RouterLink
-                  :to="{ name: 'dashboard' }"
-                  @click="closeMobileSidebar"
-                  :class="navLinkClassesMobile('dashboard')"
-                >
-                  Dashboard
-                </RouterLink>
-                <RouterLink
-                  :to="{ name: 'accounts-list' }"
-                  @click="closeMobileSidebar"
-                  :class="navLinkClassesMobile(['accounts-list', 'account-create', 'account-edit'])"
-                >
-                  Akun
-                </RouterLink>
-                <RouterLink
-                  :to="{ name: 'categories-list' }"
-                  @click="closeMobileSidebar"
-                  :class="navLinkClassesMobile('categories-list')"
-                >
-                  Kategori
-                </RouterLink>
-                <RouterLink
-                  :to="{ name: 'transactions-list' }"
-                  @click="closeMobileSidebar"
-                  :class="navLinkClassesMobile('transactions-list')"
-                >
-                  Transaksi
-                </RouterLink>
-                <!-- Budget dropdown -->
-                <div v-if="!isFreePlan">
-                  <button
-                    @click="toggleBudgetDropdown"
-                    :class="`${navLinkBaseClasses} w-full justify-between ${isBudgetActive ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`"
-                  >
-                    Budget
-                    <svg
-                      :class="isBudgetDropdownOpen ? 'transform rotate-180' : ''"
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 transition-transform duration-200"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  <div v-show="isBudgetDropdownOpen || isBudgetActive" class="pl-4 space-y-1 mt-1">
-                    <RouterLink
-                      :to="{ name: 'budget-setup' }"
-                      @click="closeMobileSidebar"
-                      :class="navLinkClassesMobile('budget-setup')"
-                    >
-                      Setup
-                    </RouterLink>
-                    <RouterLink
-                      :to="{ name: 'budget-report' }"
-                      @click="closeMobileSidebar"
-                      :class="navLinkClassesMobile('budget-report')"
-                    >
-                      Laporan
-                    </RouterLink>
-                  </div>
-                </div>
-
-                <RouterLink
-                  v-if="!isFreePlan"
-                  :to="{ name: 'spending-analysis' }"
-                  @click="closeMobileSidebar"
-                  :class="navLinkClassesMobile('spending-analysis')"
-                >
-                  Spending Analysis
-                </RouterLink>
-                <RouterLink
-                  v-if="!isFreePlan"
-                  :to="{ name: 'financial-goals-list' }"
-                  @click="closeMobileSidebar"
-                  :class="navLinkClassesMobile(['financial-goals-list', 'financial-goal-detail'])"
-                >
-                  Financial Goals
-                </RouterLink>
-                <RouterLink
-                  :to="{ name: 'settings' }"
-                  @click="closeMobileSidebar"
-                  :class="navLinkClassesMobile('settings')"
-                >
-                  Pengaturan
-                </RouterLink>
-                <RouterLink
-                  :to="{ name: 'how-to' }"
-                  @click="closeMobileSidebar"
-                  :class="navLinkClassesMobile('how-to')"
-                >
-                  Cara Penggunaan
-                </RouterLink>
+              <div class="px-2 mt-4">
+                <WorkspaceSwitcher />
+              </div>
+              <nav class="mt-3 px-2">
+                <PersonalNav v-if="wsStore.mode === 'personal'" @navigate="closeMobileSidebar" />
+                <BusinessNav v-else-if="wsStore.mode === 'business' && isBusinessPlan" @navigate="closeMobileSidebar" />
               </nav>
             </div>
-            <div class="flex-shrink-0 flex border-t border-slate-700 p-4">
+            <div class="flex-shrink-0 flex border-t border-emerald-800 p-4">
               <button @click="handleLogout" class="flex-shrink-0 group block w-full">
                 <div class="flex items-center">
                   <div class="mr-3 w-5 h-5 text-slate-300 group-hover:text-red-400">
@@ -446,69 +290,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useWorkspaceStore } from '@/stores/workspace'
+import { useThemeStore } from '@/stores/theme'
 import AdBanner from '@/components/common/AdBanner.vue'
+import WorkspaceSwitcher from '@/components/workspace/WorkspaceSwitcher.vue'
+import PersonalNav from '@/components/workspace/PersonalNav.vue'
+import BusinessNav from '@/components/workspace/BusinessNav.vue'
 
 const authStore = useAuthStore()
+const wsStore = useWorkspaceStore()
+const themeStore = useThemeStore()
+
+const toggleTheme = () => {
+  themeStore.setTheme(themeStore.isDark ? 'light' : 'dark')
+}
 const route = useRoute()
 
-const isFreePlan = computed(() => authStore.currentUser?.subscriptionPlan === 'FREE')
+const isBusinessPlan = computed(() => authStore.currentUser?.subscriptionPlan?.startsWith('BUSINESS') ?? false)
 
 const isProfileDropdownOpen = ref(false)
 const isMobileSidebarOpen = ref(false)
-const isBudgetDropdownOpen = ref(false)
-const profileDropdownRef = ref<HTMLElement | null>(null) // Ref untuk elemen dropdown
+const profileDropdownRef = ref<HTMLElement | null>(null)
 
-const isBudgetActive = computed(() => {
-  const currentRouteName = route.name?.toString() || ''
-  return currentRouteName.startsWith('budget')
-})
-
-const toggleBudgetDropdown = () => (isBudgetDropdownOpen.value = !isBudgetDropdownOpen.value)
+// Auto-detect workspace mode from current route
+watch(() => route.name, (name) => {
+  const n = name?.toString() || ''
+  if ((n.startsWith('business') || n.startsWith('invoice')) && isBusinessPlan.value) {
+    wsStore.setMode('business')
+  } else if (n && n !== 'dashboard') {
+    wsStore.setMode('personal')
+  }
+}, { immediate: true })
 
 const currentRouteTitle = computed(() => {
-  if (route.meta && route.meta.title) {
-    return route.meta.title as string
-  }
+  if (route.meta?.title) return route.meta.title as string
   if (route.name) {
-    const nameStr = String(route.name)
-    // Hapus -list, -create, -edit dari nama rute untuk judul yang lebih umum
-    const cleanedName = nameStr.replace(/-list|-create|-edit/gi, '')
-    return cleanedName.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+    const cleaned = String(route.name).replace(/-list|-create|-edit/gi, '')
+    return cleaned.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
   }
-  return 'MyWallets App'
+  return 'Moneytory Ledger'
 })
 
-const userProfilePicture = computed(() => {
-  const user = authStore.currentUser
-  if (user?.profilePictureUrl) {
-    return user.profilePictureUrl
-  }
-  return null
-})
-
-const navLinkBaseClasses = 'flex items-center py-2.5 px-4 rounded-md transition-colors'
-const navLinkActiveClass = 'bg-indigo-500 text-white'
-const navLinkInactiveClass = 'text-slate-300 hover:bg-slate-700 hover:text-white'
-
-const navLinkClasses = (routeNameOrNames: string | string[]) => {
-  const currentRouteName = route.name?.toString() || ''
-  const isActive = Array.isArray(routeNameOrNames)
-    ? routeNameOrNames.some((name) => currentRouteName.startsWith(name.replace('-list', ''))) // Cek jika nama rute saat ini diawali dengan salah satu nama (tanpa -list)
-    : currentRouteName.startsWith(routeNameOrNames.replace('-list', ''))
-  return `${navLinkBaseClasses} ${isActive ? navLinkActiveClass : navLinkInactiveClass}`
-}
-
-const navLinkClassesMobile = (routeNameOrNames: string | string[]) => {
-  // Sama dengan desktop atau bisa dibedakan jika perlu
-  return navLinkClasses(routeNameOrNames)
-}
+const userProfilePicture = computed(() => authStore.currentUser?.profilePictureUrl ?? null)
 
 const toggleProfileDropdown = () => (isProfileDropdownOpen.value = !isProfileDropdownOpen.value)
 const closeProfileDropdown = () => (isProfileDropdownOpen.value = false)
-
 const toggleMobileSidebar = () => (isMobileSidebarOpen.value = !isMobileSidebarOpen.value)
 const closeMobileSidebar = () => (isMobileSidebarOpen.value = false)
 
@@ -518,25 +347,16 @@ const handleLogout = async () => {
   await authStore.logout()
 }
 
-// Menutup dropdown jika klik di luar elemen dropdown
 const handleClickOutsideDropdown = (event: MouseEvent) => {
   if (profileDropdownRef.value && !profileDropdownRef.value.contains(event.target as Node)) {
-    // Juga cek apakah target klik adalah tombol toggle-nya, jika ya jangan tutup
     const toggleButton = document.getElementById('user-menu-button')
-    if (toggleButton && toggleButton.contains(event.target as Node)) {
-      return
-    }
+    if (toggleButton && toggleButton.contains(event.target as Node)) return
     isProfileDropdownOpen.value = false
   }
 }
 
-onMounted(() => {
-  document.addEventListener('click', handleClickOutsideDropdown)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutsideDropdown)
-})
+onMounted(() => document.addEventListener('click', handleClickOutsideDropdown))
+onUnmounted(() => document.removeEventListener('click', handleClickOutsideDropdown))
 </script>
 
 <style scoped>
@@ -547,5 +367,12 @@ main.flex-1.overflow-x-hidden.overflow-y-auto {
 .md\:flex-col {
   /* Pastikan sidebar desktop bisa scroll jika menunya panjang */
   overflow-y: auto;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 </style>

@@ -36,7 +36,7 @@
               </span>
               <span
                 v-if="goal.remainingAmount > 0"
-                class="text-xs font-bold text-indigo-600 dark:text-indigo-400"
+                class="text-xs font-bold text-emerald-600 dark:text-emerald-400"
               >
                 Kurang {{ formatCurrency(goal.remainingAmount) }}
               </span>
@@ -104,7 +104,7 @@ defineEmits(['click'])
 const statusClasses = computed(() => {
   switch (props.goal.status) {
     case 'ACTIVE':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-emerald-300'
     case 'COMPLETED':
       return 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
     case 'CANCELLED':
@@ -117,8 +117,8 @@ const statusClasses = computed(() => {
 const progressColor = computed(() => {
   if (props.goal.status === 'COMPLETED') return 'bg-green-500'
   if (props.goal.progressPercentage >= 100) return 'bg-green-500'
-  if (props.goal.progressPercentage >= 75) return 'bg-indigo-500'
-  if (props.goal.progressPercentage >= 25) return 'bg-blue-500'
+  if (props.goal.progressPercentage >= 75) return 'bg-[#2E8B57]'
+  if (props.goal.progressPercentage >= 25) return 'bg-[#2E8B57]'
   return 'bg-slate-400 text-white'
 })
 

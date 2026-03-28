@@ -98,7 +98,7 @@
             type="button"
             @click="submit"
             :disabled="goalStore.submitting || !isValid"
-            class="inline-flex justify-center items-center px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-colors"
+            class="inline-flex justify-center items-center px-6 py-2 bg-[#2E8B57] text-white font-bold rounded-lg hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 transition-colors"
           >
             <LoadingSpinner
               v-if="goalStore.submitting"
@@ -112,7 +112,7 @@
           <button
             type="button"
             @click="$emit('close')"
-            class="inline-flex justify-center px-6 py-2 bg-white text-slate-700 border border-slate-300 font-bold rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700 transition-colors"
+            class="inline-flex justify-center px-6 py-2 bg-white text-slate-700 border border-slate-300 font-bold rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700 transition-colors"
           >
             Batal
           </button>
@@ -140,7 +140,7 @@ const goalStore = useFinancialGoalStore()
 const isEdit = computed(() => !!props.goal)
 
 const inputClass =
-  'mt-1 block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder:text-slate-500 transition-colors'
+  'mt-1 block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder:text-slate-500 transition-colors'
 
 const form = reactive({
   name: '',

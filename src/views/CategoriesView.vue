@@ -1,24 +1,15 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-6 print:hidden flex-col md:flex-row gap-5">
-      <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Kelola Kategori</h1>
+      <h1 class="text-3xl w-full font-semibold text-gray-800 dark:text-white">Kelola Kategori</h1>
       <div class="flex items-center gap-3 flex-col md:flex-row w-full">
-        <!-- Filter Controls -->
-        <div class="flex flex-col md:flex-row  text-left w-full justify-end gap-2">
-          <select
-            v-model="selectedFilter"
-            class="inline-flex justify-center rounded-lg border border-gray-300 dark:border-slate-600 shadow-sm px-4 h-10 items-center bg-white dark:bg-slate-700 text-sm font-medium text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full md:w-auto justify-center"
-          >
-            <option value="ALL">Semua Kategori</option>
-            <option value="INCOME">Pemasukan</option>
-            <option value="EXPENSE">Pengeluaran</option>
-          </select>
+        <div class="flex flex-col md:flex-row text-left w-full justify-end gap-2">
         <button
           @click="openCreateCategoryModal"
           :disabled="!canAddCategory"
           :title="addCategoryButtonTitle"
-          class="bg-indigo-600 text-white text-sm font-medium px-4 h-10 rounded-lg flex items-center transition-colors shadow-sm w-full md:w-auto justify-center"
-          :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
+          class="bg-[#2E8B57] text-white text-sm font-medium px-4 h-10 rounded-lg flex items-center transition-colors shadow-sm w-full md:w-auto justify-center"
+          :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#236B43]'"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -78,8 +69,8 @@
         @click="openCreateCategoryModal"
         :disabled="!canAddCategory"
         :title="addCategoryButtonTitle"
-        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
+        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#2E8B57] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+        :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#236B43]'"
       >
         + Tambah Kategori Sekarang
       </button>
@@ -89,7 +80,13 @@
       v-if="!isLoading && categories.length > 0"
       class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8"
     >
-      <StatsCard title="Total Kategori" :value="filteredCategoryCount" variant="indigo">
+      <StatsCard
+        title="Total Kategori"
+        :value="filteredCategoryCount"
+        variant="indigo"
+        :active="selectedFilter === 'ALL'"
+        :on-click="() => setFilter('ALL')"
+      >
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -112,6 +109,8 @@
         :value="incomeCategories.length"
         variant="green"
         :subtitle="`${categoryStore.totalIncomeParent} Kategori • ${categoryStore.totalIncomeSub} Sub Kategori`"
+        :active="selectedFilter === 'INCOME'"
+        :on-click="() => setFilter('INCOME')"
       >
         <template #icon>
           <svg
@@ -131,6 +130,8 @@
         :value="expenseCategories.length"
         variant="red"
         :subtitle="`${categoryStore.totalExpenseParent} Kategori • ${categoryStore.totalExpenseSub} Sub Kategori`"
+        :active="selectedFilter === 'EXPENSE'"
+        :on-click="() => setFilter('EXPENSE')"
       >
         <template #icon>
           <svg
@@ -245,6 +246,10 @@ const categoryStore = useCategoryStore()
 const authStore = useAuthStore()
 
 const selectedFilter = ref<'ALL' | 'INCOME' | 'EXPENSE'>('ALL')
+
+const setFilter = (filter: 'ALL' | 'INCOME' | 'EXPENSE') => {
+  selectedFilter.value = filter
+}
 
 const categories = computed(() => categoryStore.allCategories)
 const incomeCategories = computed(() => {

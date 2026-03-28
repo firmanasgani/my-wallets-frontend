@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between dark:text-white">
       <button
         @click="goBack"
-        class="inline-flex items-center text-slate-500 hover:text-indigo-600 transition-colors between dark:text-white"
+        class="inline-flex items-center text-slate-500 hover:text-emerald-600 transition-colors between dark:text-white"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +122,7 @@
           >
             <button
               @click="isAllocateModalOpen = true"
-              class="flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
+              class="flex items-center justify-center px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B43] transition-colors font-semibold"
             >
               Nabung (Alokasi)
             </button>
@@ -240,7 +240,7 @@
 
       <!-- Right Column: Info & Tips -->
       <div class="space-y-6">
-        <div class="bg-indigo-600 rounded-xl p-6 text-white shadow-md">
+        <div class="bg-[#2E8B57] rounded-xl p-6 text-white shadow-md">
           <h3 class="text-lg font-bold mb-2 flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -263,7 +263,7 @@
             </svg>
             Apa itu Alokasi?
           </h3>
-          <p class="text-indigo-100 text-sm leading-relaxed">
+          <p class="text-emerald-100 text-sm leading-relaxed">
             Sistem kami menggunakan <b>soft allocation</b>. Saldo rekening Anda tetap utuh, namun
             kami "menandai" sebagian dana agar tidak terpakai untuk pengeluaran sehari-hari.
           </p>
@@ -370,7 +370,7 @@ const statusClasses = computed(() => {
   if (!goal.value) return ''
   switch (goal.value.status) {
     case 'ACTIVE':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-emerald-300'
     case 'COMPLETED':
       return 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
     case 'CANCELLED':
@@ -384,8 +384,8 @@ const progressColor = computed(() => {
   if (!goal.value) return 'bg-slate-400'
   if (goal.value.status === 'COMPLETED' || goal.value.progressPercentage >= 100)
     return 'bg-green-500'
-  if (goal.value.progressPercentage >= 75) return 'bg-indigo-500'
-  if (goal.value.progressPercentage >= 25) return 'bg-blue-500'
+  if (goal.value.progressPercentage >= 75) return 'bg-[#2E8B57]'
+  if (goal.value.progressPercentage >= 25) return 'bg-[#2E8B57]'
   return 'bg-slate-400'
 })
 

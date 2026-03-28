@@ -1,10 +1,10 @@
 <template>
   <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
     <!-- Breadcrumb / Back Navigation -->
-    <nav class="flex items-center text-sm text-slate-500">
+    <nav class="flex items-center text-sm text-slate-500 dark:text-slate-200">
       <RouterLink
         :to="{ name: 'accounts-list' }"
-        class="hover:text-indigo-600 transition-colors flex items-center"
+        class="hover:text-emerald-600 transition-colors flex items-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -58,8 +58,8 @@
       <!-- Header & Actions -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-slate-900">{{ account.accountName }}</h1>
-          <p class="text-sm text-slate-500 mt-1">Detail informasi akun dan riwayat transaksi</p>
+          <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-200">{{ account.accountName }}</h1>
+          <p class="text-sm text-slate-500 mt-1 dark:text-slate-400">Detail informasi akun dan riwayat transaksi</p>
         </div>
         <div class="flex gap-3">
           <!-- Export Dropdown -->
@@ -92,7 +92,7 @@
           </div>
           <RouterLink
             :to="{ name: 'account-edit', params: { id: account.id } }"
-            class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -114,20 +114,20 @@
       </div>
 
       <!-- Account Detail Card -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
         <div class="p-6 md:p-8">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Balance Info -->
             <div
-              class="md:col-span-1 p-6 bg-slate-50 rounded-xl border border-slate-100 dark:bg-slate-900/50"
+              class="md:col-span-1 p-6 bg-slate-50 rounded-xl border border-slate-100 dark:bg-slate-900/50 dark:border-slate-700"
             >
-              <h3 class="text-sm font-medium text-slate-500 uppercase tracking-wider mb-2">
+              <h3 class="text-sm font-medium text-slate-500 dark:text-slate-200 uppercase tracking-wider mb-2">
                 Saldo Saat Ini
               </h3>
-              <p class="text-3xl font-bold text-slate-900 tracking-tight text-indigo-600">
+              <p class="text-3xl font-bold text-slate-900 tracking-tight text-emerald-600 dark:text-slate-400">
                 {{ formatCurrency(account.currentBalance, account.currency) }}
               </p>
-              <p class="text-xs text-slate-400 mt-2">
+              <p class="text-xs text-slate-400 mt-2 dark:text-slate-200">
                 Saldo Awal: {{ formatCurrency(account.initialBalance, account.currency) }}
               </p>
             </div>
@@ -135,8 +135,8 @@
             <!-- Detail Info -->
             <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <dt class="text-sm font-medium text-slate-500">Tipe Akun</dt>
-                <dd class="mt-1 text-base font-medium text-slate-900 flex items-center">
+                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Tipe Akun</dt>
+                <dd class="mt-1 text-base font-medium text-slate-900 flex items-center dark:text-slate-400">
                   <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                     :class="getAccountTypeBadgeClass(account.accountType)"
@@ -147,29 +147,29 @@
               </div>
 
               <div v-if="account.bankId">
-                <dt class="text-sm font-medium text-slate-500">Bank</dt>
-                <dd class="mt-1 text-base font-medium text-slate-900">
+                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Bank</dt>
+                <dd class="mt-1 text-base font-medium text-slate-900 dark:text-slate-400">
                   {{ bankName }}
                 </dd>
               </div>
 
               <div v-if="account.accountNumber">
-                <dt class="text-sm font-medium text-slate-500">Nomor Akun/Rekening</dt>
-                <dd class="mt-1 text-base font-medium text-slate-900 font-mono">
+                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Nomor Akun/Rekening</dt>
+                <dd class="mt-1 text-base font-medium text-slate-900 font-mono dark:text-slate-400">
                   {{ account.accountNumber }}
                 </dd>
               </div>
 
               <div>
-                <dt class="text-sm font-medium text-slate-500">Mata Uang</dt>
-                <dd class="mt-1 text-base font-medium text-slate-900">
+                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Mata Uang</dt>
+                <dd class="mt-1 text-base font-medium text-slate-900 dark:text-slate-400">
                   {{ account.currency }}
                 </dd>
               </div>
 
               <div>
-                <dt class="text-sm font-medium text-slate-500">Dibuat Pada</dt>
-                <dd class="mt-1 text-base text-slate-700">
+                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Dibuat Pada</dt>
+                <dd class="mt-1 text-base text-slate-700 dark:text-slate-400">
                   {{ formatDate(account.createdAt) }}
                 </dd>
               </div>
@@ -179,11 +179,11 @@
       </div>
 
       <!-- Transactions List -->
-      <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
         <header
-          class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50"
+          class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 dark:bg-slate-700 dark:border-slate-600"
         >
-          <h3 class="text-lg font-medium text-slate-900">Riwayat Transaksi</h3>
+          <h3 class="text-lg font-medium text-slate-900 dark:text-slate-200">Riwayat Transaksi</h3>
         </header>
 
         <!-- Loading State for Transactions -->
@@ -195,7 +195,7 @@
             :visible="true"
             text="Memuat transaksi..."
             size="md"
-            color="text-indigo-500"
+            color="text-emerald-500"
           />
         </div>
 
@@ -287,21 +287,39 @@
             </tbody>
           </table>
 
-          <!-- Pagination / Load More -->
-          <div v-if="hasMorePages" class="px-6 py-4 border-t border-slate-200 flex justify-center">
+          <!-- Pagination -->
+          <div v-if="hasPrevPage || hasMorePages" class="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+            <button
+              @click="loadPrevTransactions"
+              :disabled="isLoadingMore || !hasPrevPage"
+              class="text-sm font-medium text-emerald-600 hover:text-emerald-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              Sebelumnya
+            </button>
+
+            <span class="text-xs text-slate-500">
+              Halaman {{ transactionMeta.page }} dari {{ transactionMeta.lastPage }}
+            </span>
+
             <button
               @click="loadMoreTransactions"
-              :disabled="isLoadingMore"
-              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="isLoadingMore || !hasMorePages"
+              class="text-sm font-medium text-emerald-600 hover:text-emerald-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <LoadingSpinner
                 v-if="isLoadingMore"
                 :visible="true"
                 size="xs"
-                color="text-indigo-600"
-                class="mr-2"
+                color="text-emerald-600"
+                class="mr-1"
               />
-              {{ isLoadingMore ? 'Memuat...' : 'Halaman Berikutnya' }}
+              Berikutnya
+              <svg v-if="!isLoadingMore" class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           </div>
         </div>
@@ -321,8 +339,8 @@
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
             />
           </svg>
-          <h3 class="mt-2 text-sm font-medium text-slate-900">Belum ada transaksi</h3>
-          <p class="mt-1 text-sm text-slate-500">Transaksi yang Anda buat akan muncul di sini.</p>
+          <h3 class="mt-2 dark:text-slate-200 text-sm font-medium text-slate-900">Belum ada transaksi</h3>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Transaksi yang Anda buat akan muncul di sini.</p>
         </div>
       </section>
     </div>
@@ -359,6 +377,10 @@ const currentAccountId = computed(() => route.params.id as string)
 
 const hasMorePages = computed(() => {
   return transactionMeta.value.page < transactionMeta.value.lastPage
+})
+
+const hasPrevPage = computed(() => {
+  return transactionMeta.value.page > 1
 })
 
 // Formatters
@@ -500,6 +522,23 @@ const loadMoreTransactions = async () => {
   try {
     await transactionStore.fetchTransactionsByAccount(currentAccountId.value, {
       page: nextPage,
+      limit: 10,
+    })
+  } catch (err) {
+    console.error(err)
+  } finally {
+    isLoadingMore.value = false
+  }
+}
+
+const loadPrevTransactions = async () => {
+  if (isLoadingMore.value || !hasPrevPage.value) return
+
+  isLoadingMore.value = true
+  const prevPage = transactionMeta.value.page - 1
+  try {
+    await transactionStore.fetchTransactionsByAccount(currentAccountId.value, {
+      page: prevPage,
       limit: 10,
     })
   } catch (err) {

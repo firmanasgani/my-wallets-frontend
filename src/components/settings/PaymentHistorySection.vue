@@ -25,7 +25,7 @@
       <button
         @click="store.fetchPaymentHistory()"
         :disabled="store.isLoadingHistory"
-        class="ml-auto text-sm text-indigo-600 dark:text-indigo-400 hover:underline disabled:opacity-50"
+        class="ml-auto text-sm text-emerald-600 dark:text-emerald-400 hover:underline disabled:opacity-50"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +91,7 @@
           <p class="text-sm text-red-500">{{ store.historyError }}</p>
           <button
             @click="store.fetchPaymentHistory()"
-            class="mt-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+            class="mt-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:underline"
           >
             Coba Lagi
           </button>

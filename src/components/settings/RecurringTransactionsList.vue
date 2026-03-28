@@ -54,7 +54,7 @@
           <div
             v-for="rt in recurringTransactions"
             :key="rt.id"
-            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-500 transition-colors"
+            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-100 dark:border-slate-700 hover:border-emerald-200 dark:hover:border-emerald-500 transition-colors"
           >
             <div>
               <div class="flex items-center gap-2">

@@ -1,9 +1,22 @@
+@theme {
+  /* Brand colors — Moneytory Ledger */
+  --color-brand-primary: #2E8B57;      /* Emerald Green: pertumbuhan & stabilitas */
+  --color-brand-secondary: #87CEEB;    /* Sky Blue: kepercayaan & ketenangan */
+  --color-brand-dark: #28896E;         /* Slate Blue: profesionalisme & kedalaman */
+  --color-brand-sidebar: #1B5E3B;      /* Deep Emerald: sidebar dark background */
+  --color-brand-bg: #F8FFFF;           /* Light Grey: kebersihan & fokus */
+  --color-brand-hover: #236B43;        /* Darker emerald for hover states */
+}
+
 @layer base {
   body {
-    @apply bg-white text-slate-900 transition-colors duration-200;
+    @apply transition-colors duration-200;
+    background-color: #F8FFFF;
+    color: rgb(15 23 42); /* slate-900 */
   }
 
   .dark body {
-    @apply bg-slate-900 text-slate-100;
+    background-color: rgb(15 23 42); /* slate-900 */
+    color: rgb(241 245 249); /* slate-100 */
   }
 }

@@ -30,7 +30,7 @@ interface UserProfile {
   fullName?: string | null
   profilePicture?: string | null
   profilePictureUrl?: string | null
-  subscriptionPlan: 'FREE' | 'PREMIUM' | 'FAMILY'
+  subscriptionPlan: 'FREE' | 'PREMIUM' | 'FAMILY' | 'BUSINESS_1M' | 'BUSINESS_6M' | 'BUSINESS_12M'
   createdAt?: string | null
   subscriptions?: UserSubscription[]
   activeSubscription?: {
@@ -80,7 +80,7 @@ export const useAuthStore = defineStore('auth', {
       this.user = userData
     },
 
-    async register(payload: RegisterPayload) {
+    async register(payload: RegisterPayload, options?: { skipRedirect?: boolean }) {
       this.isLoading = true
       this.error = null
       try {
@@ -101,7 +101,9 @@ export const useAuthStore = defineStore('auth', {
         // Ensure user state is set before navigating
         if (this.user) {
           this.isNewRegistration = true
-          router.push({ name: 'dashboard' })
+          if (!options?.skipRedirect) {
+            router.push({ name: 'dashboard' })
+          }
           return true
         } else {
           throw new Error('Login succesfull but user state missing')

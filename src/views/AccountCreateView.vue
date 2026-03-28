@@ -14,7 +14,7 @@
           id="accountName"
           v-model="formData.accountName"
           required
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 transition-colors"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 transition-colors"
           placeholder="Contoh: BCA Tabungan, GoPay"
         />
       </div>
@@ -27,7 +27,7 @@
           id="accountType"
           v-model="formData.accountType"
           required
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200
           dark:bg-slate-800 transition-colors"
         >
           <option disabled value="">Pilih tipe akun...</option>
@@ -62,7 +62,7 @@
             id="initialBalance"
             v-model="formData.initialBalance"
             :options="{ currency: formData.currency || 'IDR' }"
-            class="border border-gray-300 rounded-lg block w-full pl-12 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 transition-colors"
+            class="border border-gray-300 rounded-lg block w-full pl-12 pr-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 transition-colors"
             placeholder="0.00"
           />
         </div>
@@ -72,14 +72,14 @@
         <label for="currency" class="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-200"
           >Mata Uang (Opsional, default IDR)</label
         >
-        <input
-          type="text"
+        <select
           id="currency"
           v-model="formData.currency"
           maxlength="5"
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:text-slate-200"
-          placeholder="IDR"
-        />
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors dark:text-slate-200"
+        >
+        <option value="IDR" selected>IDR</option>
+      </select>
       </div>
 
       <div>
@@ -90,7 +90,7 @@
           type="text"
           id="accountNumber"
           v-model="formData.accountNumber"
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:text-slate-200"
+          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors dark:text-slate-200"
           placeholder="Untuk rekening bank atau e-wallet"
         />
       </div>
@@ -109,7 +109,7 @@
         <button
           type="submit"
           :disabled="isSubmitting"
-          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-blue-600 flex items-center"
+          class="px-4 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-[#2E8B57] flex items-center"
         >
           <LoadingSpinner
             v-if="isSubmitting"

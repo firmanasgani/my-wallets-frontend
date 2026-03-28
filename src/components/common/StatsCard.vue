@@ -1,5 +1,12 @@
 <template>
-  <div class="bg-white overflow-hidden shadow rounded-lg dark:bg-slate-800">
+  <div
+    class="bg-white overflow-hidden shadow rounded-lg dark:bg-slate-800 transition-all duration-200"
+    :class="[
+      onClick ? 'cursor-pointer hover:shadow-md' : '',
+      active ? `ring-2 ${colorParams.ring}` : '',
+    ]"
+    @click="onClick?.($event)"
+  >
     <div class="p-5">
       <div class="flex items-center">
         <div class="flex-shrink-0">
@@ -39,21 +46,25 @@ const props = withDefaults(
     value: string | number
     variant?: 'indigo' | 'green' | 'red' | 'blue' | 'yellow' | 'purple' | 'gray'
     subtitle?: string
+    active?: boolean
+    onClick?: (event: MouseEvent) => void
   }>(),
   {
     variant: 'indigo',
     subtitle: '',
+    active: false,
+    onClick: undefined,
   },
 )
 
-const colorMap: Record<string, { bg: string; text: string }> = {
-  indigo: { bg: 'bg-indigo-50', text: 'text-indigo-600' },
-  green: { bg: 'bg-green-50', text: 'text-green-600' },
-  red: { bg: 'bg-red-50', text: 'text-red-600' },
-  blue: { bg: 'bg-blue-50', text: 'text-blue-600' },
-  yellow: { bg: 'bg-yellow-50', text: 'text-yellow-600' },
-  purple: { bg: 'bg-purple-50', text: 'text-purple-600' },
-  gray: { bg: 'bg-gray-50', text: 'text-gray-600' },
+const colorMap: Record<string, { bg: string; text: string; ring: string }> = {
+  indigo: { bg: 'bg-emerald-50', text: 'text-emerald-600', ring: 'ring-emerald-500' },
+  green: { bg: 'bg-green-50', text: 'text-green-600', ring: 'ring-green-500' },
+  red: { bg: 'bg-red-50', text: 'text-red-600', ring: 'ring-red-500' },
+  blue: { bg: 'bg-emerald-50', text: 'text-emerald-600', ring: 'ring-emerald-500' },
+  yellow: { bg: 'bg-yellow-50', text: 'text-yellow-600', ring: 'ring-yellow-500' },
+  purple: { bg: 'bg-purple-50', text: 'text-purple-600', ring: 'ring-purple-500' },
+  gray: { bg: 'bg-gray-50', text: 'text-gray-600', ring: 'ring-gray-500' },
 }
 
 const colorParams = computed(() => {

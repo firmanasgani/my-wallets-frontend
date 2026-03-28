@@ -27,7 +27,7 @@
             <div class="flex items-center space-x-2">
               <button
                 @click="prevMonth"
-                class="p-2 rounded-full hover:bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                class="p-2 rounded-full hover:bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <i class="fa-solid fa-chevron-left"></i>
               </button>
@@ -36,14 +36,14 @@
               </span>
               <button
                 @click="nextMonth"
-                class="p-2 rounded-full hover:bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                class="p-2 rounded-full hover:bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <i class="fa-solid fa-chevron-right"></i>
               </button>
             </div>
             <button
               @click="$emit('close')"
-              class="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md"
+              class="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-md"
             >
               <i class="fa-solid fa-xmark text-xl"></i>
             </button>
@@ -70,7 +70,7 @@
                 class="bg-white min-h-[100px] p-2 relative group hover:bg-gray-50 cursor-pointer transition-colors flex flex-col justify-between"
                 :class="{
                   'bg-gray-50 text-gray-400': !day.isCurrentMonth,
-                  'ring-2 ring-inset ring-indigo-500 z-10': isSameDate(day.date, selectedDate),
+                  'ring-2 ring-inset ring-emerald-500 z-10': isSameDate(day.date, selectedDate),
                 }"
                 @click="selectDate(day.date)"
               >
@@ -78,7 +78,7 @@
                   <span
                     class="text-sm font-medium"
                     :class="{
-                      'text-indigo-600 font-bold': isToday(day.date),
+                      'text-emerald-600 font-bold': isToday(day.date),
                       'text-gray-900': day.isCurrentMonth && !isToday(day.date),
                     }"
                   >
@@ -86,10 +86,10 @@
                   </span>
                   <span v-if="getDailyCount(day.date) > 0" class="flex h-1.5 w-1.5 translate-y-1">
                     <span
-                      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"
+                      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2E8B57] opacity-75"
                     ></span>
                     <span
-                      class="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"
+                      class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#2E8B57]"
                     ></span>
                   </span>
                 </div>
@@ -118,7 +118,7 @@
           <!-- Selected Date Details -->
           <div class="mt-4 border-t border-gray-200 pt-4">
             <h4 class="text-base font-semibold text-gray-800 mb-3 flex items-center">
-              <i class="fa-regular fa-calendar-check mr-2 text-indigo-500"></i>
+              <i class="fa-regular fa-calendar-check mr-2 text-emerald-500"></i>
               Transaksi {{ formatDateFull(selectedDate) }}
             </h4>
 
@@ -133,7 +133,7 @@
               <div
                 v-for="tx in selectedDateTransactions"
                 :key="tx.id"
-                class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-indigo-100 transition-colors"
+                class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-emerald-100 transition-colors"
               >
                 <div class="flex items-center min-w-0">
                   <div
@@ -375,7 +375,8 @@ const fetchTransactionsForMonth = async () => {
 
     // API might return standard paginated structure
     if (response.data && Array.isArray(response.data.data)) {
-      transactions.value = response.data.data
+      // Takeout Transaction Type Transfer
+      transactions.value = response.data.data.filter((tx: Transaction) => tx.transactionType !== 'TRANSFER')
     } else {
       transactions.value = []
     }

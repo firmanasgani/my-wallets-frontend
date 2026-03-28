@@ -48,7 +48,7 @@
                       id="currentPassword"
                       v-model="formData.currentPassword"
                       required
-                      class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 pr-10"
+                      class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 pr-10"
                     />
                     <button
                       type="button"
@@ -105,7 +105,7 @@
                       id="newPassword"
                       v-model="formData.newPassword"
                       required
-                      class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 pr-10"
+                      class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 pr-10"
                       placeholder="Minimal 6 karakter"
                     />
                     <button
@@ -171,7 +171,7 @@
                       id="confirmNewPassword"
                       v-model="formData.confirmNewPassword"
                       required
-                      class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 pr-10"
+                      class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 pr-10"
                     />
                     <button
                       type="button"
@@ -240,7 +240,7 @@
               <button
                 type="submit"
                 :disabled="authStore.authIsLoading || !isFormValid"
-                class="inline-flex justify-center items-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto sm:text-sm transition-colors"
+                class="inline-flex justify-center items-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#2E8B57] text-base font-medium text-white hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto sm:text-sm transition-colors"
               >
                 <LoadingSpinner
                   v-if="authStore.authIsLoading"

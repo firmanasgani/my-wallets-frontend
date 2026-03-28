@@ -20,9 +20,9 @@
           <h3 class="text-lg font-medium text-slate-900 dark:text-white">Langganan & Paket</h3>
           <span
             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-            :class="isFree ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'"
+            :class="isFree ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-emerald-300' : isBusiness ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300' : 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'"
           >
-            {{ isFree ? 'Paket Free' : 'Paket Premium' }}
+            {{ isFree ? 'Paket Free' : isBusiness ? 'Paket Business' : 'Paket Premium' }}
           </span>
         </div>
         <div class="p-6">
@@ -43,18 +43,20 @@
                 <li v-if="isFree">Laporan Terbatas</li>
                 <li v-if="!isFree">Unlimited Akun & Anggaran</li>
                 <li v-if="!isFree">Export Laporan PDF/Excel</li>
+                <li v-if="isBusiness">Multi-user & Manajemen Member (hingga 5 member)</li>
+                <li v-if="isBusiness">Chart of Accounts & Pembukuan</li>
               </ul>
             </div>
             <div v-if="isFree">
               <button
                 type="button"
                 @click="openPricingModal"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
               >
                 Upgrade ke Premium
               </button>
             </div>
-            <div v-if="isPlanExpiring">
+            <div v-if="isPlanExpiring && !isBusiness">
               <button
                 type="button"
                 @click="openPricingModal"
@@ -64,6 +66,36 @@
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Company Info (business member only) -->
+      <div
+        v-if="isBusiness && businessStore.currentCompany"
+        class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+      >
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-between items-center">
+          <h3 class="text-lg font-medium text-slate-900 dark:text-white">Perusahaan</h3>
+          <RouterLink
+            :to="{ name: 'business-settings' }"
+            class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
+          >Lihat Detail</RouterLink>
+        </div>
+        <div class="p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">{{ businessStore.currentCompany.name }}</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ businessStore.currentCompany.email || businessStore.currentCompany.phone || '-' }}</p>
+          </div>
+          <span
+            v-if="businessStore.myRole"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+            :class="{
+              'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300': businessStore.myRole === 'OWNER',
+              'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-emerald-300': businessStore.myRole === 'ADMIN',
+              'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300': businessStore.myRole === 'STAFF',
+              'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400': businessStore.myRole === 'VIEWER',
+            }"
+          >{{ businessStore.myRole }}</span>
         </div>
       </div>
 
@@ -142,7 +174,7 @@
             <select
               :value="themeStore.theme"
               @change="onThemeChange"
-              class="mt-1 block w-40 pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+              class="mt-1 block w-40 pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"
             >
               <option value="light">Terang</option>
               <option value="dark">Gelap</option>
@@ -160,7 +192,7 @@
               </p>
             </div>
             <select
-              class="mt-1 block w-40 pl-3 pr-10 py-2 text-base border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-slate-700 dark:text-white"
+              class="mt-1 block w-40 pl-3 pr-10 py-2 text-base border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md dark:bg-slate-700 dark:text-white"
             >
               <option>Indonesia</option>
               <option>English (Soon)</option>
@@ -203,7 +235,7 @@
               >Export Semua Data Transaksi (CSV)</span
             >
             <button
-              class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium"
+              class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium"
             >
               Download
             </button>
@@ -216,7 +248,7 @@
             >
             <RouterLink
               :to="{ name: 'profile' }"
-              class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium"
+              class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium"
               >Ke Profil &rarr;</RouterLink
             >
           </div>
@@ -247,6 +279,7 @@
 import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
+import { useBusinessStore } from '@/stores/business'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import PricingModal from '@/components/common/PricingModal.vue'
 import RecurringTransactionsList from '@/components/settings/RecurringTransactionsList.vue'
@@ -254,15 +287,20 @@ import PaymentHistorySection from '@/components/settings/PaymentHistorySection.v
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
+const businessStore = useBusinessStore()
 const route = useRoute()
 const router = useRouter()
 const isPricingModalOpen = ref(false)
 const currentView = ref<'main' | 'recurring' | 'payment-history'>('main')
 
-onMounted(() => {
+onMounted(async () => {
   if (route.query.upgrade === 'true') {
     openPricingModal()
     router.replace({ query: {} }) // Clean up URL
+  }
+  if (isBusiness.value) {
+    if (!businessStore.isCompanyLoaded) await businessStore.fetchMyCompany().catch(() => {})
+    if (!businessStore.members.length) await businessStore.fetchMembers().catch(() => {})
   }
 })
 
@@ -270,7 +308,12 @@ const isFree = computed(() => {
   return authStore.currentUser?.subscriptionPlan === 'FREE'
 })
 
+const isBusiness = computed(() => {
+  return authStore.currentUser?.subscriptionPlan?.startsWith('BUSINESS') ?? false
+})
+
 const openPricingModal = () => {
+  if (isBusiness.value) return
   isPricingModalOpen.value = true
 }
 

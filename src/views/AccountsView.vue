@@ -5,7 +5,7 @@
         <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Akun Saya</h1>
         <button
           @click="showBalance = !showBalance"
-          class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors focus:outline-none"
+          class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-indigo-50 rounded-full transition-colors focus:outline-none"
           :title="showBalance ? 'Sembunyikan Saldo' : 'Tampilkan Saldo'"
         >
           <svg
@@ -80,7 +80,7 @@
         <RouterLink
           v-if="canAddAccount"
           :to="{ name: 'account-create' }"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm justify-center"
+          class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm justify-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -168,10 +168,10 @@
 
     <!-- Account Statistics Cards -->
     <div
-      v-if="!isLoading && accounts && accounts.length > 0"
+      v-if="!isLoading"
       class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
     >
-      <StatsCard title="Total Akun" :value="accounts.length" variant="indigo">
+      <StatsCard title="Total Akun" :value="accountStore.accounts.length" variant="indigo" @click="filtersAccountsByType(null)" :class="activeTypeFilter === null ? 'ring-2 ring-emerald-500 cursor-pointer' : 'cursor-pointer'">
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -190,7 +190,7 @@
         </template>
       </StatsCard>
 
-      <StatsCard title="Rekening Bank" :value="accountStore.totalBanks" variant="blue">
+      <StatsCard title="Rekening Bank" :value="accountStore.totalBanks" variant="blue" @click="filtersAccountsByType('BANK')" :class="activeTypeFilter === 'BANK' ? 'ring-2 ring-emerald-500 cursor-pointer' : 'cursor-pointer'">
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -209,7 +209,7 @@
         </template>
       </StatsCard>
 
-      <StatsCard title="E-Wallet" :value="accountStore.totalWallets" variant="red">
+      <StatsCard title="E-Wallet" :value="accountStore.totalWallets" variant="red" @click="filtersAccountsByType('E_WALLET')" :class="activeTypeFilter === 'E_WALLET' ? 'ring-2 ring-red-500 cursor-pointer' : 'cursor-pointer'">
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -228,7 +228,7 @@
         </template>
       </StatsCard>
 
-      <StatsCard title="Kartu Kredit" :value="accountStore.totalCards" variant="yellow">
+      <StatsCard title="Kartu Kredit" :value="accountStore.totalCards" variant="yellow" @click="filtersAccountsByType('CREDIT_CARD')" :class="activeTypeFilter === 'CREDIT_CARD' ? 'ring-2 ring-yellow-500 cursor-pointer' : 'cursor-pointer'">
         <template #icon>
           <svg
             class="h-6 w-6 text-current"
@@ -269,7 +269,7 @@
 
     <div
       v-if="!isLoading && accounts && accounts.length === 0 && !accountStore.error"
-      class="text-center py-10 bg-white rounded-lg shadow-md print:hidden"
+      class="text-center py-10 bg-white dark:bg-slate-800 rounded-lg shadow-md print:hidden"
     >
       <svg
         class="mx-auto h-16 w-16 text-slate-400"
@@ -286,14 +286,14 @@
           d="M9.5 10.75A2.25 2.25 0 1 1 5 10.75a2.25 2.25 0 0 1 4.5 0Zm0 0H20m0 0A2.25 2.25 0 1 0 15.5 13a2.25 2.25 0 0 0 4.5 0V7.5A2.25 2.25 0 0 0 15.5 5a2.25 2.25 0 0 0-4.5 0v2.25m0 0h-5.5M9.5 10.75v8.25M16.25 13.5a2.25 2.25 0 1 1 0-4.5m0 4.5a2.25 2.25 0 1 0 0-4.5M2.75 7.5A2.25 2.25 0 0 1 5 5.25h14A2.25 2.25 0 0 1 21.25 7.5v9A2.25 2.25 0 0 1 19 18.75H5A2.25 2.25 0 0 1 2.75 16.5v-9Z"
         />
       </svg>
-      <h3 class="mt-4 text-lg font-medium text-slate-800">Anda Belum Memiliki Akun</h3>
-      <p class="mt-1 text-sm text-slate-500">
+      <h3 class="mt-4 text-lg font-medium text-slate-800 dark:text-slate-200">Anda Belum Memiliki Akun</h3>
+      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
         Mulai kelola keuangan Anda dengan menambahkan akun pertama.
       </p>
 
       <RouterLink
         :to="{ name: 'account-create' }"
-        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
       >
         + Tambah Akun Sekarang
       </RouterLink>
@@ -307,7 +307,7 @@
         <!-- Card Face -->
         <div
           :class="getCardGradient(account.accountType)"
-          class="relative rounded-2xl p-5 text-white shadow-xl overflow-hidden cursor-pointer select-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl"
+          class="relative rounded-2xl p-4 sm:p-5 text-white shadow-xl overflow-hidden cursor-pointer select-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl"
           style="aspect-ratio: 1.586 / 1;"
           @click="viewTransactions(account.id)"
         >
@@ -341,18 +341,18 @@
           </div>
 
           <!-- Bottom row: account number + name -->
-          <div class="absolute bottom-5 left-5 right-5 flex items-end justify-between z-10">
-            <div>
-              <p class="text-xs text-white/60 uppercase tracking-wider mb-0.5">No. Akun</p>
-              <p class="font-mono text-sm tracking-widest">
+          <div class="absolute bottom-4 sm:bottom-5 left-4 sm:left-5 right-4 sm:right-5 flex items-end justify-between z-10 gap-2">
+            <div class="flex-shrink-0">
+              <p class="text-[10px] sm:text-xs text-white/60 uppercase tracking-wider mb-0.5 whitespace-nowrap">No. Akun</p>
+              <p class="font-mono text-xs sm:text-sm tracking-widest whitespace-nowrap">
                 {{ account.accountNumber ? `•••• ${account.accountNumber.slice(-4)}` : '•••• ••••' }}
               </p>
             </div>
-            <div class="text-right">
-              <p class="text-xs text-white/60 uppercase tracking-wider mb-0.5">
+            <div class="text-right min-w-0">
+              <p class="text-[10px] sm:text-xs text-white/60 uppercase tracking-wider mb-0.5 truncate">
                 {{ account.bank?.name || 'Akun' }}
               </p>
-              <p class="text-sm font-semibold truncate max-w-[130px]" :title="account.accountName">
+              <p class="text-xs sm:text-sm font-semibold truncate" :title="account.accountName">
                 {{ account.accountName }}
               </p>
             </div>
@@ -364,7 +364,7 @@
           <button
             @click="viewTransactions(account.id)"
             title="Lihat Transaksi"
-            class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+            class="p-1.5 text-slate-500 hover:text-emerald-600 rounded-md hover:bg-indigo-50 dark:hover:bg-emerald-900/30 transition-colors"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -374,7 +374,7 @@
           <RouterLink
             :to="{ name: 'account-edit', params: { id: account.id } }"
             title="Edit Akun"
-            class="p-1.5 text-slate-500 hover:text-blue-600 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+            class="p-1.5 text-slate-500 hover:text-emerald-600 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
@@ -437,7 +437,11 @@ watch(showBalance, (val) => {
   localStorage.setItem('show_balance', val.toString())
 })
 
-const accounts = computed(() => accountStore.accounts)
+const activeTypeFilter = ref<string | null>(null)
+const accounts = computed(() => {
+  if (!activeTypeFilter.value) return accountStore.accounts
+  return accountStore.accounts.filter((a) => a.accountType === activeTypeFilter.value)
+})
 const isLoading = computed(() => accountStore.isLoading)
 
 const canAddAccount = computed(() => {
@@ -453,6 +457,10 @@ onMounted(async () => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutsideExport)
 })
+
+const filtersAccountsByType = (type: string | null) => {
+  activeTypeFilter.value = activeTypeFilter.value === type ? null : type
+}
 
 const formatCurrency = (
   value: number | string | null | undefined,
@@ -471,13 +479,13 @@ const formatCurrency = (
 const getCardGradient = (accountType: string): string => {
   switch (accountType) {
     case 'BANK':
-      return 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800'
+      return 'bg-gradient-to-br from-[#2E8B57] via-[#236B43] to-[#1a5233]'
     case 'CREDIT_CARD':
       return 'bg-gradient-to-br from-yellow-400 via-orange-500 to-rose-600'
     case 'CASH':
       return 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-700'
     case 'E_WALLET':
-      return 'bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-700'
+      return 'bg-gradient-to-br from-purple-500 via-violet-600 to-[#236B43]'
     default:
       return 'bg-gradient-to-br from-slate-500 via-slate-600 to-slate-800'
   }

@@ -2,7 +2,7 @@
   <input
     ref="inputRef"
     type="text"
-    class="block w-full rounded-md border border-slate-300 bg-white shadow-sm px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder:text-slate-500 transition-colors"
+    class="block w-full rounded-md border border-slate-300 bg-white shadow-sm px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder:text-slate-500 transition-colors"
     placeholder="0"
   />
 </template>

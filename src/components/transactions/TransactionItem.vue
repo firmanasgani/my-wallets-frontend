@@ -31,7 +31,7 @@
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2">
           <p
-            class="text-sm font-medium text-indigo-600 dark:text-indigo-400 truncate"
+            class="text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate"
             :title="transaction.category?.categoryName || transaction.transactionType"
           >
             {{

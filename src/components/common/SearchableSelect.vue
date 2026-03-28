@@ -15,7 +15,7 @@
         :placeholder="placeholder"
         :disabled="disabled"
         :class="[
-          'border border-gray-300 rounded-lg block w-full px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 transition-colors dark:text-slate-200',
+          'border border-gray-300 rounded-lg block w-full px-3 py-2 pr-10 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 transition-colors dark:text-slate-200',
           disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white cursor-text dark:bg-slate-700',
         ]"
       />
@@ -48,7 +48,7 @@
           :key="option.value || `option-${index}`"
           @click="selectOption(option)"
           :class="[
-            'px-3 py-2 cursor-pointer hover:bg-blue-50 dark:text-slate-200 transition-colors',
+            'px-3 py-2 cursor-pointer hover:bg-emerald-50 dark:text-slate-200 transition-colors',
             modelValue === option.value
               ? 'bg-blue-100 text-blue-700 font-medium'
               : 'text-slate-700',
