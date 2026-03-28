@@ -40,6 +40,12 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: 'Syarat dan Ketentuan' },
   },
   {
+    path: '/paket-bisnis',
+    name: 'business-package',
+    component: () => import('@/views/BusinessPackageView.vue'),
+    meta: { title: 'Paket Bisnis — Moneytory Ledger' },
+  },
+  {
     path: '/login',
     name: 'login',
     component: LoginView,

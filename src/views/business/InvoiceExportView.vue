@@ -31,7 +31,7 @@
         <button
           @click="handleDownloadPDF"
           :disabled="isExportingPDF || isLoading || journals.length === 0"
-          class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg transition-colors shadow-sm"
+          class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 text-white rounded-lg transition-colors shadow-sm"
         >
           <svg v-if="isExportingPDF" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -58,7 +58,7 @@
 
     <!-- Loading -->
     <div v-if="isLoading" class="max-w-5xl mx-auto flex justify-center p-20">
-      <svg class="animate-spin w-8 h-8 text-indigo-500" fill="none" viewBox="0 0 24 24">
+      <svg class="animate-spin w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
@@ -75,16 +75,16 @@
       class="max-w-5xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-lg print:shadow-none print:rounded-none print:max-w-none"
     >
       <!-- Header Strip -->
-      <div class="bg-indigo-600 rounded-t-xl print:rounded-none px-8 py-6 flex items-center justify-between">
+      <div class="bg-[#2E8B57] rounded-t-xl print:rounded-none px-8 py-6 flex items-center justify-between">
         <div>
-          <p class="text-indigo-200 text-xs font-semibold uppercase tracking-widest mb-1">Jurnal Pembayaran Invoice</p>
+          <p class="text-emerald-100 text-xs font-semibold uppercase tracking-widest mb-1">Jurnal Pembayaran Invoice</p>
           <h1 class="text-white font-bold text-xl font-mono">{{ invoice.invoiceNumber }}</h1>
-          <p v-if="businessStore.currentCompany?.name" class="text-indigo-200 text-sm mt-0.5">{{ businessStore.currentCompany.name }}</p>
+          <p v-if="businessStore.currentCompany?.name" class="text-emerald-100 text-sm mt-0.5">{{ businessStore.currentCompany.name }}</p>
         </div>
         <div class="text-right">
-          <p class="text-indigo-200 text-xs">Klien</p>
+          <p class="text-emerald-100 text-xs">Klien</p>
           <p class="text-white font-semibold">{{ invoice.clientName }}</p>
-          <p class="text-indigo-200 text-xs mt-2">Total Invoice</p>
+          <p class="text-emerald-100 text-xs mt-2">Total Invoice</p>
           <p class="text-white font-bold text-lg">{{ formatCurrency(invoice.totalAmount) }}</p>
         </div>
       </div>
@@ -104,7 +104,7 @@
           <div v-for="tx in journals" :key="tx.id">
             <!-- Entry Header -->
             <div class="flex items-center gap-3 mb-3">
-              <div class="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></div>
+              <div class="w-2 h-2 rounded-full bg-[#2E8B57] shrink-0"></div>
               <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{ tx.description }}</span>
               <span class="text-xs text-slate-400 dark:text-slate-500 ml-auto shrink-0">{{ formatDate(tx.transactionDate) }}</span>
             </div>
@@ -171,17 +171,17 @@
 
           <!-- Grand Total -->
           <div class="flex justify-end pt-2">
-            <div class="w-80 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800 overflow-hidden">
+            <div class="w-80 bg-indigo-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800 overflow-hidden">
               <div class="flex justify-between px-5 py-3 text-sm">
                 <span class="font-semibold text-slate-600 dark:text-slate-300">Total Debit</span>
                 <span class="font-mono font-bold text-green-700 dark:text-green-400">{{ formatCurrency(grandTotalDebit) }}</span>
               </div>
-              <div class="flex justify-between px-5 py-3 text-sm border-t border-indigo-100 dark:border-indigo-800">
+              <div class="flex justify-between px-5 py-3 text-sm border-t border-emerald-100 dark:border-emerald-800">
                 <span class="font-semibold text-slate-600 dark:text-slate-300">Total Kredit</span>
                 <span class="font-mono font-bold text-red-600 dark:text-red-400">{{ formatCurrency(grandTotalCredit) }}</span>
               </div>
               <div
-                class="flex justify-between px-5 py-3 text-sm border-t border-indigo-100 dark:border-indigo-800"
+                class="flex justify-between px-5 py-3 text-sm border-t border-emerald-100 dark:border-emerald-800"
                 :class="isBalanced ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-red-50 dark:bg-red-900/20'"
               >
                 <span class="font-semibold" :class="isBalanced ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-600 dark:text-red-400'">
@@ -202,7 +202,7 @@
       <!-- Footer -->
       <div class="border-t border-slate-100 dark:border-slate-700 px-8 py-4 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 rounded-b-xl print:rounded-none">
         <span>Dicetak pada {{ new Date().toLocaleString('id-ID') }}</span>
-        <span>Dibuat dengan MyWallets</span>
+        <span>Dibuat dengan Moneytory Ledger</span>
       </div>
     </div>
   </div>

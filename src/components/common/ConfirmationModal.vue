@@ -93,7 +93,7 @@
             </button>
             <button
               type="button"
-              class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm disabled:opacity-50"
+              class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:mt-0 sm:w-auto sm:text-sm disabled:opacity-50"
               @click="handleCancel"
               :disabled="isConfirming"
             >
@@ -128,7 +128,7 @@ const props = withDefaults(defineProps<Props>(), {
   message: 'Apakah Anda yakin ingin melanjutkan aksi ini?',
   confirmButtonText: 'Ya, Lanjutkan',
   cancelButtonText: 'Batal',
-  confirmButtonClass: 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500',
+  confirmButtonClass: 'bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500',
   iconType: 'warning',
   isConfirming: false,
   closeOnOverlayClick: true,

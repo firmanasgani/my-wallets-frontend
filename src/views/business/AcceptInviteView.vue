@@ -26,7 +26,7 @@
         </div>
         <button
           @click="goToDashboard"
-          class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition-colors"
+          class="w-full px-4 py-2 bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium rounded-md transition-colors"
         >
           Ke Dashboard
         </button>

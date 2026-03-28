@@ -58,10 +58,10 @@ const props = withDefaults(
 )
 
 const colorMap: Record<string, { bg: string; text: string; ring: string }> = {
-  indigo: { bg: 'bg-indigo-50', text: 'text-indigo-600', ring: 'ring-indigo-500' },
+  indigo: { bg: 'bg-emerald-50', text: 'text-emerald-600', ring: 'ring-emerald-500' },
   green: { bg: 'bg-green-50', text: 'text-green-600', ring: 'ring-green-500' },
   red: { bg: 'bg-red-50', text: 'text-red-600', ring: 'ring-red-500' },
-  blue: { bg: 'bg-blue-50', text: 'text-blue-600', ring: 'ring-blue-500' },
+  blue: { bg: 'bg-emerald-50', text: 'text-emerald-600', ring: 'ring-emerald-500' },
   yellow: { bg: 'bg-yellow-50', text: 'text-yellow-600', ring: 'ring-yellow-500' },
   purple: { bg: 'bg-purple-50', text: 'text-purple-600', ring: 'ring-purple-500' },
   gray: { bg: 'bg-gray-50', text: 'text-gray-600', ring: 'ring-gray-500' },

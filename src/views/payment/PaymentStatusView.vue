@@ -27,7 +27,7 @@
       <div class="pt-4 space-y-3">
         <button
           @click="goToDashboard"
-          class="w-full bg-indigo-600 text-white py-3 rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all"
+          class="w-full bg-[#2E8B57] text-white py-3 rounded-2xl font-bold shadow-lg shadow-emerald-100 hover:bg-[#236B43] hover:-translate-y-0.5 transition-all"
         >
           Ke Dashboard
         </button>
@@ -42,7 +42,7 @@
     </div>
 
     <p class="mt-8 text-slate-400 text-sm">
-      &copy; 2026 MyWallets. Keamanan transaksi terjamin oleh Midtrans.
+      &copy; 2026 Moneytory Ledger. Keamanan transaksi terjamin oleh Midtrans.
     </p>
   </div>
 </template>

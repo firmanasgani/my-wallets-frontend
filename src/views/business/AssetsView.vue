@@ -6,7 +6,7 @@
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Manajemen Aset</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Aset tetap (PSAK 16) dan aset tak berwujud (PSAK 19).</p>
       </div>
-      <RouterLink v-if="isAdmin" :to="{ name: 'business-asset-create' }" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5">
+      <RouterLink v-if="isAdmin" :to="{ name: 'business-asset-create' }" class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
         Tambah Aset
       </RouterLink>
@@ -18,21 +18,21 @@
     </div>
 
     <!-- Run Depreciation Panel -->
-    <div v-if="isAdmin" class="mb-5 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-xl p-4">
+    <div v-if="isAdmin" class="mb-5 bg-indigo-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-xl p-4">
       <div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
         <div class="flex items-start gap-3">
-          <div class="mt-0.5 w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-800/60 flex items-center justify-center shrink-0">
-            <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="mt-0.5 w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-800/60 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
           <div>
-            <p class="text-sm font-semibold text-indigo-800 dark:text-indigo-200">Jalankan Penyusutan Manual</p>
-            <p class="text-xs text-indigo-500 dark:text-indigo-400 mt-0.5">Sistem otomatis berjalan tiap tanggal 1. Gunakan ini untuk run manual jika diperlukan.</p>
+            <p class="text-sm font-semibold text-emerald-800 dark:text-emerald-100">Jalankan Penyusutan Manual</p>
+            <p class="text-xs text-emerald-500 dark:text-emerald-400 mt-0.5">Sistem otomatis berjalan tiap tanggal 1. Gunakan ini untuk run manual jika diperlukan.</p>
           </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <div class="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-700 rounded-lg px-2.5 py-1.5">
+          <div class="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-700 rounded-lg px-2.5 py-1.5">
             <select v-model="deprMonth" class="bg-transparent text-slate-800 dark:text-slate-100 text-sm focus:outline-none cursor-pointer">
               <option v-for="m in 12" :key="m" :value="m">{{ String(m).padStart(2,'0') }}</option>
             </select>
@@ -41,7 +41,7 @@
               class="bg-transparent text-slate-800 dark:text-slate-100 text-sm w-16 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
           </div>
           <button @click="runDepreciation" :disabled="isRunningDepr"
-            class="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-1.5">
+            class="bg-[#2E8B57] hover:bg-[#236B43] active:bg-[#1a5233] text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-1.5">
             <svg v-if="isRunningDepr" class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
@@ -66,7 +66,7 @@
     <div class="mb-4 flex items-center gap-2 flex-wrap">
       <button v-for="s in STATUS_FILTERS" :key="s.value"
         @click="statusFilter = s.value"
-        :class="statusFilter === s.value ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-indigo-400'"
+        :class="statusFilter === s.value ? 'bg-[#2E8B57] text-white border-[#2E8B57]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-emerald-400'"
         class="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors">
         {{ s.label }}
       </button>
@@ -74,7 +74,7 @@
 
     <!-- Loading -->
     <div v-if="isLoading" class="flex justify-center py-16">
-      <svg class="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+      <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
       </svg>
@@ -94,18 +94,18 @@
       <RouterLink
         v-for="asset in filteredAssets" :key="asset.id"
         :to="{ name: 'business-asset-detail', params: { id: asset.id } }"
-        class="block bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md transition-all p-5 group"
+        class="block bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-[#2E8B57] hover:shadow-md transition-all p-5 group"
       >
         <div class="flex items-start justify-between gap-2 mb-3">
           <div>
             <div class="flex items-center gap-2">
               <span class="px-2 py-0.5 rounded text-xs font-medium"
-                :class="asset.assetType === 'TANGIBLE' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'">
+                :class="asset.assetType === 'TANGIBLE' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-emerald-300' : 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'">
                 {{ asset.assetType === 'TANGIBLE' ? 'Tetap' : 'Tak Berwujud' }}
               </span>
               <span class="text-xs text-slate-400 dark:text-slate-500 font-mono">{{ asset.code }}</span>
             </div>
-            <h3 class="mt-1 font-semibold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">{{ asset.name }}</h3>
+            <h3 class="mt-1 font-semibold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-tight">{{ asset.name }}</h3>
           </div>
           <span :class="statusClass(asset.status)" class="shrink-0 px-2 py-0.5 rounded-full text-xs font-medium">{{ statusLabel(asset.status) }}</span>
         </div>
@@ -117,7 +117,7 @@
           </div>
           <div class="flex justify-between">
             <span class="text-slate-500 dark:text-slate-400">Nilai Buku</span>
-            <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ formatRp(asset.currentBookValue) }}</span>
+            <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ formatRp(asset.currentBookValue) }}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-500 dark:text-slate-400">Akumulasi</span>
@@ -132,7 +132,7 @@
             <span>{{ deprProgress(asset) }}%</span>
           </div>
           <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5">
-            <div class="bg-indigo-500 h-1.5 rounded-full transition-all" :style="{ width: deprProgress(asset) + '%' }"></div>
+            <div class="bg-[#2E8B57] h-1.5 rounded-full transition-all" :style="{ width: deprProgress(asset) + '%' }"></div>
           </div>
         </div>
 

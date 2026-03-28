@@ -21,7 +21,7 @@
     </p>
     <RouterLink
       :to="{ name: 'accounts-list' }"
-      class="mt-4 inline-block px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md"
+      class="mt-4 inline-block px-4 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-md"
     >
       Kembali ke Daftar Akun
     </RouterLink>
@@ -42,7 +42,7 @@
           id="accountName"
           v-model="formData.accountName"
           required
-          class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+          class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300"
         />
       </div>
 
@@ -53,7 +53,7 @@
         <input
           type="text"
           :value="formatAccountTypeText(formData.accountType)"
-          class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+          class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300"
           readonly
           disabled
         />
@@ -93,7 +93,7 @@
           type="text"
           id="currency"
           v-model="formData.currency"
-          class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+          class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300"
           readonly
           disabled
         />
@@ -107,7 +107,7 @@
           type="text"
           id="accountNumber"
           v-model="formData.accountNumber"
-          class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300"
+          class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300"
         />
       </div>
 
@@ -125,7 +125,7 @@
         <button
           type="submit"
           :disabled="isSubmitting || accountStore.isSubmitting"
-          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-blue-600 flex items-center"
+          class="px-4 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-[#2E8B57] flex items-center"
         >
           <LoadingSpinner
             v-if="isSubmitting || accountStore.isSubmitting"

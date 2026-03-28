@@ -46,7 +46,7 @@
                 type="text"
                 placeholder="Contoh: 1-005"
                 required
-                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               />
               <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Konvensi: 1-xxx=ASSET, 2-xxx=LIABILITY, 3-xxx=EQUITY, 4-xxx=REVENUE, 5-xxx=EXPENSE
@@ -63,7 +63,7 @@
                 type="text"
                 placeholder="Nama akun"
                 required
-                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               />
             </div>
 
@@ -75,7 +75,7 @@
               <select
                 v-model="form.type"
                 required
-                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               >
                 <option value="ASSET">ASSET — Aset (Harta)</option>
                 <option value="LIABILITY">LIABILITY — Kewajiban (Hutang)</option>
@@ -96,7 +96,7 @@
                 min="0"
                 step="any"
                 placeholder="0"
-                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               />
               <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Isi jika sedang migrasi dari pembukuan manual/Excel. Kosongkan jika mulai dari nol.
@@ -121,7 +121,7 @@
               <button
                 type="submit"
                 :disabled="isSubmitting"
-                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                class="px-4 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <svg v-if="isSubmitting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

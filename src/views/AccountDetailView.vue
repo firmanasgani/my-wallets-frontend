@@ -4,7 +4,7 @@
     <nav class="flex items-center text-sm text-slate-500 dark:text-slate-200">
       <RouterLink
         :to="{ name: 'accounts-list' }"
-        class="hover:text-indigo-600 transition-colors flex items-center"
+        class="hover:text-emerald-600 transition-colors flex items-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -92,7 +92,7 @@
           </div>
           <RouterLink
             :to="{ name: 'account-edit', params: { id: account.id } }"
-            class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +124,7 @@
               <h3 class="text-sm font-medium text-slate-500 dark:text-slate-200 uppercase tracking-wider mb-2">
                 Saldo Saat Ini
               </h3>
-              <p class="text-3xl font-bold text-slate-900 tracking-tight text-indigo-600 dark:text-slate-400">
+              <p class="text-3xl font-bold text-slate-900 tracking-tight text-emerald-600 dark:text-slate-400">
                 {{ formatCurrency(account.currentBalance, account.currency) }}
               </p>
               <p class="text-xs text-slate-400 mt-2 dark:text-slate-200">
@@ -195,7 +195,7 @@
             :visible="true"
             text="Memuat transaksi..."
             size="md"
-            color="text-indigo-500"
+            color="text-emerald-500"
           />
         </div>
 
@@ -292,7 +292,7 @@
             <button
               @click="loadPrevTransactions"
               :disabled="isLoadingMore || !hasPrevPage"
-              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
+              class="text-sm font-medium text-emerald-600 hover:text-emerald-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -307,13 +307,13 @@
             <button
               @click="loadMoreTransactions"
               :disabled="isLoadingMore || !hasMorePages"
-              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
+              class="text-sm font-medium text-emerald-600 hover:text-emerald-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <LoadingSpinner
                 v-if="isLoadingMore"
                 :visible="true"
                 size="xs"
-                color="text-indigo-600"
+                color="text-emerald-600"
                 class="mr-1"
               />
               Berikutnya

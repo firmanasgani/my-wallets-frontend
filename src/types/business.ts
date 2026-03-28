@@ -142,6 +142,7 @@ export interface Invoice {
   status: InvoiceStatus
   subtotal: string
   taxAmount: string
+  withholdingTaxAmount: string
   totalAmount: string
   amountPaid: string
   sentAt: string | null
@@ -152,6 +153,7 @@ export interface Invoice {
   paymentReference: string | null
   paymentBankAccountId: string | null
   notes: string | null
+  taxConfigId: string | null
   createdByUserId: string
   createdAt: string
   updatedAt: string
@@ -159,6 +161,7 @@ export interface Invoice {
   attachments?: InvoiceAttachment[]
   contact: InvoiceContact | null
   paymentBankAccount?: CompanyBankAccount | null
+  taxConfig?: TaxConfig | null
 }
 
 export interface InvoicesResponse {
@@ -186,6 +189,7 @@ export interface CreateInvoicePayload {
   dueDate: string
   notes?: string
   paymentBankAccountId?: string
+  taxConfigId?: string
   items: InvoiceItemPayload[]
 }
 
@@ -198,6 +202,7 @@ export interface UpdateInvoicePayload {
   dueDate?: string
   notes?: string
   paymentBankAccountId?: string | null
+  taxConfigId?: string | null
   items?: InvoiceItemPayload[]
 }
 

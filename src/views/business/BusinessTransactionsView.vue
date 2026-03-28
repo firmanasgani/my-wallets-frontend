@@ -35,7 +35,7 @@
         <RouterLink
           v-if="canCreate"
           :to="{ name: 'business-transaction-create' }"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm"
+          class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -59,7 +59,7 @@
           <input
             v-model="filters.startDate"
             type="date"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
         <!-- End Date -->
@@ -68,7 +68,7 @@
           <input
             v-model="filters.endDate"
             type="date"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
         <!-- COA Filter -->
@@ -76,7 +76,7 @@
           <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Akun (COA)</label>
           <select
             v-model="filters.coaId"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option value="">Semua Akun</option>
             <optgroup v-for="(group, type) in businessStore.chartOfAccounts" :key="type" :label="String(type)">
@@ -91,7 +91,7 @@
           <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Status</label>
           <select
             v-model="filters.status"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option value="">Semua Status</option>
             <option value="DRAFT">Draft</option>
@@ -105,7 +105,7 @@
         <div class="flex items-end gap-2">
           <button
             @click="applyFilters"
-            class="flex-1 px-4 py-1.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+            class="flex-1 px-4 py-1.5 text-sm font-medium bg-[#2E8B57] hover:bg-[#236B43] text-white rounded-lg transition-colors"
           >
             Filter
           </button>
@@ -152,7 +152,7 @@
 
     <!-- Loading -->
     <div v-if="txStore.isLoading" class="flex justify-center p-12">
-      <svg class="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+      <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
@@ -177,7 +177,7 @@
       <div
         v-for="tx in txStore.transactions"
         :key="tx.id"
-        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 px-5 py-4 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors"
+        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 px-5 py-4 hover:border-emerald-300 dark:hover:border-[#2E8B57] transition-colors"
       >
         <div class="flex items-start justify-between gap-4">
           <!-- Left: Info -->
@@ -188,7 +188,7 @@
               <RouterLink
                 v-if="tx.invoiceId && tx.invoice"
                 :to="{ name: 'invoice-detail', params: { id: tx.invoiceId } }"
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-emerald-300 hover:bg-blue-200 dark:hover:bg-emerald-900/50 transition-colors"
               >
                 Dari Invoice {{ tx.invoice.invoiceNumber }}
               </RouterLink>
@@ -239,7 +239,7 @@
             </div>
             <button
               @click="openDetail(tx)"
-              class="p-2 rounded-md text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
+              class="p-2 rounded-md text-slate-400 hover:text-emerald-600 hover:bg-indigo-50 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
               title="Lihat Detail"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

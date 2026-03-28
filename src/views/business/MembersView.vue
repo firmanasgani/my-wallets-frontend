@@ -14,7 +14,7 @@
         @click="openInviteModal"
         :disabled="activeCount >= 5"
         :title="activeCount >= 5 ? 'Slot member sudah penuh (5/5)' : ''"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-md transition-colors"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-md transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -57,7 +57,7 @@
             />
             <div
               v-else
-              class="w-9 h-9 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0"
+              class="w-9 h-9 bg-[#2E8B57] rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0"
             >
               {{ (member.user.fullName || member.user.username).charAt(0).toUpperCase() }}
             </div>
@@ -132,14 +132,14 @@
               type="email"
               required
               placeholder="budi@example.com"
-              class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Role</label>
             <select
               v-model="inviteForm.role"
-              class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               <option value="ADMIN">ADMIN — Approve, manage aset & pajak</option>
               <option value="CHECKER">CHECKER — Check (gate pertama) & reject</option>
@@ -157,7 +157,7 @@
             <button
               type="submit"
               :disabled="isInviting"
-              class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-md font-medium flex items-center gap-2"
+              class="px-4 py-2 text-sm bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 text-white rounded-md font-medium flex items-center gap-2"
             >
               <LoadingSpinner v-if="isInviting" :visible="true" size="xs" color="text-white" />
               Kirim Undangan
@@ -191,7 +191,7 @@
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Role baru</label>
           <select
             v-model="newRole"
-            class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option value="ADMIN">ADMIN</option>
             <option value="CHECKER">CHECKER</option>
@@ -208,7 +208,7 @@
             <button
               @click="handleUpdateRole"
               :disabled="isUpdatingRole"
-              class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-md font-medium flex items-center gap-2"
+              class="px-4 py-2 text-sm bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 text-white rounded-md font-medium flex items-center gap-2"
             >
               <LoadingSpinner v-if="isUpdatingRole" :visible="true" size="xs" color="text-white" />
               Simpan
@@ -288,7 +288,7 @@ function canRevoke(member: CompanyMember): boolean {
 function roleBadgeClass(role: CompanyMemberRole): string {
   switch (role) {
     case 'OWNER': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-    case 'ADMIN': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+    case 'ADMIN': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
     case 'CHECKER': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
     case 'STAFF': return 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
     case 'VIEWER': return 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'

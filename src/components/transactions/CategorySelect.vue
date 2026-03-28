@@ -4,8 +4,8 @@
     <button
       type="button"
       @click="toggleDropdown"
-      class="appearance-none flex items-center w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-3 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-left"
-      :class="{ 'ring-1 ring-indigo-500 border-indigo-500': isOpen }"
+      class="appearance-none flex items-center w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-3 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm text-left"
+      :class="{ 'ring-1 ring-emerald-500 border-emerald-500': isOpen }"
     >
       <!-- Selected category display -->
       <template v-if="selectedCategory">
@@ -50,7 +50,7 @@
           @click="selectCategory(cat)"
           class="flex items-center px-3 py-2.5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
           :class="{
-            'bg-indigo-50 dark:bg-indigo-900/30': modelValue === cat.id,
+            'bg-indigo-50 dark:bg-emerald-900/30': modelValue === cat.id,
             'pl-6': cat.parentPrefix,
           }"
         >
@@ -69,7 +69,7 @@
           </span>
           <svg
             v-if="modelValue === cat.id"
-            class="ml-auto h-4 w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0"
+            class="ml-auto h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"

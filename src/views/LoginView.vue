@@ -6,7 +6,7 @@
     >
       <!-- Left Side (Branding) -->
       <div
-        class="hidden md:flex w-1/2 bg-gradient-to-br from-blue-700 to-blue-900 p-12 flex-col justify-between relative text-white"
+        class="hidden md:flex w-1/2 bg-gradient-to-br from-[#2E8B57] to-[#1B5E3B] p-12 flex-col justify-between relative text-white"
       >
         <!-- Decoration / Noise could go here -->
         <div class="absolute inset-0 bg-pattern opacity-10"></div>
@@ -14,7 +14,7 @@
         <div class="relative z-10">
           <div class="flex items-center gap-3 mb-2">
             <!-- Simple Logo Placeholder -->
-            <div class="bg-blue-500 bg-opacity-30 p-2 rounded-lg">
+            <div class="bg-emerald-500 bg-opacity-30 p-2 rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 text-white"
@@ -30,28 +30,30 @@
                 />
               </svg>
             </div>
-            <span class="text-xl font-bold tracking-wider">My Wallets</span>
+            <span class="text-xl font-bold tracking-wider">Moneytory Ledger</span>
           </div>
         </div>
 
         <div class="relative z-10 space-y-6">
-          <h2 class="text-xl font-semibold text-red-100">Money Tracker and Support</h2>
+          <h2 class="text-xl font-semibold text-emerald-100">Moneytory Ledger</h2>
 
-          <p class="text-red-200 text-sm leading-relaxed max-w-sm">
-            Track your expenses and income with ease. Manage your budget and get insights into your
-            financial health.
+          <p class="text-emerald-200 text-sm leading-relaxed max-w-sm">
+            Solusi pembukuan cerdas untuk personal dan bisnis. Pantau arus kas, kelola budgeting,
+            hingga laporan keuangan profesional dalam satu platform yang terintegrasi.
           </p>
         </div>
 
-        <div class="relative z-10 text-xs text-red-300">&copy; 2026 Moneytory Inc.</div>
+        <div class="relative z-10 text-xs text-emerald-200">Made with ❤️ by Firmanasgani</div>
       </div>
 
       <!-- Right Side (Login Form) -->
-      <div class="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center bg-white dark:bg-slate-800 relative">
+      <div
+        class="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center bg-white dark:bg-slate-800 relative"
+      >
         <div class="max-w-md mx-auto w-full">
           <!-- Mobile Logo (Visible only on small screens) -->
           <div class="md:hidden flex justify-center mb-8">
-            <div class="bg-red-600 p-3 rounded-full shadow-lg">
+            <div class="bg-emerald-600 p-3 rounded-full shadow-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-8 w-8 text-white"
@@ -71,33 +73,21 @@
 
           <!-- Icon for Desktop Right Side -->
           <div class="hidden md:flex justify-center mb-8">
-            <div class="text-blue-600 dark:text-blue-400">
+            <div class="text-emerald-600 dark:text-emerald-400">
               <!-- Decorative Icon inspired by image -->
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-16 w-16"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path
-                  d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 002.1 9.761.75.75 0 011.7 8.657 61.35 61.35 0 0111.7 2.805z"
-                />
-                <path
-                  d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 001.5 1.5h1.632a1.5 1.5 0 001.5-1.5v-1.515a48.224 48.224 0 011.089.444l.34.179a1.5 1.5 0 001.5 0l.34-.179a48.224 48.224 0 011.16-.474V15.5z"
-                />
-              </svg>
+              <img src="/public/logo.png" alt="Login Icon" class="w-20 h-20" />
             </div>
           </div>
 
           <form @submit.prevent="handleLogin" class="space-y-6">
             <div
               v-if="errorMessage"
-              class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 text-blue-700 dark:text-blue-300 p-4 text-sm rounded-r relative"
+              class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 text-sm rounded-r relative"
               role="alert"
             >
               <span class="block sm:inline">{{ errorMessage }}</span>
               <svg
-                class="absolute top-0 right-0 mt-4 mr-4 h-4 w-4 cursor-pointer text-blue-400 hover:text-blue-600"
+                class="absolute top-0 right-0 mt-4 mr-4 h-4 w-4 cursor-pointer text-red-400 hover:text-red-600"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
@@ -114,21 +104,25 @@
             <div class="space-y-5">
               <!-- Nama Field -->
               <div>
-                <label for="login-field" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-2"
+                <label
+                  for="login-field"
+                  class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-2"
                   >Nama</label
                 >
                 <input
                   type="text"
                   id="login-field"
                   v-model="loginField"
-                  class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                   placeholder="Nama"
                 />
               </div>
 
               <!-- Password Field -->
               <div>
-                <label for="password" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-2"
+                <label
+                  for="password"
+                  class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-2"
                   >Kata Sandi</label
                 >
                 <div class="relative">
@@ -136,14 +130,14 @@
                     :type="showPassword ? 'text' : 'password'"
                     id="password"
                     v-model="password"
-                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12"
+                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerad-500 focus:border-transparent transition-all pr-12"
                     placeholder="Kata Sandi"
                   />
                   <div class="absolute inset-y-0 right-0 flex items-center pr-4">
                     <button
                       type="button"
                       @click="showPassword = !showPassword"
-                      class="text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-200 focus:outline-none"
+                      class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-200 focus:outline-none"
                     >
                       <svg
                         v-if="!showPassword"
@@ -190,7 +184,7 @@
             <!-- Login Button -->
             <button
               type="submit"
-              class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+              class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600"
               :disabled="isLoading"
             >
               <span v-if="!isLoading">Masuk</span>
@@ -223,14 +217,17 @@
             <div class="flex flex-col space-y-3 pt-2 text-center">
               <RouterLink
                 :to="{ name: 'forgot-password' }"
-                class="text-sm font-medium text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:underline"
+                class="text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline"
               >
                 Lupa Password?
               </RouterLink>
 
               <p class="text-sm text-gray-500 dark:text-slate-400">
                 Belum punya akun?
-                <RouterLink to="/register" class="font-bold text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
+                <RouterLink
+                  to="/register"
+                  class="font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300"
+                >
                   Daftar disini
                 </RouterLink>
               </p>

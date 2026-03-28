@@ -10,7 +10,7 @@
       <button
         v-if="canCreate"
         @click="router.push({ name: 'business-contacts-create' })"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-sm shrink-0"
+        class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-sm shrink-0"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -37,8 +37,8 @@
           :class="[
             'px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-150',
             activeFilter === tab.value
-              ? 'bg-indigo-600 text-white shadow-sm scale-[1.02]'
-              : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-600',
+              ? 'bg-[#2E8B57] text-white shadow-sm scale-[1.02]'
+              : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-emerald-400 hover:text-emerald-600',
           ]"
         >
           {{ tab.label }}
@@ -83,7 +83,7 @@
       <button
         v-if="canCreate"
         @click="router.push({ name: 'business-contacts-create' })"
-        class="mt-5 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm"
+        class="mt-5 inline-flex items-center gap-2 bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -172,7 +172,7 @@
               <button
                 v-if="canCreate"
                 @click="router.push({ name: 'business-contacts-edit', params: { id: contact.id } })"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 dark:text-indigo-400 transition-colors"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-600 hover:bg-indigo-50 dark:hover:bg-emerald-900/30 dark:text-emerald-400 transition-colors"
                 title="Edit"
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -306,7 +306,7 @@ const formatType = (type: ContactType) => {
 
 const getTypeBadgeClass = (type: ContactType) => {
   const map: Record<ContactType, string> = {
-    CUSTOMER: 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
+    CUSTOMER: 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-emerald-300',
     VENDOR: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
     EMPLOYEE: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
   }
@@ -315,7 +315,7 @@ const getTypeBadgeClass = (type: ContactType) => {
 
 const getTypeDotClass = (type: ContactType) => {
   const map: Record<ContactType, string> = {
-    CUSTOMER: 'bg-blue-500',
+    CUSTOMER: 'bg-[#2E8B57]',
     VENDOR: 'bg-amber-500',
     EMPLOYEE: 'bg-purple-500',
   }
@@ -324,7 +324,7 @@ const getTypeDotClass = (type: ContactType) => {
 
 const getAvatarClass = (type: ContactType) => {
   const map: Record<ContactType, string> = {
-    CUSTOMER: 'bg-blue-500',
+    CUSTOMER: 'bg-[#2E8B57]',
     VENDOR: 'bg-amber-500',
     EMPLOYEE: 'bg-purple-500',
   }
@@ -333,7 +333,7 @@ const getAvatarClass = (type: ContactType) => {
 
 const getStripClass = (type: ContactType) => {
   const map: Record<ContactType, string> = {
-    CUSTOMER: 'bg-blue-500',
+    CUSTOMER: 'bg-[#2E8B57]',
     VENDOR: 'bg-amber-500',
     EMPLOYEE: 'bg-purple-500',
   }

@@ -11,9 +11,9 @@
     </button>
 
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-      <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-600 to-indigo-500">
+      <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-[#2E8B57] to-[#236B43]">
         <h1 class="text-xl font-bold text-white">{{ isEdit ? 'Edit Aset' : 'Tambah Aset Baru' }}</h1>
-        <p class="text-indigo-200 text-sm mt-0.5">{{ isEdit ? 'Hanya nama dan catatan yang bisa diubah.' : 'Catat aset tetap atau aset tak berwujud perusahaan.' }}</p>
+        <p class="text-emerald-100 text-sm mt-0.5">{{ isEdit ? 'Hanya nama dan catatan yang bisa diubah.' : 'Catat aset tetap atau aset tak berwujud perusahaan.' }}</p>
       </div>
 
       <form @submit.prevent="submit" class="p-6 space-y-5">
@@ -27,13 +27,13 @@
           <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Jenis Aset <span class="text-red-500">*</span></label>
           <div class="grid grid-cols-2 gap-3">
             <button type="button" @click="form.assetType = 'TANGIBLE'"
-              :class="form.assetType === 'TANGIBLE' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300' : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:border-indigo-300'"
+              :class="form.assetType === 'TANGIBLE' ? 'border-emerald-500 bg-indigo-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300' : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:border-emerald-300'"
               class="border-2 rounded-xl p-3 text-sm font-medium transition-colors text-left">
               <p class="font-semibold">Aset Tetap</p>
               <p class="text-xs opacity-70 mt-0.5">PSAK 16 (Tangible)</p>
             </button>
             <button type="button" @click="form.assetType = 'INTANGIBLE'"
-              :class="form.assetType === 'INTANGIBLE' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300' : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:border-indigo-300'"
+              :class="form.assetType === 'INTANGIBLE' ? 'border-emerald-500 bg-indigo-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300' : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:border-emerald-300'"
               class="border-2 rounded-xl p-3 text-sm font-medium transition-colors text-left">
               <p class="font-semibold">Aset Tak Berwujud</p>
               <p class="text-xs opacity-70 mt-0.5">PSAK 19 (Intangible)</p>
@@ -45,11 +45,11 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Nama Aset <span class="text-red-500">*</span></label>
-            <input v-model="form.name" type="text" required maxlength="150" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50 dark:disabled:bg-slate-800" placeholder="cth: Laptop Dell XPS 15" />
+            <input v-model="form.name" type="text" required maxlength="150" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-50 dark:disabled:bg-slate-800" placeholder="cth: Laptop Dell XPS 15" />
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Kode Aset <span v-if="!isEdit" class="text-red-500">*</span></label>
-            <input v-model="form.code" type="text" :required="!isEdit" :disabled="isEdit" maxlength="30" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50 dark:disabled:bg-slate-800" placeholder="cth: IT-001" />
+            <input v-model="form.code" type="text" :required="!isEdit" :disabled="isEdit" maxlength="30" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-50 dark:disabled:bg-slate-800" placeholder="cth: IT-001" />
           </div>
         </div>
 
@@ -58,11 +58,11 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Tanggal Perolehan <span class="text-red-500">*</span></label>
-              <input v-model="form.acquisitionDate" type="date" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <input v-model="form.acquisitionDate" type="date" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Harga Perolehan (Rp) <span class="text-red-500">*</span></label>
-              <input v-model.number="form.acquisitionCost" type="number" required min="0.01" step="0.01" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="cth: 25000000" />
+              <input v-model.number="form.acquisitionCost" type="number" required min="0.01" step="0.01" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="cth: 25000000" />
             </div>
           </div>
 
@@ -70,18 +70,18 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Nilai Residu (Rp)</label>
-              <input v-model.number="form.residualValue" type="number" min="0" step="0.01" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Default: 0" />
+              <input v-model.number="form.residualValue" type="number" min="0" step="0.01" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Default: 0" />
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Masa Manfaat (bulan) <span class="text-red-500">*</span></label>
-              <input v-model.number="form.usefulLifeMonths" type="number" required min="1" max="600" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="cth: 48" />
+              <input v-model.number="form.usefulLifeMonths" type="number" required min="1" max="600" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="cth: 48" />
             </div>
           </div>
 
           <!-- Metode Penyusutan -->
           <div>
             <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Metode Penyusutan <span class="text-red-500">*</span></label>
-            <select v-model="form.depreciationMethod" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select v-model="form.depreciationMethod" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
               <option value="STRAIGHT_LINE">Garis Lurus (Straight Line)</option>
               <option value="DECLINING_BALANCE">Saldo Menurun (Declining Balance)</option>
               <option value="DOUBLE_DECLINING">Saldo Menurun Ganda (Double Declining)</option>
@@ -92,7 +92,7 @@
           <!-- Total Unit (UoP) -->
           <div v-if="form.depreciationMethod === 'UNITS_OF_PRODUCTION'">
             <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Total Unit Produksi <span class="text-red-500">*</span></label>
-            <input v-model.number="form.unitsTotal" type="number" required min="0.0001" step="0.0001" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Total unit sepanjang masa manfaat" />
+            <input v-model.number="form.unitsTotal" type="number" required min="0.0001" step="0.0001" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Total unit sepanjang masa manfaat" />
           </div>
 
           <!-- COA Section -->
@@ -101,21 +101,21 @@
             <div class="space-y-3">
               <div>
                 <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">COA Nilai Perolehan Aset <span class="text-red-500">*</span></label>
-                <select v-model="form.assetCoaId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select v-model="form.assetCoaId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                   <option value="">-- Pilih COA --</option>
                   <option v-for="coa in assetCoas" :key="coa.id" :value="coa.id">{{ coa.code }} — {{ coa.name }}</option>
                 </select>
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">COA Akumulasi Penyusutan <span class="text-red-500">*</span></label>
-                <select v-model="form.accumulatedCoaId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select v-model="form.accumulatedCoaId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                   <option value="">-- Pilih COA --</option>
                   <option v-for="coa in accumulationCoas" :key="coa.id" :value="coa.id">{{ coa.code }} — {{ coa.name }}</option>
                 </select>
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">COA Beban Penyusutan <span class="text-red-500">*</span></label>
-                <select v-model="form.depreciationExpenseCoaId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select v-model="form.depreciationExpenseCoaId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                   <option value="">-- Pilih COA --</option>
                   <option v-for="coa in expenseCoas" :key="coa.id" :value="coa.id">{{ coa.code }} — {{ coa.name }}</option>
                 </select>
@@ -127,13 +127,13 @@
         <!-- Catatan -->
         <div>
           <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Catatan</label>
-          <textarea v-model="form.notes" rows="2" maxlength="1000" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" placeholder="Catatan tambahan tentang aset ini..."></textarea>
+          <textarea v-model="form.notes" rows="2" maxlength="1000" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none" placeholder="Catatan tambahan tentang aset ini..."></textarea>
         </div>
 
         <!-- Actions -->
         <div class="flex justify-end gap-3 pt-2 border-t border-slate-200 dark:border-slate-700">
           <button type="button" @click="$router.back()" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">Batal</button>
-          <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             {{ isSaving ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Tambah Aset') }}
           </button>
         </div>

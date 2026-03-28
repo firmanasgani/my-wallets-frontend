@@ -67,7 +67,7 @@
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                   Sistem
                 </span>
-                <span v-else class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400">
+                <span v-else class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
                   Custom
                 </span>
               </td>
@@ -75,7 +75,7 @@
                 <div v-if="!account.isSystem" class="flex items-center justify-center gap-2">
                   <button
                     @click.stop="$emit('edit', account)"
-                    class="p-1.5 rounded-md text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors"
+                    class="p-1.5 rounded-md text-slate-500 hover:text-emerald-600 hover:bg-indigo-50 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
                     title="Edit COA"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -155,7 +155,7 @@ const formatTypeHeader = (type: string) => {
 
 const getBadgeClass = (type: string) => {
   const map: Record<string, string> = {
-    ASSET: 'bg-blue-500',
+    ASSET: 'bg-[#2E8B57]',
     LIABILITY: 'bg-rose-500',
     EQUITY: 'bg-purple-500',
     REVENUE: 'bg-emerald-500',

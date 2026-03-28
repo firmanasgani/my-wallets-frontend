@@ -72,7 +72,7 @@
                       <input
                         v-model="editForm.description"
                         type="text"
-                        class="w-full border-b border-slate-300 dark:border-slate-600 focus:border-indigo-500 outline-none py-1 text-slate-900 dark:text-slate-100 font-semibold bg-transparent"
+                        class="w-full border-b border-slate-300 dark:border-slate-600 focus:border-emerald-500 outline-none py-1 text-slate-900 dark:text-slate-100 font-semibold bg-transparent"
                         placeholder="Masukkan deskripsi"
                       />
                     </div>
@@ -123,7 +123,7 @@
                   class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700"
                 >
                   <div
-                    class="p-2.5 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-indigo-600 border border-slate-100 dark:border-slate-600"
+                    class="p-2.5 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-emerald-600 border border-slate-100 dark:border-slate-600"
                   >
                     <i class="fa-solid fa-wallet w-5 text-center"></i>
                   </div>
@@ -143,7 +143,7 @@
                 <!-- Arrow for transfer -->
                 <div v-if="isTransfer" class="flex justify-center">
                   <div
-                    class="bg-slate-100 dark:bg-slate-700 p-2 rounded-full text-blue-500"
+                    class="bg-slate-100 dark:bg-slate-700 p-2 rounded-full text-emerald-500"
                   >
                     <i class="fa-solid fa-arrow-down"></i>
                   </div>
@@ -264,7 +264,7 @@
             <button
               v-if="!isEditing"
               @click="startEditing"
-              class="px-4 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"
+              class="px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-colors"
             >
               <i class="fa-solid fa-pen mr-2"></i>Edit
             </button>
@@ -287,7 +287,7 @@
             <button
               v-if="!isEditing"
               @click="exportToPDF"
-              class="px-4 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl transition-colors"
+              class="px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-indigo-50 dark:hover:bg-emerald-900/20 rounded-xl transition-colors"
             >
               <i class="fa-solid fa-file-pdf mr-2"></i>Cetak PDF
             </button>
@@ -311,7 +311,7 @@
       <p class="text-slate-500 dark:text-slate-400 mt-1">Kami tidak dapat menemukan transaksi yang Anda cari.</p>
       <button
         @click="$router.push({ name: 'transactions-list' })"
-        class="mt-6 px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all"
+        class="mt-6 px-6 py-2.5 bg-[#2E8B57] text-white rounded-xl font-bold shadow-lg shadow-emerald-200 hover:bg-[#236B43] transition-all"
       >
         Kembali ke Daftar
       </button>
@@ -387,7 +387,7 @@ const typeIcon = computed(() => {
 const typeClass = computed(() => {
   if (isIncome.value) return 'bg-gradient-to-br from-green-500 to-emerald-600'
   if (isExpense.value) return 'bg-gradient-to-br from-rose-500 to-red-600'
-  if (isTransfer.value) return 'bg-gradient-to-br from-indigo-500 to-blue-600'
+  if (isTransfer.value) return 'bg-gradient-to-br from-emerald-500 to-[#236B43]'
   return 'bg-slate-600'
 })
 

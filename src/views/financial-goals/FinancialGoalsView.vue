@@ -9,7 +9,7 @@
       </div>
       <button
         @click="openAddModal"
-        class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+        class="inline-flex items-center justify-center px-4 py-2 bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium rounded-lg transition-colors shadow-sm"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +43,7 @@
         <p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
           Total Terkumpul
         </p>
-        <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
+        <p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
           {{ formatCurrency(totalSaved) }}
         </p>
       </div>
@@ -69,7 +69,7 @@
       class="bg-white dark:bg-slate-800 rounded-xl p-12 text-center shadow-sm border border-slate-200 dark:border-slate-700"
     >
       <div
-        class="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mx-auto mb-4"
+        class="w-20 h-20 bg-indigo-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-4"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -77,7 +77,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="w-10 h-10 text-indigo-600 dark:text-indigo-400"
+          class="w-10 h-10 text-emerald-600 dark:text-emerald-400"
         >
           <path
             stroke-linecap="round"
@@ -92,7 +92,7 @@
       </p>
       <button
         @click="openAddModal"
-        class="mt-6 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors"
+        class="mt-6 px-6 py-2 bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium rounded-lg transition-colors"
       >
         Buat Goal Pertama
       </button>

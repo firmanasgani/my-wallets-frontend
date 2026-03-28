@@ -58,7 +58,7 @@
                 type="button"
                 @click="handleUploadLogo"
                 :disabled="businessStore.isLogoUploading"
-                class="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                class="w-full px-4 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <svg v-if="businessStore.isLogoUploading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -141,9 +141,9 @@
               @click="toggleApprovalWorkflow"
               :disabled="isTogglingWorkflow"
               :class="businessStore.currentCompany.requiresApprovalWorkflow
-                ? 'bg-indigo-600'
+                ? 'bg-[#2E8B57]'
                 : 'bg-slate-300 dark:bg-slate-600'"
-              class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+              class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
             >
               <span
                 :class="businessStore.currentCompany.requiresApprovalWorkflow ? 'translate-x-6' : 'translate-x-1'"

@@ -34,13 +34,13 @@
           <input
             v-model="filters.date"
             type="date"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
         <div class="flex items-end gap-2">
           <button
             @click="loadReport"
-            class="flex-1 px-4 py-1.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+            class="flex-1 px-4 py-1.5 text-sm font-medium bg-[#2E8B57] hover:bg-[#236B43] text-white rounded-lg transition-colors"
           >
             Tampilkan
           </button>
@@ -64,7 +64,7 @@
 
     <!-- Loading -->
     <div v-if="reportsStore.isLoading" class="flex justify-center p-12">
-      <svg class="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+      <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
@@ -98,7 +98,7 @@
       <!-- Assets -->
       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="px-5 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-slate-200 dark:border-slate-700">
-          <h2 class="text-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wide">Aset</h2>
+          <h2 class="text-sm font-semibold text-blue-700 dark:text-emerald-400 uppercase tracking-wide">Aset</h2>
         </div>
         <div class="divide-y divide-slate-100 dark:divide-slate-700">
           <div
@@ -114,8 +114,8 @@
           </div>
         </div>
         <div class="flex justify-between items-center px-5 py-3 bg-blue-50 dark:bg-blue-900/20 border-t border-slate-200 dark:border-slate-700">
-          <span class="text-sm font-semibold text-blue-700 dark:text-blue-400">Total Aset</span>
-          <span class="text-base font-bold text-blue-700 dark:text-blue-400 tabular-nums">{{ formatRp(data.assets.total) }}</span>
+          <span class="text-sm font-semibold text-blue-700 dark:text-emerald-400">Total Aset</span>
+          <span class="text-base font-bold text-blue-700 dark:text-emerald-400 tabular-nums">{{ formatRp(data.assets.total) }}</span>
         </div>
       </div>
 

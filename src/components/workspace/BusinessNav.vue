@@ -35,7 +35,7 @@
     </li>
 
     <!-- Laporan Keuangan -->
-    <li class="pt-2 mt-2 border-t border-slate-700">
+    <li class="pt-2 mt-2 border-t border-emerald-800">
       <button @click="reportsOpen = !reportsOpen" :class="dropbtn(isReportsActive)">
         Laporan Keuangan
         <svg :class="['h-4 w-4 transition-transform', reportsOpen ? 'rotate-180' : '']" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,7 +51,7 @@
     </li>
 
     <!-- Bantuan -->
-    <li class="pt-2 mt-2 border-t border-slate-700">
+    <li class="pt-2 mt-2 border-t border-emerald-800">
       <button @click="systemOpen = !systemOpen" :class="dropbtn(isSystemActive)">
         Bantuan & Sistem
         <svg :class="['h-4 w-4 transition-transform', systemOpen ? 'rotate-180' : '']" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,8 +89,8 @@ const isReportsActive = computed(() => {
 watch(isReportsActive, (v) => { if (v) reportsOpen.value = true }, { immediate: true })
 
 const BASE = 'flex items-center py-2.5 px-4 rounded-md transition-colors'
-const ACTIVE = 'bg-indigo-500 text-white'
-const INACTIVE = 'text-slate-300 hover:bg-slate-700 hover:text-white'
+const ACTIVE = 'bg-[#2E8B57] text-white'
+const INACTIVE = 'text-slate-300 hover:bg-[#236B43] hover:text-white'
 
 const link = (names: string | string[]) => {
   const cur = route.name?.toString() || ''
@@ -101,5 +101,5 @@ const link = (names: string | string[]) => {
 }
 
 const dropbtn = (active: boolean) =>
-  `${BASE} w-full justify-between ${active ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`
+  `${BASE} w-full justify-between ${active ? 'bg-[#236B43] text-white' : 'text-slate-300 hover:bg-[#236B43] hover:text-white'}`
 </script>

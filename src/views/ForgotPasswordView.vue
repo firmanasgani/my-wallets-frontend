@@ -6,13 +6,13 @@
     >
       <!-- Left Side (Branding) -->
       <div
-        class="hidden md:flex w-1/2 bg-gradient-to-br from-blue-700 to-blue-900 p-12 flex-col justify-between relative text-white"
+        class="hidden md:flex w-1/2 bg-gradient-to-br from-[#2E8B57] to-[#1B5E3B] p-12 flex-col justify-between relative text-white"
       >
         <div class="absolute inset-0 bg-pattern opacity-10"></div>
 
         <div class="relative z-10">
           <div class="flex items-center gap-3 mb-2">
-            <div class="bg-blue-500 bg-opacity-30 p-2 rounded-lg">
+            <div class="bg-emerald-500 bg-opacity-30 p-2 rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 text-white"
@@ -28,19 +28,19 @@
                 />
               </svg>
             </div>
-            <span class="text-xl font-bold tracking-wider">My Wallets</span>
+            <span class="text-xl font-bold tracking-wider">Moneytory Ledger</span>
           </div>
         </div>
 
         <div class="relative z-10 space-y-6">
-          <h2 class="text-xl font-semibold text-blue-100">Pulihkan Akun Anda</h2>
-          <p class="text-blue-200 text-sm leading-relaxed max-w-sm">
+          <h2 class="text-xl font-semibold text-emerald-100">Pulihkan Akun Anda</h2>
+          <p class="text-emerald-200 text-sm leading-relaxed max-w-sm">
             Masukkan alamat email yang terdaftar dan kami akan mengirimkan instruksi untuk
             mereset kata sandi Anda.
           </p>
         </div>
 
-        <div class="relative z-10 text-xs text-blue-300">&copy; 2026 Moneytory Inc.</div>
+        <div class="relative z-10 text-xs text-emerald-200">Made with ❤️ by Firmanasgani</div>
       </div>
 
       <!-- Right Side (Form) -->
@@ -50,7 +50,7 @@
         <div class="max-w-md mx-auto w-full">
           <!-- Mobile Logo -->
           <div class="md:hidden flex justify-center mb-8">
-            <div class="bg-blue-600 p-3 rounded-full shadow-lg">
+            <div class="bg-emerald-600 p-3 rounded-full shadow-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-8 w-8 text-white"
@@ -70,10 +70,10 @@
 
           <!-- Header Icon (Desktop) -->
           <div class="hidden md:flex justify-center mb-6">
-            <div class="bg-blue-100 dark:bg-blue-900/40 p-4 rounded-full">
+            <div class="bg-emerald-100 dark:bg-emerald-900/40 p-4 rounded-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-10 w-10 text-blue-600 dark:text-blue-400"
+                class="h-10 w-10 text-emerald-600 dark:text-emerald-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -122,7 +122,7 @@
             <p class="text-green-700 dark:text-green-400 text-sm">{{ successMessage }}</p>
             <RouterLink
               :to="{ name: 'login' }"
-              class="inline-block mt-4 text-sm font-medium text-blue-700 dark:text-blue-400 hover:underline"
+              class="inline-block mt-4 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:underline"
             >
               &larr; Kembali ke halaman masuk
             </RouterLink>
@@ -160,9 +160,9 @@
             <div>
               <label
                 for="email"
-                class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-2"
+                class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-2"
               >
-                Alamat Email <span class="text-blue-600 dark:text-blue-400">*</span>
+                Alamat Email <span class="text-emerald-600 dark:text-emerald-400">*</span>
               </label>
               <input
                 type="email"
@@ -170,7 +170,7 @@
                 v-model="email"
                 required
                 autocomplete="email"
-                class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="nama@email.com"
                 :disabled="isLoading"
               />
@@ -178,7 +178,7 @@
 
             <button
               type="submit"
-              class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+              class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
               :disabled="isLoading"
             >
               <span v-if="!isLoading">Kirim Kode OTP</span>
@@ -190,7 +190,7 @@
             <div class="text-center pt-1">
               <RouterLink
                 :to="{ name: 'login' }"
-                class="text-sm font-medium text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:underline"
+                class="text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline"
               >
                 &larr; Kembali ke halaman masuk
               </RouterLink>
@@ -214,11 +214,11 @@
               </button>
             </div>
 
-            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-4 text-center">
-              <p class="text-sm text-blue-800 dark:text-blue-300">
+            <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-lg mb-4 text-center">
+              <p class="text-sm text-emerald-800 dark:text-emerald-300">
                 Kode OTP telah dikirim ke <strong>{{ email }}</strong>
               </p>
-              <div class="mt-2 font-mono text-lg font-bold text-blue-700 dark:text-blue-400">
+              <div class="mt-2 font-mono text-lg font-bold text-emerald-700 dark:text-emerald-400">
                 {{ formattedTime }}
               </div>
               <p v-if="timeLeft === 0" class="text-xs text-red-500 mt-1">Kode OTP telah kadaluarsa</p>
@@ -227,9 +227,9 @@
             <div>
               <label
                 for="otp"
-                class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-2"
+                class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-2"
               >
-                Kode OTP <span class="text-blue-600 dark:text-blue-400">*</span>
+                Kode OTP <span class="text-emerald-600 dark:text-emerald-400">*</span>
               </label>
               <input
                 type="text"
@@ -237,7 +237,7 @@
                 v-model="otp"
                 required
                 maxlength="6"
-                class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 text-center tracking-widest text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 text-center tracking-widest text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="000000"
                 :disabled="isLoading || timeLeft === 0"
               />
@@ -245,7 +245,7 @@
 
             <button
               type="submit"
-              class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
+              class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed"
               :disabled="isLoading || timeLeft === 0"
             >
               <span v-if="!isLoading">Verifikasi OTP</span>
@@ -257,7 +257,7 @@
                 v-if="timeLeft === 0"
                 type="button"
                 @click="handleForgotPassword"
-                class="text-sm font-medium text-blue-700 dark:text-blue-400 hover:underline disabled:opacity-50"
+                class="text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:underline disabled:opacity-50"
                 :disabled="isLoading"
               >
                 Kirim Ulang OTP
@@ -291,8 +291,8 @@
             </div>
 
             <div>
-              <label for="newPassword" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-2">
-                Kata Sandi Baru <span class="text-blue-600 dark:text-blue-400">*</span>
+              <label for="newPassword" class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-2">
+                Kata Sandi Baru <span class="text-emerald-600 dark:text-emerald-400">*</span>
               </label>
               <input
                 type="password"
@@ -300,15 +300,15 @@
                 v-model="newPassword"
                 required
                 minlength="6"
-                class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="Minimal 6 karakter"
                 :disabled="isLoading"
               />
             </div>
 
             <div>
-              <label for="confirmPassword" class="block text-sm font-bold text-blue-900 dark:text-blue-200 mb-2">
-                Konfirmasi Kata Sandi <span class="text-blue-600 dark:text-blue-400">*</span>
+              <label for="confirmPassword" class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-2">
+                Konfirmasi Kata Sandi <span class="text-emerald-600 dark:text-emerald-400">*</span>
               </label>
               <input
                 type="password"
@@ -316,7 +316,7 @@
                 v-model="confirmPassword"
                 required
                 minlength="6"
-                class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                 placeholder="Ketik ulang kata sandi"
                 :disabled="isLoading"
               />
@@ -324,7 +324,7 @@
 
             <button
               type="submit"
-              class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
+              class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed"
               :disabled="isLoading"
             >
               <span v-if="!isLoading">Simpan Kata Sandi Baru</span>
@@ -426,7 +426,7 @@ const handleVerifyOtp = async () => {
     errorMessage.value = 'Kode OTP harus 6 digit.'
     return
   }
-  
+
   if (timeLeft.value === 0) {
     errorMessage.value = 'Kode OTP telah kadaluarsa. Silakan minta kode baru.'
     return
@@ -466,7 +466,7 @@ const handleResetPassword = async () => {
     errorMessage.value = 'Kata sandi baru minimal 6 karakter.'
     return
   }
-  
+
   isLoading.value = true
   errorMessage.value = null
 

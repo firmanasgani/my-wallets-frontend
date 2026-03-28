@@ -15,7 +15,7 @@
 
     <!-- Loading -->
     <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
-      <svg class="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+      <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
@@ -26,7 +26,7 @@
       <!-- Header Card -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
         <!-- Top strip -->
-        <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 px-6 py-5">
+        <div class="bg-gradient-to-r from-[#2E8B57] to-[#236B43] px-6 py-5">
           <div class="flex items-start justify-between gap-4">
             <div>
               <div class="flex items-center gap-2 mb-1">
@@ -47,10 +47,10 @@
                 </span>
               </div>
               <h1 class="text-xl font-bold text-white leading-tight">{{ tx.description }}</h1>
-              <p class="text-indigo-200 text-sm mt-1">{{ formatDate(tx.transactionDate) }}</p>
+              <p class="text-emerald-100 text-sm mt-1">{{ formatDate(tx.transactionDate) }}</p>
             </div>
             <div class="text-right shrink-0">
-              <p class="text-indigo-200 text-xs font-medium uppercase tracking-wide">Total Debit</p>
+              <p class="text-emerald-100 text-xs font-medium uppercase tracking-wide">Total Debit</p>
               <p class="text-white text-2xl font-bold">{{ formatRp(totalDebit) }}</p>
             </div>
           </div>
@@ -66,7 +66,7 @@
             <span class="font-medium text-slate-600 dark:text-slate-300">Ref Invoice:</span>
             <RouterLink
               :to="{ name: 'invoice-detail', params: { id: tx.invoiceId! } }"
-              class="text-indigo-600 dark:text-indigo-400 hover:underline ml-1"
+              class="text-emerald-600 dark:text-emerald-400 hover:underline ml-1"
             >
               {{ tx.invoice.invoiceNumber }}
             </RouterLink>
@@ -82,7 +82,7 @@
       <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700">
           <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide flex items-center gap-2">
-            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
             Entri Jurnal
@@ -135,8 +135,8 @@
             </tbody>
             <!-- Total Row -->
             <tfoot>
-              <tr class="bg-indigo-50 dark:bg-indigo-900/20 border-t-2 border-indigo-100 dark:border-indigo-800">
-                <td colspan="4" class="px-4 py-3 text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide">
+              <tr class="bg-indigo-50 dark:bg-emerald-900/20 border-t-2 border-emerald-100 dark:border-emerald-800">
+                <td colspan="4" class="px-4 py-3 text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wide">
                   Total
                 </td>
                 <td class="px-4 py-3 text-right font-bold text-green-700 dark:text-green-400 whitespace-nowrap">
@@ -166,7 +166,7 @@
       <div v-if="tx.status" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
           <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide flex items-center gap-2">
-            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             Status Persetujuan
@@ -222,15 +222,15 @@
         <!-- Action Buttons -->
         <div v-if="!tx.isSystemGenerated" class="px-6 pb-4 flex flex-wrap gap-2">
           <!-- Staff: submit DRAFT/REJECTED -->
-          <button v-if="canSubmit" @click="doAction('submit')" :disabled="isActioning" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <button v-if="canSubmit" @click="doAction('submit')" :disabled="isActioning" class="bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Submit untuk Review
           </button>
           <!-- Checker: check PENDING_CHECK -->
-          <button v-if="canCheck" @click="doAction('check')" :disabled="isActioning" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <button v-if="canCheck" @click="doAction('check')" :disabled="isActioning" class="bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Check (Gate 1)
           </button>
           <!-- Admin: approve PENDING_APPROVAL -->
-          <button v-if="canApprove" @click="doAction('approve')" :disabled="isActioning" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <button v-if="canApprove" @click="doAction('approve')" :disabled="isActioning" class="bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Approve
           </button>
           <!-- Checker/Admin: reject -->
@@ -246,12 +246,12 @@
       <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
           <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide flex items-center gap-2">
-            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
             </svg>
             Lampiran ({{ tx.attachments?.length ?? 0 }}/5)
           </h2>
-          <label v-if="canUploadAttachment" class="cursor-pointer flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors">
+          <label v-if="canUploadAttachment" class="cursor-pointer flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-100 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Upload
             <input type="file" class="sr-only" accept=".pdf,.jpg,.jpeg,.png,.webp" @change="uploadAttachment" :disabled="isUploadingAttachment" />
@@ -273,7 +273,7 @@
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <a v-if="att.presignedUrl" :href="att.presignedUrl" target="_blank" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">Buka</a>
+                <a v-if="att.presignedUrl" :href="att.presignedUrl" target="_blank" class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Buka</a>
                 <button @click="deleteAttachment(att.id)" class="text-xs text-red-500 hover:underline">Hapus</button>
               </div>
             </div>
@@ -299,7 +299,7 @@
           </button>
           <button
             @click="downloadPDF"
-            class="px-4 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800 transition-colors flex items-center gap-2"
+            class="px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-indigo-50 dark:hover:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800 transition-colors flex items-center gap-2"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -336,7 +336,7 @@
       <h2 class="text-xl font-bold text-slate-900 dark:text-white">Jurnal tidak ditemukan</h2>
       <button
         @click="$router.push({ name: 'business-transactions' })"
-        class="mt-6 px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all"
+        class="mt-6 px-6 py-2.5 bg-[#2E8B57] text-white rounded-xl font-bold hover:bg-[#236B43] transition-all"
       >
         Kembali ke Daftar
       </button>
@@ -349,7 +349,7 @@
           <h3 class="font-semibold text-slate-800 dark:text-slate-100">Tolak Jurnal</h3>
           <div>
             <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Alasan Penolakan</label>
-            <textarea v-model="rejectNote" rows="3" maxlength="1000" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Jelaskan alasan penolakan..."></textarea>
+            <textarea v-model="rejectNote" rows="3" maxlength="1000" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Jelaskan alasan penolakan..."></textarea>
           </div>
           <div class="flex justify-end gap-3">
             <button @click="showRejectModal = false" class="px-4 py-2 text-sm font-medium border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">Batal</button>
@@ -469,7 +469,7 @@ function statusBadgeClass(status: string) {
   return {
     DRAFT: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300',
     PENDING_CHECK: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-    PENDING_APPROVAL: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+    PENDING_APPROVAL: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-emerald-300',
     APPROVED: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
     REJECTED: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
   }[status] ?? ''

@@ -34,8 +34,8 @@
       <!-- ── KLIEN ─────────────────────────────────────── -->
       <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden h-full">
         <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
-            <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
+            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
@@ -53,7 +53,7 @@
               <select
                 v-model="selectedContactId"
                 @change="onContactChange"
-                class="w-full pl-3.5 pr-9 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
+                class="w-full pl-3.5 pr-9 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer"
               >
                 <option value="">— Tanpa kontak terdaftar —</option>
                 <optgroup label="Customer">
@@ -81,11 +81,11 @@
           </div>
 
           <!-- Auto-filled notice -->
-          <div v-if="selectedContactId" class="flex items-center gap-2 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800">
-            <svg class="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div v-if="selectedContactId" class="flex items-center gap-2 px-3 py-2 bg-indigo-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-100 dark:border-emerald-800">
+            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p class="text-xs text-indigo-700 dark:text-indigo-300">Data klien diambil otomatis dari kontak terpilih.</p>
+            <p class="text-xs text-emerald-700 dark:text-emerald-300">Data klien diambil otomatis dari kontak terpilih.</p>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -101,7 +101,7 @@
                 :required="!selectedContactId"
                 :readonly="!!selectedContactId"
                 :class="[
-                  'w-full px-3.5 py-2.5 border rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all',
+                  'w-full px-3.5 py-2.5 border rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all',
                   selectedContactId
                     ? 'bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 cursor-not-allowed'
                     : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100',
@@ -117,7 +117,7 @@
                 placeholder="email@example.com"
                 :readonly="!!selectedContactId"
                 :class="[
-                  'w-full px-3.5 py-2.5 border rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all',
+                  'w-full px-3.5 py-2.5 border rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all',
                   selectedContactId
                     ? 'bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 cursor-not-allowed'
                     : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100',
@@ -133,7 +133,7 @@
                 placeholder="Alamat lengkap (opsional)"
                 :readonly="!!selectedContactId"
                 :class="[
-                  'w-full px-3.5 py-2.5 border rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all',
+                  'w-full px-3.5 py-2.5 border rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all',
                   selectedContactId
                     ? 'bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 cursor-not-allowed'
                     : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100',
@@ -165,7 +165,7 @@
                 v-model="form.issueDate"
                 type="date"
                 required
-                class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
               />
             </div>
             <div>
@@ -176,7 +176,7 @@
                 v-model="form.dueDate"
                 type="date"
                 required
-                class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
               />
             </div>
             <div class="sm:col-span-2">
@@ -187,7 +187,7 @@
               <div class="relative">
                 <select
                   v-model="form.paymentBankAccountId"
-                  class="w-full pl-3.5 pr-9 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
+                  class="w-full pl-3.5 pr-9 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer"
                 >
                   <option value="">— Tanpa rekening —</option>
                   <option v-for="acc in bankAccounts" :key="acc.id" :value="acc.id">
@@ -201,6 +201,34 @@
                 </div>
               </div>
             </div>
+
+            <!-- Jenis Pajak -->
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Withholding Tax <span class="text-xs font-normal text-slate-400 dark:text-slate-500">(PPh, opsional)</span>
+              </label>
+              <div class="relative">
+                <select
+                  v-model="form.taxConfigId"
+                  class="w-full pl-3.5 pr-9 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer"
+                >
+                  <option value="">— Tidak ada withholding tax —</option>
+                  <option v-for="tax in activeTaxConfigs" :key="tax.id" :value="tax.id">
+                    {{ tax.name }} ({{ tax.rate }}%)
+                  </option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <p v-if="selectedTaxConfig" class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                Rate: <span class="font-medium text-amber-600 dark:text-amber-400">{{ selectedTaxConfig.rate }}%</span>
+                · {{ selectedTaxConfig.type.replace('_', ' ') }}
+                <span v-if="selectedTaxConfig.description"> · {{ selectedTaxConfig.description }}</span>
+              </p>
+            </div>
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Catatan</label>
               <div class="relative">
@@ -209,7 +237,7 @@
                   rows="2"
                   maxlength="500"
                   placeholder="Terima kasih atas kepercayaan Anda."
-                  class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                  class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all resize-none"
                 ></textarea>
                 <span class="absolute bottom-2 right-3 text-xs text-slate-400 dark:text-slate-500 pointer-events-none">
                   {{ form.notes.length }}/500
@@ -239,7 +267,7 @@
           <button
             type="button"
             @click="addItem"
-            class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 px-3 py-1.5 rounded-lg transition-colors"
+            class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 bg-indigo-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 px-3 py-1.5 rounded-lg transition-colors"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
@@ -265,7 +293,7 @@
                 type="text"
                 placeholder="Nama produk / layanan"
                 required
-                class="flex-1 min-w-0 px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
+                class="flex-1 min-w-0 px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
               />
               <button
                 v-if="form.items.length > 1"
@@ -292,7 +320,7 @@
                   min="0.0001"
                   step="any"
                   required
-                  class="w-full px-2.5 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-right bg-slate-50 dark:bg-slate-700/60 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
+                  class="w-full px-2.5 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-right bg-slate-50 dark:bg-slate-700/60 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
                 />
               </div>
 
@@ -319,7 +347,7 @@
                 <label class="text-xs font-medium text-slate-400 dark:text-slate-500">PPN</label>
                 <label class="relative inline-flex items-center cursor-pointer h-[34px]">
                   <input type="checkbox" v-model="item.taxable" class="sr-only peer" />
-                  <div class="w-9 h-5 bg-slate-200 peer-focus:ring-2 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-slate-600 peer-checked:bg-indigo-600 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
+                  <div class="w-9 h-5 bg-slate-200 peer-focus:ring-2 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-slate-600 peer-checked:bg-[#2E8B57] transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
                 </label>
               </div>
 
@@ -353,19 +381,29 @@
               <span>Subtotal</span>
               <span class="font-medium tabular-nums">{{ formatCurrency(subtotal) }}</span>
             </div>
+            <!-- PPN dari perusahaan -->
             <div v-if="taxEnabled" class="flex justify-between items-center text-slate-600 dark:text-slate-400">
               <span class="flex items-center gap-1.5">
                 PPN
                 <span class="text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded font-medium">{{ taxRate }}%</span>
               </span>
-              <span class="font-medium tabular-nums">{{ formatCurrency(totalTax) }}</span>
+              <span class="font-medium tabular-nums">{{ formatCurrency(ppnTotal) }}</span>
             </div>
-            <div v-if="!taxEnabled" class="text-xs text-slate-400 dark:text-slate-500 text-right italic">
-              PPN tidak aktif di profil perusahaan
+            <!-- Withholding Tax dari TaxConfig -->
+            <div v-if="selectedTaxConfig" class="flex justify-between items-center text-slate-600 dark:text-slate-400">
+              <span class="flex items-center gap-1.5">
+                {{ selectedTaxConfig.name }}
+                <span class="text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded font-medium">{{ taxConfigRate }}%</span>
+                <span class="text-xs text-slate-400 dark:text-slate-500">× subtotal</span>
+              </span>
+              <span class="font-medium tabular-nums">{{ formatCurrency(taxConfigTotal) }}</span>
+            </div>
+            <div v-if="!taxEnabled && !selectedTaxConfig" class="text-xs text-slate-400 dark:text-slate-500 text-right italic">
+              Pajak tidak aktif di profil perusahaan
             </div>
             <div class="flex justify-between items-center pt-2.5 border-t border-slate-200 dark:border-slate-700">
               <span class="font-bold text-slate-700 dark:text-slate-200">Total</span>
-              <span :class="['font-bold text-lg tabular-nums', grandTotal < 0 ? 'text-red-600 dark:text-red-400' : 'text-indigo-600 dark:text-indigo-400']">
+              <span :class="['font-bold text-lg tabular-nums', grandTotal < 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400']">
                 {{ formatCurrency(grandTotal) }}
               </span>
             </div>
@@ -403,7 +441,7 @@
         <button
           type="submit"
           :disabled="isSubmitting || form.items.length === 0 || grandTotal < 0"
-          class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+          class="px-5 py-2.5 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-xl shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2"
         >
           <svg v-if="isSubmitting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -423,9 +461,10 @@ import { useInvoicesStore } from '@/stores/invoices'
 import { useContactsStore } from '@/stores/contacts'
 import { useBusinessStore } from '@/stores/business'
 import { useBankAccountsStore } from '@/stores/bankAccounts'
+import { BusinessService } from '@/services/business.service'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import CurrencyInput from '@/components/common/CurrencyInput.vue'
-import type { Contact, CompanyBankAccount } from '@/types/business'
+import type { Contact, CompanyBankAccount, TaxConfig } from '@/types/business'
 
 const router = useRouter()
 const route = useRoute()
@@ -441,9 +480,19 @@ const errorMsg = ref('')
 const selectedContactId = ref('')
 const contacts = ref<Contact[]>([])
 const bankAccounts = ref<CompanyBankAccount[]>([])
+const taxConfigs = ref<TaxConfig[]>([])
 
 const taxEnabled = computed(() => businessStore.currentCompany?.taxEnabled ?? false)
 const taxRate = computed(() => businessStore.currentCompany?.taxRate ?? 11)
+
+const activeTaxConfigs = computed(() => taxConfigs.value.filter((t) => t.isActive))
+const selectedTaxConfig = computed(() =>
+  form.value.taxConfigId ? taxConfigs.value.find((t) => t.id === form.value.taxConfigId) ?? null : null,
+)
+
+const taxConfigRate = computed(() =>
+  selectedTaxConfig.value ? parseFloat(selectedTaxConfig.value.rate) : 0,
+)
 
 const defaultItem = () => ({ description: '', quantity: 1, unitPrice: 0, discountAmount: 0, taxable: false })
 
@@ -455,6 +504,7 @@ const form = ref({
   dueDate: '',
   notes: '',
   paymentBankAccountId: '',
+  taxConfigId: '',
   items: [defaultItem()],
 })
 
@@ -462,22 +512,29 @@ const subtotal = computed(() =>
   form.value.items.reduce((sum, item) => sum + item.quantity * item.unitPrice - item.discountAmount, 0),
 )
 
-const totalTax = computed(() => {
+const taxableLine = (item: { quantity: number; unitPrice: number; discountAmount: number }) =>
+  item.quantity * item.unitPrice - item.discountAmount
+
+const ppnTotal = computed(() => {
   if (!taxEnabled.value) return 0
   return form.value.items
     .filter((i) => i.taxable)
-    .reduce((sum, item) => {
-      const lineAfterDiscount = item.quantity * item.unitPrice - item.discountAmount
-      return sum + lineAfterDiscount * (taxRate.value / 100)
-    }, 0)
+    .reduce((sum, item) => sum + taxableLine(item) * (taxRate.value / 100), 0)
 })
+
+const taxConfigTotal = computed(() => {
+  if (!selectedTaxConfig.value) return 0
+  return subtotal.value * (taxConfigRate.value / 100)
+})
+
+const totalTax = computed(() => ppnTotal.value + taxConfigTotal.value)
 
 const grandTotal = computed(() => subtotal.value + totalTax.value)
 
 const calcItemTotal = (item: { quantity: number; unitPrice: number; discountAmount: number; taxable: boolean }) => {
-  const lineAfterDiscount = item.quantity * item.unitPrice - item.discountAmount
-  if (taxEnabled.value && item.taxable) return lineAfterDiscount + lineAfterDiscount * (taxRate.value / 100)
-  return lineAfterDiscount
+  const line = taxableLine(item)
+  if (!item.taxable) return line
+  return line + line * (taxRate.value / 100) * (taxEnabled.value ? 1 : 0)
 }
 
 onMounted(async () => {
@@ -485,6 +542,7 @@ onMounted(async () => {
     contactsStore.fetchContacts(),
     businessStore.fetchMyCompany().catch(() => {}),
     bankAccountsStore.fetchBankAccounts().catch(() => {}),
+    BusinessService.getTaxConfigs().then((res) => { taxConfigs.value = res }).catch(() => {}),
   ]
   if (!businessStore.members.length) initFetch.push(businessStore.fetchMembers().catch(() => {}))
   await Promise.all(initFetch)
@@ -512,6 +570,7 @@ onMounted(async () => {
         dueDate: invoice.dueDate.split('T')[0],
         notes: invoice.notes || '',
         paymentBankAccountId: invoice.paymentBankAccountId || '',
+        taxConfigId: invoice.taxConfigId || '',
         items: invoice.items.map((i) => ({
           description: i.description,
           quantity: parseFloat(i.quantity),
@@ -557,29 +616,41 @@ const handleSubmit = async () => {
     return
   }
   isSubmitting.value = true
-  const payload = {
-    contactId: selectedContactId.value || undefined,
-    clientName: selectedContactId.value ? undefined : form.value.clientName,
-    clientEmail: selectedContactId.value ? undefined : (form.value.clientEmail || undefined),
-    clientAddress: form.value.clientAddress || undefined,
-    issueDate: form.value.issueDate,
-    dueDate: form.value.dueDate,
-    notes: form.value.notes || undefined,
-    paymentBankAccountId: form.value.paymentBankAccountId || (isEdit.value ? null : undefined),
-    items: form.value.items.map((i) => ({
-      description: i.description,
-      quantity: i.quantity,
-      unitPrice: i.unitPrice,
-      discountAmount: i.discountAmount || undefined,
-      taxable: i.taxable,
-    })),
-  }
+  const baseItems = form.value.items.map((i) => ({
+    description: i.description,
+    quantity: i.quantity,
+    unitPrice: i.unitPrice,
+    discountAmount: i.discountAmount || undefined,
+    taxable: i.taxable,
+  }))
   try {
     if (isEdit.value) {
-      const updated = await invoicesStore.updateInvoice(route.params.id as string, payload)
+      const updated = await invoicesStore.updateInvoice(route.params.id as string, {
+        contactId: selectedContactId.value || undefined,
+        clientName: selectedContactId.value ? undefined : form.value.clientName,
+        clientEmail: selectedContactId.value ? undefined : (form.value.clientEmail || undefined),
+        clientAddress: form.value.clientAddress || undefined,
+        issueDate: form.value.issueDate,
+        dueDate: form.value.dueDate,
+        notes: form.value.notes || undefined,
+        paymentBankAccountId: form.value.paymentBankAccountId || null,
+        taxConfigId: form.value.taxConfigId || null,
+        items: baseItems,
+      })
       router.push({ name: 'invoice-detail', params: { id: updated.id } })
     } else {
-      const created = await invoicesStore.createInvoice(payload)
+      const created = await invoicesStore.createInvoice({
+        contactId: selectedContactId.value || undefined,
+        clientName: selectedContactId.value ? undefined : form.value.clientName,
+        clientEmail: selectedContactId.value ? undefined : (form.value.clientEmail || undefined),
+        clientAddress: form.value.clientAddress || undefined,
+        issueDate: form.value.issueDate,
+        dueDate: form.value.dueDate,
+        notes: form.value.notes || undefined,
+        paymentBankAccountId: form.value.paymentBankAccountId || undefined,
+        taxConfigId: form.value.taxConfigId || undefined,
+        items: baseItems,
+      })
       router.push({ name: 'invoice-detail', params: { id: created.id } })
     }
   } catch (err: any) {
@@ -592,7 +663,4 @@ const handleSubmit = async () => {
 
 const formatCurrency = (val: number) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val)
-
-const formatCurrencyShort = (val: number) =>
-  new Intl.NumberFormat('id-ID', { notation: 'compact', minimumFractionDigits: 0 }).format(val)
 </script>

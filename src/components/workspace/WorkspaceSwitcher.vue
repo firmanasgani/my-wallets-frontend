@@ -39,8 +39,8 @@ const tabClass = (mode: 'personal' | 'business') => {
   return [
     'flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-xs font-semibold transition-colors',
     isActive
-      ? mode === 'personal' ? 'bg-slate-600 text-white' : 'bg-indigo-600 text-white'
-      : 'text-slate-400 hover:text-slate-200',
+      ? 'bg-[#2E8B57] text-white'
+      : 'text-slate-400 hover:text-slate-200 hover:bg-[#236B43]/50',
   ]
 }
 

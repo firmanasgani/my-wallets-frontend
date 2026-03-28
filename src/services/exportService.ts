@@ -1231,7 +1231,7 @@ class ExportService {
     doc.setFont('helvetica', 'normal')
     doc.setTextColor(148, 163, 184)
     doc.text(
-      `Dicetak pada ${new Date().toLocaleString('id-ID')} · Dibuat dengan MyWallets`,
+      `Dicetak pada ${new Date().toLocaleString('id-ID')} · Dibuat dengan Moneytory Ledger`,
       pageW / 2,
       pageH - 5,
       { align: 'center' },

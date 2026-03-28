@@ -123,7 +123,7 @@
                     </div>
 
                     <div
-                      class="h-10 w-10 flex items-center justify-center rounded-md border border-indigo-300 text-indigo-600 flex-shrink-0 transition-all duration-200"
+                      class="h-10 w-10 flex items-center justify-center rounded-md border border-emerald-300 text-emerald-600 flex-shrink-0 transition-all duration-200"
                       :style="{ backgroundColor: formData.color || '#CBD5E1' }"
                     >
                       <i
@@ -149,7 +149,7 @@
                     <input
                       type="text"
                       v-model="formData.color"
-                      class="ml-2 flex-1 rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors"
+                      class="ml-2 flex-1 rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors"
                       placeholder="#FF0000"
                     />
                   </div>
@@ -164,7 +164,7 @@
               <button
                 type="submit"
                 :disabled="categoryStore.isSubmittingCategory"
-                class="inline-flex justify-center items-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto sm:text-sm transition-colors"
+                class="inline-flex justify-center items-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#2E8B57] text-base font-medium text-white hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto sm:text-sm transition-colors"
               >
                 <LoadingSpinner
                   v-if="categoryStore.isSubmittingCategory"
@@ -223,7 +223,7 @@ const isEditMode = computed(() => !!props.categoryToEdit && !!props.categoryToEd
 const hasTransactions = computed(() => isEditMode.value)
 
 const inputClass =
-  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
+  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
 
 import { iconOptions } from '@/constants/icons'
 

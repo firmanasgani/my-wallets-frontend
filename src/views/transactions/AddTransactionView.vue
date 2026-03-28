@@ -52,7 +52,7 @@
                     : '',
                   selectedTransactionType === typeOpt.value &&
                   typeOpt.value === FrontendTransactionType.TRANSFER
-                    ? 'bg-blue-600 focus:ring-blue-500'
+                    ? 'bg-[#2E8B57] focus:ring-emerald-500'
                     : '',
                 ]"
               >
@@ -73,7 +73,7 @@
               <CurrencyInput
                 v-model="commonFormData.amount"
                 id="txAmount"
-                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-12 sm:text-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-md py-3 placeholder:text-slate-300 dark:placeholder:text-slate-500 font-semibold"
+                class="focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 pr-12 sm:text-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-md py-3 placeholder:text-slate-300 dark:placeholder:text-slate-500 font-semibold"
                 placeholder="0"
                 required
               />
@@ -101,7 +101,7 @@
                   id="txSourceAccount"
                   v-model="accountFormFields.sourceAccountId"
                   required
-                  class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                 >
                   <option disabled value="">Pilih akun sumber...</option>
                   <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
@@ -143,7 +143,7 @@
                   id="txDestinationAccount"
                   v-model="accountFormFields.destinationAccountId"
                   required
-                  class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                 >
                   <option disabled value="">Pilih akun tujuan...</option>
                   <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
@@ -206,7 +206,7 @@
                 id="txDate"
                 v-model="commonFormData.transactionDate"
                 required
-                class="block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                class="block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
               />
             </div>
 
@@ -219,28 +219,28 @@
                 type="text"
                 id="txDescription"
                 v-model="commonFormData.description"
-                class="block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                class="block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 placeholder="Contoh: Makan siang, Gaji bulan ini..."
               />
             </div>
           </div>
 
           <!-- Recurring Toggle -->
-          <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-5 border border-indigo-100 dark:border-indigo-800">
+          <div class="bg-indigo-50 dark:bg-emerald-900/20 rounded-lg p-5 border border-emerald-100 dark:border-emerald-800">
             <div class="flex items-center">
               <div class="flex items-center h-5">
                 <input
                   id="isRecurring"
                   type="checkbox"
                   v-model="recurringForm.isRecurring"
-                  class="focus:ring-indigo-500 h-5 w-5 text-indigo-600 border-gray-300 dark:border-slate-600 rounded"
+                  class="focus:ring-emerald-500 h-5 w-5 text-emerald-600 border-gray-300 dark:border-slate-600 rounded"
                 />
               </div>
               <div class="ml-3 text-sm">
-                <label for="isRecurring" class="font-medium text-indigo-900 dark:text-indigo-200"
+                <label for="isRecurring" class="font-medium text-emerald-900 dark:text-emerald-100"
                   >Jadikan Transaksi Berulang?</label
                 >
-                <p class="text-indigo-700 dark:text-indigo-300">Aktifkan untuk membuat jadwal otomatis.</p>
+                <p class="text-emerald-700 dark:text-emerald-300">Aktifkan untuk membuat jadwal otomatis.</p>
               </div>
             </div>
 
@@ -248,13 +248,13 @@
               <div class="flex-1">
                 <label
                   for="recurringInterval"
-                  class="block text-xs font-semibold text-indigo-900 dark:text-indigo-200 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold text-emerald-900 dark:text-emerald-100 uppercase tracking-wider mb-2"
                   >Setiap</label
                 >
                 <select
                   id="recurringInterval"
                   v-model="recurringForm.interval"
-                  class="block w-full bg-white dark:bg-slate-700 border border-indigo-200 dark:border-indigo-700 rounded-lg py-2.5 px-3 text-indigo-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  class="block w-full bg-white dark:bg-slate-700 border border-emerald-200 dark:border-emerald-700 rounded-lg py-2.5 px-3 text-emerald-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                 >
                   <option :value="null" disabled>Pilih interval...</option>
                   <option
@@ -270,14 +270,14 @@
               <div class="flex-1">
                 <label
                   for="recurringEndDate"
-                  class="block text-xs font-semibold text-indigo-900 dark:text-indigo-200 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold text-emerald-900 dark:text-emerald-100 uppercase tracking-wider mb-2"
                   >Berakhir Pada (Opsional)</label
                 >
                 <input
                   type="date"
                   id="recurringEndDate"
                   v-model="recurringForm.endDate"
-                  class="block w-full bg-white dark:bg-slate-700 border border-indigo-200 dark:border-indigo-700 rounded-lg py-2.5 px-3 text-indigo-900 dark:text-slate-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-indigo-300 dark:placeholder:text-slate-500"
+                  class="block w-full bg-white dark:bg-slate-700 border border-emerald-200 dark:border-emerald-700 rounded-lg py-2.5 px-3 text-emerald-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm placeholder-emerald-300 dark:placeholder:text-slate-500"
                   :min="commonFormData.transactionDate"
                 />
               </div>
@@ -288,11 +288,11 @@
           <div class="space-y-3">
             <label class="block text-sm font-medium text-slate-900 dark:text-slate-100">Lampiran (Opsional)</label>
             <div
-              class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors cursor-pointer relative group"
+              class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors cursor-pointer relative group"
             >
               <div class="space-y-1 text-center">
                 <svg
-                  class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500 group-hover:text-indigo-500 transition-colors"
+                  class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500 group-hover:text-emerald-500 transition-colors"
                   stroke="currentColor"
                   fill="none"
                   viewBox="0 0 48 48"
@@ -308,7 +308,7 @@
                 <div class="flex text-sm text-slate-600 dark:text-slate-400">
                   <label
                     for="file-upload"
-                    class="relative cursor-pointer bg-transparent rounded-md font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 focus-within:outline-none"
+                    class="relative cursor-pointer bg-transparent rounded-md font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 focus-within:outline-none"
                   >
                     <span>Upload file</span>
                     <input
@@ -331,10 +331,10 @@
                 class="absolute inset-0 bg-white dark:bg-slate-800 rounded-lg flex flex-col items-center justify-center p-4"
               >
                 <div class="flex items-center gap-3 mb-3">
-                  <div class="p-2 bg-indigo-50 dark:bg-indigo-900/40 rounded-lg">
+                  <div class="p-2 bg-indigo-50 dark:bg-emerald-900/40 rounded-lg">
                     <svg
                       v-if="selectedFile.type === 'application/pdf'"
-                      class="w-8 h-8 text-indigo-600 dark:text-indigo-400"
+                      class="w-8 h-8 text-emerald-600 dark:text-emerald-400"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -350,7 +350,7 @@
                     />
                     <svg
                       v-else
-                      class="w-8 h-8 text-indigo-600 dark:text-indigo-400"
+                      class="w-8 h-8 text-emerald-600 dark:text-emerald-400"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -390,7 +390,7 @@
                 <a
                   :href="previewUrl || undefined"
                   target="_blank"
-                  class="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 font-semibold"
+                  class="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 font-semibold"
                   >Buka di tab baru</a
                 >
               </div>
@@ -439,7 +439,7 @@
           <button
             type="button"
             @click="$router.back()"
-            class="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            class="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
             :disabled="isSubmittingForm"
           >
             Batal
@@ -447,7 +447,7 @@
           <button
             type="submit"
             :disabled="isSubmittingForm"
-            class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <LoadingSpinner
               v-if="isSubmittingForm"
@@ -470,7 +470,7 @@
       confirmButtonText="Lihat Daftar Transaksi"
       cancelButtonText="Tambah Lagi"
       iconType="success"
-      confirmButtonClass="bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
+      confirmButtonClass="bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500"
       @confirm="router.push({ name: 'transactions-list' })"
       @cancel="resetForm"
     >

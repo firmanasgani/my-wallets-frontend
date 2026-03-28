@@ -43,7 +43,7 @@ import { computed } from 'vue'
 interface Props {
   visible?: boolean // Untuk mengontrol visibilitas dari parent
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
-  color?: string // Class warna Tailwind, mis: 'text-indigo-600'
+  color?: string // Class warna Tailwind, mis: 'text-emerald-600'
   textColor?: string // Class warna teks Tailwind, mis: 'text-slate-700'
   overlay?: boolean // Apakah menggunakan full-screen overlay
   transparentOverlayContent?: boolean // Jika true, konten di atas overlay tidak punya background/shadow
@@ -54,7 +54,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   visible: true, // Defaultnya terlihat jika komponen dirender
   size: 'md',
-  color: 'text-indigo-600',
+  color: 'text-emerald-600',
   textColor: 'text-slate-700',
   overlay: false,
   transparentOverlayContent: false,

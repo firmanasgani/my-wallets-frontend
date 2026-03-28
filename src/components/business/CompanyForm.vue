@@ -7,7 +7,7 @@
       <button
         v-if="initialData && !isEditing && !viewerMode"
         @click="startEditing"
-        class="inline-flex items-center px-3 py-1.5 border border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded-md text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+        class="inline-flex items-center px-3 py-1.5 border border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded-md text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
       >
         <svg class="-ml-0.5 mr-2 h-4 w-4 text-slate-500 dark:text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -29,7 +29,7 @@
               id="companyName"
               v-model="formData.name"
               required
-              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
+              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
               placeholder="Contoh: PT. Maju Bersama"
             />
           </div>
@@ -42,7 +42,7 @@
               type="text"
               id="npwp"
               v-model="formData.npwp"
-              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
+              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
               placeholder="00.000.000.0-000.000"
             />
           </div>
@@ -55,7 +55,7 @@
               type="text"
               id="phone"
               v-model="formData.phone"
-              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
+              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
               placeholder="08123456789"
             />
           </div>
@@ -68,7 +68,7 @@
               type="email"
               id="email"
               v-model="formData.email"
-              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
+              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
               placeholder="info@perusahaan.com"
             />
           </div>
@@ -82,7 +82,7 @@
               id="currency"
               v-model="formData.currency"
               maxlength="5"
-              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
+              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
               placeholder="IDR"
             />
           </div>
@@ -95,7 +95,7 @@
               id="address"
               v-model="formData.address"
               rows="3"
-              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
+              class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
               placeholder="Alamat lengkap..."
             ></textarea>
           </div>
@@ -109,7 +109,7 @@
               id="taxEnabled"
               type="checkbox"
               v-model="formData.taxEnabled"
-              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-slate-900 dark:border-slate-600"
+              class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-slate-900 dark:border-slate-600"
             />
             <label for="taxEnabled" class="ml-2 text-sm font-medium text-slate-700 dark:text-slate-200"
               >Aktifkan Hitung Otomatis Pajak</label
@@ -127,7 +127,7 @@
               min="0"
               max="100"
               step="0.01"
-              class="border border-gray-300 rounded-lg block w-full sm:w-1/3 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
+              class="border border-gray-300 rounded-lg block w-full sm:w-1/3 px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
             />
           </div>
         </div>
@@ -144,7 +144,7 @@
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed flex items-center"
+            class="px-5 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed flex items-center"
           >
             <LoadingSpinner v-if="isSubmitting" :visible="true" size="xs" color="text-white" class="mr-2" />
             {{ isSubmitting ? 'Menyimpan...' : 'Simpan' }}

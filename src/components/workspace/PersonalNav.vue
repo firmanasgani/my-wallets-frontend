@@ -112,8 +112,8 @@ watch(isAnalysisActive, (v) => { if (v) analysisOpen.value = true }, { immediate
 watch(isSystemActive, (v) => { if (v) systemOpen.value = true }, { immediate: true })
 
 const BASE = 'flex items-center py-2.5 px-4 rounded-md transition-colors'
-const ACTIVE = 'bg-indigo-500 text-white'
-const INACTIVE = 'text-slate-300 hover:bg-slate-700 hover:text-white'
+const ACTIVE = 'bg-[#2E8B57] text-white'
+const INACTIVE = 'text-slate-300 hover:bg-[#236B43] hover:text-white'
 
 const link = (names: string | string[]) => {
   const cur = route.name?.toString() || ''
@@ -124,5 +124,5 @@ const link = (names: string | string[]) => {
 }
 
 const dropbtn = (active: boolean) =>
-  `${BASE} w-full justify-between ${active ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`
+  `${BASE} w-full justify-between ${active ? 'bg-[#236B43] text-white' : 'text-slate-300 hover:bg-[#236B43] hover:text-white'}`
 </script>

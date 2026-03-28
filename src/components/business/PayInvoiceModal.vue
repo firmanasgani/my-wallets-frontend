@@ -68,7 +68,7 @@
                   v-model="form.paymentCoaId"
                   required
                   :disabled="isLoadingCoa"
-                  class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                  class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
                 >
                   <option value="" disabled>-- Pilih akun kas/bank --</option>
                   <option v-for="coa in assetAccounts" :key="coa.id" :value="coa.id">
@@ -86,7 +86,7 @@
                   v-model="form.paymentDate"
                   type="date"
                   required
-                  class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
@@ -109,7 +109,7 @@
                   <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Metode</label>
                   <select
                     v-model="form.paymentMethod"
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="">-- Pilih --</option>
                     <option value="Cash">Cash</option>
@@ -123,7 +123,7 @@
                     v-model="form.paymentReference"
                     type="text"
                     placeholder="No. bukti transfer..."
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>

@@ -16,7 +16,7 @@
             <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Buku Besar</h2>
             <p v-if="coa" class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
               {{ coa.code }} {{ coa.name }}
-              <span class="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
+              <span class="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
                 {{ coa.type }}
               </span>
             </p>
@@ -38,7 +38,7 @@
             <input
               v-model="startDate"
               type="date"
-              class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
           <div>
@@ -46,13 +46,13 @@
             <input
               v-model="endDate"
               type="date"
-              class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
           <button
             @click="loadLedger"
             :disabled="isLoading"
-            class="px-4 py-1.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors disabled:opacity-50"
+            class="px-4 py-1.5 text-sm font-medium bg-[#2E8B57] hover:bg-[#236B43] text-white rounded-lg transition-colors disabled:opacity-50"
           >
             Tampilkan
           </button>
@@ -62,7 +62,7 @@
         <div class="flex-1 overflow-y-auto px-6 py-4">
           <!-- Loading -->
           <div v-if="isLoading" class="flex justify-center py-12">
-            <svg class="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+            <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
@@ -83,9 +83,9 @@
                 <p class="text-xs text-red-600 dark:text-red-400">Total Credit</p>
                 <p class="text-sm font-semibold text-red-700 dark:text-red-300 mt-0.5">{{ formatRp(totalCredit) }}</p>
               </div>
-              <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-3 border border-indigo-200 dark:border-indigo-800">
-                <p class="text-xs text-indigo-600 dark:text-indigo-400">Saldo Akhir</p>
-                <p class="text-sm font-semibold text-indigo-700 dark:text-indigo-300 mt-0.5">{{ formatRp(closingBalance) }}</p>
+              <div class="bg-indigo-50 dark:bg-emerald-900/20 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800">
+                <p class="text-xs text-emerald-600 dark:text-emerald-400">Saldo Akhir</p>
+                <p class="text-sm font-semibold text-emerald-700 dark:text-emerald-300 mt-0.5">{{ formatRp(closingBalance) }}</p>
               </div>
             </div>
 
@@ -124,7 +124,7 @@
                       </td>
                       <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
                         <div>{{ row.description }}</div>
-                        <div v-if="row.invoiceNumber" class="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                        <div v-if="row.invoiceNumber" class="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">
                           {{ row.invoiceNumber }}
                         </div>
                         <div v-if="row.contactName" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -154,7 +154,7 @@
                       <td colspan="4" class="px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300">
                         Saldo Akhir
                       </td>
-                      <td class="px-4 py-3 text-right text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                      <td class="px-4 py-3 text-right text-sm font-bold text-emerald-600 dark:text-emerald-400">
                         {{ formatRp(closingBalance) }}
                       </td>
                     </tr>

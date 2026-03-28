@@ -25,7 +25,7 @@
         class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full"
       >
         <div
-          class="bg-gradient-to-br from-indigo-600 to-indigo-800 px-6 py-8 text-center text-white"
+          class="bg-gradient-to-br from-[#2E8B57] to-[#1a5233] px-6 py-8 text-center text-white"
         >
           <div
             class="mx-auto flex items-center justify-center h-16 w-16 bg-white bg-opacity-20 rounded-full mb-4"
@@ -33,7 +33,7 @@
             <i class="fa-solid fa-crown text-3xl"></i>
           </div>
           <h2 class="text-2xl font-bold mb-2">Upgrade Berhasil!</h2>
-          <p class="text-indigo-100">
+          <p class="text-emerald-100">
             Selamat, akun Anda telah diupgrade ke
             <span class="font-extrabold text-yellow-300">PREMIUM</span>.
           </p>
@@ -62,7 +62,7 @@
 
           <button
             type="button"
-            class="w-full inline-flex justify-center items-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-indigo-600 text-base font-bold text-white hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            class="w-full inline-flex justify-center items-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-[#2E8B57] text-base font-bold text-white hover:bg-[#236B43] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
             @click="close"
           >
             Mulai Jelajahi

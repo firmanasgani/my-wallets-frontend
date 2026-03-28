@@ -8,8 +8,8 @@
           @click="openCreateCategoryModal"
           :disabled="!canAddCategory"
           :title="addCategoryButtonTitle"
-          class="bg-indigo-600 text-white text-sm font-medium px-4 h-10 rounded-lg flex items-center transition-colors shadow-sm w-full md:w-auto justify-center"
-          :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
+          class="bg-[#2E8B57] text-white text-sm font-medium px-4 h-10 rounded-lg flex items-center transition-colors shadow-sm w-full md:w-auto justify-center"
+          :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#236B43]'"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -69,8 +69,8 @@
         @click="openCreateCategoryModal"
         :disabled="!canAddCategory"
         :title="addCategoryButtonTitle"
-        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'"
+        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#2E8B57] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+        :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#236B43]'"
       >
         + Tambah Kategori Sekarang
       </button>

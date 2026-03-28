@@ -7,17 +7,17 @@
       text="Memuat halaman..."
       size="lg"
       overlay
-      color="text-indigo-500"
+      color="text-[#2E8B57]"
       text-color="text-slate-700"
     />
 
-    <div v-if="!isLoadingPage" class="bg-slate-50 text-slate-700 min-h-screen">
+    <div v-if="!isLoadingPage" class="bg-[#F8FFFF] dark:bg-slate-900 text-slate-700 dark:text-slate-200 min-h-screen">
       <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-40">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
               <RouterLink :to="{ name: 'home' }" class="flex-shrink-0">
-                <span class="text-2xl font-bold text-indigo-600">My Wallets</span>
+                <span class="text-2xl font-bold text-[#2E8B57]">Moneytory Ledger</span>
               </RouterLink>
             </div>
             <div class="hidden md:block">
@@ -29,7 +29,7 @@
                   <RouterLink :to="{ name: 'login' }" class="nav-link">Masuk</RouterLink>
                   <RouterLink
                     :to="{ name: 'register' }"
-                    class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2E8B57]"
                   >
                     Daftar Gratis
                   </RouterLink>
@@ -37,7 +37,7 @@
                 <template v-else>
                   <RouterLink
                     :to="{ name: 'dashboard' }"
-                    class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2E8B57]"
                   >
                     Ke Dashboard
                   </RouterLink>
@@ -48,7 +48,7 @@
               <button
                 @click="mobileMenuOpen = !mobileMenuOpen"
                 type="button"
-                class="bg-white rounded-md p-2 inline-flex items-center justify-center text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                class="bg-white rounded-md p-2 inline-flex items-center justify-center text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#2E8B57]"
                 aria-controls="mobile-menu"
                 aria-expanded="false"
               >
@@ -108,7 +108,7 @@
                 <RouterLink
                   :to="{ name: 'register' }"
                   @click="mobileMenuOpen = false"
-                  class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2E8B57]"
                   >Daftar Gratis</RouterLink
                 >
               </template>
@@ -116,7 +116,7 @@
                 <RouterLink
                   :to="{ name: 'dashboard' }"
                   @click="mobileMenuOpen = false"
-                  class="block w-full text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  class="block w-full text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2E8B57]"
                   >Ke Dashboard</RouterLink
                 >
               </template>
@@ -126,31 +126,62 @@
       </nav>
 
       <section
-        class="relative bg-gradient-to-br from-indigo-600 to-purple-700 text-white overflow-hidden"
+        class="relative bg-gradient-to-br from-[#1B5E3B] via-[#2E8B57] to-[#28896E] text-white overflow-hidden"
       >
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
+        <!-- Subtle pattern overlay -->
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0); background-size: 32px 32px;"></div>
+
+        <div class="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
+          <!-- Badge -->
+          <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6 text-sm font-medium text-emerald-100 backdrop-blur-sm">
+            <svg class="w-4 h-4 text-[#87CEEB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+            </svg>
+            Solusi Keuangan & Akuntansi Bisnis Terpadu
+          </div>
+
           <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
-            <span class="block">Kelola Keuangan Pribadi</span>
-            <span class="block text-indigo-300 mt-2">Jadi Lebih Mudah & Cerdas</span>
+            <span class="block">Satu Platform untuk</span>
+            <span class="block text-[#87CEEB] mt-2">Semua Kebutuhan Finansial Anda</span>
           </h1>
           <p
-            class="mt-6 max-w-lg mx-auto text-lg sm:text-xl text-indigo-100 sm:max-w-xl md:max-w-2xl"
+            class="mt-6 max-w-lg mx-auto text-lg sm:text-xl text-emerald-100 sm:max-w-xl md:max-w-2xl"
           >
-            Lacak setiap pemasukan dan pengeluaran Anda, atur anggaran, dan capai tujuan finansial
-            Anda dengan MyWallets.
+            Dari pencatatan keuangan pribadi hingga akuntansi bisnis lengkap — kelola invoice, laporan laba rugi, neraca keuangan, dan arus kas dalam satu aplikasi yang handal.
           </p>
+
+          <!-- Stats row -->
+          <div class="mt-8 flex flex-wrap justify-center gap-6 text-sm">
+            <div class="flex items-center gap-1.5 text-emerald-200">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+              Pembukuan Double-Entry
+            </div>
+            <div class="flex items-center gap-1.5 text-emerald-200">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+              Invoice & Pembayaran
+            </div>
+            <div class="flex items-center gap-1.5 text-emerald-200">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+              Laporan Finansial Real-time
+            </div>
+            <div class="flex items-center gap-1.5 text-emerald-200">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+              Multi-Workspace Tim
+            </div>
+          </div>
+
           <div
             class="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center space-y-4 sm:space-y-0 sm:space-x-4"
           >
             <RouterLink
               :to="{ name: 'register' }"
-              class="w-full sm:w-auto flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg shadow-md text-indigo-700 bg-white hover:bg-indigo-50 transition-colors md:py-3 md:text-lg md:px-10"
+              class="w-full sm:w-auto flex items-center justify-center px-8 py-3 border border-transparent text-base font-semibold rounded-lg shadow-md text-[#1B5E3B] bg-white hover:bg-emerald-50 transition-colors md:py-3.5 md:text-lg md:px-10"
             >
-              Daftar Gratis Sekarang
+              Mulai Gratis Sekarang
             </RouterLink>
             <RouterLink
               :to="{ name: 'login' }"
-              class="w-full sm:w-auto flex items-center justify-center px-8 py-3 border-2 border-indigo-300 text-base font-medium rounded-lg text-white hover:bg-indigo-500 hover:border-indigo-500 transition-colors md:py-3 md:text-lg md:px-10"
+              class="w-full sm:w-auto flex items-center justify-center px-8 py-3 border-2 border-white/40 text-base font-semibold rounded-lg text-white hover:bg-white/10 hover:border-white/60 transition-colors md:py-3.5 md:text-lg md:px-10"
             >
               Sudah Punya Akun? Masuk
             </RouterLink>
@@ -158,7 +189,7 @@
         </div>
       </section>
 
-      <section id="features" class="py-16 sm:py-24 bg-white">
+      <section id="features" class="py-16 sm:py-24 bg-white dark:bg-slate-800">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-12 sm:mb-16">
             <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
@@ -171,7 +202,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-12">
             <div class="text-center">
               <div
-                class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 text-indigo-600"
+                class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 text-[#2E8B57]"
               >
                 <svg
                   class="h-6 w-6"
@@ -195,7 +226,7 @@
             </div>
             <div class="text-center">
               <div
-                class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 text-indigo-600"
+                class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 text-[#2E8B57]"
               >
                 <svg
                   class="h-6 w-6"
@@ -219,7 +250,7 @@
             </div>
             <div class="text-center">
               <div
-                class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 text-indigo-600"
+                class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 text-[#2E8B57]"
               >
                 <svg
                   class="h-6 w-6"
@@ -250,7 +281,7 @@
         </div>
       </section>
 
-      <section id="pricing" class="py-16 sm:py-24 bg-slate-100">
+      <section id="pricing" class="py-16 sm:py-24 bg-[#F8FFFF] dark:bg-slate-900">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-12 sm:mb-16">
             <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
@@ -267,7 +298,7 @@
               :key="plan.name"
               :class="[
                 'bg-white rounded-xl shadow-xl p-6 flex flex-col transition-all duration-300 ease-in-out',
-                plan.recommended ? 'ring-2 ring-indigo-500 scale-105' : 'hover:shadow-2xl',
+                plan.recommended ? 'ring-2 ring-[#2E8B57] scale-105' : 'hover:shadow-2xl',
               ]"
             >
               <div class="flex-grow">
@@ -304,8 +335,8 @@
                   :class="[
                     'w-full flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium transition-colors',
                     plan.recommended
-                      ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                      : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200',
+                      ? 'bg-[#2E8B57] text-white hover:bg-[#236B43]'
+                      : 'bg-emerald-100 text-[#2E8B57] hover:bg-emerald-200',
                   ]"
                 >
                   {{ plan.cta.text }}
@@ -315,16 +346,19 @@
           </div>
         </div>
       </section>
-      <section class="py-16 sm:py-24 bg-slate-800">
+      <section class="py-16 sm:py-24 bg-[#1B5E3B]">
         <footer class="text-slate-400">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-center">
             <div class="text-center">
+                <p class="text-xl font-bold text-white mb-4">Moneytory Ledger</p>
                 <div class="mb-4 flex justify-center space-x-6">
                     <RouterLink :to="{ name: 'terms' }" class="text-sm hover:text-white transition-colors">Syarat & Ketentuan</RouterLink>
                     <RouterLink :to="{ name: 'how-to' }" class="text-sm hover:text-white transition-colors">Cara Penggunaan</RouterLink>
+                    <RouterLink :to="{ name: 'business-package' }" class="text-sm hover:text-white transition-colors">Paket Bisnis</RouterLink>
                 </div>
-                <p class="text-sm">2026 MyWallets. All rights reserved.</p>
+                <p class="text-sm">&copy; 2026 Moneytory Ledger. All rights reserved.</p>
+                <p class="text-xs mt-2 text-emerald-400/70">Made with ❤️ by Firmanasgani</p>
             </div>
             </div>
           </div>

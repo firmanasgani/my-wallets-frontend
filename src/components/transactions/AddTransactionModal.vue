@@ -45,9 +45,9 @@
                     :key="typeOpt.value"
                     @click="selectedTransactionType = typeOpt.value"
                     :class="[
-                      'w-full rounded-md py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-700 focus:ring-indigo-500 transition-colors',
+                      'w-full rounded-md py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-700 focus:ring-emerald-500 transition-colors',
                       selectedTransactionType === typeOpt.value
-                        ? 'bg-indigo-600 text-white shadow'
+                        ? 'bg-[#2E8B57] text-white shadow'
                         : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600',
                     ]"
                   >
@@ -68,7 +68,7 @@
                     required
                     min="0.01"
                     step="any"
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                     placeholder="0.00"
                   />
                 </div>
@@ -86,7 +86,7 @@
                     id="txSourceAccount"
                     v-model="accountFormFields.sourceAccountId"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                   >
                     <option disabled value="">Pilih akun sumber...</option>
                     <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
@@ -110,7 +110,7 @@
                     id="txDestinationAccount"
                     v-model="accountFormFields.destinationAccountId"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                   >
                     <option disabled value="">Pilih akun tujuan...</option>
                     <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
@@ -143,7 +143,7 @@
                     id="txCategory"
                     v-model="accountFormFields.categoryId"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                   >
                     <option disabled value="">Pilih kategori...</option>
                     <option v-for="cat in relevantCategories" :key="cat.id" :value="cat.id">
@@ -161,7 +161,7 @@
                     id="txDate"
                     v-model="commonFormData.transactionDate"
                     required
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                   />
                 </div>
 
@@ -171,7 +171,7 @@
                       id="isRecurring"
                       type="checkbox"
                       v-model="recurringForm.isRecurring"
-                      class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-slate-600 rounded"
+                      class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 dark:border-slate-600 rounded"
                     />
                     <label for="isRecurring" class="ml-2 block text-sm text-slate-900 dark:text-slate-100 select-none">
                       Jadikan Transaksi Berulang
@@ -191,7 +191,7 @@
                       <select
                         id="recurringInterval"
                         v-model="recurringForm.interval"
-                        class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                        class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                       >
                         <option :value="null" disabled>Pilih interval...</option>
                         <option
@@ -214,7 +214,7 @@
                         type="date"
                         id="recurringEndDate"
                         v-model="recurringForm.endDate"
-                        class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                        class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                         :min="commonFormData.transactionDate"
                       />
                       <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -232,7 +232,7 @@
                     id="txDescription"
                     v-model="commonFormData.description"
                     rows="3"
-                    class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                    class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     placeholder="Catatan tambahan..."
                   ></textarea>
                 </div>
@@ -247,7 +247,7 @@
               <button
                 type="submit"
                 :disabled="isSubmittingForm"
-                class="inline-flex justify-center items-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto sm:text-sm transition-colors"
+                class="inline-flex justify-center items-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#2E8B57] text-base font-medium text-white hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto sm:text-sm transition-colors"
               >
                 <LoadingSpinner
                   v-if="isSubmittingForm"

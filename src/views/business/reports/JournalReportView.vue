@@ -27,7 +27,7 @@
           <input
             v-model="filters.startDate"
             type="date"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
         <div>
@@ -35,13 +35,13 @@
           <input
             v-model="filters.endDate"
             type="date"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
         <div class="flex items-end gap-2">
           <button
             @click="applyFilters"
-            class="flex-1 px-4 py-1.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+            class="flex-1 px-4 py-1.5 text-sm font-medium bg-[#2E8B57] hover:bg-[#236B43] text-white rounded-lg transition-colors"
           >
             Filter
           </button>
@@ -65,7 +65,7 @@
 
     <!-- Loading -->
     <div v-if="reportsStore.isLoading" class="flex justify-center p-12">
-      <svg class="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+      <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
@@ -87,7 +87,7 @@
       <div
         v-for="entry in data.data"
         :key="entry.id"
-        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-sm transition-all"
+        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden cursor-pointer hover:border-emerald-300 dark:hover:border-[#2E8B57] hover:shadow-sm transition-all"
         @click="router.push({ name: 'business-transaction-detail', params: { id: entry.id } })"
       >
         <div class="flex items-center justify-between gap-4 px-5 py-3.5">
@@ -95,7 +95,7 @@
             <div class="flex items-center gap-2 flex-wrap">
               <span
                 v-if="entry.isSystemGenerated"
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 shrink-0"
+                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-emerald-300 shrink-0"
               >
                 Dari Invoice
               </span>
@@ -105,7 +105,7 @@
               >
                 Manual
               </span>
-              <span v-if="entry.reference" class="text-xs font-mono text-indigo-600 dark:text-indigo-400 shrink-0">{{ entry.reference }}</span>
+              <span v-if="entry.reference" class="text-xs font-mono text-emerald-600 dark:text-emerald-400 shrink-0">{{ entry.reference }}</span>
               <span class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{{ entry.description }}</span>
             </div>
             <div class="flex items-center gap-3 mt-1 text-xs text-slate-400 dark:text-slate-500 flex-wrap">

@@ -37,7 +37,7 @@
                 v-model="form.transactionDate"
                 type="date"
                 required
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
             <div>
@@ -47,7 +47,7 @@
                 type="text"
                 required
                 placeholder="Contoh: Gaji Maret 2026"
-                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
@@ -56,7 +56,7 @@
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Lampiran <span class="text-xs font-normal text-slate-400">(opsional, maks 5)</span>
               </label>
-              <label class="flex items-center gap-2 cursor-pointer w-full px-3 py-2 rounded-lg border border-dashed border-slate-300 dark:border-slate-600 hover:border-indigo-400 dark:hover:border-indigo-500 bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-sm transition-colors">
+              <label class="flex items-center gap-2 cursor-pointer w-full px-3 py-2 rounded-lg border border-dashed border-slate-300 dark:border-slate-600 hover:border-emerald-400 dark:hover:border-emerald-500 bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-sm transition-colors">
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                 </svg>
@@ -82,7 +82,7 @@
               <button
                 type="submit"
                 :disabled="isSubmitting"
-                class="w-full px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center justify-center gap-2"
+                class="w-full px-5 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <svg v-if="isSubmitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -101,9 +101,51 @@
         </div>
 
         <!-- Card: Baris Jurnal -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 min-w-0">
-          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Baris Jurnal</h2>
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 min-w-0 space-y-4">
+          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Baris Jurnal</h2>
           <JournalLinesEditor ref="linesEditor" :coa-grouped="coaGrouped" :contacts="contacts" />
+
+          <!-- Tax Suggestion Panel -->
+          <div v-if="isSuggesting || taxSuggestions.length" class="rounded-xl border border-amber-200 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/10 p-3.5">
+            <div class="flex items-center gap-2 mb-2.5">
+              <svg class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.34A3.001 3.001 0 0112 21a3 3 0 01-2.121-.879l-.346-.34z" />
+              </svg>
+              <span class="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">Saran Pajak</span>
+              <svg v-if="isSuggesting" class="w-3.5 h-3.5 text-amber-500 animate-spin ml-auto" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            </div>
+            <div v-if="!isSuggesting && taxSuggestions.length" class="space-y-2">
+              <div
+                v-for="s in taxSuggestions"
+                :key="s.taxConfigId"
+                class="flex items-start gap-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 text-xs"
+              >
+                <!-- Confidence badge -->
+                <span
+                  class="shrink-0 mt-0.5 px-1.5 py-0.5 rounded font-semibold text-[10px] uppercase tracking-wide"
+                  :class="{
+                    'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400': s.confidence === 'HIGH',
+                    'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400': s.confidence === 'MEDIUM',
+                    'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400': s.confidence === 'LOW',
+                  }"
+                >{{ s.confidence }}</span>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-semibold text-slate-800 dark:text-slate-100">{{ s.name }}</span>
+                    <span class="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">{{ parseFloat(s.rate) }}%</span>
+                    <span v-if="s.taxAmount" class="text-slate-500 dark:text-slate-400">· Pajak ≈ {{ formatRpSuggest(s.taxAmount) }}</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{{ s.reason }}</p>
+                </div>
+              </div>
+            </div>
+            <p v-if="!isSuggesting && !taxSuggestions.length" class="text-xs text-slate-400 dark:text-slate-500">
+              Tidak ada saran pajak untuk konteks ini.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -118,7 +160,7 @@
         <button
           type="submit"
           :disabled="isSubmitting"
-          class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
+          class="px-5 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
         >
           <svg v-if="isSubmitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -132,12 +174,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBusinessTransactionsStore } from '@/stores/businessTransactions'
 import { useBusinessStore } from '@/stores/business'
 import { useContactsStore } from '@/stores/contacts'
+import { BusinessService } from '@/services/business.service'
 import JournalLinesEditor from '@/components/business/JournalLinesEditor.vue'
+import type { TaxSuggestion } from '@/types/business'
 
 const router = useRouter()
 const txStore = useBusinessTransactionsStore()
@@ -147,6 +191,51 @@ const contactsStore = useContactsStore()
 const isSubmitting = ref(false)
 const errorMsg = ref('')
 const linesEditor = ref<InstanceType<typeof JournalLinesEditor> | null>(null)
+
+// ─── Tax Suggestions ───────────────────────────────────────────────────────
+const taxSuggestions = ref<TaxSuggestion[]>([])
+const isSuggesting = ref(false)
+let suggestTimer: ReturnType<typeof setTimeout> | null = null
+
+function scheduleSuggest() {
+  if (suggestTimer) clearTimeout(suggestTimer)
+  suggestTimer = setTimeout(runSuggest, 500)
+}
+
+async function runSuggest() {
+  const lines = linesEditor.value?.lines ?? []
+  const debitLine = lines.find((l) => l.type === 'DEBIT' && l.coaId)
+  const creditLine = lines.find((l) => l.type === 'CREDIT' && l.coaId)
+  const contactLine = lines.find((l) => l.contactId)
+  const totalDebit = lines.filter((l) => l.type === 'DEBIT').reduce((s, l) => s + l.amountRaw, 0)
+
+  const hasContext = form.value.description || debitLine || creditLine
+  if (!hasContext) {
+    taxSuggestions.value = []
+    return
+  }
+
+  isSuggesting.value = true
+  try {
+    const res = await BusinessService.getTaxSuggestions({
+      debitCoaId: debitLine?.coaId || undefined,
+      creditCoaId: creditLine?.coaId || undefined,
+      contactId: contactLine?.contactId || undefined,
+      amount: totalDebit || undefined,
+      description: form.value.description || undefined,
+    })
+    taxSuggestions.value = res.suggestions
+  } catch {
+    taxSuggestions.value = []
+  } finally {
+    isSuggesting.value = false
+  }
+}
+
+function formatRpSuggest(val: string | null) {
+  if (!val) return ''
+  return 'Rp ' + Math.round(parseFloat(val)).toLocaleString('id-ID')
+}
 
 const form = ref({
   transactionDate: new Date().toISOString().slice(0, 10),
@@ -175,6 +264,9 @@ onMounted(async () => {
     Object.keys(businessStore.chartOfAccounts).length ? Promise.resolve() : businessStore.fetchChartOfAccounts(),
     contactsStore.contacts.length ? Promise.resolve() : contactsStore.fetchContacts(),
   ])
+
+  watch(() => form.value.description, scheduleSuggest)
+  watch(() => linesEditor.value?.lines, scheduleSuggest, { deep: true })
 })
 
 async function handleSubmit() {

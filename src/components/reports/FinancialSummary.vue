@@ -58,14 +58,14 @@
     >
       <div>
         <p class="text-sm text-gray-500 font-medium dark:text-slate-400">Net Cash Flow</p>
-        <p :class="['text-xl font-bold', data.netCashFlow >= 0 ? 'text-blue-600' : 'text-red-500']">
+        <p :class="['text-xl font-bold', data.netCashFlow >= 0 ? 'text-emerald-600' : 'text-red-500']">
           {{ formatCurrency(data.netCashFlow) }}
         </p>
       </div>
       <div class="bg-blue-100 p-2 rounded-lg">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 text-blue-600"
+          class="h-6 w-6 text-emerald-600"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -127,7 +127,7 @@ const formatCurrency = (amount: number) => {
 
 const getSavingsRateColor = (rate: number) => {
   if (rate >= 20) return 'text-green-600'
-  if (rate > 0) return 'text-blue-600'
+  if (rate > 0) return 'text-emerald-600'
   return 'text-red-500'
 }
 </script>

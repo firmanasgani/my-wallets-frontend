@@ -40,13 +40,13 @@
           @click="openCalendarModal"
           class="w-full sm:w-auto bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
         >
-          <i class="fa-regular fa-calendar-days mr-2 text-indigo-500"></i>
+          <i class="fa-regular fa-calendar-days mr-2 text-emerald-500"></i>
           Kalender
         </button>
 
         <button
           @click="openAddTransactionModal"
-          class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
+          class="w-full sm:w-auto bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -204,7 +204,7 @@
         </button>
         <button
           @click="applyCurrentFilters"
-          class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors w-full sm:w-auto"
+          class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#2E8B57] text-sm font-medium text-white hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors w-full sm:w-auto"
         >
           Terapkan
         </button>
@@ -230,7 +230,7 @@
           <p
             :class="[
               'text-xl font-semibold',
-              summary.net >= 0 ? 'text-blue-600' : 'text-orange-600',
+              summary.net >= 0 ? 'text-emerald-600' : 'text-orange-600',
             ]"
           >
             {{ formatCurrency(summary.net, 'IDR') }}
@@ -282,7 +282,7 @@
       </p>
       <button
         @click="openAddTransactionModal"
-        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#2E8B57] hover:bg-[#236B43]"
       >
         + Tambah Transaksi
       </button>
@@ -404,7 +404,7 @@ const router = useRouter()
 const transactionStore = useTransactionStore()
 
 const filterInputClass =
-  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
+  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
 
 // Export dropdown
 const isExportDropdownOpen = ref(false)

@@ -20,11 +20,11 @@
           <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Jenis Pajak (PPh)</h2>
           <p class="text-sm text-slate-500 dark:text-slate-400">Daftar pajak yang berlaku untuk perusahaan ini.</p>
         </div>
-        <button v-if="isAdmin" @click="openTaxForm()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">+ Tambah Pajak</button>
+        <button v-if="isAdmin" @click="openTaxForm()" class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">+ Tambah Pajak</button>
       </div>
 
       <div v-if="isLoadingTax" class="flex justify-center py-10">
-        <svg class="w-6 h-6 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
         </svg>
@@ -52,7 +52,7 @@
                 <p v-if="tax.description" class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{{ tax.description }}</p>
               </td>
               <td class="px-4 py-3">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">{{ tax.type }}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-indigo-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">{{ tax.type }}</span>
               </td>
               <td class="px-4 py-3 text-right font-mono font-medium text-slate-800 dark:text-slate-100">{{ tax.rate }}%</td>
               <td class="px-4 py-3 text-center">
@@ -63,7 +63,7 @@
               </td>
               <td v-if="isAdmin" class="px-4 py-3 text-right">
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="openTaxForm(tax)" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">Edit</button>
+                  <button @click="openTaxForm(tax)" class="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">Edit</button>
                   <button @click="confirmDeleteTax(tax)" class="text-sm text-red-500 hover:underline">Hapus</button>
                 </div>
               </td>
@@ -80,11 +80,11 @@
           <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Aturan Saran Pajak Kustom</h2>
           <p class="text-sm text-slate-500 dark:text-slate-400">Aturan otomatis untuk menyarankan pajak saat mengisi jurnal.</p>
         </div>
-        <button v-if="isAdmin && taxConfigs.length > 0" @click="openRuleForm()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">+ Tambah Aturan</button>
+        <button v-if="isAdmin && taxConfigs.length > 0" @click="openRuleForm()" class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">+ Tambah Aturan</button>
       </div>
 
       <div v-if="isLoadingRules" class="flex justify-center py-10">
-        <svg class="w-6 h-6 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
         </svg>
@@ -119,7 +119,7 @@
               <p v-if="rule.note" class="mt-1 text-sm text-slate-400 dark:text-slate-500 italic">{{ rule.note }}</p>
             </div>
             <div v-if="isAdmin" class="flex items-center gap-2 shrink-0">
-              <button @click="openRuleForm(rule)" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">Edit</button>
+              <button @click="openRuleForm(rule)" class="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">Edit</button>
               <button @click="confirmDeleteRule(rule)" class="text-sm text-red-500 hover:underline">Hapus</button>
             </div>
           </div>
@@ -138,21 +138,21 @@
           <form @submit.prevent="saveTaxConfig" class="p-6 space-y-4">
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Jenis Pajak <span class="text-red-500">*</span></label>
-              <select v-model="taxForm.type" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" :disabled="!!editingTax">
+              <select v-model="taxForm.type" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" :disabled="!!editingTax">
                 <option v-for="t in TAX_TYPES" :key="t.value" :value="t.value">{{ t.label }}</option>
               </select>
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Nama Deskriptif <span class="text-red-500">*</span></label>
-              <input v-model="taxForm.name" type="text" required maxlength="100" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="cth: PPh Pasal 23 - Jasa" />
+              <input v-model="taxForm.name" type="text" required maxlength="100" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="cth: PPh Pasal 23 - Jasa" />
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Tarif (%) <span class="text-red-500">*</span></label>
-              <input v-model.number="taxForm.rate" type="number" required min="0" max="100" step="0.0001" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="cth: 2" />
+              <input v-model.number="taxForm.rate" type="number" required min="0" max="100" step="0.0001" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="cth: 2" />
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Deskripsi</label>
-              <textarea v-model="taxForm.description" rows="2" maxlength="500" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none" placeholder="Keterangan tambahan..."></textarea>
+              <textarea v-model="taxForm.description" rows="2" maxlength="500" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none" placeholder="Keterangan tambahan..."></textarea>
             </div>
             <div class="flex items-center gap-2">
               <input v-model="taxForm.isActive" type="checkbox" id="taxActive" class="w-4 h-4 rounded" />
@@ -161,7 +161,7 @@
             <div v-if="formError" class="text-sm text-red-500">{{ formError }}</div>
             <div class="flex justify-end gap-3 pt-2">
               <button type="button" @click="showTaxForm = false" class="bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium py-1.5 px-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">Batal</button>
-              <button type="submit" :disabled="isSaving" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">{{ isSaving ? 'Menyimpan...' : 'Simpan' }}</button>
+              <button type="submit" :disabled="isSaving" class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">{{ isSaving ? 'Menyimpan...' : 'Simpan' }}</button>
             </div>
           </form>
         </div>
@@ -177,14 +177,14 @@
           <form @submit.prevent="saveRule" class="p-6 space-y-4">
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Pajak <span class="text-red-500">*</span></label>
-              <select v-model="ruleForm.taxConfigId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+              <select v-model="ruleForm.taxConfigId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                 <option value="">-- Pilih Pajak --</option>
                 <option v-for="t in taxConfigs" :key="t.id" :value="t.id">{{ t.name }} ({{ t.rate }}%)</option>
               </select>
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Tipe Kontak Trigger</label>
-              <select v-model="ruleForm.triggerContactType" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+              <select v-model="ruleForm.triggerContactType" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                 <option value="">-- Semua --</option>
                 <option value="CUSTOMER">Customer</option>
                 <option value="VENDOR">Vendor</option>
@@ -194,19 +194,19 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Keywords (pisahkan dengan koma)</label>
-              <input v-model="ruleForm.triggerKeywordsRaw" type="text" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="cth: jasa, konsultan, sewa" />
+              <input v-model="ruleForm.triggerKeywordsRaw" type="text" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="cth: jasa, konsultan, sewa" />
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Minimum Amount (Rp)</label>
-              <input v-model.number="ruleForm.minAmount" type="number" min="0" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="cth: 1000000" />
+              <input v-model.number="ruleForm.minAmount" type="number" min="0" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="cth: 1000000" />
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Prioritas</label>
-              <input v-model.number="ruleForm.priority" type="number" min="0" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="0" />
+              <input v-model.number="ruleForm.priority" type="number" min="0" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="0" />
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Catatan / Alasan</label>
-              <textarea v-model="ruleForm.note" rows="2" maxlength="500" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none" placeholder="Tampil sebagai alasan saran pajak..."></textarea>
+              <textarea v-model="ruleForm.note" rows="2" maxlength="500" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none" placeholder="Tampil sebagai alasan saran pajak..."></textarea>
             </div>
             <div class="flex items-center gap-2">
               <input v-model="ruleForm.isActive" type="checkbox" id="ruleActive" class="w-4 h-4 rounded" />
@@ -215,7 +215,7 @@
             <div v-if="formError" class="text-sm text-red-500">{{ formError }}</div>
             <div class="flex justify-end gap-3 pt-2">
               <button type="button" @click="showRuleForm = false" class="bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium py-1.5 px-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">Batal</button>
-              <button type="submit" :disabled="isSaving" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">{{ isSaving ? 'Menyimpan...' : 'Simpan' }}</button>
+              <button type="submit" :disabled="isSaving" class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">{{ isSaving ? 'Menyimpan...' : 'Simpan' }}</button>
             </div>
           </form>
         </div>

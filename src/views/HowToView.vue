@@ -5,11 +5,11 @@
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <RouterLink :to="{ name: 'home' }" class="flex-shrink-0">
-            <span class="text-2xl font-bold text-indigo-600">My Wallets</span>
+            <span class="text-2xl font-bold text-[#2E8B57]">Moneytory Ledger</span>
           </RouterLink>
           <div class="flex items-center gap-4">
-            <RouterLink :to="{ name: 'login' }" class="text-sm font-medium hover:text-indigo-600 transition-colors">Masuk</RouterLink>
-            <RouterLink :to="{ name: 'register' }" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
+            <RouterLink :to="{ name: 'login' }" class="text-sm font-medium hover:text-[#2E8B57] transition-colors">Masuk</RouterLink>
+            <RouterLink :to="{ name: 'register' }" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#2E8B57] hover:bg-[#236B43] transition-colors">
               Daftar Gratis
             </RouterLink>
           </div>
@@ -17,11 +17,11 @@
       </div>
     </nav>
 
-    <header class="bg-indigo-600 py-16 sm:py-24 text-white">
+    <header class="bg-[#2E8B57] py-16 sm:py-24 text-white">
       <div class="container mx-auto px-4 text-center">
         <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">Cara Penggunaan & Fitur</h1>
-        <p class="text-xl text-indigo-100 max-w-2xl mx-auto">
-          Panduan lengkap untuk mengelola keuangan Anda lebih cerdas dengan MyWallets.
+        <p class="text-xl text-emerald-100 max-w-2xl mx-auto">
+          Panduan lengkap untuk mengelola keuangan Anda lebih cerdas dengan Moneytory Ledger.
         </p>
       </div>
     </header>
@@ -30,7 +30,7 @@
       <!-- Section: Features -->
       <section id="features" class="space-y-12">
         <div class="text-center">
-          <h2 class="text-3xl font-bold text-slate-900 dark:text-white">Fitur MyWallets</h2>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white">Fitur Moneytory Ledger</h2>
           <p class="mt-4 text-slate-500 max-w-2xl mx-auto text-lg">
             Kami menyediakan paket yang fleksibel untuk kebutuhan finansial Anda.
           </p>
@@ -55,19 +55,19 @@
           </div>
 
           <!-- Premium Plan -->
-          <div class="bg-indigo-600 text-white rounded-2xl p-8 shadow-xl flex flex-col transition-transform hover:scale-[1.02] relative">
-            <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-indigo-900 text-[10px] font-black uppercase px-3 py-1 rounded-full">POPULER</div>
+          <div class="bg-emerald-600 text-white rounded-2xl p-8 shadow-xl flex flex-col transition-transform hover:scale-[1.02] relative">
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-emerald-900 text-[10px] font-black uppercase px-3 py-1 rounded-full">POPULER</div>
             <h3 class="text-xl font-bold mb-2">Premium</h3>
-            <p class="text-indigo-100 mb-6 text-sm">Fitur lengkap untuk kontrol finansial mendalam.</p>
+            <p class="text-emerald-100 mb-6 text-sm">Fitur lengkap untuk kontrol finansial mendalam.</p>
             <ul class="space-y-4 flex-grow mb-8">
               <li v-for="f in premiumFeatures" :key="f" class="flex items-start gap-3">
-                <svg class="h-5 w-5 text-indigo-300 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="h-5 w-5 text-emerald-300 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
                 <span class="text-sm">{{ f }}</span>
               </li>
             </ul>
-            <RouterLink v-if="!authStore.isAuthenticated" :to="{ name: 'register' }" class="w-full py-3 bg-white text-indigo-600 text-center font-bold rounded-lg hover:bg-indigo-50 transition-colors shadow-lg">
+            <RouterLink v-if="!authStore.isAuthenticated" :to="{ name: 'register' }" class="w-full py-3 bg-white text-emerald-600 text-center font-bold rounded-lg hover:bg-emerald-50 transition-colors shadow-lg">
               Langganan Sekarang
             </RouterLink>
           </div>
@@ -102,7 +102,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
           <div class="flex gap-6">
-            <div class="h-12 w-12 shrink-0 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xl">1</div>
+            <div class="h-12 w-12 shrink-0 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold text-xl">1</div>
             <div>
               <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Buat Akun Keuangan</h4>
               <p class="text-slate-600 dark:text-slate-400">
@@ -111,7 +111,7 @@
             </div>
           </div>
           <div class="flex gap-6">
-            <div class="h-12 w-12 shrink-0 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xl">2</div>
+            <div class="h-12 w-12 shrink-0 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold text-xl">2</div>
             <div>
               <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Atur Kategori</h4>
               <p class="text-slate-600 dark:text-slate-400">
@@ -120,7 +120,7 @@
             </div>
           </div>
           <div class="flex gap-6">
-            <div class="h-12 w-12 shrink-0 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xl">3</div>
+            <div class="h-12 w-12 shrink-0 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold text-xl">3</div>
             <div>
               <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Catat Transaksi</h4>
               <p class="text-slate-600 dark:text-slate-400">
@@ -129,7 +129,7 @@
             </div>
           </div>
           <div class="flex gap-6">
-            <div class="h-12 w-12 shrink-0 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xl">4</div>
+            <div class="h-12 w-12 shrink-0 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-bold text-xl">4</div>
             <div>
               <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Pantau Laporan</h4>
               <p class="text-slate-600 dark:text-slate-400">
@@ -165,13 +165,13 @@
       </section>
 
       <!-- Section: Premium Benefits -->
-      <section id="premium-benefits" class="bg-indigo-50 dark:bg-slate-800/50 rounded-3xl p-8 sm:p-12 border border-indigo-100 dark:border-slate-700">
+      <section id="premium-benefits" class="bg-emerald-50 dark:bg-slate-800/50 rounded-3xl p-8 sm:p-12 border border-emerald-100 dark:border-slate-700">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-6">Kenapa Pilih Premium?</h2>
             <div class="space-y-6">
               <div class="flex gap-4">
-                <div class="shrink-0 h-10 w-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center">
+                <div class="shrink-0 h-10 w-10 bg-emerald-600 text-white rounded-lg flex items-center justify-center">
                   <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -182,7 +182,7 @@
                 </div>
               </div>
               <div class="flex gap-4">
-                <div class="shrink-0 h-10 w-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center">
+                <div class="shrink-0 h-10 w-10 bg-emerald-600 text-white rounded-lg flex items-center justify-center">
                   <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
@@ -193,7 +193,7 @@
                 </div>
               </div>
               <div class="flex gap-4">
-                <div class="shrink-0 h-10 w-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center">
+                <div class="shrink-0 h-10 w-10 bg-emerald-600 text-white rounded-lg flex items-center justify-center">
                   <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
@@ -206,19 +206,19 @@
             </div>
           </div>
           <div class="relative">
-            <div class="absolute -inset-4 bg-indigo-500/10 rounded-3xl blur-2xl"></div>
-            <div class="relative bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl border border-indigo-100 dark:border-slate-700">
+            <div class="absolute -inset-4 bg-emerald-500/10 rounded-3xl blur-2xl"></div>
+            <div class="relative bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl border border-emerald-100 dark:border-slate-700">
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                  <span class="font-bold text-indigo-600">Premium Dashboard</span>
+                  <span class="font-bold text-emerald-600">Premium Dashboard</span>
                   <span class="text-xs text-slate-400">Contoh UI</span>
                 </div>
                 <div class="h-4 bg-slate-100 dark:bg-slate-700 rounded w-1/2"></div>
                 <div class="grid grid-cols-2 gap-3">
-                  <div class="h-20 bg-indigo-50 dark:bg-slate-700/50 rounded-xl p-3 flex flex-col justify-between">
-                    <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">Budget Food</span>
+                  <div class="h-20 bg-emerald-50 dark:bg-slate-700/50 rounded-xl p-3 flex flex-col justify-between">
+                    <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Budget Food</span>
                     <div class="h-1.5 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                      <div class="h-full bg-indigo-500 w-[75%]"></div>
+                      <div class="h-full bg-emerald-500 w-[75%]"></div>
                     </div>
                     <span class="text-xs font-bold text-slate-500">75% Terpakai</span>
                   </div>
@@ -240,18 +240,18 @@
       </section>
 
       <!-- CTA -->
-      <section class="bg-slate-900 rounded-3xl p-12 text-center text-white overflow-hidden relative">
-        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-50"></div>
+      <section class="bg-emerald-100 rounded-3xl p-12 text-center text-white overflow-hidden relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-purple-500/20 opacity-50"></div>
         <div class="relative z-10">
-          <h2 class="text-3xl font-bold mb-6">Siap Mengatur Keuangan Anda?</h2>
+          <h2 class="text-3xl font-bold mb-6 text-slate-800">Siap Mengatur Keuangan Anda?</h2>
           <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <RouterLink v-if="!authStore.isAuthenticated" :to="{ name: 'register' }" class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/20">
+            <RouterLink v-if="!authStore.isAuthenticated" :to="{ name: 'register' }" class="px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20">
               Daftar Sekarang
             </RouterLink>
-            <RouterLink v-if="authStore.isAuthenticated" :to="{ name: 'dashboard' }" class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/20">
+            <RouterLink v-if="authStore.isAuthenticated" :to="{ name: 'dashboard' }" class="px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20">
               Kembali ke Dashboard
             </RouterLink>
-            <RouterLink :to="{ name: 'home' }" class="px-8 py-3 bg-white/10 backdrop-blur-sm text-white border border-white/20 font-bold rounded-xl hover:bg-white/20 transition-colors">
+            <RouterLink :to="{ name: 'home' }" class="px-8 py-3 bg-white backdrop-blur-sm text-slate-900 border border-white/20 font-bold rounded-xl hover:bg-white/10 transition-colors">
               Halaman Depan
             </RouterLink>
           </div>
@@ -261,10 +261,12 @@
 
     <footer class="bg-slate-100 dark:bg-slate-800 py-12 text-center border-t border-slate-200 dark:border-slate-700">
       <div class="mb-4 flex justify-center space-x-6">
-        <RouterLink :to="{ name: 'terms' }" class="text-sm text-slate-500 hover:text-indigo-600 transition-colors">Syarat & Ketentuan</RouterLink>
-        <RouterLink :to="{ name: 'home' }" class="text-sm text-slate-500 hover:text-indigo-600 transition-colors">Beranda</RouterLink>
+        <RouterLink :to="{ name: 'terms' }" class="text-sm text-slate-500 hover:text-[#2E8B57] transition-colors">Syarat & Ketentuan</RouterLink>
+        <RouterLink :to="{ name: 'home' }" class="text-sm text-slate-500 hover:text-[#2E8B57] transition-colors">Beranda</RouterLink>
+        <router-link :to="{ name: 'business-package'}" class="text-sm text-slate-500 hover:text-[#2E8B57] transition-colors">Paket Bisnis</router-link>
       </div>
-      <p class="text-sm text-slate-500">&copy; 2026 MyWallets. Solusi Cerdas Kelola Keuangan.</p>
+      <p class="text-sm text-slate-500">&copy; 2026 Moneytory Ledger. Solusi Cerdas Kelola Keuangan.</p>
+      <p class="text-xs mt-2 text-slate-400">Made with ❤️ by Firmanasgani</p>
     </footer>
   </div>
 </template>

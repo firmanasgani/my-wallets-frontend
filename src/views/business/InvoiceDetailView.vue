@@ -114,14 +114,14 @@
             <button
               v-if="invoice.status === 'DRAFT' && canCreate"
               @click="isSendModalOpen = true"
-              class="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              class="px-4 py-2 text-sm font-medium bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B43] transition-colors"
             >
               Kirim Invoice
             </button>
             <button
               v-if="(invoice.status === 'SENT' || invoice.status === 'OVERDUE') && canCreate"
               @click="isSendEmailModalOpen = true"
-              class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              class="px-4 py-2 text-sm font-medium bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B43] transition-colors"
             >
               Kirim Email
             </button>
@@ -164,9 +164,18 @@
               <span class="text-slate-500 dark:text-slate-400">Subtotal</span>
               <span class="text-slate-700 dark:text-slate-200">{{ formatCurrency(invoice.subtotal) }}</span>
             </div>
-            <div class="flex justify-between">
+            <div v-if="parseFloat(invoice.taxAmount) > 0" class="flex justify-between">
               <span class="text-slate-500 dark:text-slate-400">PPN</span>
               <span class="text-slate-700 dark:text-slate-200">{{ formatCurrency(invoice.taxAmount) }}</span>
+            </div>
+            <div v-if="parseFloat(invoice.withholdingTaxAmount) > 0" class="flex justify-between">
+              <span class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                {{ invoice.taxConfig?.name ?? 'Withholding Tax' }}
+                <span class="text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded font-medium">
+                  {{ invoice.taxConfig?.rate ? parseFloat(invoice.taxConfig.rate) + '%' : '' }}
+                </span>
+              </span>
+              <span class="text-slate-700 dark:text-slate-200">{{ formatCurrency(invoice.withholdingTaxAmount) }}</span>
             </div>
             <div class="flex justify-between font-bold text-base border-t border-slate-200 dark:border-slate-700 pt-2">
               <span class="text-slate-700 dark:text-slate-200">Total</span>
@@ -229,8 +238,8 @@
       <div v-if="invoice.paymentBankAccount" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
         <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Rekening Tujuan Transfer</h3>
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0">
-            <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
           </div>
@@ -257,7 +266,7 @@
           </div>
           <RouterLink
             :to="{ name: 'business-transactions' }"
-            class="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium"
+            class="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium"
           >
             Lihat semua →
           </RouterLink>
@@ -265,7 +274,7 @@
 
         <!-- Loading -->
         <div v-if="journalsLoading" class="flex justify-center p-8">
-          <svg class="w-6 h-6 animate-spin text-indigo-400" fill="none" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 animate-spin text-emerald-400" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
@@ -284,7 +293,7 @@
           <div v-for="tx in invoiceJournals" :key="tx.id" class="px-6 py-4">
             <!-- Header -->
             <div class="flex items-center gap-2 mb-3">
-              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-emerald-300">
                 Dari Invoice
               </span>
               <span class="text-sm font-medium text-slate-800 dark:text-slate-100">{{ tx.description }}</span>
@@ -348,7 +357,7 @@
       title="Kirim Invoice"
       message="Setelah dikirim, invoice tidak bisa diedit lagi. Lanjutkan?"
       confirm-button-text="Ya, Kirim"
-      confirm-button-class="bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+      confirm-button-class="bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500"
       icon-type="info"
       :is-confirming="invoicesStore.isSubmitting"
       @update:is-open="isSendModalOpen = $event"
@@ -361,7 +370,7 @@
       title="Kirim Email Invoice"
       message="Email invoice akan dikirim ulang ke klien. Lanjutkan?"
       confirm-button-text="Ya, Kirim"
-      confirm-button-class="bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
+      confirm-button-class="bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500"
       icon-type="info"
       :is-confirming="invoicesStore.isSubmitting"
       @update:is-open="isSendEmailModalOpen = $event"
@@ -542,7 +551,7 @@ const formatContactType = (type: ContactType) => {
 
 const contactTypeClass = (type: ContactType) => {
   const map: Record<ContactType, string> = {
-    CUSTOMER: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    CUSTOMER: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-emerald-300',
     VENDOR: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
     EMPLOYEE: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
   }

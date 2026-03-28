@@ -20,7 +20,7 @@
           <h3 class="text-lg font-medium text-slate-900 dark:text-white">Langganan & Paket</h3>
           <span
             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-            :class="isFree ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' : isBusiness ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300' : 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'"
+            :class="isFree ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-emerald-300' : isBusiness ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300' : 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'"
           >
             {{ isFree ? 'Paket Free' : isBusiness ? 'Paket Business' : 'Paket Premium' }}
           </span>
@@ -51,7 +51,7 @@
               <button
                 type="button"
                 @click="openPricingModal"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
               >
                 Upgrade ke Premium
               </button>
@@ -78,7 +78,7 @@
           <h3 class="text-lg font-medium text-slate-900 dark:text-white">Perusahaan</h3>
           <RouterLink
             :to="{ name: 'business-settings' }"
-            class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+            class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
           >Lihat Detail</RouterLink>
         </div>
         <div class="p-6 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -91,7 +91,7 @@
             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
             :class="{
               'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300': businessStore.myRole === 'OWNER',
-              'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300': businessStore.myRole === 'ADMIN',
+              'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-emerald-300': businessStore.myRole === 'ADMIN',
               'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300': businessStore.myRole === 'STAFF',
               'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400': businessStore.myRole === 'VIEWER',
             }"
@@ -174,7 +174,7 @@
             <select
               :value="themeStore.theme"
               @change="onThemeChange"
-              class="mt-1 block w-40 pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+              class="mt-1 block w-40 pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"
             >
               <option value="light">Terang</option>
               <option value="dark">Gelap</option>
@@ -192,7 +192,7 @@
               </p>
             </div>
             <select
-              class="mt-1 block w-40 pl-3 pr-10 py-2 text-base border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-slate-700 dark:text-white"
+              class="mt-1 block w-40 pl-3 pr-10 py-2 text-base border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md dark:bg-slate-700 dark:text-white"
             >
               <option>Indonesia</option>
               <option>English (Soon)</option>
@@ -235,7 +235,7 @@
               >Export Semua Data Transaksi (CSV)</span
             >
             <button
-              class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium"
+              class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium"
             >
               Download
             </button>
@@ -248,7 +248,7 @@
             >
             <RouterLink
               :to="{ name: 'profile' }"
-              class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium"
+              class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium"
               >Ke Profil &rarr;</RouterLink
             >
           </div>

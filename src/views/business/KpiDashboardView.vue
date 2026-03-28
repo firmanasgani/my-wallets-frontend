@@ -31,7 +31,7 @@
 
     <!-- Loading -->
     <div v-if="reportsStore.isLoading && !data" class="flex justify-center p-16">
-      <svg class="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+      <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
@@ -43,8 +43,8 @@
 
         <!-- Profitabilitas -->
         <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-          <div class="px-5 py-3 bg-indigo-50 dark:bg-indigo-900/20 border-b border-slate-200 dark:border-slate-700">
-            <h2 class="text-xs font-semibold text-indigo-700 dark:text-indigo-400 uppercase tracking-wide">Profitabilitas</h2>
+          <div class="px-5 py-3 bg-indigo-50 dark:bg-emerald-900/20 border-b border-slate-200 dark:border-slate-700">
+            <h2 class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">Profitabilitas</h2>
           </div>
           <div class="px-5 py-4 space-y-3">
             <div class="flex justify-between items-center">

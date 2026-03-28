@@ -12,7 +12,7 @@
         <!-- Month Selector -->
         <select
           v-model="selectedMonth"
-          class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-auto"
+          class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg px-4 py-2 focus:ring-emerald-500 focus:border-emerald-500 w-full md:w-auto"
         >
           <option v-for="m in 12" :key="m" :value="m">{{ getMonthName(m) }}</option>
         </select>
@@ -20,7 +20,7 @@
         <!-- Year Selector -->
         <select
           v-model="selectedYear"
-          class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-auto"
+          class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg px-4 py-2 focus:ring-emerald-500 focus:border-emerald-500 w-full md:w-auto"
         >
           <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
         </select>
@@ -32,7 +32,7 @@
             @click.stop="isExportDropdownOpen = !isExportDropdownOpen"
             class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-200 px-4 py-2 rounded-lg flex items-center transition-colors shadow-sm w-full md:w-auto"
           >
-            <i class="fa-solid fa-file-export mr-2 text-indigo-500"></i>
+            <i class="fa-solid fa-file-export mr-2 text-emerald-500"></i>
             Ekspor Laporan
             <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-gray-400"></i>
           </button>
@@ -60,7 +60,7 @@
         <!-- Refresh Button -->
         <button
           @click="fetchData"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition-colors shadow-sm"
+          class="bg-[#2E8B57] hover:bg-[#236B43] text-white p-2 rounded-lg transition-colors shadow-sm"
           title="Refresh Data"
         >
           <svg
@@ -84,7 +84,7 @@
 
     <!-- Loading State -->
     <div v-if="reportsStore.isLoading" class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
     </div>
 
     <!-- Main Content -->

@@ -12,7 +12,7 @@
 
     <!-- Loading -->
     <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
-      <svg class="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+      <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
       </svg>
@@ -21,7 +21,7 @@
     <template v-else-if="asset">
       <!-- Header Card -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 px-6 py-5">
+        <div class="bg-gradient-to-r from-[#2E8B57] to-[#236B43] px-6 py-5">
           <div class="flex items-start justify-between gap-4">
             <div>
               <div class="flex items-center gap-2 mb-1">
@@ -33,10 +33,10 @@
                 </span>
               </div>
               <h1 class="text-xl font-bold text-white">{{ asset.name }}</h1>
-              <p class="text-indigo-200 text-sm mt-0.5">Diperoleh {{ formatDate(asset.acquisitionDate) }}</p>
+              <p class="text-emerald-100 text-sm mt-0.5">Diperoleh {{ formatDate(asset.acquisitionDate) }}</p>
             </div>
             <div class="text-right shrink-0">
-              <p class="text-indigo-200 text-xs font-medium uppercase tracking-wide">Nilai Buku</p>
+              <p class="text-emerald-100 text-xs font-medium uppercase tracking-wide">Nilai Buku</p>
               <p class="text-white text-2xl font-bold">{{ formatRp(asset.currentBookValue) }}</p>
             </div>
           </div>
@@ -49,7 +49,7 @@
             <span>{{ deprProgress }}%</span>
           </div>
           <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2">
-            <div class="bg-indigo-500 h-2 rounded-full transition-all" :style="{ width: deprProgress + '%' }"></div>
+            <div class="bg-[#2E8B57] h-2 rounded-full transition-all" :style="{ width: deprProgress + '%' }"></div>
           </div>
         </div>
 
@@ -115,24 +115,24 @@
       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
           <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-300">Riwayat Penyusutan</h2>
-          <button @click="loadSchedule" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">Lihat Proyeksi</button>
+          <button @click="loadSchedule" class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Lihat Proyeksi</button>
         </div>
 
         <!-- UoP: Unit input -->
         <div v-if="isAdmin && asset.depreciationMethod === 'UNITS_OF_PRODUCTION' && asset.status === 'ACTIVE'" class="px-5 py-3 border-b border-slate-200 dark:border-slate-700 bg-amber-50 dark:bg-amber-900/10">
           <p class="text-xs font-medium text-amber-800 dark:text-amber-300 mb-2">Catat Unit Produksi Bulan Ini</p>
           <div class="flex items-center gap-2">
-            <select v-model.number="uopMonth" class="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <select v-model.number="uopMonth" class="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
               <option v-for="m in 12" :key="m" :value="m">{{ String(m).padStart(2,'0') }}</option>
             </select>
-            <input v-model.number="uopYear" type="number" min="2000" max="2100" class="w-24 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            <input v-model.number="uopUnits" type="number" min="0.0001" step="0.0001" class="w-32 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Unit diproduksi" />
-            <button @click="recordUnits" :disabled="isSavingUop" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-4 text-xs rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap">{{ isSavingUop ? '...' : 'Catat' }}</button>
+            <input v-model.number="uopYear" type="number" min="2000" max="2100" class="w-24 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <input v-model.number="uopUnits" type="number" min="0.0001" step="0.0001" class="w-32 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Unit diproduksi" />
+            <button @click="recordUnits" :disabled="isSavingUop" class="bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium py-1.5 px-4 text-xs rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap">{{ isSavingUop ? '...' : 'Catat' }}</button>
           </div>
         </div>
 
         <div v-if="isLoadingHistory" class="flex justify-center py-8">
-          <svg class="w-5 h-5 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
           </svg>
@@ -154,7 +154,7 @@
               <td class="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">{{ String(d.periodMonth).padStart(2,'0') }}/{{ d.periodYear }}</td>
               <td class="px-4 py-3 text-right text-slate-800 dark:text-slate-100">{{ formatRp(d.depreciationAmount) }}</td>
               <td class="px-4 py-3 text-right text-slate-800 dark:text-slate-100">{{ formatRp(d.accumulatedDepreciation) }}</td>
-              <td class="px-4 py-3 text-right font-semibold text-indigo-600 dark:text-indigo-400">{{ formatRp(d.bookValue) }}</td>
+              <td class="px-4 py-3 text-right font-semibold text-emerald-600 dark:text-emerald-400">{{ formatRp(d.bookValue) }}</td>
             </tr>
           </tbody>
         </table>
@@ -181,7 +181,7 @@
                   <tr v-for="s in schedule" :key="`${s.periodYear}-${s.periodMonth}`" class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
                     <td class="px-4 py-2 font-medium text-slate-700 dark:text-slate-300">{{ String(s.periodMonth).padStart(2,'0') }}/{{ s.periodYear }}</td>
                     <td class="px-4 py-2 text-right text-slate-800 dark:text-slate-100">{{ formatRp(s.depreciationAmount) }}</td>
-                    <td class="px-4 py-2 text-right font-semibold text-indigo-600 dark:text-indigo-400">{{ formatRp(s.bookValue) }}</td>
+                    <td class="px-4 py-2 text-right font-semibold text-emerald-600 dark:text-emerald-400">{{ formatRp(s.bookValue) }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -200,15 +200,15 @@
               <div v-if="disposeError" class="text-sm text-red-500">{{ disposeError }}</div>
               <div>
                 <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Tanggal Pelepasan <span class="text-red-500">*</span></label>
-                <input v-model="disposeForm.disposalDate" type="date" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <input v-model="disposeForm.disposalDate" type="date" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Nilai Penerimaan (Rp) <span class="text-red-500">*</span></label>
-                <input v-model.number="disposeForm.disposalAmount" type="number" required min="0" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="0 jika dibuang/scrapped" />
+                <input v-model.number="disposeForm.disposalAmount" type="number" required min="0" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="0 jika dibuang/scrapped" />
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">COA Penerimaan (Kas/Bank) <span class="text-red-500">*</span></label>
-                <select v-model="disposeForm.disposalCoaId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select v-model="disposeForm.disposalCoaId" required class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                   <option value="">-- Pilih COA --</option>
                   <option v-for="coa in cashCoas" :key="coa.id" :value="coa.id">{{ coa.code }} — {{ coa.name }}</option>
                 </select>

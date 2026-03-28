@@ -39,7 +39,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-5 h-5 text-slate-400 group-hover:text-indigo-500 transition-colors"
+                class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
               >
                 <path
                   stroke-linecap="round"
@@ -51,7 +51,7 @@
             <select
               id="filterYear"
               v-model="filterYear"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-indigo-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
+              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
             >
               <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
             </select>
@@ -66,7 +66,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-5 h-5 text-slate-400 group-hover:text-indigo-500 transition-colors"
+                class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
               >
                 <path
                   stroke-linecap="round"
@@ -78,7 +78,7 @@
             <select
               id="filterMonth"
               v-model="filterMonth"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-indigo-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
+              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
             >
               <option v-for="(m, index) in monthNames" :key="index" :value="index + 1">
                 {{ m }}
@@ -100,7 +100,7 @@
       <p class="text-slate-500 dark:text-slate-400">Tidak ada data anggaran untuk periode ini.</p>
       <RouterLink
         :to="{ name: 'budget-setup' }"
-        class="mt-4 inline-block text-indigo-600 hover:text-indigo-800 font-medium"
+        class="mt-4 inline-block text-emerald-600 hover:text-emerald-800 font-medium"
         >Buat anggaran sekarang</RouterLink
       >
     </div>

@@ -10,7 +10,7 @@
       <div>
         <button
           @click="navigateToCreate"
-          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +41,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-5 h-5 text-slate-400 group-hover:text-indigo-500 transition-colors"
+                class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
               >
                 <path
                   stroke-linecap="round"
@@ -53,7 +53,7 @@
             <select
               id="filterYear"
               v-model="filterYear"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-indigo-300 focus:bg-white dark:focus:bg-slate-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
+              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white dark:focus:bg-slate-600 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
             >
               <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
             </select>
@@ -84,7 +84,7 @@
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="w-5 h-5 text-slate-400 group-hover:text-indigo-500 transition-colors"
+                class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
               >
                 <path
                   stroke-linecap="round"
@@ -96,7 +96,7 @@
             <select
               id="filterMonth"
               v-model="filterMonth"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-indigo-300 focus:bg-white dark:focus:bg-slate-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
+              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white dark:focus:bg-slate-600 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
             >
               <option v-for="(m, index) in monthNames" :key="index" :value="index + 1">
                 {{ m }}
@@ -130,7 +130,7 @@
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-5 h-5 text-slate-400 group-hover:text-indigo-500 transition-colors"
+              class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
             >
               <path
                 stroke-linecap="round"
@@ -143,7 +143,7 @@
             type="text"
             v-model="searchQuery"
             placeholder="Cari kategori budget..."
-            class="pl-11 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-indigo-300 focus:bg-white dark:focus:bg-slate-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-sm py-2.5 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            class="pl-11 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white dark:focus:bg-slate-600 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm py-2.5 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
         </div>
       </div>
@@ -153,14 +153,14 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
         <div class="flex items-center">
-          <div class="p-2 bg-indigo-50 dark:bg-indigo-900/40 rounded-lg">
+          <div class="p-2 bg-indigo-50 dark:bg-emerald-900/40 rounded-lg">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-6 h-6 text-indigo-600 dark:text-indigo-400"
+              class="w-6 h-6 text-emerald-600 dark:text-emerald-400"
             >
               <path
                 stroke-linecap="round"
@@ -225,8 +225,8 @@
           @click="navigateToCreate"
           :disabled="!canAddBudget"
           :title="addBudgetButtonTitle"
-          class="mt-4 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium"
-          :class="{ 'opacity-50 cursor-not-allowed hover:text-indigo-600 dark:hover:text-indigo-400': !canAddBudget }"
+          class="mt-4 text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium"
+          :class="{ 'opacity-50 cursor-not-allowed hover:text-emerald-600 dark:hover:text-emerald-400': !canAddBudget }"
         >
           Buat anggaran baru
         </button>
@@ -299,7 +299,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button
                   @click="navigateToEdit(budget.id)"
-                  class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 mr-4"
+                  class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 mr-4"
                 >
                   Edit
                 </button>

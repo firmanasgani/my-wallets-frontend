@@ -1,12 +1,12 @@
 <template>
   <div
     v-if="insights && insights.length > 0"
-    class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-slate-800 dark:to-slate-800 p-6 rounded-xl border border-indigo-100 dark:border-slate-700"
+    class="bg-gradient-to-br from-emerald-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800 p-6 rounded-xl border border-emerald-100 dark:border-slate-700"
   >
-    <h3 class="text-lg font-bold text-indigo-900 dark:text-indigo-300 mb-4 flex items-center gap-2">
+    <h3 class="text-lg font-bold text-emerald-900 dark:text-emerald-300 mb-4 flex items-center gap-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 text-indigo-600 dark:text-indigo-400"
+        class="h-5 w-5 text-emerald-600 dark:text-emerald-400"
         viewBox="0 0 20 20"
         fill="currentColor"
       >
@@ -34,7 +34,7 @@
           </div>
           <span
             v-if="insight.action"
-            class="text-xs font-semibold text-blue-600 dark:text-blue-400 cursor-pointer hover:underline whitespace-nowrap ml-2"
+            class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 cursor-pointer hover:underline whitespace-nowrap ml-2"
           >
             {{ insight.action }} &rarr;
           </span>
@@ -81,7 +81,7 @@ const getInsightColor = (type: string) => {
     case 'TIP':
       return 'border-green-400'
     case 'INFO':
-      return 'border-blue-400'
+      return 'border-emerald-500'
     default:
       return 'border-gray-300'
   }

@@ -57,7 +57,7 @@
       <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">Dashboard</h1>
       <button
         @click="showBalance = !showBalance"
-        class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors focus:outline-none"
+        class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-indigo-50 rounded-full transition-colors focus:outline-none"
         :title="showBalance ? 'Sembunyikan Saldo' : 'Tampilkan Saldo'"
       >
         <svg
@@ -205,7 +205,7 @@
               </h2>
               <RouterLink
                 :to="{ name: 'transactions-list' }"
-                class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+                class="text-sm font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400"
               >
                 Lihat semua
               </RouterLink>

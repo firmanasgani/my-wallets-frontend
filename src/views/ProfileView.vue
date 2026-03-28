@@ -8,7 +8,7 @@
           'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200': authStore.currentUser.subscriptionPlan === 'FREE',
           'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300': authStore.currentUser.subscriptionPlan === 'PREMIUM',
           'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300': authStore.currentUser.subscriptionPlan === 'FAMILY',
-          'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300': authStore.currentUser.subscriptionPlan?.startsWith('BUSINESS'),
+          'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-emerald-300': authStore.currentUser.subscriptionPlan?.startsWith('BUSINESS'),
         }"
         class="px-3 py-1 rounded-full text-sm font-bold tracking-wide uppercase"
       >
@@ -26,7 +26,7 @@
             v-if="profileImagePreview"
             :src="profileImagePreview"
             alt="Preview foto profil"
-            class="h-24 w-24 rounded-full object-cover ring-2 ring-offset-2 ring-indigo-500 sm:h-32 sm:w-32"
+            class="h-24 w-24 rounded-full object-cover ring-2 ring-offset-2 ring-emerald-500 sm:h-32 sm:w-32"
           />
           <div
             v-else
@@ -62,7 +62,7 @@
               type="button"
               @click="triggerFileInput"
               :disabled="isUploadingPicture"
-              class="w-full sm:w-auto px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              class="w-full sm:w-auto px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {{ isUploadingPicture ? 'Mengupload...' : 'Ubah Foto Profil' }}
             </button>
@@ -95,7 +95,7 @@
             type="text"
             id="fullName"
             v-model="profileData.fullName"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
             placeholder="Nama lengkap Anda"
           />
         </div>
@@ -108,7 +108,7 @@
             type="text"
             id="username"
             v-model="profileData.username"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-500 dark:text-slate-400"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-500 dark:text-slate-400"
             placeholder="Username Anda"
             readonly
             disabled
@@ -122,7 +122,7 @@
             type="email"
             id="email"
             v-model="profileData.email"
-            class="input-field p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-500 dark:text-slate-400"
+            class="input-field p-2 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-500 dark:text-slate-400"
             placeholder="Email Anda"
             readonly
             disabled
@@ -134,7 +134,7 @@
           <button
             type="submit"
             :disabled="isSubmittingProfile"
-            class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed sm:text-sm transition-colors"
+            class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#2E8B57] text-base font-medium text-white hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed sm:text-sm transition-colors"
           >
             <LoadingSpinner
               v-if="isSubmittingProfile"
@@ -156,7 +156,7 @@
         <button
           type="button"
           @click="openChangePasswordModal"
-          class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
         >
           Ubah Password
         </button>
