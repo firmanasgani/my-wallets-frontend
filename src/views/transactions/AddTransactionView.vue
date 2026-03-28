@@ -598,15 +598,15 @@ const relevantCategories = computed(() => {
         selectedTransactionType.value === FrontendTransactionType.INCOME &&
         item.categoryType === FrontendCategoryType.INCOME
       ) {
-        allCats.push({ id: item.id, categoryName: item.categoryName, icon: item.icon, parentPrefix: prefix })
+        allCats.push({ id: item.id, categoryName: item.categoryName, icon: item.icon ?? null, parentPrefix: prefix })
       } else if (
         selectedTransactionType.value === FrontendTransactionType.EXPENSE &&
         item.categoryType === FrontendCategoryType.EXPENSE
       ) {
-        allCats.push({ id: item.id, categoryName: item.categoryName, icon: item.icon, parentPrefix: prefix })
+        allCats.push({ id: item.id, categoryName: item.categoryName, icon: item.icon ?? null, parentPrefix: prefix })
       }
       if (item.subCategories && item.subCategories.length > 0) {
-        flatten(item.subCategories, prefix + '- ', item.icon)
+        flatten(item.subCategories, prefix + '- ')
       }
     })
   }

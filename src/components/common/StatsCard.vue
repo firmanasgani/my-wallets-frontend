@@ -2,7 +2,7 @@
   <div
     class="bg-white overflow-hidden shadow rounded-lg dark:bg-slate-800 transition-all duration-200"
     :class="[
-      onClick ? 'cursor-pointer hover:shadow-md' : '',
+      onClick !== undefined ? 'cursor-pointer hover:shadow-md' : '',
       active ? `ring-2 ${colorParams.ring}` : '',
     ]"
     @click="onClick?.($event)"
