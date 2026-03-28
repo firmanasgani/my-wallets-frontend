@@ -1763,7 +1763,7 @@ class ExportService {
         head: [head[0]],
         body: [...body, [{ content: total, colSpan: 3, styles: { fontStyle: 'bold', halign: 'right', fillColor: [238, 242, 255] } }]],
         margin: { left: margin, right: margin },
-        headStyles: { fillColor: headColor, textColor: 255, fontSize: 8, fontStyle: 'bold', cellPadding: 3 },
+        headStyles: { fillColor: headColor as [number, number, number], textColor: 255, fontSize: 8, fontStyle: 'bold', cellPadding: 3 },
         bodyStyles: { fontSize: 8, cellPadding: 2.5, textColor: [30, 41, 59] },
         alternateRowStyles: { fillColor: [248, 250, 252] },
         columnStyles: { 0: { cellWidth: 20, textColor: [148, 163, 184] }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 42, halign: 'right' } },
