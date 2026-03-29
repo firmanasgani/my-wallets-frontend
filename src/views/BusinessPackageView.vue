@@ -575,7 +575,7 @@ const comparisonRows = [
   { feature: 'Manajemen Aset & Penyusutan', free: false, premium: false, business: true },
   { feature: 'Approval Workflow Jurnal', free: false, premium: false, business: true },
   { feature: 'Lampiran Dokumen Jurnal', free: false, premium: false, business: true },
-  { feature: 'Harga', free: 'Gratis', premium: 'Rp 39rb/bln', business: 'Rp 199rb/bln' },
+  { feature: 'Harga', free: 'Gratis', premium: 'Rp 39rb/bln', business: 'Rp 297rb/bln' },
 ]
 </script>
 
