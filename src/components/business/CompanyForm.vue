@@ -16,6 +16,23 @@
       </button>
     </div>
 
+    <div v-if="isDemo" class="p-6 sm:p-8">
+      <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-yellow-700">
+              Fitur edit profil perusahaan tidak tersedia untuk akun demo.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Mode Edit (Form) -->
     <div v-if="isEditing" class="p-6 sm:p-8">
       <form @submit.prevent="handleSubmit" class="space-y-6">
@@ -80,6 +97,7 @@
             <input
               type="text"
               id="currency"
+              readonly="true"
               v-model="formData.currency"
               maxlength="5"
               class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 dark:bg-slate-900 transition-colors"
@@ -103,7 +121,7 @@
 
         <div class="mt-8 border-t dark:border-slate-700 pt-6">
           <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4">Pengaturan Pajak (PPN)</h3>
-          
+
           <div class="flex items-center mb-4">
             <input
               id="taxEnabled"
@@ -197,14 +215,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 import type { CompanyPayload, Company } from '@/types/business'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { useAuthStore } from '@/stores/auth';
 
 const props = defineProps<{
   initialData?: Company | null
   isSubmitting?: boolean
   defaultEditing?: boolean
+  isDemoAccount?: boolean
   viewerMode?: boolean
 }>()
 
@@ -213,12 +233,15 @@ const emit = defineEmits<{
   (e: 'cancel'): void
 }>()
 
+const isDemo = ref(props.isDemoAccount !== undefined ? props.isDemoAccount : false)
+
 const isEditing = ref(props.defaultEditing !== undefined ? props.defaultEditing : !props.initialData)
 
 // Reset edit state when initialData changes meaning a submit succeeded
 watch(() => props.initialData, (newVal, oldVal) => {
   if (newVal && (!oldVal || newVal.updatedAt !== oldVal.updatedAt)) {
     isEditing.value = false
+    isDemo.value = false
   }
 })
 
@@ -252,7 +275,15 @@ watch(
   { deep: true }
 )
 
+const userProfileEmail = computed(() => {
+  const authStore = useAuthStore()
+  return authStore.currentUser?.email || null
+})
 const startEditing = () => {
+  if(userProfileEmail.value === 'demo@firmanasgani.id'){
+    isDemo.value = true
+    return
+  }
   resetFormData()
   isEditing.value = true
 }

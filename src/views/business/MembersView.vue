@@ -323,6 +323,11 @@ const inviteError = ref('')
 const inviteForm = ref({ email: '', role: 'STAFF' as 'ADMIN' | 'CHECKER' | 'STAFF' | 'VIEWER' })
 
 function openInviteModal() {
+  const userEmail = authStore.currentUser?.email
+  if (userEmail === 'demo@firmanasgani.id') {
+    errorMsg.value = 'Akun Demo Tidak bisa digunakan untuk fitur invite member.'
+    return
+  }
   inviteForm.value = { email: '', role: 'STAFF' }
   inviteError.value = ''
   isInviteModalOpen.value = true

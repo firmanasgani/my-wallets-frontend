@@ -399,6 +399,11 @@ const handleForgotPassword = async () => {
     return
   }
 
+  if(email.value.trim() == 'demo@firmanasgani.id'){
+    errorMessage.value = 'Akun Demo Tidak bisa digunakan untuk fitur lupa password.'
+    return
+  }
+
   isLoading.value = true
   errorMessage.value = null
 

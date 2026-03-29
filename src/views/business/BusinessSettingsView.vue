@@ -163,6 +163,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import { useBusinessStore } from '@/stores/business'
 import CompanyForm from '@/components/business/CompanyForm.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
@@ -180,6 +181,11 @@ const logoErrorMsg = ref('')
 
 // Cache-bust key — berubah setiap kali logo di-upload/hapus agar browser tidak pakai cache lama
 const logoCacheBust = ref(Date.now())
+
+const useProfileEmail = computed(() => {
+  const authStore = useAuthStore()
+  return authStore.currentUser?.email || null
+})
 
 const logoPreviewUrl = computed(() => {
   if (pendingLogoFile.value) return URL.createObjectURL(pendingLogoFile.value)
@@ -226,6 +232,11 @@ const cancelLogoSelection = () => {
 const handleUploadLogo = async () => {
   if (!pendingLogoFile.value) return
   logoErrorMsg.value = ''
+
+  if (useProfileEmail.value === 'demo@firmanasgani.id') {
+    logoErrorMsg.value = 'Akun Demo Tidak bisa digunakan untuk fitur upload logo.'
+    return
+  }
   try {
     await businessStore.uploadLogo(pendingLogoFile.value)
     pendingLogoFile.value = null
