@@ -262,10 +262,16 @@ const selectedPlanId = ref<string | null>(null)
 const isProcessing = ref(false)
 
 const premiumPlans = computed(() => {
+  let plans = subscriptionStore.plans.filter((p) => p.code !== 'FREE')
   if (props.businessOnly) {
-    return subscriptionStore.plans.filter((p) => p.code?.startsWith('BUSINESS'))
+    plans = plans.filter((p) => p.code?.startsWith('BUSINESS'))
   }
-  return subscriptionStore.plans.filter((p) => p.code !== 'FREE')
+  // Premium first, then Business
+  return plans.sort((a, b) => {
+    const aIsBusiness = a.code?.startsWith('BUSINESS') ? 1 : 0
+    const bIsBusiness = b.code?.startsWith('BUSINESS') ? 1 : 0
+    return aIsBusiness - bIsBusiness
+  })
 })
 
 const selectedPlanDetails = computed(() => {
@@ -294,8 +300,13 @@ const businessFeatures = [
   'Pajak PPN Otomatis',
 ]
 
-const displayedFeatures = computed(() => props.businessOnly ? businessFeatures : premiumFeatures)
-const modalTitle = computed(() => props.businessOnly ? 'Upgrade ke Business' : 'Upgrade ke Premium')
+const displayedFeatures = computed(() => {
+  if (selectedPlanId.value) {
+    return selectedPlanDetails.value?.code?.startsWith('BUSINESS') ? businessFeatures : premiumFeatures
+  }
+  return props.businessOnly ? businessFeatures : premiumFeatures
+})
+const modalTitle = computed(() => 'Upgrade Plan')
 
 const formatNumber = (num: number) => {
   return new Intl.NumberFormat('id-ID').format(num)

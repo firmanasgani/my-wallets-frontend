@@ -488,7 +488,8 @@ const openChangePasswordModal = () => {
 }
 
 const promptDeleteAccount = () => {
-  alert('Fitur hapus akun bersifat permanen dan akan segera tersedia. Hubungi admin jika mendesak.')
+  errorMessage.value = 'Fitur hapus akun belum tersedia. Silakan hubungi dukungan pelanggan untuk bantuan lebih lanjut.'
+  isErrorModalOpen.value = true
 }
 </script>
 
