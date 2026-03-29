@@ -42,7 +42,7 @@ export const PRICING_PLANS: PricingPlanDetails[] = [
     key: SubscriptionPlan.BUSINESS,
     name: 'Bisnis',
     description: 'Solusi akuntansi lengkap untuk usaha dan profesional.',
-    price: 'Rp 199rb',
+    price: 'Rp 297rb',
     billingPeriod: '/bulan',
     features: [
       'Semua di paket Premium',

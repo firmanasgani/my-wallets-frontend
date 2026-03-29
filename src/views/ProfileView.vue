@@ -326,6 +326,11 @@ onMounted(() => {
 })
 
 const triggerFileInput = () => {
+  if(profileData.email === 'demo@firmanasgani.id'){
+    errorMessage.value = 'Akun Demo Tidak bisa digunakan untuk fitur upload foto profil.'
+    isErrorModalOpen.value = true
+    return
+  }
   fileInputRef.value?.click()
 }
 
@@ -444,8 +449,12 @@ const handleDeletePicture = async () => {
 }
 
 const handleUpdateProfile = async () => {
+  if(profileData.email === 'demo@firmanasgani.id'){
+    errorMessage.value = 'Akun Demo Tidak bisa digunakan untuk fitur update profil.'
+    isErrorModalOpen.value = true
+    return
+  }
   isSubmittingProfile.value = true
-  console.log('Memperbarui profil dengan data:', JSON.parse(JSON.stringify(profileData)))
 
   setTimeout(() => {
     isSubmittingProfile.value = false
@@ -470,6 +479,11 @@ const handlePasswordChanged = () => {
 const isChangePasswordModalOpen = ref(false)
 
 const openChangePasswordModal = () => {
+  if(profileData.email === 'demo@firmanasgani.id'){
+    errorMessage.value = 'Akun Demo Tidak bisa digunakan untuk fitur ubah password.'
+    isErrorModalOpen.value = true
+    return
+  }
   isChangePasswordModalOpen.value = true
 }
 

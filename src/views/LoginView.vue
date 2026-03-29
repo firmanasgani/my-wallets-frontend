@@ -107,7 +107,7 @@
                 <label
                   for="login-field"
                   class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-2"
-                  >Nama</label
+                  >Username / Email</label
                 >
                 <input
                   type="text"
@@ -248,6 +248,54 @@
       </div>
     </div>
   </div>
+
+  <!-- Demo Account Footer -->
+  <div class="fixed bottom-0 left-0 right-0 z-50">
+    <!-- Minimized Bar -->
+    <div
+      v-if="isDemoMinimized"
+      class="flex items-center justify-between bg-amber-500 text-white px-4 py-2 text-sm shadow-lg cursor-pointer"
+      @click="isDemoMinimized = false"
+    >
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="font-semibold">Info Akun Demo</span>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+      </svg>
+    </div>
+
+    <!-- Expanded Panel -->
+    <div v-else class="bg-amber-50 dark:bg-amber-900/80 border-t-2 border-amber-400 shadow-lg px-6 py-4">
+      <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="flex items-start gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <p class="text-sm font-bold text-amber-800 dark:text-amber-200 mb-1">Akun Demo Bisnis</p>
+            <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-amber-700 dark:text-amber-300">
+              <span><span class="font-semibold">Akun:</span> demoaccount</span>
+              <span><span class="font-semibold">Email:</span> demo@firmanasgani.id</span>
+              <span><span class="font-semibold">Password:</span> DemoAccount@123</span>
+            </div>
+          </div>
+        </div>
+        <button
+          @click="isDemoMinimized = true"
+          class="flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors flex-shrink-0"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+          Sembunyikan
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -261,6 +309,7 @@ const password = ref('')
 const showPassword = ref(false)
 const isLoading = ref(false)
 const errorMessage = ref<string | null>(null)
+const isDemoMinimized = ref(false)
 
 const handleLogin = async () => {
   if (!loginField.value.trim() || !password.value.trim()) {

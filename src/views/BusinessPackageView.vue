@@ -478,7 +478,7 @@
           Mulai Paket Bisnis Sekarang
         </h2>
         <p class="mt-4 max-w-xl mx-auto text-lg text-emerald-100">
-          Hanya <strong class="text-white">Rp 199.000/bulan</strong> untuk akses penuh semua fitur akuntansi bisnis.
+          Hanya <strong class="text-white">Rp 297.000/bulan</strong> untuk akses penuh semua fitur akuntansi bisnis.
         </p>
         <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
           <RouterLink
