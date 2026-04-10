@@ -19,31 +19,11 @@ import SettingsView from '@/views/SettingsView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 
 import { useAuthStore } from '@/stores/auth'
-import HomeView from '@/views/HomeView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView,
-  },
-  {
-    path: '/how-to',
-    name: 'how-to',
-    component: () => import('@/views/HowToView.vue'),
-    meta: { title: 'Cara Penggunaan' },
-  },
-  {
-    path: '/terms',
-    name: 'terms',
-    component: () => import('@/views/TermsView.vue'),
-    meta: { title: 'Syarat dan Ketentuan' },
-  },
-  {
-    path: '/paket-bisnis',
-    name: 'business-package',
-    component: () => import('@/views/BusinessPackageView.vue'),
-    meta: { title: 'Paket Bisnis — Moneytory Ledger' },
+    redirect: { name: 'login' },
   },
   {
     path: '/login',

@@ -75,7 +75,7 @@
           <div class="hidden md:flex justify-center mb-8">
             <div class="text-emerald-600 dark:text-emerald-400">
               <!-- Decorative Icon inspired by image -->
-              <img src="/public/logo.png" alt="Login Icon" class="w-20 h-20" />
+              <img src="/logo.png" alt="Login Icon" class="w-20 h-20" />
             </div>
           </div>
 
