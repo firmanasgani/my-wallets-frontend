@@ -309,6 +309,15 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/business/AssetFormView.vue'),
         meta: { title: 'Edit Aset', requiresBusiness: true },
       },
+      {
+        path: 'how-to',
+        name: 'how-to',
+        component: { render: () => null },
+        beforeEnter() {
+          window.open(`${import.meta.env.VITE_BASE_URL_COMPRO}/cara-penggunaan`, '_blank')
+          return false
+        },
+      },
       { path: '', redirect: { name: 'dashboard' } },
     ],
   },

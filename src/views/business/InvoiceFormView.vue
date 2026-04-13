@@ -277,7 +277,7 @@
         </div>
 
         <!-- Item List -->
-        <div class="px-5 pb-5 space-y-2">
+        <div class="px-5 pt-3 pb-5 space-y-2">
           <div
             v-for="(item, idx) in form.items"
             :key="idx"
@@ -320,7 +320,7 @@
                   min="0.0001"
                   step="any"
                   required
-                  class="w-full px-2.5 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-right bg-slate-50 dark:bg-slate-700/60 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
+                  class="w-full px-2.5 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-right bg-slate-50 dark:bg-slate-700/60 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent focus:bg-white dark:focus:bg-slate-700 transition-all"
                 />
               </div>
 
@@ -347,7 +347,7 @@
                 <label class="text-xs font-medium text-slate-400 dark:text-slate-500">PPN</label>
                 <label class="relative inline-flex items-center cursor-pointer h-[34px]">
                   <input type="checkbox" v-model="item.taxable" class="sr-only peer" />
-                  <div class="w-9 h-5 bg-slate-200 peer-focus:ring-2 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-slate-600 peer-checked:bg-[#2E8B57] transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
+                  <div class="w-9 h-5 bg-slate-200 peer-focus:ring-2 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-slate-600 peer-checked:bg-[#2E8B57] transition-colors after:content-[''] after:absolute after:top-[9px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
                 </label>
               </div>
 
