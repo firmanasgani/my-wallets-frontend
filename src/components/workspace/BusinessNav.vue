@@ -60,7 +60,7 @@
       </button>
       <div v-show="systemOpen" class="pl-4 space-y-1 mt-1">
         <RouterLink :to="{ name: 'settings' }" @click="emit('navigate')" :class="link('settings')">Pengaturan</RouterLink>
-        <RouterLink :to="{ name: 'how-to' }" @click="emit('navigate')" :class="link('how-to')">Cara Penggunaan</RouterLink>
+        <RouterLink :to="https://moneytory.my.id/cara-penggunaan" @click="emit('navigate')" :class="link('how-to')">Cara Penggunaan</RouterLink>
       </div>
     </li>
   </ul>
