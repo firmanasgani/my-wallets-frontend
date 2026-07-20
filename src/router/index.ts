@@ -314,7 +314,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'how-to',
         component: { render: () => null },
         beforeEnter() {
-          window.open(`${import.meta.env.VITE_BASE_URL_COMPRO}/cara-penggunaan`, '_blank')
+          window.open('https://moneytory.my.id/cara-penggunaan', '_blank')
           return false
         },
       },
