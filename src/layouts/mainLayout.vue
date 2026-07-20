@@ -156,7 +156,7 @@
                   Profil Saya
                 </RouterLink>
                 <RouterLink
-                  :to="{ name: 'how-to' }"
+                  to="https://moneytory.my.id/cara-penggunaan"
                   @click="closeProfileDropdown"
                   class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 w-full text-left"
                   role="menuitem"
