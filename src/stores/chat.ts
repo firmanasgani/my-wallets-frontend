@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import chatService, { type ChatMessage, type Conversation } from '@/services/chatService'
 import { getChatSocket, disconnectChatSocket } from '@/services/socket'
 import { useAuthStore } from '@/stores/auth'
+import { playChatNotificationSound } from '@/utils/notificationSound'
 
 export const useChatStore = defineStore('chat', () => {
   const conversation = ref<Conversation | null>(null)
@@ -44,6 +45,7 @@ export const useChatStore = defineStore('chat', () => {
       if (conversation.value && message.conversationId === conversation.value.id) {
         messages.value.push(message)
         if (message.senderType === 'ADMIN') {
+          playChatNotificationSound()
           socket.emit('markRead', { conversationId: conversation.value.id })
         }
       }
