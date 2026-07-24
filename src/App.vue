@@ -1,11 +1,13 @@
 <template>
   <RouterView />
+  <ToastContainer />
 </template>
 
 <script setup lang="ts">
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useThemeStore } from './stores/theme'
+import ToastContainer from './components/common/ToastContainer.vue'
 
 const themeStore = useThemeStore()
 const route = useRoute()

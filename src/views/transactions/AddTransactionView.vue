@@ -471,7 +471,7 @@
       cancelButtonText="Tambah Lagi"
       iconType="success"
       confirmButtonClass="bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500"
-      @confirm="router.push({ name: 'transactions-list' })"
+      @confirm="goToTransactionsList"
       @cancel="resetForm"
     >
       <template #icon>
@@ -503,12 +503,13 @@ import type {
 import { useTransactionStore } from '@/stores/transactions'
 import { useAccountStore } from '@/stores/accounts'
 import { useCategoryStore } from '@/stores/categories'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import CurrencyInput from '@/components/common/CurrencyInput.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import CategorySelect from '@/components/transactions/CategorySelect.vue'
 
+const route = useRoute()
 const router = useRouter()
 const transactionStore = useTransactionStore()
 const accountStore = useAccountStore()
@@ -663,6 +664,14 @@ const resetForm = () => {
   submissionError.value = null
   removeFile()
   accountStore.fetchAccounts()
+}
+
+// Navigasi eksplisit ke daftar transaksi sambil membawa filter asal
+// (dibawa lewat query saat membuka halaman ini — lihat openAddTransactionModal
+// di TransactionsView.vue). Dibuat eksplisit (bukan router.back()) supaya
+// tidak bergantung pada riwayat browser dan selalu memicu fetch data terbaru.
+const goToTransactionsList = () => {
+  router.push({ name: 'transactions-list', query: route.query })
 }
 
 const handleSubmit = async () => {

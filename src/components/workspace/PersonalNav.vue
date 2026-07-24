@@ -69,6 +69,7 @@
       </button>
       <div v-show="systemOpen" class="pl-4 space-y-1 mt-1">
         <RouterLink :to="{ name: 'settings' }" @click="emit('navigate')" :class="link('settings')">Pengaturan</RouterLink>
+        <RouterLink :to="{ name: 'help-chat' }" @click="emit('navigate')" :class="link('help-chat')">Live Chat</RouterLink>
         <RouterLink :to="{ name: 'how-to' }" @click="emit('navigate')" :class="link('how-to')">Cara Penggunaan</RouterLink>
       </div>
     </li>
@@ -103,7 +104,7 @@ const isAnalysisActive = computed(() => {
 })
 const isSystemActive = computed(() => {
   const n = route.name?.toString() || ''
-  return n.includes('settings') || n.includes('how-to')
+  return n.includes('settings') || n.includes('how-to') || n.includes('help-chat')
 })
 
 watch(isMasterActive, (v) => { if (v) masterOpen.value = true }, { immediate: true })

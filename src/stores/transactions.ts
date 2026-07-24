@@ -9,6 +9,7 @@ import type {
   RecurringTransaction,
 } from '@/types/transaction'
 import { useAuthStore } from './auth'
+import { useAccountStore } from './accounts'
 
 interface TransactionMeta {
   total: number
@@ -277,6 +278,10 @@ export const useTransactionStore = defineStore('transactions', {
           await this.fetchTransactions(this.currentFilters)
         }
 
+        // Account balances change whenever a transaction is created — refresh them
+        // so other views (dashboard, account list, etc.) don't show stale values.
+        await useAccountStore().fetchAccounts()
+
         console.log(successMessage)
       } catch (err: any) {
         const errorMessage =
@@ -322,6 +327,7 @@ export const useTransactionStore = defineStore('transactions', {
       try {
         await apiClient.delete(`/transactions/${transactionId}`)
         await this.fetchTransactions(this.currentFilters)
+        await useAccountStore().fetchAccounts()
       } catch (err: any) {
         const errorMessage = err.response?.data?.message || 'Gagal menghapus transaksi.'
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
@@ -391,6 +397,10 @@ export const useTransactionStore = defineStore('transactions', {
         if (index !== -1) {
           this.transactions[index] = { ...this.transactions[index], ...response.data }
         }
+
+        // An edit can change the amount on the backend, which changes account
+        // balances — refresh so other views don't show stale values.
+        await useAccountStore().fetchAccounts()
 
         return response.data
       } catch (err: any) {

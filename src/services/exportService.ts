@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { useToastStore } from '@/stores/toast'
 import type { Transaction } from '@/types/transaction'
 import type { BudgetReportItem } from '@/types/budget'
 import type {
@@ -2137,4 +2138,25 @@ class ExportService {
   }
 }
 
-export default new ExportService()
+const exportServiceInstance = new ExportService()
+
+/**
+ * Wraps every `exportXxxToExcel`/`exportXxxToPDF` method so a success toast
+ * fires after the download completes, without touching ~20 method bodies.
+ */
+const exportService = new Proxy(exportServiceInstance, {
+  get(target, prop, receiver) {
+    const value = Reflect.get(target, prop, receiver)
+    if (typeof value !== 'function' || typeof prop !== 'string' || !prop.startsWith('export')) {
+      return value
+    }
+    return async function (this: unknown, ...args: unknown[]) {
+      const result = await value.apply(target, args)
+      const format = prop.toLowerCase().includes('excel') ? 'Excel' : 'PDF'
+      useToastStore().show(`File ${format} berhasil diunduh`, 'success')
+      return result
+    }
+  },
+}) as ExportService
+
+export default exportService

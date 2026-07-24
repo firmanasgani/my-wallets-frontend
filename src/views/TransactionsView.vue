@@ -118,7 +118,7 @@
               v-model="localFilters.search"
               placeholder="Cari deskripsi, kategori, atau akun..."
               :class="[filterInputClass, 'pl-10']"
-              @keyup.enter="applyCurrentFilters"
+              @input="handleSearchInput"
             />
           </div>
         </div>
@@ -132,6 +132,7 @@
             id="filter-daterange-start"
             v-model="localFilters.startDate"
             :class="[filterInputClass, 'dark:[color-scheme:dark]']"
+            @change="applyCurrentFilters"
           />
         </div>
         <div>
@@ -143,6 +144,7 @@
             id="filter-daterange-end"
             v-model="localFilters.endDate"
             :class="[filterInputClass, 'dark:[color-scheme:dark]']"
+            @change="applyCurrentFilters"
           />
         </div>
         <div>
@@ -153,6 +155,7 @@
             id="filter-account"
             v-model="localFilters.accountId"
             :class="filterInputClass"
+            @change="applyCurrentFilters"
           >
             <option :value="undefined">Semua Akun</option>
             <option v-for="acc in accountsForFilter" :key="acc.id" :value="acc.id">
@@ -169,6 +172,7 @@
             id="filter-category"
             v-model="localFilters.categoryId"
             :class="filterInputClass"
+            @change="applyCurrentFilters"
           >
             <option :value="undefined">Semua Kategori</option>
             <option v-for="cat in categoriesForFilter" :key="cat.id" :value="cat.id">
@@ -187,6 +191,7 @@
             id="filter-type"
             v-model="localFilters.type"
             :class="filterInputClass"
+            @change="applyCurrentFilters"
           >
             <option :value="undefined">Semua Tipe</option>
             <option value="INCOME">Pemasukan</option>
@@ -195,18 +200,12 @@
           </select>
         </div>
       </div>
-      <div class="mt-4 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+      <div class="mt-4 flex justify-end">
         <button
           @click="resetFilters"
           class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors w-full sm:w-auto"
         >
           Reset
-        </button>
-        <button
-          @click="applyCurrentFilters"
-          class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#2E8B57] text-sm font-medium text-white hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors w-full sm:w-auto"
-        >
-          Terapkan
         </button>
       </div>
     </div>
@@ -387,7 +386,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, reactive, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import TransactionItem from '@/components/transactions/TransactionItem.vue'
@@ -400,6 +399,7 @@ import ExportService from '@/services/exportService'
 import type { Transaction, QueryTransactionDto } from '@/types/transaction'
 import type { FrontendTransactionType } from '@/types/enums'
 
+const route = useRoute()
 const router = useRouter()
 const transactionStore = useTransactionStore()
 
@@ -423,12 +423,38 @@ const getCurrentDate = () => {
   return new Date().toISOString().split('T')[0]
 }
 
+// Filter state hidup di URL query params — supaya filter tidak hilang saat
+// pindah halaman (mis. ke tambah transaksi lalu kembali) atau saat reload.
+const parseFiltersFromQuery = (query: LocationQuery): QueryTransactionDto => {
+  const single = (value: LocationQuery[string]): string | undefined =>
+    Array.isArray(value) ? (value[0] ?? undefined) : (value ?? undefined)
+
+  return {
+    page: query.page ? Number(single(query.page)) : 1,
+    limit: query.limit ? Number(single(query.limit)) : transactionStore.activeFilters.limit || 10,
+    accountId: single(query.accountId),
+    categoryId: single(query.categoryId),
+    type: single(query.type) as FrontendTransactionType | undefined,
+    startDate: single(query.startDate) || getCurrentDate(),
+    endDate: single(query.endDate) || getCurrentDate(),
+    search: single(query.search),
+    sortBy: single(query.sortBy) || 'transactionDate',
+    sortOrder: (single(query.sortOrder) as 'asc' | 'desc') || 'desc',
+  }
+}
+
+const buildQuery = (filters: QueryTransactionDto): Record<string, string> => {
+  const query: Record<string, string> = {}
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      query[key] = String(value)
+    }
+  })
+  return query
+}
+
 // Set default filter dengan current date
-const localFilters = reactive<QueryTransactionDto>({
-  ...transactionStore.activeFilters,
-  startDate: transactionStore.activeFilters.startDate || getCurrentDate(),
-  endDate: transactionStore.activeFilters.endDate || getCurrentDate(),
-})
+const localFilters = reactive<QueryTransactionDto>(parseFiltersFromQuery(route.query))
 
 // Computed properties untuk mengambil data dari store
 const transactions = computed(() => transactionStore.transactionList)
@@ -486,14 +512,25 @@ watch(
   { deep: true },
 )
 
+// Satu-satunya sumber kebenaran untuk fetch transaksi: perubahan URL query.
+// Ini menangani perubahan filter dari UI (lihat applyCurrentFilters/resetFilters/
+// prevPage/nextPage di bawah), tombol back/forward browser, reload halaman
+// (query tetap ada di URL), dan kembali dari halaman tambah transaksi.
+watch(
+  () => route.query,
+  (query) => {
+    const filters = parseFiltersFromQuery(query)
+    Object.assign(localFilters, filters)
+    transactionStore.fetchTransactions(filters)
+  },
+  { immediate: true },
+)
+
 onMounted(async () => {
   document.addEventListener('click', handleClickOutsideExport)
-  // Ambil data awal untuk filter dan transaksi
-  // Cek apakah perlu fetch atau data sudah ada di store (tergantung strategi Anda)
   if (accountStore.accounts.length === 0) await accountStore.fetchAccounts()
   if (categoryStore.categories.length === 0)
     await categoryStore.fetchCategories({ hierarchical: 'true' }) // Untuk dropdown filter yang hierarkis
-  await transactionStore.fetchTransactions(localFilters) // Fetch transaksi dengan filter awal
 })
 
 const applyCurrentFilters = () => {
@@ -507,40 +544,44 @@ const applyCurrentFilters = () => {
   if (localFilters.limit) cleanFilters.limit = localFilters.limit
   if (localFilters.sortBy) cleanFilters.sortBy = localFilters.sortBy
   if (localFilters.sortOrder) cleanFilters.sortOrder = localFilters.sortOrder
-  if (localFilters.search) cleanFilters.search = localFilters.search.trim() || null
+  if (localFilters.search) cleanFilters.search = localFilters.search.trim() || undefined
 
-  transactionStore.applyFilters(cleanFilters)
+  // Filter berubah lewat URL query — watcher di atas yang akan fetch datanya.
+  router.push({ query: buildQuery(cleanFilters) })
+}
+
+// Search diketik karakter demi karakter, jadi di-debounce supaya tidak
+// fetch+push query di setiap ketikan.
+let searchDebounceTimer: ReturnType<typeof setTimeout> | undefined
+const handleSearchInput = () => {
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
+  searchDebounceTimer = setTimeout(() => {
+    applyCurrentFilters()
+  }, 400)
 }
 
 const resetFilters = () => {
   const currentDate = getCurrentDate()
-  localFilters.accountId = undefined
-  localFilters.categoryId = undefined
-  localFilters.type = undefined
-  localFilters.startDate = currentDate
-  localFilters.endDate = currentDate
-  localFilters.search = ''
-  localFilters.page = 1 // Reset ke halaman 1
-  // localFilters.limit tetap (atau reset ke default store)
-  // localFilters.sortBy & sortOrder tetap (atau reset ke default store)
-  transactionStore.applyFilters({
-    page: 1,
-    limit: localFilters.limit,
-    sortBy: 'transactionDate',
-    sortOrder: 'desc',
-    startDate: currentDate,
-    endDate: currentDate,
+  router.push({
+    query: buildQuery({
+      page: 1,
+      limit: localFilters.limit,
+      sortBy: 'transactionDate',
+      sortOrder: 'desc',
+      startDate: currentDate,
+      endDate: currentDate,
+    }),
   })
 }
 
 const prevPage = () => {
   if (transactionStore.meta.hasPreviousPage && transactionStore.meta.page > 1) {
-    transactionStore.applyFilters({ page: transactionStore.meta.page - 1 })
+    router.push({ query: { ...route.query, page: String(transactionStore.meta.page - 1) } })
   }
 }
 const nextPage = () => {
   if (transactionStore.meta.hasNextPage) {
-    transactionStore.applyFilters({ page: transactionStore.meta.page + 1 })
+    router.push({ query: { ...route.query, page: String(transactionStore.meta.page + 1) } })
   }
 }
 
@@ -556,7 +597,9 @@ const formatCurrency = (value: number | string, currency: string = 'IDR') => {
 
 // Logika Modal Tambah Transaksi (Placeholder)
 const openAddTransactionModal = () => {
-  router.push({ name: 'transaction-create' })
+  // Bawa filter saat ini supaya saat kembali dari halaman tambah transaksi,
+  // AddTransactionView tahu ke mana harus kembali (lihat query di sana).
+  router.push({ name: 'transaction-create', query: route.query })
 }
 
 const isCalendarModalOpen = ref(false)

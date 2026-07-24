@@ -195,10 +195,19 @@
                 type="text"
                 id="username"
                 v-model="formData.username"
+                @input="checkUsername"
                 required
-                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent transition-all"
+                :class="[
+                  'block w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all',
+                  usernameError
+                    ? 'border-red-400 dark:border-red-500 focus:ring-red-400'
+                    : 'border-gray-300 dark:border-slate-600 focus:ring-[#2E8B57]',
+                ]"
                 placeholder="Username unik Anda"
               />
+              <p v-if="usernameError" class="mt-1 text-xs text-red-500 dark:text-red-400">
+                {{ usernameError }}
+              </p>
             </div>
 
             <!-- Email -->
@@ -419,6 +428,26 @@ onMounted(() => {
 const clientSideError = ref<string | null>(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+const usernameError = ref<string | null>(null)
+
+const USERNAME_PATTERN = /^[a-zA-Z0-9_]+$/
+
+const checkUsername = () => {
+  const value = formData.username.trim()
+  if (!value) {
+    usernameError.value = null
+    return
+  }
+  if (value.length < 4) {
+    usernameError.value = 'Username minimal 4 karakter.'
+  } else if (value.length > 30) {
+    usernameError.value = 'Username maksimal 30 karakter.'
+  } else if (!USERNAME_PATTERN.test(value)) {
+    usernameError.value = 'Username hanya boleh berisi huruf, angka, dan garis bawah (_).'
+  } else {
+    usernameError.value = null
+  }
+}
 
 const passwordCriteria = reactive({
   minLength: false,
@@ -455,6 +484,11 @@ const goToStep2 = () => {
   clientSideError.value = null
   if (!formData.username.trim() || !formData.email.trim()) {
     clientSideError.value = 'Username dan Email wajib diisi.'
+    return
+  }
+  checkUsername()
+  if (usernameError.value) {
+    clientSideError.value = usernameError.value
     return
   }
   currentStep.value = 2
