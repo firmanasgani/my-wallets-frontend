@@ -38,6 +38,8 @@ interface UserProfile {
     planCode: string
     startDate: string
     endDate?: string
+    scheduledPlanCode?: string | null
+    scheduledPlanName?: string | null
   } | null
 }
 

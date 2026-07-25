@@ -25,46 +25,65 @@
             {{ isFree ? 'Paket Free' : isBusiness ? 'Paket Business' : 'Paket Premium' }}
           </span>
         </div>
-        <div class="p-6">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <p class="text-sm text-slate-600 dark:text-slate-300 mb-2">
-                Status paket Anda saat ini adalah
-                <strong class="dark:text-white">{{
-                  authStore.currentUser?.subscriptionPlan
-                }}</strong
-                >.
-              </p>
-              <ul
-                class="text-sm text-slate-500 dark:text-slate-400 list-disc list-inside space-y-1"
-              >
-                <li v-if="isFree">Maksimal 4 Akun Dompet/Bank</li>
-                <li v-if="isFree">Maksimal 10 Kategori Anggaran (Total)</li>
-                <li v-if="isFree">Laporan Terbatas</li>
-                <li v-if="!isFree">Unlimited Akun & Anggaran</li>
-                <li v-if="!isFree">Export Laporan PDF/Excel</li>
-                <li v-if="isBusiness">Multi-user & Manajemen Member (hingga 5 member)</li>
-                <li v-if="isBusiness">Chart of Accounts & Pembukuan</li>
-              </ul>
-            </div>
-            <div v-if="isFree">
-              <button
-                type="button"
-                @click="openPricingModal"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-              >
-                Upgrade ke Premium
-              </button>
-            </div>
-            <div v-if="isPlanExpiring && !isBusiness">
-              <button
-                type="button"
-                @click="openPricingModal"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                Perpanjang Langganan
-              </button>
-            </div>
+        <div class="p-6 space-y-4">
+          <div>
+            <p class="text-sm text-slate-600 dark:text-slate-300 mb-2">
+              Status paket Anda saat ini adalah
+              <strong class="dark:text-white">{{
+                authStore.currentUser?.subscriptionPlan
+              }}</strong
+              >.
+            </p>
+            <ul
+              class="text-sm text-slate-500 dark:text-slate-400 list-disc list-inside space-y-1"
+            >
+              <li v-if="isFree">Maksimal 4 Akun Dompet/Bank</li>
+              <li v-if="isFree">Maksimal 10 Kategori Anggaran (Total)</li>
+              <li v-if="isFree">Laporan Terbatas</li>
+              <li v-if="!isFree">Unlimited Akun & Anggaran</li>
+              <li v-if="!isFree">Export Laporan PDF/Excel</li>
+              <li v-if="isBusiness">Multi-user & Manajemen Member (hingga 5 member)</li>
+              <li v-if="isBusiness">Chart of Accounts & Pembukuan</li>
+            </ul>
+          </div>
+
+          <!-- Scheduled downgrade/cancel notice -->
+          <div
+            v-if="scheduledPlanCode"
+            class="rounded-lg border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-4 flex flex-col sm:flex-row sm:items-center gap-3 justify-between"
+          >
+            <p class="text-sm text-amber-800 dark:text-amber-300">
+              Paket Anda akan berubah menjadi <strong>{{ scheduledPlanName }}</strong> pada
+              {{ formattedCurrentEndDate }}.
+            </p>
+            <button
+              type="button"
+              @click="handleUndoDowngrade"
+              :disabled="isUndoing"
+              class="text-sm font-semibold text-amber-800 dark:text-amber-300 underline hover:no-underline disabled:opacity-50 whitespace-nowrap"
+            >
+              {{ isUndoing ? 'Memproses...' : 'Batalkan Perubahan' }}
+            </button>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-wrap gap-3">
+            <button
+              v-if="!isFree"
+              type="button"
+              @click="goToCheckout('renew')"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Perpanjang
+            </button>
+            <button
+              v-if="canUpgrade"
+              type="button"
+              @click="goToCheckout('upgrade')"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+            >
+              {{ isFree ? 'Upgrade ke Premium' : 'Upgrade' }}
+            </button>
           </div>
         </div>
       </div>
@@ -265,13 +284,6 @@
     <div v-else-if="currentView === 'payment-history'" class="space-y-6">
       <PaymentHistorySection @back="currentView = 'main'" />
     </div>
-
-    <!-- Pricing Modal -->
-    <PricingModal
-      :isOpen="isPricingModalOpen"
-      @update:isOpen="isPricingModalOpen = $event"
-      @success="handleUpgradeSuccess"
-    />
   </div>
 </template>
 
@@ -280,23 +292,27 @@ import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
 import { useBusinessStore } from '@/stores/business'
+import { useSubscriptionStore } from '@/stores/subscriptions'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import PricingModal from '@/components/common/PricingModal.vue'
 import RecurringTransactionsList from '@/components/settings/RecurringTransactionsList.vue'
 import PaymentHistorySection from '@/components/settings/PaymentHistorySection.vue'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
 const businessStore = useBusinessStore()
+const subscriptionStore = useSubscriptionStore()
 const route = useRoute()
 const router = useRouter()
-const isPricingModalOpen = ref(false)
 const currentView = ref<'main' | 'recurring' | 'payment-history'>('main')
+const isUndoing = ref(false)
 
 onMounted(async () => {
+  if (subscriptionStore.plans.length === 0) {
+    subscriptionStore.fetchPlans()
+  }
   if (route.query.upgrade === 'true') {
-    openPricingModal()
-    router.replace({ query: {} }) // Clean up URL
+    router.replace({ name: 'subscription-checkout', query: { action: 'upgrade' } })
+    return
   }
   if (isBusiness.value) {
     if (!businessStore.isCompanyLoaded) await businessStore.fetchMyCompany().catch(() => {})
@@ -312,27 +328,35 @@ const isBusiness = computed(() => {
   return authStore.currentUser?.subscriptionPlan?.startsWith('BUSINESS') ?? false
 })
 
-const openPricingModal = () => {
-  if (isBusiness.value) return
-  isPricingModalOpen.value = true
-}
+const currentPlanCode = computed(() => authStore.currentUser?.activeSubscription?.planCode ?? 'FREE')
 
-const isPlanExpiring = computed(() => {
-  const user = authStore.currentUser
-  if(!user || user.subscriptionPlan === 'FREE') return false
+// The Upgrade page lets a user pick any other plan (higher or lower —
+// picking lower behaves as a downgrade), so this just checks there is
+// something else to switch to.
+const canUpgrade = computed(() => subscriptionStore.plans.some((p) => p.code !== currentPlanCode.value))
 
-  const isActive = user.subscriptions?.find((s) => s.status === 'ACTIVE')
-  if (!isActive) return false
-  const endDate = new Date(isActive.endDate)
-  const now = new Date()
-  const msPerDay = 1000 * 60 * 60 * 24
-  const daysLeft = Math.ceil((endDate.getTime() - now.getTime()) / msPerDay)
-  if (daysLeft <= 7) return true
-  return false
+const scheduledPlanCode = computed(() => authStore.currentUser?.activeSubscription?.scheduledPlanCode ?? null)
+const scheduledPlanName = computed(() => authStore.currentUser?.activeSubscription?.scheduledPlanName ?? null)
+const formattedCurrentEndDate = computed(() => {
+  const endDate = authStore.currentUser?.activeSubscription?.endDate
+  if (!endDate) return '-'
+  return new Date(endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 })
 
-const handleUpgradeSuccess = () => {
-  // User profile is already refreshed by the mod
+const goToCheckout = (action: 'renew' | 'upgrade') => {
+  router.push({ name: 'subscription-checkout', query: { action } })
+}
+
+const handleUndoDowngrade = async () => {
+  isUndoing.value = true
+  try {
+    await subscriptionStore.cancelScheduledDowngrade()
+    await authStore.fetchUserProfile()
+  } catch (err: any) {
+    alert(err.message || 'Gagal membatalkan perubahan paket.')
+  } finally {
+    isUndoing.value = false
+  }
 }
 
 const onThemeChange = (event: Event) => {

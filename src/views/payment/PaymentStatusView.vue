@@ -106,7 +106,7 @@ const goToDashboard = () => {
 }
 
 const goToSettings = () => {
-  router.push({ name: 'settings', query: { upgrade: 'true' } })
+  router.push({ name: 'subscription-checkout', query: { action: 'upgrade' } })
 }
 
 onMounted(async () => {

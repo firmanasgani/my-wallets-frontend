@@ -81,5 +81,25 @@ export const useSubscriptionStore = defineStore('subscriptions', {
         throw new Error(err.response?.data?.message || 'Gagal melanjutkan pembayaran.')
       }
     },
+    async scheduleDowngrade(planCode: string) {
+      try {
+        const response = await apiClient.post<{
+          currentPlan: string
+          scheduledPlan: string | null
+          effectiveDate: string | null
+        }>('/subscriptions/downgrade', { planCode })
+        return response.data
+      } catch (err: any) {
+        throw new Error(err.response?.data?.message || 'Gagal menjadwalkan perubahan paket.')
+      }
+    },
+    async cancelScheduledDowngrade() {
+      try {
+        const response = await apiClient.post<{ message: string }>('/subscriptions/downgrade/cancel')
+        return response.data
+      } catch (err: any) {
+        throw new Error(err.response?.data?.message || 'Gagal membatalkan perubahan paket.')
+      }
+    },
   },
 })

@@ -147,6 +147,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Pengaturan' },
       },
       {
+        path: 'settings/subscription',
+        name: 'subscription-checkout',
+        component: () => import('@/views/subscriptions/SubscriptionCheckoutView.vue'),
+        meta: { title: 'Kelola Langganan' },
+      },
+      {
         path: 'help/chat',
         name: 'help-chat',
         component: () => import('@/views/HelpChatView.vue'),
