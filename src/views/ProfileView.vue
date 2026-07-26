@@ -181,9 +181,10 @@
         <button
           type="button"
           @click="promptDeleteAccount"
-          class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          :disabled="isDeletingAccount"
+          class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Hapus Akun
+          {{ isDeletingAccount ? 'Menghapus...' : 'Hapus Akun' }}
         </button>
       </div>
     </section>
@@ -201,6 +202,18 @@
       confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       iconType="danger"
       @confirm="handleDeletePicture"
+    />
+
+    <ConfirmationModal
+      v-model:isOpen="isDeleteAccountConfirmModalOpen"
+      title="Hapus Akun Permanen"
+      message="Apakah Anda yakin ingin menghapus akun dan semua data Anda secara permanen? Tindakan ini tidak dapat dibatalkan."
+      confirmButtonText="Ya, Hapus Akun"
+      confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+      iconType="danger"
+      :isConfirming="isDeletingAccount"
+      :closeOnOverlayClick="!isDeletingAccount"
+      @confirm="handleDeleteAccount"
     />
 
     <!-- Success Modal -->
@@ -301,6 +314,8 @@ const authStore = useAuthStore()
 
 // Delete modal state
 const isDeleteConfirmModalOpen = ref(false)
+const isDeleteAccountConfirmModalOpen = ref(false)
+const isDeletingAccount = ref(false)
 
 // Success modal state
 const isSuccessModalOpen = ref(false)
@@ -488,8 +503,42 @@ const openChangePasswordModal = () => {
 }
 
 const promptDeleteAccount = () => {
-  errorMessage.value = 'Fitur hapus akun belum tersedia. Silakan hubungi dukungan pelanggan untuk bantuan lebih lanjut.'
-  isErrorModalOpen.value = true
+  if (profileData.email === 'demo@firmanasgani.id') {
+    errorMessage.value = 'Akun Demo tidak bisa digunakan untuk fitur hapus akun.'
+    isErrorModalOpen.value = true
+    return
+  }
+
+  isDeleteAccountConfirmModalOpen.value = true
+}
+
+const handleDeleteAccount = async () => {
+  if (isDeletingAccount.value) {
+    return
+  }
+
+  isDeletingAccount.value = true
+  try {
+    await authStore.deleteAccount()
+    isDeleteAccountConfirmModalOpen.value = false
+  } catch (error: any) {
+    console.error('Delete account failed:', error)
+    isDeleteAccountConfirmModalOpen.value = false
+
+    const backendMessage = error.message || 'Gagal menghapus akun.'
+    if (backendMessage.includes('member of a company')) {
+      errorMessage.value =
+        'Akun tidak dapat dihapus selama Anda masih menjadi anggota perusahaan. Mintalah pemilik perusahaan untuk mencabut akses Anda terlebih dahulu.'
+    } else if (backendMessage.includes('own a company')) {
+      errorMessage.value =
+        'Akun tidak dapat dihapus selama Anda masih memiliki perusahaan. Hapus perusahaan terlebih dahulu.'
+    } else {
+      errorMessage.value = backendMessage
+    }
+    isErrorModalOpen.value = true
+  } finally {
+    isDeletingAccount.value = false
+  }
 }
 </script>
 

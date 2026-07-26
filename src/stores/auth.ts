@@ -234,6 +234,32 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async deleteAccount() {
+      if (!this.isAuthenticated) {
+        throw new Error('User not authenticated.')
+      }
+
+      this.isLoading = true
+      this.error = null
+      try {
+        await apiClient.delete('/auth/delete-account')
+        this.setToken(null)
+        this.setUser(null)
+        delete apiClient.defaults.headers.common['Authorization']
+        await router.push({ name: 'login' })
+      } catch (err: any) {
+        const responseMessage = err.response?.data?.message
+        const errorMessage = Array.isArray(responseMessage)
+          ? responseMessage.join(', ')
+          : responseMessage || err.message || 'Gagal menghapus akun.'
+
+        this.error = errorMessage
+        throw new Error(errorMessage)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
     async logout() {
       this.setToken(null)
       this.setUser(null)
