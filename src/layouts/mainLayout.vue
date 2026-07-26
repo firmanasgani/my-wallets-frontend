@@ -57,6 +57,8 @@
           </div>
 
           <div class="flex items-center gap-2">
+          <NotificationBell />
+
           <!-- Dark / Light Toggle -->
           <button
             @click="toggleTheme"
@@ -295,14 +297,17 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useWorkspaceStore } from '@/stores/workspace'
 import { useThemeStore } from '@/stores/theme'
+import { useNotificationsStore } from '@/stores/notifications'
 import AdBanner from '@/components/common/AdBanner.vue'
 import WorkspaceSwitcher from '@/components/workspace/WorkspaceSwitcher.vue'
 import PersonalNav from '@/components/workspace/PersonalNav.vue'
 import BusinessNav from '@/components/workspace/BusinessNav.vue'
+import NotificationBell from '@/components/notifications/NotificationBell.vue'
 
 const authStore = useAuthStore()
 const wsStore = useWorkspaceStore()
 const themeStore = useThemeStore()
+const notificationsStore = useNotificationsStore()
 
 const toggleTheme = () => {
   themeStore.setTheme(themeStore.isDark ? 'light' : 'dark')
@@ -355,8 +360,17 @@ const handleClickOutsideDropdown = (event: MouseEvent) => {
   }
 }
 
-onMounted(() => document.addEventListener('click', handleClickOutsideDropdown))
-onUnmounted(() => document.removeEventListener('click', handleClickOutsideDropdown))
+onMounted(() => {
+  document.addEventListener('click', handleClickOutsideDropdown)
+  if (authStore.isAuthenticated) {
+    notificationsStore.fetchUnreadCount()
+    notificationsStore.connect()
+  }
+})
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutsideDropdown)
+  notificationsStore.disconnect()
+})
 </script>
 
 <style scoped>

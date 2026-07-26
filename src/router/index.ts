@@ -159,6 +159,18 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Chat Bantuan' },
       },
       {
+        path: 'notifications',
+        name: 'notifications-list',
+        component: () => import('@/views/NotificationsView.vue'),
+        meta: { title: 'Notifikasi' },
+      },
+      {
+        path: 'notifications/:id',
+        name: 'notification-detail',
+        component: () => import('@/views/NotificationDetailView.vue'),
+        meta: { title: 'Detail Notifikasi' },
+      },
+      {
         path: 'financial-goals',
         name: 'financial-goals-list',
         component: () => import('@/views/financial-goals/FinancialGoalsView.vue'),
