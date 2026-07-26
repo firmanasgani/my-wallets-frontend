@@ -118,6 +118,7 @@
                       >Rp {{ formatNumber(plan.price) }}</span
                     >
                     <span
+                      v-if="Number(plan.price) !== 0"
                       class="ml-2 text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded"
                       >Hemat {{ calculateSaving(plan) }}%</span
                     >

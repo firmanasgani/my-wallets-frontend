@@ -117,7 +117,10 @@
               <span class="text-slate-500 dark:text-slate-400">Harga diskon</span>
               <span class="font-bold text-emerald-600 dark:text-emerald-400">
                 Rp {{ formatNumber(targetPlanDetails.discountPrice) }}
-                <span class="text-xs font-semibold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-1.5 py-0.5 rounded ml-1">
+                <span
+                  v-if="Number(targetPlanDetails.price) !== 0"
+                  class="text-xs font-semibold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-1.5 py-0.5 rounded ml-1"
+                >
                   Hemat {{ savingPercent }}%
                 </span>
               </span>
