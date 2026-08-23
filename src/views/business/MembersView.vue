@@ -324,7 +324,7 @@ const inviteForm = ref({ email: '', role: 'STAFF' as 'ADMIN' | 'CHECKER' | 'STAF
 
 function openInviteModal() {
   const userEmail = authStore.currentUser?.email
-  if (userEmail === 'demo@firmanasgani.id') {
+  if (userEmail === 'demo@moneytory.id') {
     errorMsg.value = 'Akun Demo Tidak bisa digunakan untuk fitur invite member.'
     return
   }

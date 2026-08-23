@@ -233,7 +233,7 @@ const handleUploadLogo = async () => {
   if (!pendingLogoFile.value) return
   logoErrorMsg.value = ''
 
-  if (useProfileEmail.value === 'demo@firmanasgani.id') {
+  if (useProfileEmail.value === 'demo@moneytory.id') {
     logoErrorMsg.value = 'Akun Demo Tidak bisa digunakan untuk fitur upload logo.'
     return
   }

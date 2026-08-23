@@ -280,7 +280,7 @@ const userProfileEmail = computed(() => {
   return authStore.currentUser?.email || null
 })
 const startEditing = () => {
-  if(userProfileEmail.value === 'demo@firmanasgani.id'){
+  if(userProfileEmail.value === 'demo@moneytory.id'){
     isDemo.value = true
     return
   }

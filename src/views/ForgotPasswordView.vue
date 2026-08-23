@@ -39,8 +39,6 @@
             mereset kata sandi Anda.
           </p>
         </div>
-
-        <div class="relative z-10 text-xs text-emerald-200">Made with ❤️ by Firmanasgani</div>
       </div>
 
       <!-- Right Side (Form) -->
@@ -399,7 +397,7 @@ const handleForgotPassword = async () => {
     return
   }
 
-  if(email.value.trim() == 'demo@firmanasgani.id'){
+  if(email.value.trim() == 'demo@moneytory.id'){
     errorMessage.value = 'Akun Demo Tidak bisa digunakan untuk fitur lupa password.'
     return
   }

@@ -42,8 +42,6 @@
             hingga laporan keuangan profesional dalam satu platform yang terintegrasi.
           </p>
         </div>
-
-        <div class="relative z-10 text-xs text-emerald-200">Made with ❤️ by Firmanasgani</div>
       </div>
 
       <!-- Right Side (Login Form) -->
@@ -279,7 +277,7 @@
             <p class="text-sm font-bold text-amber-800 dark:text-amber-200 mb-1">Akun Demo Bisnis</p>
             <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-amber-700 dark:text-amber-300">
               <span><span class="font-semibold">Akun:</span> demoaccount</span>
-              <span><span class="font-semibold">Email:</span> demo@firmanasgani.id</span>
+              <span><span class="font-semibold">Email:</span> demo@moneytory.id</span>
               <span><span class="font-semibold">Password:</span> DemoAccount@123</span>
             </div>
           </div>

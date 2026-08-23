@@ -24,7 +24,6 @@
         >
           Keluar
         </button>
-        <p class="mt-3 text-center text-[10px] text-emerald-400/60">Made with ❤️ by Firmanasgani</p>
       </div>
     </aside>
 

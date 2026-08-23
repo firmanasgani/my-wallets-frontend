@@ -341,7 +341,7 @@ onMounted(() => {
 })
 
 const triggerFileInput = () => {
-  if(profileData.email === 'demo@firmanasgani.id'){
+  if(profileData.email === 'demo@moneytory.id'){
     errorMessage.value = 'Akun Demo Tidak bisa digunakan untuk fitur upload foto profil.'
     isErrorModalOpen.value = true
     return
@@ -464,7 +464,7 @@ const handleDeletePicture = async () => {
 }
 
 const handleUpdateProfile = async () => {
-  if(profileData.email === 'demo@firmanasgani.id'){
+  if(profileData.email === 'demo@moneytory.id'){
     errorMessage.value = 'Akun Demo Tidak bisa digunakan untuk fitur update profil.'
     isErrorModalOpen.value = true
     return
@@ -494,7 +494,7 @@ const handlePasswordChanged = () => {
 const isChangePasswordModalOpen = ref(false)
 
 const openChangePasswordModal = () => {
-  if(profileData.email === 'demo@firmanasgani.id'){
+  if(profileData.email === 'demo@moneytory.id'){
     errorMessage.value = 'Akun Demo Tidak bisa digunakan untuk fitur ubah password.'
     isErrorModalOpen.value = true
     return
@@ -503,7 +503,7 @@ const openChangePasswordModal = () => {
 }
 
 const promptDeleteAccount = () => {
-  if (profileData.email === 'demo@firmanasgani.id') {
+  if (profileData.email === 'demo@moneytory.id') {
     errorMessage.value = 'Akun Demo tidak bisa digunakan untuk fitur hapus akun.'
     isErrorModalOpen.value = true
     return
