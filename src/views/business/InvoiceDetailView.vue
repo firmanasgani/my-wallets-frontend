@@ -511,7 +511,16 @@ const handleDelete = async () => {
 
 const handlePrintPDF = async () => {
   if (!invoice.value) return
-  await exportService.exportInvoiceToPDF(invoice.value, businessStore.currentCompany)
+  try {
+    // Mutation responses can omit relations such as items. Fetch the complete
+    // detail payload before export so the generated invoice is not incomplete.
+    const invoiceToExport = Array.isArray(invoice.value.items)
+      ? invoice.value
+      : await invoicesStore.fetchInvoiceById(invoice.value.id)
+    await exportService.exportInvoiceToPDF(invoiceToExport, businessStore.currentCompany)
+  } catch (err: any) {
+    showToast('error', err.response?.data?.message || 'Gagal mengunduh PDF invoice.')
+  }
 }
 
 const handleDuplicate = async () => {

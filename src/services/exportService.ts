@@ -972,6 +972,9 @@ class ExportService {
    */
   async exportInvoiceToPDF(invoice: Invoice, company: Company | null) {
     const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+    // Some invoice mutation endpoints return a summary without relations. Keep
+    // the exporter safe if that response is temporarily held by the store.
+    const items = Array.isArray(invoice.items) ? invoice.items : []
     const pageW = doc.internal.pageSize.getWidth()
     const margin = 14
     const rightCol = pageW - margin
@@ -1102,12 +1105,12 @@ class ExportService {
     // ── Items table ───────────────────────────────────────────────
     y = invoice.clientAddress ? 92 : 87
 
-    const hasDiscount = invoice.items.some((item) => parseFloat(item.discountAmount) > 0)
+    const hasDiscount = items.some((item) => parseFloat(item.discountAmount) > 0)
     const tableHead = hasDiscount
       ? [['Deskripsi', 'Qty', 'Harga Satuan', 'Diskon', 'PPN', 'Total']]
       : [['Deskripsi', 'Qty', 'Harga Satuan', 'PPN', 'Total']]
 
-    const tableRows = invoice.items.map((item) => {
+    const tableRows = items.map((item) => {
       const base = [
         item.description,
         parseFloat(item.quantity).toString(),
