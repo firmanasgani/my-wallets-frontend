@@ -1,258 +1,59 @@
 <template>
-  <div class="max-w-2xl mx-auto bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-xl shadow-lg">
-    <h1 class="text-2xl sm:text-3xl font-semibold text-slate-800 dark:text-slate-200 mb-6 border-b pb-4">
-      Tambah Akun Baru
-    </h1>
-
-    <form @submit.prevent="handleSubmitAccount" class="space-y-6">
-      <div>
-        <label for="accountName" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
-          >Nama Akun <span class="text-red-500">*</span></label
-        >
-        <input
-          type="text"
-          id="accountName"
-          v-model="formData.accountName"
-          required
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 transition-colors"
-          placeholder="Contoh: BCA Tabungan, GoPay"
-        />
-      </div>
-
-      <div>
-        <label for="accountType" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
-          >Tipe Akun <span class="text-red-500">*</span></label
-        >
-        <select
-          id="accountType"
-          v-model="formData.accountType"
-          required
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200
-          dark:bg-slate-800 transition-colors"
-        >
-          <option disabled value="">Pilih tipe akun...</option>
-          <option v-for="typeOpt in accountTypeOptions" :key="typeOpt.value" :value="typeOpt.value">
-            {{ typeOpt.text }}
-          </option>
-        </select>
-      </div>
-
-      <div v-if="formData.accountType === FrontendAccountType.BANK">
-        <SearchableSelect
-          v-model="selectedBankId"
-          :options="bankOptions"
-          label="Pilih Bank"
-          placeholder="Ketik untuk mencari bank..."
-          :required="formData.accountType === FrontendAccountType.BANK"
-          :disabled="bankStore.isLoadingBanks"
-          :helper-text="getHelperText()"
-          input-id="bankId"
-        />
-      </div>
-
-      <div>
-        <label for="initialBalance" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
-          >Saldo Awal (Opsional)</label
-        >
-        <div class="mt-1 relative rounded-md shadow-sm">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <span class="text-slate-500 sm:text-sm dark:text-slate-200"> {{ formData.currency || 'IDR' }} </span>
-          </div>
-          <CurrencyInput
-            id="initialBalance"
-            v-model="formData.initialBalance"
-            :options="{ currency: formData.currency || 'IDR' }"
-            class="border border-gray-300 rounded-lg block w-full pl-12 pr-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:text-slate-200 transition-colors"
-            placeholder="0.00"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label for="currency" class="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-200"
-          >Mata Uang (Opsional, default IDR)</label
-        >
-        <select
-          id="currency"
-          v-model="formData.currency"
-          maxlength="5"
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors dark:text-slate-200"
-        >
-        <option value="IDR" selected>IDR</option>
-      </select>
-      </div>
-
-      <div>
-        <label for="accountNumber" class="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-200"
-          >Nomor Akun/Telepon (Opsional)</label
-        >
-        <input
-          type="text"
-          id="accountNumber"
-          v-model="formData.accountNumber"
-          class="border border-gray-300 rounded-lg block w-full px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors dark:text-slate-200"
-          placeholder="Untuk rekening bank atau e-wallet"
-        />
-      </div>
-
-      <div v-if="submissionError" class="rounded-md bg-red-50 p-3 my-4">
-        <p class="text-sm font-medium text-red-700">{{ submissionError }}</p>
-      </div>
-
-      <div class="flex items-center justify-end gap-3 pt-6 border-t mt-8">
-        <RouterLink
-          :to="{ name: 'accounts-list' }"
-          class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-        >
-          Batal
-        </RouterLink>
-        <button
-          type="submit"
-          :disabled="isSubmitting"
-          class="px-4 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-[#2E8B57] flex items-center"
-        >
-          <LoadingSpinner
-            v-if="isSubmitting"
-            :visible="true"
-            size="xs"
-            color="text-white"
-            class="mr-2"
-          />
-          {{ isSubmitting ? 'Menyimpan...' : 'Simpan Akun' }}
-        </button>
-      </div>
-    </form>
+  <div v-if="checkingQuota || quotaError || limitReached" class="money-accounts account-form-page">
+    <header class="account-form-heading"><RouterLink :to="{ name: 'accounts-list' }" class="account-form-back"><AppIcon name="arrow" />Daftar akun</RouterLink><h1>Tambah akun baru.</h1></header>
+    <section class="accounts-state" :role="quotaError ? 'alert' : 'status'">
+      <template v-if="checkingQuota"><span class="accounts-spinner" aria-hidden="true"></span><h2>Menyiapkan akun baru...</h2><p>Memeriksa jumlah akun yang sudah kamu miliki.</p></template>
+      <template v-else-if="quotaError"><AppIcon name="help" /><h2>Data akun belum berhasil dimuat.</h2><p>{{ quotaError }}</p><button type="button" class="accounts-button" @click="checkQuota">Coba lagi</button></template>
+      <template v-else><AppIcon name="lock" /><h2>Batas akun paket Dasar tercapai.</h2><p>Kamu sudah memiliki {{ accountStore.accounts.length }} akun. Kelola akun yang ada atau pilih paket Premium untuk menambah akun.</p><RouterLink :to="{ name: 'settings', query: { upgrade: 'true' } }" class="accounts-button is-primary">Jelajahi Premium <AppIcon name="arrow" /></RouterLink></template>
+    </section>
   </div>
+  <AccountForm v-else mode="create" :submitting="isSubmitting" :error="submissionError" @create="createAccount" />
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, onMounted, computed } from 'vue'
-import { useRouter, RouterLink } from 'vue-router'
-import { FrontendAccountType } from '@/types/enums'
-import type { CreateAccountPayload } from '@/types/accounts'
-import { useBankStore } from '@/stores/banks'
+import { computed, onMounted, ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import AccountForm from '@/components/accounts/AccountForm.vue'
+import AppIcon from '@/components/common/AppIcon.vue'
 import { useAccountStore } from '@/stores/accounts'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import SearchableSelect from '@/components/common/SearchableSelect.vue'
-import CurrencyInput from '@/components/common/CurrencyInput.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
+import { canCreateAccount } from '@/utils/accountList'
+import type { CreateAccountPayload } from '@/types/accounts'
+import '@/assets/accounts.css'
+import '@/assets/account-form.css'
 
-const accountTypeOptions = [
-  { value: FrontendAccountType.BANK, text: 'Rekening Bank' },
-  { value: FrontendAccountType.E_WALLET, text: 'E-Wallet (Dompet Digital)' },
-  { value: FrontendAccountType.CASH, text: 'Tunai (Cash)' },
-  { value: FrontendAccountType.CREDIT_CARD, text: 'Kartu Kredit' },
-]
-
-const bankStore = useBankStore()
-const accountStore = useAccountStore()
 const router = useRouter()
-
-const availableBanks = computed(() => bankStore.allBanks)
-
-// Format bank options untuk SearchableSelect
-const bankOptions = computed(() => {
-  return availableBanks.value.map((bank) => ({
-    value: bank.id,
-    label: bank.name,
-  }))
-})
-
-// Helper text untuk bank select
-const getHelperText = () => {
-  if (bankStore.isLoadingBanks) {
-    return 'Memuat daftar bank...'
-  }
-  if (bankStore.bankError) {
-    return bankStore.bankError
-  }
-  if (!bankStore.isLoadingBanks && availableBanks.value.length === 0) {
-    return 'Tidak ada bank tersedia atau gagal memuat.'
-  }
-  return ''
-}
-
-// Reactive form data
-const formData = reactive<CreateAccountPayload>({
-  accountName: '',
-  accountType: FrontendAccountType.BANK,
-  bankId: null,
-  initialBalance: 0,
-  currency: 'IDR',
-  accountNumber: null,
-})
-
+const accountStore = useAccountStore()
+const authStore = useAuthStore()
+const toastStore = useToastStore()
+const checkingQuota = ref(true)
+const quotaError = ref('')
 const isSubmitting = ref(false)
-const submissionError = ref<string | null>(null)
-
-// Computed property untuk handle bankId dengan type yang sesuai
-const selectedBankId = computed({
-  get: () => formData.bankId ?? null,
-  set: (value) => {
-    formData.bankId = value
-  },
-})
-
-const fetchBanksIfNeeded = async () => {
-  if (formData.accountType === FrontendAccountType.BANK && bankStore.banks.length === 0) {
-    await bankStore.fetchBanks()
-  }
-}
-
-onMounted(() => {
-  fetchBanksIfNeeded()
-})
-
-watch(
-  () => formData.accountType,
-  (newType) => {
-    if (newType !== FrontendAccountType.BANK) {
-      formData.bankId = null
-    } else {
-      fetchBanksIfNeeded()
-    }
-  },
-)
-
-const handleSubmitAccount = async () => {
-  isSubmitting.value = true
-  submissionError.value = null
-  accountStore.error = null
-
-  if (!formData.accountName.trim()) {
-    submissionError.value = 'Nama Akun wajib diisi.'
-    isSubmitting.value = false
-    return
-  }
-  if (!formData.accountType) {
-    submissionError.value = 'Tipe Akun wajib dipilih.'
-    isSubmitting.value = false
-    return
-  }
-  if (formData.accountType === FrontendAccountType.BANK && !formData.bankId) {
-    submissionError.value = 'Bank wajib dipilih untuk tipe akun BANK.'
-    isSubmitting.value = false
-    return
-  }
-
+const submissionError = ref('')
+const limitReached = computed(() => !isSubmitting.value && !canCreateAccount(authStore.currentUser?.subscriptionPlan, accountStore.accounts.length))
+const checkQuota = async () => {
+  checkingQuota.value = true
+  quotaError.value = ''
   try {
-    const payloadToSubmit: CreateAccountPayload = {
-      accountName: formData.accountName,
-      accountType: formData.accountType as FrontendAccountType,
-      initialBalance: formData.initialBalance ?? 0,
-      currency: formData.currency?.trim() || 'IDR',
-      accountNumber: formData.accountNumber?.trim() || null,
+    if (authStore.currentUser?.subscriptionPlan === 'FREE') {
+      await accountStore.fetchAccounts()
+      quotaError.value = accountStore.error || ''
     }
-    if (formData.accountType === FrontendAccountType.BANK && formData.bankId) {
-      payloadToSubmit.bankId = formData.bankId
-    }
-
-    await accountStore.createAccount(payloadToSubmit)
-    router.push({ name: 'accounts-list' })
-  } catch (error: any) {
-    submissionError.value = error.message || 'Gagal menambahkan akun. Silakan coba lagi.'
-    console.error('Submit error:', error)
-  } finally {
-    isSubmitting.value = false
-  }
+  } catch { quotaError.value = 'Jumlah akun belum dapat diperiksa. Silakan coba lagi.' }
+  finally { checkingQuota.value = false }
 }
+const createAccount = async (payload: CreateAccountPayload) => {
+  if (isSubmitting.value || checkingQuota.value || quotaError.value || limitReached.value) return
+  isSubmitting.value = true
+  submissionError.value = ''
+  try {
+    await accountStore.createAccount(payload)
+    toastStore.show('Akun baru berhasil ditambahkan.')
+    await router.push({ name: 'accounts-list' })
+  } catch (error: unknown) {
+    submissionError.value = (typeof error === 'string' ? error : error instanceof Error ? error.message : '') || accountStore.error || 'Akun belum berhasil disimpan. Silakan coba lagi.'
+  } finally { isSubmitting.value = false }
+}
+onMounted(checkQuota)
 </script>
