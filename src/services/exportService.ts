@@ -4,6 +4,7 @@ import autoTable from 'jspdf-autotable'
 import { useToastStore } from '@/stores/toast'
 import type { Transaction } from '@/types/transaction'
 import type { BudgetReportItem } from '@/types/budget'
+import { budgetNumber, budgetProgress } from '@/utils/budget'
 import type {
   Invoice,
   Company,
@@ -177,17 +178,17 @@ class ExportService {
     worksheet.addRow([])
 
     worksheet.columns = [
-      { header: 'Kategori', key: 'category', width: 25 },
-      { header: 'Anggaran', key: 'amount', width: 20 },
-      { header: 'Terpakai', key: 'spent', width: 20 },
-      { header: 'Sisa', key: 'remaining', width: 20 },
-      { header: 'Persentase', key: 'percentage', width: 15 },
-      { header: 'Status', key: 'status', width: 15 },
+      { key: 'category', width: 35 },
+      { key: 'amount', width: 20 },
+      { key: 'spent', width: 20 },
+      { key: 'remaining', width: 20 },
+      { key: 'percentage', width: 15 },
+      { key: 'status', width: 26 },
     ]
 
     // Set Headers at Row 3
     const headerRow = worksheet.getRow(3)
-    headerRow.values = worksheet.columns?.map((c) => String(c.header)) || []
+    headerRow.values = ['Kategori', 'Rencana', 'Realisasi', 'Selisih', 'Persentase', 'Status']
     headerRow.font = { bold: true, color: { argb: 'FFFFFF' } }
     headerRow.eachCell((cell) => {
       cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '4F46E5' } }
@@ -195,17 +196,14 @@ class ExportService {
     })
 
     budgets.forEach((b) => {
-      let status = 'Aman'
-      if (b.percentage >= 100) status = 'Melebihi'
-      else if (b.percentage >= 80) status = 'Peringatan'
-
+      const progress = budgetProgress(b)
       worksheet.addRow({
-        category: b.category?.categoryName || '-',
-        amount: Number(b.amount),
-        spent: b.spent,
-        remaining: b.remaining,
-        percentage: `${b.percentage.toFixed(1)}%`,
-        status: status,
+        category: `${b.category?.categoryName || '-'} (${progress.income ? 'Pemasukan' : 'Pengeluaran'})`,
+        amount: budgetNumber(b.amount),
+        spent: budgetNumber(b.spent),
+        remaining: progress.remaining,
+        percentage: progress.hasRatio ? `${progress.percentage.toFixed(1)}%` : '-',
+        status: progress.status,
       })
     })
 
@@ -237,23 +235,20 @@ class ExportService {
     doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 30)
 
     const tableData = budgets.map((b) => {
-      let status = 'Aman'
-      if (b.percentage >= 100) status = 'Melebihi'
-      else if (b.percentage >= 80) status = 'Peringatan'
-
+      const progress = budgetProgress(b)
       return [
-        b.category?.categoryName || '-',
-        this.formatCurrency(Number(b.amount)),
-        this.formatCurrency(b.spent),
-        this.formatCurrency(b.remaining),
-        `${b.percentage.toFixed(1)}%`,
-        status,
+        `${b.category?.categoryName || '-'} (${progress.income ? 'Pemasukan' : 'Pengeluaran'})`,
+        this.formatCurrency(budgetNumber(b.amount)),
+        this.formatCurrency(budgetNumber(b.spent)),
+        this.formatCurrency(progress.remaining),
+        progress.hasRatio ? `${progress.percentage.toFixed(1)}%` : '-',
+        progress.status,
       ]
     })
 
     autoTable(doc, {
       startY: 35,
-      head: [['Kategori', 'Anggaran', 'Terpakai', 'Sisa', '%', 'Status']],
+      head: [['Kategori', 'Rencana', 'Realisasi', 'Selisih', '%', 'Status']],
       body: tableData,
       headStyles: { fillColor: [79, 70, 229] },
       styles: { fontSize: 9, cellPadding: 3 },

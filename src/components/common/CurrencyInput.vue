@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { useCurrencyInput } from 'vue-currency-input'
-import { watch } from 'vue'
+import { onMounted, watch } from 'vue'
 
 interface Props {
   modelValue: number | null | undefined
@@ -37,6 +37,9 @@ const { inputRef, setValue, numberValue } = useCurrencyInput({
   precision: 0,
   ...props.options,
 })
+
+// Forms can mount this input after asynchronously loading an existing amount.
+onMounted(() => setValue(props.modelValue))
 
 watch(
   () => props.modelValue,

@@ -1,288 +1,91 @@
 <template>
-  <div class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
-        {{ isEditing ? 'Edit Anggaran' : 'Buat Anggaran Baru' }}
-      </h1>
-      <button
-        @click="goBack"
-        class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 hover:cursor-pointer"
-      >
-        Kembali
-      </button>
-    </div>
-
-    <div class="bg-white dark:bg-slate-800 shadow-sm rounded-lg border border-slate-200 dark:border-slate-700 p-6">
-      <form @submit.prevent="submitForm" class="space-y-6">
-        <!-- Period Selectors (For Create only usually, or Readonly for Edit) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label for="year" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tahun</label>
-            <select
-              id="year"
-              v-model="formData.year"
-              :disabled="isEditing"
-              class="block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 transition-colors disabled:bg-slate-100 dark:disabled:bg-slate-600 disabled:text-slate-500 dark:disabled:text-slate-400 disabled:cursor-not-allowed"
-            >
-              <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
-            </select>
-          </div>
-          <div>
-            <label for="month" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bulan</label>
-            <select
-              id="month"
-              v-model="formData.month"
-              :disabled="isEditing"
-              class="block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 transition-colors disabled:bg-slate-100 dark:disabled:bg-slate-600 disabled:text-slate-500 dark:disabled:text-slate-400 disabled:cursor-not-allowed"
-            >
-              <option v-for="(m, index) in monthNames" :key="index" :value="index + 1">
-                {{ m }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Category -->
-        <div>
-          <label for="category" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-            >Kategori</label
-          >
-          <select
-            id="category"
-            v-model="formData.categoryId"
-            :disabled="isEditing"
-            class="block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 transition-colors disabled:bg-slate-100 dark:disabled:bg-slate-600 disabled:text-slate-500 dark:disabled:text-slate-400 disabled:cursor-not-allowed"
-          >
-            <option value="" disabled>Pilih Kategori</option>
-            <optgroup label="Pengeluaran">
-              <option v-for="cat in flatExpenseCategories" :key="cat.id" :value="cat.id">
-                {{ cat.categoryName }} ({{ cat.parentCategoryId ? 'Sub' : 'Main' }})
-              </option>
-            </optgroup>
-            <optgroup label="Pemasukan">
-              <option v-for="cat in incomeCategories" :key="cat.id" :value="cat.id">
-                {{ cat.categoryName }}
-              </option>
-            </optgroup>
-          </select>
-          <p v-if="isEditing" class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Kategori dan periode tidak dapat diubah saat edit.
-          </p>
-        </div>
-
-        <!-- Amount -->
-        <div>
-          <label for="amount" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-            >Jumlah Anggaran</label
-          >
-          <div class="relative rounded-md shadow-sm">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-slate-500 dark:text-slate-400 sm:text-sm">Rp</span>
-            </div>
-            <CurrencyInput
-              id="amount"
-              v-model="formData.amount"
-              class="block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors"
-              placeholder="0"
-            />
-          </div>
-        </div>
-
-        <!-- Description -->
-        <div>
-          <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-            >Deskripsi (Opsional)</label
-          >
-          <textarea
-            id="description"
-            v-model="formData.description"
-            rows="3"
-            class="block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors"
-          ></textarea>
-        </div>
-
-        <!-- Error Message -->
-        <div v-if="error" class="bg-red-50 dark:bg-red-900/30 p-4 rounded-md">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg
-                class="h-5 w-5 text-red-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Gagal menyimpan anggaran</h3>
-              <div class="mt-2 text-sm text-red-700 dark:text-red-400">
-                <p>{{ error }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Button Actions -->
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
-          <button
-            type="button"
-            @click="goBack"
-            class="bg-white dark:bg-slate-700 py-2 px-4 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-          >
-            Batal
-          </button>
-          <button
-            type="submit"
-            :disabled="isSubmitting"
-            class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg
-              v-if="isSubmitting"
-              class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            {{ isSubmitting ? 'Menyimpan...' : 'Simpan' }}
-          </button>
-        </div>
+  <div class="money-budgets">
+    <header class="budget-heading"><div><RouterLink :to="backLocation" class="budget-back" :aria-disabled="saving || undefined" @click="saving && $event.preventDefault()"><AppIcon name="arrow" />Pengaturan anggaran</RouterLink><span class="shell-overline">RUANG UNTUK RENCANAMU</span><h1>{{ isEditing ? 'Sesuaikan rencanamu.' : 'Buat ruang untuk prioritas.' }}</h1><p>{{ isEditing ? 'Perbarui nominal dan catatan anggaran bulananmu.' : 'Tentukan kategori, periode, dan nominal yang ingin kamu rencanakan.' }}</p></div></header>
+    <div v-if="loading" class="budget-state" role="status"><span class="budget-spinner" aria-hidden="true"></span><h2>Menyiapkan formulir...</h2></div>
+    <div v-else-if="loadError" class="budget-state" role="alert"><AppIcon name="help" /><h2>Formulir belum dapat ditampilkan.</h2><p>{{ loadError }}</p><button type="button" class="budget-button" @click="loadForm">Coba lagi</button><RouterLink :to="backLocation" class="budget-button">Kembali ke anggaran</RouterLink></div>
+    <div v-else class="budget-editor-layout">
+      <form class="budget-form-panel" :aria-busy="saving" @submit.prevent="submitForm">
+        <div v-if="error" ref="errorBox" class="budget-error" role="alert" tabindex="-1"><AppIcon name="warning" /><span>{{ error }}</span></div>
+        <fieldset :disabled="saving"><legend class="budget-section-title">01 <span>Periode &amp; kategori</span></legend>
+          <BudgetPeriodPicker id="form-period" v-model:year="draft.year" v-model:month="draft.month" :disabled="isEditing || saving" />
+          <AppSelect id="budget-category" v-model="draft.categoryId" :options="categoryOptions" label="Kategori anggaran" placeholder="Pilih kategori" searchable required :disabled="isEditing || saving" />
+          <p v-if="isEditing" class="budget-hint">Kategori dan periode tetap. Kamu bisa mengubah nominal serta catatan.</p>
+          <p v-else-if="!categoryOptions.length" class="budget-hint">Belum ada kategori. <RouterLink :to="{ name: 'categories-list' }">Tambahkan kategori ↗</RouterLink> sebelum membuat anggaran.</p>
+          <div class="budget-form-divider"></div>
+          <h2 class="budget-section-title">02 <span>Nominal &amp; catatan</span></h2>
+          <div class="budget-field budget-amount-field"><label for="budget-amount">{{ isIncome ? 'Target pemasukan' : 'Batas pengeluaran' }}</label><div><span>IDR</span><CurrencyInput id="budget-amount" v-model="draft.amount" required placeholder="0" :options="{ currency: 'IDR' }" aria-describedby="budget-amount-hint" /></div><p id="budget-amount-hint" class="budget-hint">{{ isIncome ? 'Jumlah pemasukan yang ingin kamu capai pada periode ini.' : 'Jumlah pengeluaran yang kamu rencanakan pada periode ini.' }}</p></div>
+          <div class="budget-field"><label for="budget-description">Catatan <span>(opsional)</span></label><textarea id="budget-description" v-model="draft.description" rows="4" placeholder="Contoh: Belanja kebutuhan rumah bulan ini"></textarea></div>
+        </fieldset>
+        <footer class="budget-form-actions"><button type="button" class="budget-button" :disabled="saving" @click="router.push(backLocation)">Batal</button><button type="submit" class="budget-button is-primary" :disabled="saving || !categoryOptions.length"><span v-if="saving" class="budget-spinner" aria-hidden="true"></span><AppIcon v-else name="check" />{{ saving ? 'Menyimpan...' : isEditing ? 'Simpan perubahan' : 'Simpan anggaran' }}</button></footer>
       </form>
+      <aside class="budget-plan-preview"><span class="shell-overline">RENCANA PILIHANMU</span><h2>{{ selectedCategory?.categoryName || 'Satu langkah lebih terarah.' }}</h2><div class="budget-preview-value" :class="isIncome ? 'is-mint' : 'is-sun'"><AppIcon :name="isIncome ? 'target' : 'wallet'" /><span>{{ isIncome ? 'Target pemasukan' : 'Batas pengeluaran' }}</span><strong>{{ accountMoney(draft.amount ?? 0, 'IDR') }}</strong></div><dl><div><dt>Periode anggaran</dt><dd>{{ budgetPeriodLabel(draft.year, draft.month) }}</dd></div><div><dt>Kategori</dt><dd>{{ selectedCategory?.categoryName || 'Belum dipilih' }}</dd></div><div><dt>Jenis rencana</dt><dd>{{ selectedCategory ? isIncome ? 'Pemasukan' : 'Pengeluaran' : 'Belum dipilih' }}</dd></div></dl><p><AppIcon name="info" />Anggaran tidak mengubah saldo akun. Realisasi mengikuti transaksi pada kategori dan periode yang dipilih.</p></aside>
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
-import { computed, onMounted, reactive } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import BudgetPeriodPicker from '@/components/budgets/BudgetPeriodPicker.vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import CurrencyInput from '@/components/common/CurrencyInput.vue'
 import { useBudgetStore } from '@/stores/budget'
 import { useCategoryStore } from '@/stores/categories'
-import CurrencyInput from '@/components/common/CurrencyInput.vue'
+import { useToastStore } from '@/stores/toast'
+import { flattenCategories } from '@/utils/categoryTree'
+import { budgetCategoryOptions, budgetPeriod, budgetPeriodLabel, buildBudgetPayload } from '@/utils/budget'
+import { accountMoney } from '@/utils/accountList'
+import type { Budget } from '@/types/budget'
+import '@/assets/budgets.css'
 
-const router = useRouter()
-const route = useRoute()
-const budgetStore = useBudgetStore()
-const categoryStore = useCategoryStore()
-
+const route = useRoute(), router = useRouter(), store = useBudgetStore(), categoryStore = useCategoryStore(), toast = useToastStore()
 const isEditing = computed(() => route.name === 'budget-edit')
-const budgetId = computed(() => route.params.id as string)
-
-const currentDate = new Date()
-const formData = reactive({
-  year: currentDate.getFullYear(),
-  month: currentDate.getMonth() + 1,
-  categoryId: '',
-  amount: 0,
-  description: '',
+const budgetId = computed(() => typeof route.params.id === 'string' ? route.params.id : '')
+const draft = reactive({ ...budgetPeriod(route.query.year, route.query.month), categoryId: '', amount: null as number | null, description: '' })
+const original = ref<Budget | null>(null)
+const loading = ref(true), saving = ref(false), loadError = ref(''), error = ref(''), errorBox = ref<HTMLElement | null>(null)
+const categories = computed(() => {
+  const items = flattenCategories(categoryStore.allCategories)
+  if (original.value?.category && !items.some((item) => item.id === original.value?.categoryId)) items.push(original.value.category)
+  return items
 })
-
-const isSubmitting = computed(() => budgetStore.isSubmittingBudget)
-const error = computed(() => budgetStore.budgetError)
-
-const monthNames = [
-  'Januari',
-  'Februari',
-  'Maret',
-  'April',
-  'Mei',
-  'Juni',
-  'Juli',
-  'Agustus',
-  'September',
-  'Oktober',
-  'November',
-  'Desember',
-]
-const availableYears = computed(() => {
-  const years = []
-  const current = new Date().getFullYear()
-  for (let i = current - 2; i <= current + 2; i++) {
-    years.push(i)
-  }
-  return years
-})
-
-const flattenedCategories = computed(() => {
-  const flat: any[] = []
-  categoryStore.allCategories.forEach((cat) => {
-    flat.push(cat) // Parent
-    if (cat.subCategories && cat.subCategories.length > 0) {
-      cat.subCategories.forEach((sub) => flat.push(sub))
-    }
-  })
-  return flat
-})
-
-const incomeCategories = computed(() =>
-  flattenedCategories.value.filter((c) => c.categoryType === 'INCOME'),
-)
-const flatExpenseCategories = computed(() =>
-  flattenedCategories.value.filter((c) => c.categoryType === 'EXPENSE'),
-)
-
-onMounted(async () => {
-  if (categoryStore.allCategories.length === 0) {
-    await categoryStore.fetchCategories()
-  }
-
-  if (isEditing.value && budgetId.value) {
-    const budget = budgetStore.allBudgets.find((b) => b.id === budgetId.value)
-    if (!budget) {
-    } else {
-      formData.year = budget.year
-      formData.month = budget.month
-      formData.categoryId = budget.categoryId
-      formData.amount = Number(budget.amount)
-      formData.description = budget.description || ''
-    }
-  }
-})
-
-const goBack = () => {
-  router.push({ name: 'budget-setup' })
-}
-
-const submitForm = async () => {
-  if (!formData.categoryId && !isEditing.value) return
-
+const categoryOptions = computed(() => budgetCategoryOptions(categories.value))
+const selectedCategory = computed(() => categories.value.find((category) => category.id === draft.categoryId))
+const isIncome = computed(() => selectedCategory.value?.categoryType === 'INCOME')
+const backLocation = computed(() => ({ name: 'budget-setup', query: { ...route.query, year: String(draft.year), month: String(draft.month) } }))
+let active = true, request = 0
+const loadForm = async () => {
+  const version = ++request
+  loading.value = true; loadError.value = ''; error.value = ''; original.value = null
+  Object.assign(draft, { ...budgetPeriod(route.query.year, route.query.month), categoryId: '', amount: null, description: '' })
   try {
-    if (isEditing.value) {
-      await budgetStore.updateBudget(budgetId.value, {
-        amount: formData.amount,
-        description: formData.description,
-      })
-    } else {
-      await budgetStore.createBudget({
-        categoryId: formData.categoryId,
-        amount: formData.amount,
-        year: formData.year,
-        month: formData.month,
-        description: formData.description,
-      })
-    }
-    router.push({ name: 'budget-setup' })
-  } catch (e) {
-    // Error handled in store helper usually, but we display via 'error' computed
-    console.error('Submit error', e)
-  }
+    if (isEditing.value && !budgetId.value) throw new Error('ID anggaran tidak valid.')
+    const [budget] = await Promise.all([isEditing.value ? store.fetchBudgetById(budgetId.value) : Promise.resolve(null), categoryStore.fetchCategories({ hierarchical: 'true' })])
+    if (!active || version !== request) return
+    if (categoryStore.categoryError) throw new Error(categoryStore.categoryError)
+    if (isEditing.value && !budget) throw new Error('Anggaran tidak ditemukan.')
+    if (budget) { original.value = budget; Object.assign(draft, { year: budget.year, month: budget.month, categoryId: budget.categoryId, amount: Number(budget.amount), description: budget.description || '' }) }
+  } catch { if (active && version === request) loadError.value = 'Anggaran atau kategori belum berhasil dimuat. Periksa koneksi dan pastikan anggaran masih tersedia.' }
+  finally { if (active && version === request) loading.value = false }
 }
+const submitForm = async () => {
+  if (saving.value || loading.value || loadError.value) return
+  const version = request
+  error.value = ''
+  try {
+    const payload = buildBudgetPayload(draft, categories.value)
+    saving.value = true
+    if (isEditing.value) {
+      if (!original.value) throw new Error('Anggaran tidak ditemukan.')
+      await store.updateBudget(original.value.id, { amount: payload.amount, description: payload.description })
+    } else await store.createBudget(payload)
+    if (active && version === request) { toast.show(isEditing.value ? 'Anggaran berhasil diperbarui.' : 'Anggaran berhasil dibuat.'); await router.push(backLocation.value) }
+  } catch (failure: unknown) {
+    if (!active || version !== request) return
+    error.value = (failure instanceof Error && !('response' in failure) ? failure.message : '') || store.budgetError || 'Anggaran belum berhasil disimpan.'
+    await nextTick(); errorBox.value?.focus()
+  } finally { saving.value = false }
+}
+watch([isEditing, budgetId], loadForm, { immediate: true })
+onBeforeUnmount(() => { active = false; request++ })
 </script>

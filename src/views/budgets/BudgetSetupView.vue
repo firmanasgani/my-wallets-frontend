@@ -1,458 +1,88 @@
 <template>
-  <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Pengaturan Anggaran</h1>
-        <div class="flex items-center flex-wrap gap-2 mt-1">
-          <p class="text-sm text-slate-500 dark:text-slate-400">Kelola anggaran bulanan Anda di sini.</p>
-        </div>
-      </div>
-      <div>
-        <button
-          @click="navigateToCreate"
-          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5 mr-2"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Buat Anggaran
-        </button>
-      </div>
-    </div>
-
-    <!-- Filters & Search -->
-    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-        <!-- Date Filters -->
-        <div class="flex flex-wrap items-center gap-4">
-          <div class="relative group">
-            <label for="filterYear" class="sr-only">Tahun</label>
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
-                />
-              </svg>
-            </div>
-            <select
-              id="filterYear"
-              v-model="filterYear"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white dark:focus:bg-slate-600 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
-            >
-              <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
-            </select>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                class="w-4 h-4 text-slate-400"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <div class="relative group">
-            <label for="filterMonth" class="sr-only">Bulan</label>
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
-                />
-              </svg>
-            </div>
-            <select
-              id="filterMonth"
-              v-model="filterMonth"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white dark:focus:bg-slate-600 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
-            >
-              <option v-for="(m, index) in monthNames" :key="index" :value="index + 1">
-                {{ m }}
-              </option>
-            </select>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                class="w-4 h-4 text-slate-400"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Search Input -->
-        <div class="relative w-full md:w-72 group">
-          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-              />
-            </svg>
-          </div>
-          <input
-            type="text"
-            v-model="searchQuery"
-            placeholder="Cari kategori budget..."
-            class="pl-11 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white dark:focus:bg-slate-600 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm py-2.5 placeholder:text-slate-400 dark:placeholder:text-slate-500"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- Monthly Summary -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
-        <div class="flex items-center">
-          <div class="p-2 bg-indigo-50 dark:bg-emerald-900/40 rounded-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6 text-emerald-600 dark:text-emerald-400"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div class="ml-4">
-            <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Anggaran</h3>
-            <p class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
-              {{ formatCurrency(totalMonthlyAmount) }}
-            </p>
-            <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-              {{ monthNames[filterMonth - 1] }} {{ filterYear }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
-        <div class="flex items-center">
-          <div class="p-2 bg-pink-50 dark:bg-pink-900/40 rounded-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-6 h-6 text-pink-600 dark:text-pink-400"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"
-              />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
-            </svg>
-          </div>
-          <div class="ml-4">
-            <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Jumlah Anggaran</h3>
-            <p class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
-              {{ budgetStore.allBudgets.length }} Kategori
-            </p>
-            <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-              {{ monthNames[filterMonth - 1] }} {{ filterYear }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Budget List -->
-    <div class="bg-white dark:bg-slate-800 shadow-sm rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-      <div v-if="isLoading" class="p-12 flex justify-center">
-        <LoadingSpinner :visible="true" text="Memuat anggaran..." />
-      </div>
-
-      <div v-else-if="budgets.length === 0" class="p-12 text-center">
-        <p class="text-slate-500 dark:text-slate-400">Belum ada anggaran untuk periode ini.</p>
-        <button
-          @click="navigateToCreate"
-          :disabled="!canAddBudget"
-          :title="addBudgetButtonTitle"
-          class="mt-4 text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium"
-          :class="{ 'opacity-50 cursor-not-allowed hover:text-emerald-600 dark:hover:text-emerald-400': !canAddBudget }"
-        >
-          Buat anggaran baru
-        </button>
-      </div>
-
-      <div v-else class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-          <thead class="bg-slate-50 dark:bg-slate-700/50">
-            <tr>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-              >
-                Kategori
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-              >
-                Nominal
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-              >
-                Deskripsi
-              </th>
-              <th scope="col" class="relative px-6 py-3">
-                <span class="sr-only">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-            <tr v-for="budget in budgets" :key="budget.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div
-                    class="h-8 w-8 rounded-full flex items-center justify-center text-lg mr-3"
-                    :style="{
-                      backgroundColor: budget.category?.color + '20' || '#f1f5f9',
-                      color: budget.category?.color || '#64748b',
-                    }"
-                  >
-                    <!-- Icon placeholder or library implementation -->
-                    <span v-if="budget.category?.icon">
-                      <i :class="['fa-solid', `fa-${budget.category.icon}`]"></i>
-                    </span>
-                    <span v-else>📁</span>
-                  </div>
-                  <div>
-                    <div class="text-sm font-medium text-slate-900 dark:text-slate-100">
-                      {{ budget.category?.categoryName }}
-                    </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400">
-                      {{ budget.category?.categoryType }}
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-bold text-slate-900 dark:text-slate-100">
-                  {{ formatCurrency(budget.amount) }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">
-                  {{ budget.description || '-' }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button
-                  @click="navigateToEdit(budget.id)"
-                  class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 mr-4"
-                >
-                  Edit
-                </button>
-                <button @click="confirmDelete(budget)" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
-                  Hapus
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <ConfirmationModal
-      v-model:isOpen="isDeleteModalOpen"
-      title="Hapus Anggaran"
-      message="Apakah Anda yakin ingin menghapus anggaran ini? Tindakan ini tidak dapat dibatalkan."
-      confirmButtonText="Hapus"
-      confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-      iconType="danger"
-      @confirm="handleDelete"
-    />
+  <div class="money-budgets">
+    <BudgetPageHeader title="Beri arah pada uangmu." subtitle="Susun batas pengeluaran dan target pemasukan, satu kategori setiap bulan." active="setup" :query="periodQuery">
+      <RouterLink :to="{ name: 'budget-create', query: periodQuery }" class="budget-button is-primary"><AppIcon name="plus" />Buat anggaran</RouterLink>
+    </BudgetPageHeader>
+    <section class="budget-toolbar" aria-label="Filter anggaran">
+      <BudgetPeriodPicker id="setup-period" v-model:year="year" v-model:month="month" :disabled="deleting" />
+      <AppSelect id="budget-type" v-model="type" :options="typeOptions" label="Jenis kategori" :disabled="deleting" />
+      <div class="budget-search"><label for="budget-search">Cari anggaran</label><div><AppIcon name="search" /><input id="budget-search" v-model="search" type="search" placeholder="Kategori atau catatan..." /></div></div>
+    </section>
+    <div v-if="loading" class="budget-state" role="status"><span class="budget-spinner" aria-hidden="true"></span><h2>Memuat anggaran...</h2><p>{{ periodLabel }}</p></div>
+    <div v-else-if="loadError" class="budget-state" role="alert"><AppIcon name="help" /><h2>Anggaran belum berhasil dimuat.</h2><p>{{ loadError }}</p><button class="budget-button" type="button" @click="fetchData">Coba lagi</button></div>
+    <template v-else>
+      <section class="budget-summary" aria-label="Ringkasan periode">
+        <article class="budget-summary-card is-lilac"><span><AppIcon name="calendar" />{{ periodLabel }}</span><strong>{{ rows.length }} kategori</strong><p>Rencana keuangan bulan ini</p></article>
+        <article class="budget-summary-card is-sun"><span><AppIcon name="wallet" />Batas pengeluaran</span><strong>{{ accountMoney(expenseTotal, 'IDR') }}</strong><p>{{ expenseCount }} kategori pengeluaran</p></article>
+        <article class="budget-summary-card is-mint"><span><AppIcon name="target" />Target pemasukan</span><strong>{{ accountMoney(incomeTotal, 'IDR') }}</strong><p>{{ incomeCount }} kategori pemasukan</p></article>
+      </section>
+      <section class="budget-list-panel" aria-labelledby="budget-list-heading">
+        <header class="budget-panel-heading"><div><span class="shell-overline">RENCANA BULANAN</span><h2 id="budget-list-heading">Daftar anggaran</h2></div><span class="budget-count" role="status">{{ visibleRows.length }} dari {{ rows.length }} kategori</span></header>
+        <div v-if="!visibleRows.length" class="budget-empty"><AppIcon :name="rows.length ? 'search' : 'target'" /><h3>{{ rows.length ? 'Belum ada yang cocok.' : 'Mulai dari satu kategori.' }}</h3><p>{{ rows.length ? 'Coba kata kunci atau jenis kategori lainnya.' : `Belum ada anggaran untuk ${periodLabel}. Tentukan rencana pertamamu.` }}</p><button v-if="rows.length" type="button" class="budget-button" @click="search = ''; type = ''">Reset pencarian</button><RouterLink v-else :to="{ name: 'budget-create', query: periodQuery }" class="budget-button is-primary"><AppIcon name="plus" />Buat anggaran</RouterLink></div>
+        <ul v-else class="budget-list">
+          <li v-for="budget in visibleRows" :key="budget.id" class="budget-row">
+            <div class="budget-category"><CategoryBadge :color="budget.category?.color" :icon="budget.category?.icon" /><div><h3>{{ budget.category?.categoryName || 'Kategori tidak tersedia' }}</h3><span class="budget-kind" :class="budget.category?.categoryType === 'INCOME' ? 'is-income' : 'is-expense'">{{ budget.category?.categoryType === 'INCOME' ? 'Target pemasukan' : 'Batas pengeluaran' }}</span></div></div>
+            <p class="budget-row-note">{{ budget.description || 'Tanpa catatan' }}</p>
+            <strong class="budget-row-amount">{{ accountMoney(budget.amount, 'IDR') }}</strong>
+            <div class="budget-row-actions"><RouterLink :to="{ name: 'budget-edit', params: { id: budget.id }, query: periodQuery }" class="budget-icon-button" :aria-label="`Edit anggaran ${budget.category?.categoryName || ''}`" title="Edit anggaran"><AppIcon name="edit" /></RouterLink><button type="button" class="budget-icon-button is-danger" :disabled="deleting" :aria-label="`Hapus anggaran ${budget.category?.categoryName || ''}`" title="Hapus anggaran" @click="confirmDelete(budget)"><AppIcon name="trash" /></button></div>
+          </li>
+        </ul>
+        <footer v-if="rows.length" class="budget-list-footer"><AppIcon name="info" /><p>Bandingkan rencana dengan transaksi bulan ini melalui laporan realisasi.</p><RouterLink :to="{ name: 'budget-report', query: periodQuery }">Lihat realisasi <AppIcon name="arrow" /></RouterLink></footer>
+      </section>
+    </template>
+    <ConfirmationModal v-model:isOpen="showDelete" title="Hapus anggaran?" :message="`Hapus anggaran ${selectedBudget?.category?.categoryName || 'ini'} untuk ${selectedBudget ? budgetPeriodLabel(selectedBudget.year, selectedBudget.month) : periodLabel}? Transaksi dan saldo akun tetap tersimpan. Anggaran yang dihapus tidak dapat dikembalikan.`" confirmButtonText="Hapus anggaran" iconType="danger" :isConfirming="deleting" @confirm="handleDelete" />
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useBudgetStore } from '@/stores/budget'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { RouterLink } from 'vue-router'
+import BudgetPageHeader from '@/components/budgets/BudgetPageHeader.vue'
+import BudgetPeriodPicker from '@/components/budgets/BudgetPeriodPicker.vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import CategoryBadge from '@/components/categories/CategoryBadge.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+import { useBudgetStore } from '@/stores/budget'
+import { useToastStore } from '@/stores/toast'
+import { useBudgetPeriod } from '@/composables/useBudgetPeriod'
+import { accountMoney } from '@/utils/accountList'
+import { budgetNumber, budgetPeriodLabel, filterBudgets } from '@/utils/budget'
 import type { Budget } from '@/types/budget'
+import '@/assets/categories.css'
+import '@/assets/budgets.css'
 
-import { useAuthStore } from '@/stores/auth'
-import { SubscriptionPlan } from '@/enums/pricing'
-
-const router = useRouter()
-const budgetStore = useBudgetStore()
-const authStore = useAuthStore()
-
-// No Free plan validation here as route guard handles it
-
-const currentDate = new Date()
-const filterYear = ref(currentDate.getFullYear())
-const filterMonth = ref(currentDate.getMonth() + 1)
-// ... existing variables ...
-
-// ...
-
-onMounted(async () => {
-  await Promise.all([fetchData(), budgetStore.fetchTotalBudgetCount()])
-})
-
-const monthNames = [
-  'Januari',
-  'Februari',
-  'Maret',
-  'April',
-  'Mei',
-  'Juni',
-  'Juli',
-  'Agustus',
-  'September',
-  'Oktober',
-  'November',
-  'Desember',
-]
-const availableYears = computed(() => {
-  const years = []
-  const current = new Date().getFullYear()
-  for (let i = current - 2; i <= current + 2; i++) {
-    years.push(i)
-  }
-  return years
-})
-
-const searchQuery = ref('')
-const budgets = computed(() => {
-  const all = budgetStore.allBudgets
-  if (!searchQuery.value) return all
-  const lower = searchQuery.value.toLowerCase()
-  return all.filter((b) => b.category?.categoryName.toLowerCase().includes(lower))
-})
-const isLoading = computed(() => budgetStore.isLoadingBudgets)
-
-const totalMonthlyAmount = computed(() => {
-  return budgetStore.allBudgets.reduce((sum, b) => sum + (Number(b.amount) || 0), 0)
-})
-
-const isPremiumOrFamily = computed(() => {
-  const plan = authStore.currentUser?.subscriptionPlan
-  return plan === SubscriptionPlan.PREMIUM || plan === SubscriptionPlan.FAMILY
-})
-
-const canAddBudget = computed(() => isPremiumOrFamily.value)
-
-const addBudgetButtonTitle = computed(() => {
-  return canAddBudget.value
-    ? 'Buat anggaran baru'
-    : 'Fitur Anggaran hanya tersedia untuk pengguna Premium dan Family'
-})
-
+const store = useBudgetStore(), toast = useToastStore()
+const { year, month, periodLabel, periodQuery } = useBudgetPeriod()
+const search = ref(''), type = ref('')
+const typeOptions = [{ value: '', label: 'Semua jenis' }, { value: 'EXPENSE', label: 'Pengeluaran' }, { value: 'INCOME', label: 'Pemasukan' }]
+const rows = ref<Budget[]>([]), loading = ref(true), loadError = ref('')
+const visibleRows = computed(() => filterBudgets(rows.value, search.value, type.value))
+const expenseRows = computed(() => rows.value.filter((row) => row.category?.categoryType === 'EXPENSE'))
+const incomeRows = computed(() => rows.value.filter((row) => row.category?.categoryType === 'INCOME'))
+const expenseTotal = computed(() => expenseRows.value.reduce((sum, row) => sum + budgetNumber(row.amount), 0))
+const incomeTotal = computed(() => incomeRows.value.reduce((sum, row) => sum + budgetNumber(row.amount), 0))
+const expenseCount = computed(() => expenseRows.value.length), incomeCount = computed(() => incomeRows.value.length)
+let request = 0, active = true
 const fetchData = async () => {
-  await budgetStore.fetchBudgets({
-    year: filterYear.value,
-    month: filterMonth.value,
-  })
+  const version = ++request
+  loading.value = true; loadError.value = ''
+  try {
+    const data = await store.fetchBudgets({ year: year.value, month: month.value })
+    if (!active || version !== request) return
+    if (data === null || data === undefined) loadError.value = store.budgetError || 'Silakan coba lagi.'
+    else rows.value = data
+  } catch { if (active && version === request) loadError.value = 'Silakan coba lagi.' }
+  finally { if (active && version === request) loading.value = false }
 }
-
-const navigateToCreate = () => {
-  router.push({ name: 'budget-create' })
-}
-
-const navigateToEdit = (id: string) => {
-  router.push({ name: 'budget-edit', params: { id } })
-}
-
-// Delete Logic
-const isDeleteModalOpen = ref(false)
-const budgetToDelete = ref<Budget | null>(null)
-
-const confirmDelete = (budget: Budget) => {
-  budgetToDelete.value = budget
-  isDeleteModalOpen.value = true
-}
-
+const showDelete = ref(false), deleting = ref(false), selectedBudget = ref<Budget | null>(null)
+const confirmDelete = (budget: Budget) => { if (!deleting.value) { selectedBudget.value = budget; showDelete.value = true } }
 const handleDelete = async () => {
-  if (budgetToDelete.value) {
-    try {
-      await budgetStore.deleteBudget(budgetToDelete.value.id)
-      await fetchData()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-  isDeleteModalOpen.value = false
-  budgetToDelete.value = null
+  if (!selectedBudget.value || deleting.value) return
+  deleting.value = true
+  try { await store.deleteBudget(selectedBudget.value.id); toast.show('Anggaran berhasil dihapus.'); showDelete.value = false; await fetchData() }
+  catch { toast.show(store.budgetError || 'Anggaran belum berhasil dihapus.', 'error') }
+  finally { deleting.value = false }
 }
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(value)
-}
-
-onMounted(() => {
-  fetchData()
-})
-
-watch([filterYear, filterMonth], () => {
-  fetchData()
-})
+watch([year, month], fetchData, { immediate: true })
+onBeforeUnmount(() => { active = false; request++ })
 </script>

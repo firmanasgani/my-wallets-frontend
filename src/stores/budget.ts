@@ -62,9 +62,11 @@ export const useBudgetStore = defineStore('budgets', {
         // Better to separate concerns or update it lazily.
         // Let's ensure we have the global count separate.
         this.fetchTotalBudgetCount()
+        return response.data
       } catch (err: any) {
         this.error = err.response?.data?.message || 'Gagal memuat daftar anggaran.'
         console.error('Fetch budgets error:', err)
+        return null
       } finally {
         this.isLoading = false
       }
@@ -81,12 +83,19 @@ export const useBudgetStore = defineStore('budgets', {
           params: { year, month },
         })
         this.report = response.data
+        return response.data
       } catch (err: any) {
         this.error = err.response?.data?.message || 'Gagal memuat laporan anggaran.'
         console.error('Fetch budget report error:', err)
+        return null
       } finally {
         this.isLoading = false
       }
+    },
+
+    async fetchBudgetById(id: string) {
+      const response = await apiClient.get<Budget>(`/budgets/${encodeURIComponent(id)}`)
+      return response.data
     },
 
     async createBudget(payload: CreateBudgetPayload) {

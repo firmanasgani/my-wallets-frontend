@@ -1,296 +1,94 @@
 <template>
-  <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div class="w-full">
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Laporan Anggaran</h1>
-        <p class="text-sm text-slate-500 mt-1 dark:text-white">Pantau realisasi anggaran Anda.</p>
-      </div>
-
-        <div class="flex flex-col sm:flex-row gap-4 items-end sm:items-center w-full justify-end">
-          <!-- Export Buttons -->
-          <div v-if="reportData.length > 0" class="flex gap-2 w-full md:w-auto">
-            <button
-              @click="exportBudget('excel')"
-                class="bg-white
-                dark:bg-slate-800 dark:text-slate-200 hover:bg-slate-50 text-slate-700 text-sm w-full md:w-auto font-medium py-2 px-4 rounded-lg flex items-center transition-colors shadow-sm"
-            title="Download Excel"
-          >
-            <i class="fa-solid fa-file-excel mr-2 text-green-600"></i>
-            Excel
-          </button>
-          <button
-            @click="exportBudget('pdf')"
-            class="bg-white hover:bg-slate-50 text-slate-700 text-sm w-full md:w-auto font-medium py-2 px-4 rounded-lg flex items-center dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors shadow-sm"
-            title="Download PDF"
-          >
-            <i class="fa-solid fa-file-pdf mr-2 text-red-600 "></i>
-            PDF
-          </button>
-        </div>
-
-        <!-- Filters -->
-        <div class="flex gap-4 w-full md:w-auto">
-          <div class="relative group w-full md:w-auto">
-            <label for="filterYear" class="sr-only">Tahun</label>
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
-                />
-              </svg>
-            </div>
-            <select
-              id="filterYear"
-              v-model="filterYear"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
-            >
-              <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
-            </select>
-          </div>
-
-          <div class="relative group w-full md:w-auto">
-            <label for="filterMonth" class="sr-only">Bulan</label>
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
-                />
-              </svg>
-            </div>
-            <select
-              id="filterMonth"
-              v-model="filterMonth"
-              class="pl-11 pr-10 py-2.5 block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-300 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200 text-sm font-medium cursor-pointer appearance-none"
-            >
-              <option v-for="(m, index) in monthNames" :key="index" :value="index + 1">
-                {{ m }}
-              </option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="isLoading" class="p-12 flex justify-center">
-      <LoadingSpinner :visible="true" text="Memuat laporan..." />
-    </div>
-
-    <div
-      v-else-if="reportData.length === 0"
-      class="bg-white p-12 text-center rounded-lg shadow-sm border border-slate-200 dark:bg-slate-800 dark:border-slate-700"
-    >
-      <p class="text-slate-500 dark:text-slate-400">Tidak ada data anggaran untuk periode ini.</p>
-      <RouterLink
-        :to="{ name: 'budget-setup' }"
-        class="mt-4 inline-block text-emerald-600 hover:text-emerald-800 font-medium"
-        >Buat anggaran sekarang</RouterLink
-      >
-    </div>
-
-    <div v-else class="space-y-6">
-      <!-- Summary Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-            Total Anggaran
-          </h3>
-          <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(totalBudget) }}</p>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-            Total Terpakai
-          </h3>
-          <p class="text-2xl font-bold text-red-600">{{ formatCurrency(totalSpent) }}</p>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-            Sisa Anggaran
-          </h3>
-          <p
-            class="text-2xl font-bold"
-            :class="totalRemaining >= 0 ? 'text-green-600' : 'text-red-600'"
-          >
-            {{ formatCurrency(totalRemaining) }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Detail List -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
-          <h3 class="text-lg font-medium text-slate-900 dark:text-white">Rincian per Kategori</h3>
-        </div>
-        <ul class="divide-y divide-slate-200 dark:divide-slate-700">
-          <li v-for="item in reportData" :key="item.id" class="p-6">
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center">
-                <div
-                  class="h-10 w-10 rounded-full flex items-center justify-center text-lg mr-3"
-                  :style="{
-                    backgroundColor: item.category?.color + '20' || '#f1f5f9',
-                    color: item.category?.color || '#64748b',
-                  }"
-                >
-                  <span v-if="item.category?.icon">
-                    <i :class="['fa-solid', `fa-${item.category.icon}`]"></i>
-                  </span>
-                  <span v-else>📁</span>
-                </div>
-                <div>
-                  <h4 class="text-sm font-bold text-slate-900 dark:text-white">
-                    {{ item.category?.categoryName }}
-                  </h4>
-                  <p class="text-xs text-slate-500 dark:text-slate-400">
-                    {{ item.description || 'Tidak ada deskripsi' }}
-                  </p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="text-sm font-medium text-slate-900 dark:text-white">
-                  Sisa: {{ formatCurrency(item.remaining) }}
-                </p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">
-                  Anggaran: {{ formatCurrency(Number(item.amount)) }}
-                </p>
-              </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="relative pt-1">
-              <div class="flex mb-2 items-center justify-between">
-                <div>
-                  <span
-                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full"
-                    :class="getBadgeClass(item.percentage)"
-                  >
-                    {{ item.percentage.toFixed(1) }}%
-                  </span>
-                </div>
-                <div class="text-right">
-                  <span class="text-xs font-semibold inline-block text-slate-600 dark:text-slate-300">
-                    {{ formatCurrency(item.spent) }} terpakai
-                  </span>
-                </div>
-              </div>
-              <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-slate-200">
-                <div
-                  :style="{ width: Math.min(item.percentage, 100) + '%' }"
-                  class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center transition-all duration-500"
-                  :class="getProgressBarClass(item.percentage)"
-                ></div>
-              </div>
-            </div>
+  <div class="money-budgets">
+    <BudgetPageHeader title="Lihat rencanamu berjalan." subtitle="Bandingkan anggaran dengan realisasi transaksi pada kategori yang sama." active="report" :query="periodQuery">
+      <button type="button" class="budget-button" :disabled="loading || !!loadError || exporting || !visibleRows.length" @click="exportBudget('excel')"><AppIcon name="download" />Excel</button>
+      <button type="button" class="budget-button" :disabled="loading || !!loadError || exporting || !visibleRows.length" @click="exportBudget('pdf')"><span v-if="exporting" class="budget-spinner" aria-hidden="true"></span><AppIcon v-else name="file" />PDF</button>
+    </BudgetPageHeader>
+    <section class="budget-toolbar" aria-label="Filter laporan">
+      <BudgetPeriodPicker id="report-period" v-model:year="year" v-model:month="month" />
+      <AppSelect id="report-type" v-model="type" :options="typeOptions" label="Jenis kategori" />
+      <div class="budget-search"><label for="report-search">Cari kategori</label><div><AppIcon name="search" /><input id="report-search" v-model="search" type="search" placeholder="Kategori atau catatan..." /></div></div>
+    </section>
+    <div v-if="loading" class="budget-state" role="status"><span class="budget-spinner" aria-hidden="true"></span><h2>Memuat realisasi anggaran...</h2><p>{{ periodLabel }}</p></div>
+    <div v-else-if="loadError" class="budget-state" role="alert"><AppIcon name="help" /><h2>Laporan belum berhasil dimuat.</h2><p>{{ loadError }}</p><button type="button" class="budget-button" @click="fetchData">Coba lagi</button></div>
+    <template v-else>
+      <section class="budget-report-overview" aria-label="Ringkasan realisasi periode">
+        <article v-for="summary in summaries" :key="summary.type" class="budget-overview-card" :class="summary.type === 'INCOME' ? 'is-mint' : 'is-sun'">
+          <header><AppIcon :name="summary.type === 'INCOME' ? 'target' : 'wallet'" /><div><span class="shell-overline">{{ periodLabel }}</span><h2>{{ summary.type === 'INCOME' ? 'Target pemasukan' : 'Batas pengeluaran' }}</h2></div><span class="budget-count">{{ summary.count }} kategori</span></header>
+          <strong>{{ accountMoney(summary.actual, 'IDR') }}</strong><p>{{ summary.type === 'INCOME' ? 'Pemasukan tercatat' : 'Pengeluaran tercatat' }} dari rencana {{ accountMoney(summary.amount, 'IDR') }}</p>
+          <div class="budget-overview-bottom"><span>{{ summary.type === 'INCOME' ? summary.remaining > 0 ? 'Menuju target' : 'Di atas target' : summary.remaining >= 0 ? 'Sisa anggaran' : 'Melebihi anggaran' }}</span><b>{{ accountMoney(Math.abs(summary.remaining), 'IDR') }}</b></div>
+        </article>
+      </section>
+      <section class="budget-list-panel" aria-labelledby="report-list-heading">
+        <header class="budget-panel-heading"><div><span class="shell-overline">DARI RENCANA KE REALISASI</span><h2 id="report-list-heading">Rincian per kategori</h2></div><span class="budget-count" role="status">{{ visibleRows.length }} dari {{ rows.length }} kategori</span></header>
+        <div v-if="!visibleRows.length" class="budget-empty"><AppIcon :name="rows.length ? 'search' : 'chart'" /><h3>{{ rows.length ? 'Belum ada yang cocok.' : 'Rencanakan dulu, pantau kemudian.' }}</h3><p>{{ rows.length ? 'Coba pencarian atau jenis kategori lain.' : `Buat anggaran untuk ${periodLabel} agar realisasinya bisa dipantau di sini.` }}</p><button v-if="rows.length" class="budget-button" type="button" @click="search = ''; type = ''">Reset pencarian</button><RouterLink v-else :to="{ name: 'budget-create', query: periodQuery }" class="budget-button is-primary"><AppIcon name="plus" />Buat anggaran</RouterLink></div>
+        <ul v-else class="budget-report-list">
+          <li v-for="item in displayRows" :key="item.id" class="budget-report-row">
+            <header><div class="budget-category"><CategoryBadge :color="item.category?.color" :icon="item.category?.icon" /><div><h3>{{ item.category?.categoryName || 'Kategori tidak tersedia' }}</h3><p>{{ item.description || (item.progress.income ? 'Target pemasukan' : 'Batas pengeluaran') }}</p></div></div><span class="budget-status" :class="`is-${item.progress.tone}`">{{ item.progress.status }}</span></header>
+            <dl class="budget-report-metrics"><div><dt>{{ item.progress.income ? 'Target' : 'Anggaran' }}</dt><dd>{{ accountMoney(item.amount, 'IDR') }}</dd></div><div><dt>{{ item.progress.income ? 'Tercapai' : 'Terpakai' }}</dt><dd>{{ accountMoney(item.spent, 'IDR') }}</dd></div><div><dt>{{ item.progress.income ? item.progress.remaining > 0 ? 'Menuju target' : 'Di atas target' : item.progress.remaining >= 0 ? 'Tersisa' : 'Melebihi batas' }}</dt><dd>{{ accountMoney(Math.abs(item.progress.remaining), 'IDR') }}</dd></div></dl>
+            <div class="budget-progress-heading"><span>{{ item.progress.income ? 'Pencapaian target' : 'Pemakaian anggaran' }}</span><strong>{{ item.progress.hasRatio ? `${item.progress.percentage.toLocaleString('id-ID', { maximumFractionDigits: 1 })}%` : 'Rencana Rp0' }}</strong></div>
+            <div class="budget-progress" :class="`is-${item.progress.tone}`" role="progressbar" :aria-label="`${item.category?.categoryName || 'Kategori'}: ${item.progress.status}`" :aria-valuenow="item.progress.width" :aria-valuetext="item.progress.hasRatio ? `${item.progress.percentage.toFixed(1)}% — ${item.progress.status}` : item.progress.status" aria-valuemin="0" aria-valuemax="100"><span :style="{ width: `${item.progress.width}%` }"></span></div>
+            <footer><span>{{ item.progress.income ? 'Realisasi mengikuti pemasukan kategori ini.' : 'Realisasi mengikuti pengeluaran kategori ini.' }}</span><RouterLink :to="{ name: 'budget-edit', params: { id: item.id }, query: periodQuery }">Sesuaikan anggaran <AppIcon name="arrow" /></RouterLink></footer>
           </li>
         </ul>
-      </div>
-    </div>
+        <footer v-if="rows.length" class="budget-list-footer"><AppIcon name="info" /><p>Ringkasan mencakup seluruh anggaran periode ini. Ekspor mengikuti kategori yang tampil. Transaksi tanpa anggaran tidak termasuk.</p></footer>
+      </section>
+    </template>
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { RouterLink } from 'vue-router'
+import BudgetPageHeader from '@/components/budgets/BudgetPageHeader.vue'
+import BudgetPeriodPicker from '@/components/budgets/BudgetPeriodPicker.vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import CategoryBadge from '@/components/categories/CategoryBadge.vue'
 import { useBudgetStore } from '@/stores/budget'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import ExportService from '@/services/exportService'
+import { useToastStore } from '@/stores/toast'
+import { useBudgetPeriod } from '@/composables/useBudgetPeriod'
+import { accountMoney } from '@/utils/accountList'
+import { budgetNumber, budgetProgress, filterBudgets } from '@/utils/budget'
+import type { BudgetReportItem } from '@/types/budget'
+import '@/assets/categories.css'
+import '@/assets/budgets.css'
 
-const budgetStore = useBudgetStore()
-
-const currentDate = new Date()
-const filterYear = ref(currentDate.getFullYear())
-const filterMonth = ref(currentDate.getMonth() + 1)
-
-const monthNames = [
-  'Januari',
-  'Februari',
-  'Maret',
-  'April',
-  'Mei',
-  'Juni',
-  'Juli',
-  'Agustus',
-  'September',
-  'Oktober',
-  'November',
-  'Desember',
-]
-const availableYears = computed(() => {
-  const years = []
-  const current = new Date().getFullYear()
-  for (let i = current - 2; i <= current + 2; i++) {
-    years.push(i)
-  }
-  return years
-})
-
-const reportData = computed(() => budgetStore.budgetReport)
-const isLoading = computed(() => budgetStore.isLoadingBudgets) // Using same loading state as fetchBudgets or should separate? Store uses 'isLoading' for both. Ideally separate but acceptable.
-
-// Aggregates
-const totalBudget = computed(() =>
-  reportData.value.reduce((acc, curr) => acc + Number(curr.amount), 0),
-)
-const totalSpent = computed(() => reportData.value.reduce((acc, curr) => acc + curr.spent, 0))
-const totalRemaining = computed(() => totalBudget.value - totalSpent.value)
-
+const store = useBudgetStore(), toast = useToastStore()
+const { year, month, periodLabel, periodQuery } = useBudgetPeriod()
+const loading = ref(true), loadError = ref(''), exporting = ref(false), search = ref(''), type = ref('')
+const typeOptions = [{ value: '', label: 'Semua jenis' }, { value: 'EXPENSE', label: 'Pengeluaran' }, { value: 'INCOME', label: 'Pemasukan' }]
+const rows = ref<BudgetReportItem[]>([])
+const visibleRows = computed(() => filterBudgets(rows.value, search.value, type.value))
+const displayRows = computed(() => visibleRows.value.map((row) => ({ ...row, progress: budgetProgress(row) })))
+const summaries = computed(() => ['EXPENSE', 'INCOME'].map((categoryType) => {
+  const items = rows.value.filter((row) => row.category?.categoryType === categoryType)
+  const amount = items.reduce((sum, row) => sum + budgetNumber(row.amount), 0)
+  const actual = items.reduce((sum, row) => sum + budgetNumber(row.spent), 0)
+  return { type: categoryType, count: items.length, amount, actual, remaining: amount - actual }
+}))
+let request = 0, active = true
 const fetchData = async () => {
-  await budgetStore.fetchBudgetReport(filterYear.value, filterMonth.value)
+  const version = ++request
+  loading.value = true; loadError.value = ''
+  try {
+    const data = await store.fetchBudgetReport(year.value, month.value)
+    if (!active || version !== request) return
+    if (data === null || data === undefined) loadError.value = store.budgetError || 'Silakan coba lagi.'
+    else rows.value = data
+  } catch { if (active && version === request) loadError.value = 'Silakan coba lagi.' }
+  finally { if (active && version === request) loading.value = false }
 }
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(value)
-}
-
-const getProgressBarClass = (percentage: number) => {
-  if (percentage >= 100) return 'bg-red-500'
-  if (percentage >= 80) return 'bg-yellow-500'
-  return 'bg-green-500'
-}
-
-const getBadgeClass = (percentage: number) => {
-  if (percentage >= 100) return 'text-red-600 bg-red-200'
-  if (percentage >= 80) return 'text-yellow-600 bg-yellow-200'
-  return 'text-green-600 bg-green-200'
-}
-
 const exportBudget = async (format: 'excel' | 'pdf') => {
-  if (reportData.value.length === 0) return
-
-  const periodName = `${monthNames[filterMonth.value - 1]} ${filterYear.value}`
-
-  if (format === 'excel') {
-    await ExportService.exportBudgetsToExcel(reportData.value, periodName)
-  } else {
-    ExportService.exportBudgetsToPDF(reportData.value, periodName)
-  }
+  if (exporting.value || loading.value || loadError.value || !visibleRows.value.length) return
+  const data = visibleRows.value.map((row) => ({ ...row })), label = periodLabel.value
+  exporting.value = true
+  try {
+    const { default: service } = await import('@/services/exportService')
+    if (format === 'excel') await service.exportBudgetsToExcel(data, label)
+    else await service.exportBudgetsToPDF(data, label)
+  } catch { toast.show('Laporan belum berhasil diekspor. Silakan coba lagi.', 'error') }
+  finally { exporting.value = false }
 }
-
-onMounted(() => {
-  fetchData()
-})
-
-watch([filterYear, filterMonth], () => {
-  fetchData()
-})
+watch([year, month], fetchData, { immediate: true })
+onBeforeUnmount(() => { active = false; request++ })
 </script>
