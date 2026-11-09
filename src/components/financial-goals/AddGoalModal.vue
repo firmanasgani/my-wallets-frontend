@@ -1,189 +1,46 @@
 <template>
-  <Transition
-    enter-active-class="transition ease-out duration-200"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-150"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="isOpen"
-      class="fixed inset-0 z-[60] overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
-      @click.self="$emit('close')"
-    >
-      <div
-        class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl transform transition-all max-w-lg w-full overflow-hidden border border-slate-200 dark:border-slate-700"
-        @click.stop
-      >
-        <div class="px-6 py-6">
-          <div class="flex items-start">
-
-            <div class="ml-4 w-full text-left">
-              <h3 class="text-xl font-bold text-slate-900 dark:text-white" id="modal-title">
-                {{ isEdit ? 'Edit Goal' : 'Tambah Goal Baru' }}
-              </h3>
-              <div class="mt-4 space-y-4">
-                <!-- Name -->
-                <div>
-                  <label
-                    for="goal-name"
-                    class="block text-sm font-medium text-slate-700 dark:text-slate-300"
-                    >Nama Goal</label
-                  >
-                  <input
-                    type="text"
-                    id="goal-name"
-                    v-model="form.name"
-                    placeholder="misal: Liburan ke Bali"
-                    :class="inputClass"
-                  />
-                </div>
-
-                <!-- Target Amount -->
-                <div>
-                  <label
-                    for="goal-amount"
-                    class="block text-sm font-medium text-slate-700 dark:text-slate-300"
-                    >Target Nominal (IDR)</label
-                  >
-                  <CurrencyInput id="goal-amount" v-model="form.targetAmount" :class="inputClass" />
-                </div>
-
-                <!-- Target Date -->
-                <div>
-                  <label
-                    for="goal-date"
-                    class="block text-sm font-medium text-slate-700 dark:text-slate-300"
-                    >Target Tanggal (Opsional)</label
-                  >
-                  <input
-                    type="date"
-                    id="goal-date"
-                    v-model="form.targetDate"
-                    :class="[inputClass, 'dark:[color-scheme:dark]']"
-                  />
-                </div>
-
-                <!-- Description -->
-                <div>
-                  <label
-                    for="goal-desc"
-                    class="block text-sm font-medium text-slate-700 dark:text-slate-300"
-                    >Deskripsi (Opsional)</label
-                  >
-                  <textarea
-                    id="goal-desc"
-                    v-model="form.description"
-                    rows="3"
-                    :class="inputClass"
-                    placeholder="Kenapa Anda ingin mencapai goal ini?"
-                  ></textarea>
-                </div>
-
-                <div
-                  v-if="goalStore.errorMessage"
-                  class="text-sm text-red-600 font-medium p-2 bg-red-50 dark:bg-red-900/20 rounded"
-                >
-                  {{ goalStore.errorMessage }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-slate-50 dark:bg-slate-900/50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-3"
-        >
-          <button
-            type="button"
-            @click="submit"
-            :disabled="goalStore.submitting || !isValid"
-            class="inline-flex justify-center items-center px-6 py-2 bg-[#2E8B57] text-white font-bold rounded-lg hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 transition-colors"
-          >
-            <LoadingSpinner
-              v-if="goalStore.submitting"
-              :visible="true"
-              class="mr-2"
-              color="text-white"
-              size="xs"
-            />
-            {{ isEdit ? 'Simpan Perubahan' : 'Buat Goal' }}
-          </button>
-          <button
-            type="button"
-            @click="$emit('close')"
-            class="inline-flex justify-center px-6 py-2 bg-white text-slate-700 border border-slate-300 font-bold rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700 transition-colors"
-          >
-            Batal
-          </button>
-        </div>
-      </div>
-    </div>
-  </Transition>
+  <GoalDialog :is-open="isOpen" :title="goal ? 'Sesuaikan goal keuangan.' : 'Mulai dari satu impian.'" description="Tentukan tujuan, target dana, dan waktu yang ingin kamu capai." :busy="saving" @close="$emit('close')">
+    <form class="goal-dialog-form" :aria-busy="saving" @submit.prevent="submit">
+      <div v-if="error" ref="errorBox" class="goal-error" role="alert" tabindex="-1"><AppIcon name="warning" />{{ error }}</div>
+      <fieldset :disabled="saving"><legend class="shell-sr-only">Rencana goal keuangan</legend>
+        <div class="goal-field"><label for="goal-name">Nama goal</label><input id="goal-name" v-model="draft.name" type="text" required maxlength="100" placeholder="Contoh: Dana darurat keluarga" autofocus /></div>
+        <div class="goal-field goal-amount-field"><label for="goal-amount">Target nominal</label><div><span>IDR</span><CurrencyInput id="goal-amount" v-model="draft.targetAmount" required placeholder="0" /></div></div>
+        <div class="goal-field"><label for="goal-date">Tanggal target <span>{{ goal?.targetDate ? '(ganti tanggal)' : '(opsional)' }}</span></label><input id="goal-date" v-model="draft.targetDate" type="date" :required="!!goal?.targetDate" /><p v-if="goal?.targetDate" class="goal-hint">Tanggal yang sudah tersimpan dapat diganti dengan tanggal lain.</p></div>
+        <AppSelect v-if="goal" id="goal-status" v-model="draft.status" :options="statusOptions" label="Status goal" :disabled="saving" />
+        <p v-if="goal && goalNumber(goal.currentSaved) > 0" class="goal-hint">Lepaskan seluruh alokasi dana sebelum memilih status Dibatalkan.</p>
+        <div class="goal-field"><label for="goal-description">Catatan <span>(opsional)</span></label><textarea id="goal-description" v-model="draft.description" rows="3" maxlength="255" placeholder="Apa yang membuat tujuan ini berarti untukmu?"></textarea></div>
+      </fieldset>
+      <div class="goal-form-note"><AppIcon name="info" /><p>Membuat atau mengedit goal tidak memindahkan uang. Tambahkan alokasi dana dari halaman detail.</p></div>
+      <footer class="goal-dialog-actions"><button type="button" class="goal-button" :disabled="saving" @click="$emit('close')">Batal</button><button type="submit" class="goal-button is-primary" :disabled="saving"><span v-if="saving" class="goal-spinner" aria-hidden="true"></span><AppIcon v-else name="check" />{{ saving ? 'Menyimpan...' : goal ? 'Simpan perubahan' : 'Buat goal' }}</button></footer>
+    </form>
+  </GoalDialog>
 </template>
-
 <script setup lang="ts">
-import { computed, reactive, onMounted } from 'vue'
-import { useFinancialGoalStore } from '@/stores/financialGoals'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
+import GoalDialog from './GoalDialog.vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
 import CurrencyInput from '@/components/common/CurrencyInput.vue'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { useFinancialGoalStore } from '@/stores/financialGoals'
+import { GoalStatus } from '@/types/enums'
 import type { FinancialGoal } from '@/types/financialGoals'
-
-const props = defineProps<{
-  isOpen: boolean
-  goal?: FinancialGoal | null
-}>()
-
-const emit = defineEmits(['close', 'success'])
-const goalStore = useFinancialGoalStore()
-
-const isEdit = computed(() => !!props.goal)
-
-const inputClass =
-  'mt-1 block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder:text-slate-500 transition-colors'
-
-const form = reactive({
-  name: '',
-  targetAmount: 0,
-  targetDate: '',
-  description: '',
-})
-
-const isValid = computed(() => {
-  return form.name.trim().length > 0 && form.targetAmount > 0
-})
-
-onMounted(() => {
-  if (props.goal) {
-    form.name = props.goal.name
-    form.targetAmount = props.goal.targetAmount
-    form.description = props.goal.description || ''
-    if (props.goal.targetDate) {
-      form.targetDate = new Date(props.goal.targetDate).toISOString().split('T')[0]
-    }
-  }
-})
-
+import { buildGoalPayload, goalNumber, goalStatusOptions, type GoalDraft } from '@/utils/financialGoals'
+const props = defineProps<{ isOpen: boolean; goal?: FinancialGoal | null }>()
+const emit = defineEmits<{ close: []; success: [] }>()
+const store = useFinancialGoalStore(), saving = ref(false), error = ref(''), errorBox = ref<HTMLElement | null>(null)
+const draft = reactive<GoalDraft>({ name: '', targetAmount: null, targetDate: '', description: '', status: GoalStatus.ACTIVE })
+const statusOptions = computed(() => goalStatusOptions.map((option) => ({ ...option, disabled: option.value === GoalStatus.CANCELLED && props.goal?.status !== GoalStatus.CANCELLED && goalNumber(props.goal?.currentSaved) > 0 })))
+watch(() => props.isOpen, (open) => { if (open) { error.value = ''; Object.assign(draft, { name: props.goal?.name || '', targetAmount: props.goal ? goalNumber(props.goal.targetAmount) : null, targetDate: props.goal?.targetDate?.slice(0, 10) || '', description: props.goal?.description || '', status: props.goal?.status || GoalStatus.ACTIVE }) } }, { immediate: true })
 const submit = async () => {
+  if (saving.value) return
+  error.value = ''
   try {
-    if (isEdit.value && props.goal) {
-      await goalStore.updateGoal(props.goal.id, {
-        name: form.name,
-        targetAmount: form.targetAmount,
-        targetDate: form.targetDate || undefined,
-        description: form.description,
-      })
-    } else {
-      await goalStore.createGoal({
-        name: form.name,
-        targetAmount: form.targetAmount,
-        targetDate: form.targetDate || undefined,
-        description: form.description,
-      })
-    }
+    const payload = buildGoalPayload(draft, props.goal)
+    saving.value = true
+    if (props.goal) await store.updateGoal(props.goal.id, payload)
+    else await store.createGoal(payload)
     emit('success')
-  } catch (error) {
-    console.error('Failed to submit goal:', error)
-  }
+  } catch (failure: unknown) { error.value = failure instanceof Error ? failure.message : 'Goal belum berhasil disimpan.'; await nextTick(); errorBox.value?.focus() }
+  finally { saving.value = false }
 }
 </script>

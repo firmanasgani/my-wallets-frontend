@@ -1,473 +1,62 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header & Navigation -->
-    <div class="flex items-center justify-between dark:text-white">
-      <button
-        @click="goBack"
-        class="inline-flex items-center text-slate-500 hover:text-emerald-600 transition-colors between dark:text-white"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-5 h-5 mr-1"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-          />
-        </svg>
-        Kembali ke Daftar
-      </button>
-      <div class="flex space-x-2">
-        <button
-          @click="isEditModalOpen = true"
-          class="px-3 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600"
-        >
-          Edit Goal
-        </button>
-        <button
-          @click="confirmDelete"
-          class="px-3 py-1.5 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors dark:bg-slate-800 dark:text-red-400 dark:border-red-900/30"
-        >
-          Hapus
-        </button>
+  <div class="money-goals">
+    <header class="goals-heading"><div><RouterLink :to="listLocation" class="goal-back"><AppIcon name="arrow" />Daftar goal keuangan</RouterLink><span class="shell-overline">LANGKAH DEMI LANGKAH MENUJU TUJUANMU</span><h1>Rencana yang terus bertumbuh.</h1><p>Kelola alokasi, catat penggunaan, dan lihat perjalanan dana goalmu.</p></div><div v-if="goal && !loading" class="goal-heading-actions"><button type="button" class="goal-button" @click="showEditor = true"><AppIcon name="edit" />Edit goal</button><button type="button" class="goal-button is-danger" @click="showDelete = true"><AppIcon name="trash" />Hapus goal</button></div></header>
+    <div v-if="loading" class="goal-state" role="status"><span class="goal-spinner" aria-hidden="true"></span><h2>Memuat perjalanan goalmu...</h2></div>
+    <div v-else-if="!goal" class="goal-state" role="alert"><AppIcon name="help" /><h2>Goal belum dapat ditampilkan.</h2><p>{{ loadError || 'Goal tidak ditemukan atau kamu tidak memiliki akses.' }}</p><button type="button" class="goal-button" @click="loadGoal">Coba lagi</button><RouterLink :to="listLocation" class="goal-button is-primary">Kembali ke daftar</RouterLink></div>
+    <template v-else>
+      <section class="goal-detail-hero"><header><span class="goal-detail-symbol"><AppIcon name="target" /></span><div><span class="shell-overline">TUJUAN FINANSIALMU</span><h2>{{ goal.name }}</h2><p v-if="goal.description">{{ goal.description }}</p></div><span class="goal-status" :class="`is-${goal.status.toLowerCase()}`">{{ goalStatusLabel(goal.status) }}</span></header><div class="goal-detail-amounts"><div><span>Dana teralokasi</span><strong>{{ accountMoney(progress.saved, 'IDR') }}</strong></div><div><span>Target nominal</span><strong>{{ accountMoney(progress.target, 'IDR') }}</strong></div></div><div class="goal-progress-heading"><span>{{ progress.reached ? 'Target nominal tercapai' : 'Progres menuju target' }}</span><strong>{{ progress.percentage.toLocaleString('id-ID', { maximumFractionDigits: 1 }) }}%</strong></div><div class="goal-progress" role="progressbar" :aria-label="`Progres ${goal.name}`" :aria-valuenow="progress.width" :aria-valuetext="`${progress.percentage.toFixed(1)}%`" aria-valuemin="0" aria-valuemax="100"><span :style="{ width: `${progress.width}%` }"></span></div><div class="goal-detail-progress-note"><span><AppIcon name="calendar" />{{ goal.targetDate ? `Target ${transactionDateLabel(goal.targetDate)}` : 'Tanpa tanggal target' }}</span><span>{{ progress.reached ? 'Dana telah memenuhi target nominal.' : `Masih perlu ${accountMoney(progress.remaining, 'IDR')}` }}</span></div><footer class="goal-fund-actions"><button type="button" class="goal-button is-primary" :disabled="goal.status !== 'ACTIVE'" @click="fundMode = 'allocate'"><AppIcon name="plus" />Alokasikan dana</button><button type="button" class="goal-button" :disabled="progress.saved <= 0" @click="fundMode = 'spend'"><AppIcon name="wallet" />Gunakan dana</button><button type="button" class="goal-button" :disabled="progress.saved <= 0" @click="fundMode = 'release'"><AppIcon name="transfer" />Lepaskan alokasi</button></footer><p v-if="goal.status !== 'ACTIVE'" class="goal-hint">Alokasi baru hanya tersedia untuk goal berstatus Aktif.</p></section>
+      <div class="goal-detail-layout">
+        <section class="goal-ledger-panel" aria-labelledby="ledger-heading"><header class="goal-panel-heading"><div><span class="shell-overline">JEJAK LANGKAHMU</span><h2 id="ledger-heading">Riwayat dana</h2></div><AppSelect id="goal-ledger-type" v-model="ledgerType" :options="ledgerOptions" aria-label="Jenis pergerakan dana" /></header>
+          <div v-if="!visibleLedgers.length" class="goal-ledger-empty"><AppIcon name="book" /><h3>{{ ledgers.length ? 'Belum ada riwayat jenis ini.' : 'Mulai dari alokasi pertamamu.' }}</h3><p>{{ ledgers.length ? 'Pilih jenis pergerakan lain untuk melihat riwayat.' : 'Setiap alokasi dan penggunaan dana akan tercatat di sini.' }}</p></div>
+          <ol v-else class="goal-ledger-list"><li v-for="ledger in visibleLedgers" :key="ledger.id"><span class="goal-ledger-symbol" :class="ledger.direction === 'INCOMING' ? 'is-incoming' : 'is-outgoing'"><AppIcon :name="ledger.direction === 'INCOMING' ? 'plus' : 'arrow'" /></span><div class="goal-ledger-description"><h3>{{ goalLedgerLabel(ledger.type) }}</h3><div class="goal-ledger-meta"><RouterLink v-if="ledger.account?.id" :to="{ name: 'account-detail', params: { id: ledger.account.id } }">{{ ledger.account.accountName || 'Lihat akun' }}</RouterLink><span v-else>{{ ledger.account?.accountName || 'Akun tidak tersedia' }}</span><time :datetime="ledger.createdAt">{{ transactionDateLabel(ledger.createdAt, true) }}</time></div><p v-if="ledger.note">{{ ledger.note }}</p><RouterLink v-if="ledger.referenceTransactionId" :to="{ name: 'transaction-detail', params: { id: ledger.referenceTransactionId } }" class="goal-text-link">Lihat transaksi <AppIcon name="arrow" /></RouterLink></div><strong class="goal-ledger-amount">{{ ledger.direction === 'INCOMING' ? '+' : '−' }}{{ accountMoney(ledger.amount, 'IDR') }}</strong></li></ol>
+          <footer class="goal-ledger-footer" role="status">{{ visibleLedgers.length }} dari {{ ledgers.length }} pergerakan dana · Terbaru lebih dulu</footer>
+        </section>
+        <aside class="goal-detail-sidebar"><section class="goal-info-panel is-lilac"><span class="goal-info-symbol"><AppIcon name="info" /></span><h2>Uangnya tetap di akunmu.</h2><p>Alokasi menandai dana untuk goal tanpa memindahkan saldo. Gunakan dana untuk mencatat pengeluaran, atau lepaskan alokasi agar dana tersedia kembali.</p></section><section class="goal-info-panel"><h2>Rincian perjalanan</h2><dl><div><dt>Masih perlu dialokasikan</dt><dd>{{ accountMoney(progress.remaining, 'IDR') }}</dd></div><div><dt>Total pengeluaran goal</dt><dd>{{ accountMoney(totalSpent, 'IDR') }}</dd></div><div><dt>Dibuat pada</dt><dd>{{ transactionDateLabel(goal.createdAt) }}</dd></div><div><dt>Terakhir diperbarui</dt><dd>{{ transactionDateLabel(goal.updatedAt, true) }}</dd></div></dl></section></aside>
       </div>
-    </div>
-
-    <div
-      v-if="goalStore.loading && !goalStore.goalDetails"
-      class="flex flex-col items-center justify-center py-20"
-    >
-      <LoadingSpinner :visible="true" text="Memuat detail goal..." />
-    </div>
-
-    <div v-else-if="goal" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Left Column: Goal Summary -->
-      <div class="lg:col-span-2 space-y-6">
-        <div
-          class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700"
-        >
-          <div class="flex justify-between items-start mb-6">
-            <div>
-              <h1 class="text-3xl font-bold text-slate-900 dark:text-white">{{ goal.name }}</h1>
-              <p v-if="goal.description" class="text-slate-500 dark:text-slate-400 mt-2 italic">
-                "{{ goal.description }}"
-              </p>
-            </div>
-            <span
-              :class="[
-                'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider',
-                statusClasses,
-              ]"
-            >
-              {{ goal.status }}
-            </span>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
-            <div class="space-y-1">
-              <p
-                class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-              >
-                Terkumpul
-              </p>
-              <p class="text-4xl font-black text-slate-900 dark:text-white">
-                {{ formatCurrency(goal.currentSaved) }}
-              </p>
-            </div>
-            <div class="space-y-1">
-              <p
-                class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-              >
-                Target
-              </p>
-              <p class="text-4xl font-black text-slate-300 dark:text-slate-600">
-                {{ formatCurrency(goal.targetAmount) }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Large Progress Bar -->
-          <div class="space-y-2 mb-6">
-            <div class="flex justify-between text-sm font-bold text-slate-700 dark:text-slate-300">
-              <span>Progres Pencapaian</span>
-              <span>{{ Number(goal.progressPercentage).toFixed(1).replace('.0', '') }}%</span>
-            </div>
-            <div
-              class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-5 overflow-hidden shadow-inner p-0.5"
-            >
-              <div
-                class="h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
-                :class="progressColor"
-                :style="{ width: `${Math.min(goal.progressPercentage, 100)}%` }"
-              ></div>
-            </div>
-            <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
-              <span v-if="goal.targetDate">Deadline: {{ formatDate(goal.targetDate) }}</span>
-              <span v-else>Tidak ada tenggat waktu</span>
-              <span v-if="goal.remainingAmount > 0"
-                >Sisa: {{ formatCurrency(goal.remainingAmount) }}</span
-              >
-              <span v-else class="text-green-600 font-bold">Goal Tercapai!</span>
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div
-            class="grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-slate-100 dark:border-slate-700 pt-6"
-          >
-            <button
-              @click="isAllocateModalOpen = true"
-              class="flex items-center justify-center px-4 py-2 bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B43] transition-colors font-semibold"
-            >
-              Nabung (Alokasi)
-            </button>
-            <button
-              @click="isSpendModalOpen = true"
-              :disabled="goal.currentSaved <= 0"
-              class="flex items-center justify-center px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors font-semibold disabled:opacity-50"
-            >
-              Gunakan Dana
-            </button>
-            <button
-              @click="isReleaseModalOpen = true"
-              :disabled="goal.currentSaved <= 0"
-              class="flex items-center justify-center px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors font-semibold disabled:opacity-50 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600"
-            >
-              Lepas Alokasi
-            </button>
-          </div>
-        </div>
-
-        <!-- Ledger History -->
-        <div
-          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden"
-        >
-          <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700">
-            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Riwayat Dana</h2>
-          </div>
-
-          <div class="divide-y divide-slate-100 dark:divide-slate-700">
-            <div
-              v-if="goalStore.loading && !goalStore.ledgers.length"
-              class="p-8 text-center text-slate-500"
-            >
-              Memuat riwayat...
-            </div>
-            <div v-else-if="goalStore.ledgers.length === 0" class="p-12 text-center">
-              <p class="text-slate-500 dark:text-slate-400">
-                Belum ada riwayat pergerakan dana untuk goal ini.
-              </p>
-            </div>
-
-            <div
-              v-for="ledger in goalStore.ledgers"
-              :key="ledger.id"
-              class="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors flex items-center justify-between"
-            >
-              <div class="flex items-center space-x-4">
-                <div
-                  :class="[
-                    'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
-                    ledger.direction === 'INCOMING'
-                      ? 'bg-green-100 text-green-600'
-                      : 'bg-red-100 text-red-600',
-                  ]"
-                >
-                  <svg
-                    v-if="ledger.direction === 'INCOMING'"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 4.5v15m0-15l-6.75 6.75M12 4.5l6.75 6.75"
-                    />
-                  </svg>
-                  <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 19.5v-15m0 0l-6.75 6.75M12 19.5l6.75-6.75"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm font-bold text-slate-800 dark:text-slate-200">
-                    {{ ledgerTypeLabel(ledger.type) }}
-                  </p>
-                  <p class="text-xs text-slate-500 dark:text-slate-400">
-                    {{ ledger.account?.accountName || 'Unknown Akun' }} &bull;
-                    {{ formatDateFull(ledger.createdAt) }}
-                  </p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p
-                  :class="[
-                    'text-sm font-bold',
-                    ledger.direction === 'INCOMING' ? 'text-green-600' : 'text-red-600',
-                  ]"
-                >
-                  {{ ledger.direction === 'INCOMING' ? '+' : '-'
-                  }}{{ formatCurrency(ledger.amount) }}
-                </p>
-                <p v-if="ledger.note" class="text-xs text-slate-500 dark:text-slate-400 italic">
-                  {{ ledger.note }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Info & Tips -->
-      <div class="space-y-6">
-        <div class="bg-[#2E8B57] rounded-xl p-6 text-white shadow-md">
-          <h3 class="text-lg font-bold mb-2 flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="2"
-              stroke="currentColor"
-              class="w-5 h-5 mr-2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m11.25 11.25.041-.02a.75.75 0 1 1 .512 1.35l-.493.17a.75.75 0 0 1-.954-.814l.036-.686Z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M8.625 9.25a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l3.184-2.122a18.147 18.147 0 0 0 2.535-.549c1.556-.33 2.586-1.789 2.586-3.386V6.222c0-1.551-1.025-2.914-2.52-3.175A48.393 48.393 0 0 0 12 2.75c-1.098 0-2.19.033-3.276.098-1.567.094-2.724 1.406-2.724 2.984v7.178Z"
-              />
-            </svg>
-            Apa itu Alokasi?
-          </h3>
-          <p class="text-emerald-100 text-sm leading-relaxed">
-            Sistem kami menggunakan <b>soft allocation</b>. Saldo rekening Anda tetap utuh, namun
-            kami "menandai" sebagian dana agar tidak terpakai untuk pengeluaran sehari-hari.
-          </p>
-        </div>
-
-        <div
-          class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700"
-        >
-          <h3 class="font-bold text-slate-900 dark:text-white mb-4">Ringkasan Sisa</h3>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-slate-500 dark:text-slate-400">Masih perlu ditabung</span>
-              <span class="font-bold text-slate-800 dark:text-slate-200">{{
-                formatCurrency(goal.remainingAmount)
-              }}</span>
-            </div>
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-slate-500 dark:text-slate-400">Total Pengeluaran Goal</span>
-              <span class="font-bold text-red-600">{{ formatCurrency(totalSpent) }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modals -->
-    <AddGoalModal
-      v-if="isEditModalOpen && goal"
-      :is-open="isEditModalOpen"
-      :goal="goal"
-      @close="isEditModalOpen = false"
-      @success="handleUpdateSuccess"
-    />
-
-    <AllocateModal
-      v-if="isAllocateModalOpen"
-      :is-open="isAllocateModalOpen"
-      :goal-id="id"
-      @close="isAllocateModalOpen = false"
-      @success="handleActionSuccess('Dana berhasil dialokasikan!')"
-    />
-
-    <SpendModal
-      v-if="isSpendModalOpen && goal"
-      :is-open="isSpendModalOpen"
-      :goal="goal"
-      @close="isSpendModalOpen = false"
-      @success="handleActionSuccess('Pengeluaran dana tercatat!')"
-    />
-
-    <ReleaseModal
-      v-if="isReleaseModalOpen && goal"
-      :is-open="isReleaseModalOpen"
-      :goal="goal"
-      @close="isReleaseModalOpen = false"
-      @success="handleActionSuccess('Alokasi dana berhasil dilepas!')"
-    />
-
-    <ConfirmationModal
-      v-model:isOpen="isDeleteConfirmOpen"
-      title="Hapus Goal"
-      :message="`Apakah Anda yakin ingin menghapus goal '${goal?.name}'? Goal hanya bisa dihapus jika saldo terkumpul sudah 0.`"
-      confirmButtonText="Hapus Goal"
-      confirmButtonClass="bg-red-600 hover:bg-red-700"
-      iconType="danger"
-      :isConfirming="goalStore.submitting"
-      @confirm="handleDelete"
-    />
+    </template>
+    <AddGoalModal v-if="showEditor && goal" :is-open="showEditor" :goal="goal" @close="showEditor = false" @success="updated" />
+    <GoalFundsModal v-if="fundMode && goal" :is-open="!!fundMode" :mode="fundMode" :goal="goal" @close="fundMode = null" @success="fundsSaved" />
+    <GoalDeleteModal v-if="showDelete && goal" :is-open="showDelete" :goal="goal" :query="route.query" @close="showDelete = false" @deleted="router.push(listLocation)" />
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useFinancialGoalStore } from '@/stores/financialGoals'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
 import AddGoalModal from '@/components/financial-goals/AddGoalModal.vue'
-import AllocateModal from '@/components/financial-goals/AllocateModal.vue'
-import SpendModal from '@/components/financial-goals/SpendModal.vue'
-import ReleaseModal from '@/components/financial-goals/ReleaseModal.vue'
-
-const route = useRoute()
-const router = useRouter()
-const goalStore = useFinancialGoalStore()
-
-const id = computed(() => route.params.id as string)
-const goal = computed(() => goalStore.goalDetails)
-
-const isEditModalOpen = ref(false)
-const isAllocateModalOpen = ref(false)
-const isSpendModalOpen = ref(false)
-const isReleaseModalOpen = ref(false)
-const isDeleteConfirmOpen = ref(false)
-
-const totalSpent = computed(() => {
-  if (!goalStore.ledgers) return 0
-  return goalStore.ledgers
-    .filter((l) => l.type === 'SPEND')
-    .reduce((acc, l) => acc + Number(l.amount), 0)
-})
-
-const statusClasses = computed(() => {
-  if (!goal.value) return ''
-  switch (goal.value.status) {
-    case 'ACTIVE':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-emerald-300'
-    case 'COMPLETED':
-      return 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-    case 'CANCELLED':
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-900/40 dark:text-slate-300'
-    default:
-      return 'bg-slate-100 text-slate-700'
-  }
-})
-
-const progressColor = computed(() => {
-  if (!goal.value) return 'bg-slate-400'
-  if (goal.value.status === 'COMPLETED' || goal.value.progressPercentage >= 100)
-    return 'bg-green-500'
-  if (goal.value.progressPercentage >= 75) return 'bg-[#2E8B57]'
-  if (goal.value.progressPercentage >= 25) return 'bg-[#2E8B57]'
-  return 'bg-slate-400'
-})
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(value)
+import GoalDeleteModal from '@/components/financial-goals/GoalDeleteModal.vue'
+import GoalFundsModal from '@/components/financial-goals/GoalFundsModal.vue'
+import { useFinancialGoalStore } from '@/stores/financialGoals'
+import { useToastStore } from '@/stores/toast'
+import { accountMoney } from '@/utils/accountList'
+import { goalLedgerLabel, goalNumber, goalProgress, goalStatusLabel, type GoalFundMode } from '@/utils/financialGoals'
+import { transactionDateLabel } from '@/utils/transactionForm'
+import type { FinancialGoal } from '@/types/financialGoals'
+import '@/assets/financial-goals.css'
+const route = useRoute(), router = useRouter(), store = useFinancialGoalStore(), toast = useToastStore()
+const id = computed(() => typeof route.params.id === 'string' ? route.params.id : '')
+const listLocation = computed(() => ({ name: 'financial-goals-list', query: route.query }))
+const goal = ref<FinancialGoal | null>(null), loading = ref(true), loadError = ref('')
+const progress = computed(() => goal.value ? goalProgress(goal.value) : { saved: 0, target: 0, percentage: 0, width: 0, remaining: 0, reached: false })
+const showEditor = ref(false), showDelete = ref(false), fundMode = ref<GoalFundMode | null>(null)
+const ledgerType = ref('')
+const ledgerOptions = [{ value: '', label: 'Semua pergerakan' }, ...['ALLOCATE', 'SPEND', 'RELEASE', 'ADJUST'].map((value) => ({ value, label: goalLedgerLabel(value) }))]
+const ledgers = computed(() => [...(goal.value?.ledgers || [])].sort((a, b) => (Date.parse(b.createdAt) || 0) - (Date.parse(a.createdAt) || 0)))
+const visibleLedgers = computed(() => ledgers.value.filter((ledger) => !ledgerType.value || ledger.type === ledgerType.value))
+const totalSpent = computed(() => ledgers.value.filter((ledger) => ledger.type === 'SPEND' && ledger.direction === 'OUTGOING').reduce((sum, ledger) => sum + goalNumber(ledger.amount), 0))
+let active = true, request = 0
+const loadGoal = async () => {
+  const version = ++request
+  goal.value = null; loading.value = true; loadError.value = ''
+  showEditor.value = false; showDelete.value = false; fundMode.value = null
+  if (!id.value) { loadError.value = 'ID goal tidak valid.'; loading.value = false; return }
+  try { const data = await store.fetchGoalById(id.value); if (!active || version !== request) return; if (data) goal.value = data; else loadError.value = store.errorMessage || 'Goal tidak ditemukan.' }
+  catch { if (active && version === request) loadError.value = 'Goal belum berhasil dimuat.' }
+  finally { if (active && version === request) loading.value = false }
 }
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-}
-
-const formatDateFull = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
-const ledgerTypeLabel = (type: string) => {
-  switch (type) {
-    case 'ALLOCATE':
-      return 'Alokasi Tabungan'
-    case 'SPEND':
-      return 'Pengeluaran Goal'
-    case 'RELEASE':
-      return 'Pelepasan Alokasi'
-    case 'ADJUST':
-      return 'Koreksi Manual'
-    default:
-      return type
-  }
-}
-
-const goBack = () => router.push({ name: 'financial-goals-list' })
-
-const confirmDelete = () => {
-  if (goal.value && goal.value.currentSaved > 0) {
-    alert(
-      `Goal '${goal.value.name}' masih memiliki saldo terkumpul sebesar ${formatCurrency(goal.value.currentSaved)}. Harap lepas (release) semua alokasi terlebih dahulu sebelum menghapus.`,
-    )
-    return
-  }
-  isDeleteConfirmOpen.value = true
-}
-
-const handleDelete = async () => {
-  try {
-    await goalStore.deleteGoal(id.value)
-    goBack()
-  } catch (err) {
-    console.error(err)
-  }
-}
-
-const handleUpdateSuccess = () => {
-  isEditModalOpen.value = false
-  goalStore.fetchGoalById(id.value)
-}
-
-const handleActionSuccess = (msg: string) => {
-  isAllocateModalOpen.value = false
-  isSpendModalOpen.value = false
-  isReleaseModalOpen.value = false
-  // Toast or notification could be added here
-}
-
-onMounted(() => {
-  goalStore.fetchGoalById(id.value)
-})
-
-watch(id, (newId) => {
-  if (newId) goalStore.fetchGoalById(newId)
-})
+const updated = async () => { showEditor.value = false; toast.show('Goal berhasil diperbarui.'); await loadGoal() }
+const fundsSaved = async () => { fundMode.value = null; toast.show('Perubahan dana goal berhasil dicatat.'); await loadGoal() }
+watch(id, () => { ledgerType.value = ''; void loadGoal() }, { immediate: true })
+onBeforeUnmount(() => { active = false; request++ })
 </script>

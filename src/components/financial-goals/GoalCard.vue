@@ -1,153 +1,23 @@
 <template>
-  <div
-    class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex justify-between flex-col"
-    @click="$emit('click')"
-  >
-    <div class="p-6">
-      <div class="flex justify-between items-start mb-4">
-        <div>
-          <h3 class="font-bold text-lg text-slate-900 dark:text-white line-clamp-1">
-            {{ goal.name }}
-          </h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Target: {{ formatDate(goal.targetDate) || 'No deadline' }}
-          </p>
-        </div>
-        <span
-          :class="[
-            'px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider',
-            statusClasses,
-          ]"
-        >
-          {{ goal.status }}
-        </span>
-      </div>
-
-      <div class="space-y-4">
-        <!-- Progress Bar -->
-        <div>
-          <div class="flex flex-col mb-2">
-            <span class="text-3xl font-extrabold text-slate-900 dark:text-white">
-              {{ formatCurrency(goal.currentSaved) }}
-            </span>
-            <div class="flex justify-between items-center mt-1">
-              <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
-                dari {{ formatCurrency(goal.targetAmount) }}
-              </span>
-              <span
-                v-if="goal.remainingAmount > 0"
-                class="text-xs font-bold text-emerald-600 dark:text-emerald-400"
-              >
-                Kurang {{ formatCurrency(goal.remainingAmount) }}
-              </span>
-            </div>
-          </div>
-
-          <div
-            class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden shadow-inner font-bold"
-          >
-            <div
-              class="h-full rounded-full transition-all duration-700 ease-out"
-              :class="progressColor"
-              :style="{ width: `${Math.min(goal.progressPercentage, 100)}%` }"
-            ></div>
-          </div>
-
-          <div class="flex justify-between mt-2">
-            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">
-              {{ Number(goal.progressPercentage).toFixed(1).replace('.0', '') }}% Tercapai
-            </span>
-            <span
-              v-if="goal.status === 'COMPLETED' || goal.progressPercentage >= 100"
-              class="text-xs font-bold text-green-600"
-            >
-              Target Selesai!
-            </span>
-          </div>
-        </div>
-
-        <div
-          v-if="goal.description"
-          class="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 italic border-l-2 border-slate-200 dark:border-slate-700 pl-2 mt-2"
-        >
-          "{{ goal.description }}"
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <div
-      class="px-6 py-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center"
-    >
-      <span class="text-xs text-slate-400 dark:text-slate-500">
-        Dibuat {{ formatDateRelative(goal.createdAt) }}
-      </span>
-      <div class="flex space-x-1">
-        <div class="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-        <div class="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-        <div class="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-      </div>
-    </div>
-  </div>
+  <article class="goal-card" :class="{ 'is-reached': progress.reached }">
+    <header><span class="goal-card-symbol"><AppIcon name="target" /></span><span class="goal-status" :class="`is-${goal.status.toLowerCase()}`">{{ goalStatusLabel(goal.status) }}</span></header>
+    <h2><RouterLink :to="location">{{ goal.name }}</RouterLink></h2><p class="goal-card-description">{{ goal.description || 'Setiap langkah kecil mendekatkanmu pada tujuan.' }}</p>
+    <div class="goal-card-amount"><span>Dana teralokasi</span><strong>{{ accountMoney(progress.saved, 'IDR') }}</strong><small>dari {{ accountMoney(progress.target, 'IDR') }}</small></div>
+    <div class="goal-progress-heading"><span>{{ progress.reached ? 'Target nominal tercapai' : 'Progres tabungan' }}</span><strong>{{ progress.percentage.toLocaleString('id-ID', { maximumFractionDigits: 1 }) }}%</strong></div><div class="goal-progress" role="progressbar" :aria-label="`Progres ${goal.name}`" :aria-valuenow="progress.width" :aria-valuetext="`${progress.percentage.toFixed(1)}%`" aria-valuemin="0" aria-valuemax="100"><span :style="{ width: `${progress.width}%` }"></span></div>
+    <p class="goal-card-deadline"><AppIcon name="calendar" />{{ goal.targetDate ? transactionDateLabel(goal.targetDate) : 'Tanpa tanggal target' }}</p>
+    <footer><RouterLink :to="location" class="goal-text-link">Lihat detail <AppIcon name="arrow" /></RouterLink><div><button type="button" class="goal-icon-button" :aria-label="`Edit goal ${goal.name}`" title="Edit goal" @click="$emit('edit', goal)"><AppIcon name="edit" /></button><button type="button" class="goal-icon-button is-danger" :aria-label="`Hapus goal ${goal.name}`" title="Hapus goal" @click="$emit('delete', goal)"><AppIcon name="trash" /></button></div></footer>
+  </article>
 </template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
+import { RouterLink, type LocationQueryRaw } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
+import { accountMoney } from '@/utils/accountList'
+import { goalProgress, goalStatusLabel } from '@/utils/financialGoals'
+import { transactionDateLabel } from '@/utils/transactionForm'
 import type { FinancialGoal } from '@/types/financialGoals'
-
-const props = defineProps<{
-  goal: FinancialGoal
-}>()
-
-defineEmits(['click'])
-
-const statusClasses = computed(() => {
-  switch (props.goal.status) {
-    case 'ACTIVE':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-emerald-300'
-    case 'COMPLETED':
-      return 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-    case 'CANCELLED':
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-900/40 dark:text-slate-300'
-    default:
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-900/40 dark:text-slate-300'
-  }
-})
-
-const progressColor = computed(() => {
-  if (props.goal.status === 'COMPLETED') return 'bg-green-500'
-  if (props.goal.progressPercentage >= 100) return 'bg-green-500'
-  if (props.goal.progressPercentage >= 75) return 'bg-[#2E8B57]'
-  if (props.goal.progressPercentage >= 25) return 'bg-[#2E8B57]'
-  return 'bg-slate-400 text-white'
-})
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(value)
-}
-
-const formatDate = (dateString?: string | null) => {
-  if (!dateString) return null
-  return new Date(dateString).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
-const formatDateRelative = (dateString: string) => {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return 'hari ini'
-  if (diffDays === 1) return 'kemarin'
-  if (diffDays < 7) return `${diffDays} hari lalu`
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} minggu lalu`
-  return `${Math.floor(diffDays / 30)} bulan lalu`
-}
+const props = defineProps<{ goal: FinancialGoal; query?: LocationQueryRaw }>()
+defineEmits<{ edit: [goal: FinancialGoal]; delete: [goal: FinancialGoal] }>()
+const progress = computed(() => goalProgress(props.goal))
+const location = computed(() => ({ name: 'financial-goal-detail', params: { id: props.goal.id }, query: props.query }))
 </script>

@@ -50,10 +50,12 @@ export const useFinancialGoalStore = defineStore('financialGoals', {
       try {
         const response = await apiClient.get<FinancialGoal[]>('/financial-goals')
         this.goals = response.data
+        return response.data
       } catch (err: any) {
         console.error('Failed to fetch financial goals:', err)
         const errorMessage = err.response?.data?.message || 'Gagal memuat daftar goal keuangan.'
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
+        return null
       } finally {
         this.isLoading = false
       }
@@ -65,13 +67,13 @@ export const useFinancialGoalStore = defineStore('financialGoals', {
       try {
         const response = await apiClient.get<FinancialGoal>(`/financial-goals/${id}`)
         this.currentGoal = response.data
-        if (response.data.ledgers) {
-          this.ledgers = response.data.ledgers
-        }
+        this.ledgers = response.data.ledgers || []
+        return response.data
       } catch (err: any) {
         console.error(`Failed to fetch goal ${id}:`, err)
         const errorMessage = err.response?.data?.message || 'Gagal memuat detail goal.'
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
+        return null
       } finally {
         this.isLoading = false
       }
