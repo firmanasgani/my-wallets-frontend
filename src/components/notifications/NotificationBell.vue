@@ -1,11 +1,14 @@
 <template>
-  <div class="relative">
+  <div class="relative" @keydown.esc.stop="closeDropdown">
     <button
       @click="toggleDropdown"
       type="button"
       id="notification-bell-button"
       class="relative p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors focus:outline-none"
       title="Notifikasi"
+      aria-label="Notifikasi"
+      :aria-expanded="isOpen"
+      aria-controls="notification-dropdown"
     >
       <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -34,6 +37,7 @@
       <div
         v-if="isOpen"
         ref="dropdownRef"
+        id="notification-dropdown"
         class="origin-top-right absolute right-0 mt-2 w-80 max-w-[90vw] rounded-md shadow-lg bg-white dark:bg-slate-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
       >
         <div

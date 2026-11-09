@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6 sm:space-y-8">
+  <div class="personal-dashboard space-y-6 sm:space-y-8">
     <!-- Subscription Expiry Alert -->
     <div
       v-if="subscriptionExpiryAlert"
@@ -53,11 +53,18 @@
       </RouterLink>
     </div>
 
-    <div class="flex items-center space-x-3">
-      <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">Dashboard</h1>
+    <div class="personal-dashboard-heading">
+      <div class="personal-dashboard-title">
+        <span class="shell-overline">KEUANGAN PERSONAL</span>
+        <h1>Gambaran keuanganmu.</h1>
+        <p>Pantau saldo, arus kas, dan catatan terbarumu dalam satu tempat.</p>
+      </div>
+      <div class="personal-dashboard-actions">
       <button
         @click="showBalance = !showBalance"
-        class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-indigo-50 rounded-full transition-colors focus:outline-none"
+        class="shell-icon-button"
+        :aria-label="showBalance ? 'Sembunyikan saldo' : 'Tampilkan saldo'"
+        :aria-pressed="!showBalance"
         :title="showBalance ? 'Sembunyikan Saldo' : 'Tampilkan Saldo'"
       >
         <svg
@@ -96,12 +103,17 @@
           />
         </svg>
       </button>
+      <RouterLink :to="{ name: 'transaction-create' }" class="dashboard-primary-action">
+        <span aria-hidden="true">+</span> Catat transaksi
+      </RouterLink>
+      </div>
     </div>
 
     <section aria-labelledby="summary-heading">
       <h2 id="summary-heading" class="sr-only">Ringkasan Keuangan</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6">
+      <div class="dashboard-stats-grid">
         <StatsCard
+          class="money-stat-card"
           title="Total Saldo Saat Ini"
           :value="showBalance ? formatCurrency(overallNetBalance, 'IDR') : 'Rp ••••••••'"
           variant="indigo"
@@ -125,6 +137,7 @@
         </StatsCard>
 
         <StatsCard
+          class="money-stat-card"
           title="Pemasukan Bulan Ini"
           :value="showBalance ? formatCurrency(monthlySummary.income, 'IDR') : 'Rp ••••••••'"
           variant="green"
@@ -148,6 +161,7 @@
         </StatsCard>
 
         <StatsCard
+          class="money-stat-card"
           title="Pengeluaran Bulan Ini"
           :value="showBalance ? formatCurrency(monthlySummary.expense, 'IDR') : 'Rp ••••••••'"
           variant="red"
@@ -171,6 +185,7 @@
         </StatsCard>
 
         <StatsCard
+          class="money-stat-card"
           title="Arus Kas Bersih (Bulan Ini)"
           :value="showBalance ? formatCurrency(monthlySummary.net, 'IDR') : 'Rp ••••••••'"
           variant="blue"
@@ -197,7 +212,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
       <section aria-labelledby="recent-transactions-heading" class="lg:col-span-3">
-        <div class="bg-white shadow-lg rounded-xl dark:bg-slate-800">
+        <div class="dashboard-panel">
           <div class="px-4 py-5 sm:px-6 border-b border-slate-200">
             <div class="flex justify-between items-center">
               <h2 id="recent-transactions-heading" class="text-lg font-medium text-slate-900 dark:text-white">
@@ -235,7 +250,7 @@
 
       <div class="lg:col-span-2 space-y-6">
         <section aria-labelledby="account-balances-heading">
-          <div class="bg-white shadow-lg rounded-xl dark:bg-slate-800">
+          <div class="dashboard-panel">
             <div class="px-4 py-5 sm:px-6 border-b border-slate-200">
               <h2 id="account-balances-heading" class="text-lg font-medium text-slate-900 dark:text-white">
                 Saldo per Akun
@@ -266,7 +281,7 @@
         </section>
 
         <section aria-labelledby="spending-category-heading">
-          <div class="bg-white shadow-lg rounded-xl dark:bg-slate-800">
+          <div class="dashboard-panel">
             <div class="px-4 py-5 sm:px-6 border-b border-slate-200">
               <h2 id="spending-category-heading" class="text-lg font-medium text-slate-900 dark:text-slate-200">
                 Pengeluaran per Kategori (Bulan Ini)
@@ -390,18 +405,18 @@ const accountChartData = computed(() => {
         label: 'Saldo Akun (IDR)',
         data: relevantAccounts.map((acc) => acc.currentBalance),
         backgroundColor: [
-          'rgba(75, 192, 192, 0.7)',
-          'rgba(54, 162, 235, 0.7)',
-          'rgba(255, 206, 86, 0.7)',
-          'rgba(153, 102, 255, 0.7)',
-          'rgba(255, 159, 64, 0.7)',
+          'rgba(167, 128, 242, 0.8)',
+          'rgba(200, 237, 198, 0.8)',
+          'rgba(255, 217, 98, 0.8)',
+          'rgba(207, 184, 245, 0.8)',
+          'rgba(217, 205, 187, 0.8)',
         ],
         borderColor: [
-          'rgba(75, 192, 192, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
+          'rgba(80, 38, 165, 1)',
+          'rgba(90, 130, 88, 1)',
+          'rgba(159, 124, 32, 1)',
+          'rgba(124, 94, 174, 1)',
+          'rgba(108, 98, 86, 1)',
         ],
         borderWidth: 1,
       },
