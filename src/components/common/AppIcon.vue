@@ -8,6 +8,9 @@
 <script setup lang="ts">
 defineProps<{ name: string }>()
 const paths: Record<string, string> = {
+  check: 'm5 12 4 4L19 6',
+  warning: 'm12 3 10 18H2L12 3Zm0 6v5m0 3h.01',
+  info: 'M12 11v6m0-10h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
   eye: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
   eyeOff: 'm3 3 18 18M9 5.5A11 11 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 4M6 6a17 17 0 0 0-4 6s3.5 7 10 7c1.6 0 3-.4 4.3-1M10 10a3 3 0 0 0 4 4',
   edit: 'm15 5 4 4M3 21l4-1 13-13a3 3 0 0 0-4-4L3 16v5Z',

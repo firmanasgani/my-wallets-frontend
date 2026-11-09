@@ -1,0 +1,283 @@
+.money-confirm {
+  --confirm-paper: #fdf9ee;
+  --confirm-surface: #fffcf5;
+  --confirm-ink: #27231d;
+  --confirm-muted: #6c6256;
+  --confirm-line: #423a2d;
+  --confirm-rule: #e2d8c7;
+  --confirm-accent: #5026a5;
+  --confirm-tint: #eee4ff;
+  --confirm-action: #5026a5;
+  --confirm-action-hover: #3f1c87;
+  position: fixed;
+  inset: 0;
+  width: min(460px, calc(100vw - 32px));
+  height: fit-content;
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 1.5px solid var(--confirm-line);
+  border-radius: 22px;
+  background: var(--confirm-surface);
+  color: var(--confirm-ink);
+  box-shadow: 5px 6px 0 #27231d66, 0 24px 70px #17121d33;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.money-confirm:not([open]) {
+  display: none;
+}
+.money-confirm[open] {
+  animation: confirm-enter .18s ease-out;
+}
+.money-confirm::backdrop {
+  background: #17121d80;
+  backdrop-filter: blur(4px);
+}
+.money-confirm.is-danger {
+  --confirm-accent: #ad3d4b;
+  --confirm-tint: #f9e4e4;
+  --confirm-action: #a93243;
+  --confirm-action-hover: #8c2635;
+}
+.money-confirm.is-warning {
+  --confirm-accent: #806112;
+  --confirm-tint: #fff0b6;
+}
+.money-confirm.is-success {
+  --confirm-accent: #286248;
+  --confirm-tint: #ddf4d9;
+}
+.dark .money-confirm {
+  --confirm-paper: #17151d;
+  --confirm-surface: #211e29;
+  --confirm-ink: #f6f0e5;
+  --confirm-muted: #b7aec2;
+  --confirm-line: #736b7e;
+  --confirm-rule: #3c3549;
+  --confirm-accent: #cfb8f5;
+  --confirm-tint: #35264e;
+  --confirm-action: #cfb8f5;
+  --confirm-action-hover: #decdf8;
+}
+.dark .money-confirm.is-danger {
+  --confirm-accent: #f3a6b0;
+  --confirm-tint: #412b37;
+  --confirm-action: #ad3549;
+  --confirm-action-hover: #c14358;
+}
+.dark .money-confirm.is-warning {
+  --confirm-accent: #f0d58a;
+  --confirm-tint: #423822;
+}
+.dark .money-confirm.is-success {
+  --confirm-accent: #a5ddb9;
+  --confirm-tint: #243a32;
+}
+.money-confirm *, .money-confirm *::before, .money-confirm *::after {
+  box-sizing: border-box;
+}
+.money-confirm :is(h2, p) {
+  margin: 0;
+}
+.money-confirm :focus-visible {
+  outline: 3px solid var(--confirm-accent);
+  outline-offset: 4px;
+}
+.money-confirm:focus {
+  outline: none;
+}
+.confirm-content {
+  padding: 26px 28px 28px;
+}
+.confirm-topline {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.confirm-symbol {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid var(--confirm-line);
+  border-radius: 16px;
+  background: var(--confirm-tint);
+  color: var(--confirm-accent);
+  box-shadow: 2px 2px 0 var(--confirm-line);
+}
+.confirm-symbol > svg {
+  width: 25px;
+  height: 25px;
+  color: inherit;
+}
+.money-confirm .confirm-close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 7px;
+  border: 1px solid var(--confirm-rule);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--confirm-muted);
+  cursor: pointer;
+}
+.confirm-close > svg {
+  width: 16px;
+  height: 16px;
+}
+.money-confirm .confirm-close:hover:not(:disabled) {
+  background: var(--confirm-paper);
+  color: var(--confirm-ink);
+  border-color: var(--confirm-line);
+}
+.confirm-eyebrow {
+  display: block;
+  color: var(--confirm-accent);
+  font-family: Consolas,'Courier New',monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+.money-confirm h2 {
+  margin-top: 9px;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -1.1px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.confirm-message {
+  margin-top: 15px;
+  color: var(--confirm-muted);
+  font-size: 13px;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+.confirm-message :is(a, strong) {
+  color: var(--confirm-ink);
+}
+.confirm-footer {
+  padding: 20px 28px;
+  border-top: 1px solid var(--confirm-rule);
+  background: var(--confirm-paper);
+}
+.confirm-actions {
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
+.money-confirm .confirm-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 43px;
+  padding: 11px 19px;
+  border: 1px solid var(--confirm-line);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.money-confirm .confirm-cancel {
+  background: var(--confirm-surface);
+  color: var(--confirm-ink);
+}
+.money-confirm .confirm-cancel:hover:not(:disabled) {
+  background: var(--confirm-tint);
+}
+.money-confirm .confirm-primary {
+  background: var(--confirm-action);
+  color: #fffcf5;
+  border-color: var(--confirm-action);
+  box-shadow: none;
+}
+.money-confirm .confirm-primary:hover:not(:disabled) {
+  background: var(--confirm-action-hover);
+  border-color: var(--confirm-action-hover);
+}
+.dark .money-confirm:not(.is-danger) .confirm-primary {
+  color: #211e29;
+}
+.confirm-primary > svg {
+  width: 15px;
+  height: 15px;
+}
+.money-confirm button:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+.confirm-spinner {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: confirm-spin .8s linear infinite;
+}
+.confirm-progress {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  color: var(--confirm-muted);
+  font-size: 11px;
+}
+.confirm-progress-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--confirm-accent);
+}
+@keyframes confirm-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes confirm-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (max-width: 480px) {
+  .money-confirm {
+    border-radius: 19px;
+  }
+  .confirm-content {
+    padding: 24px 22px;
+  }
+  .money-confirm h2 {
+    font-size: 25px;
+  }
+  .confirm-footer {
+    padding: 18px 22px;
+  }
+  .confirm-actions {
+    flex-direction: column-reverse;
+  }
+  .confirm-actions > button {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .money-confirm[open], .confirm-spinner {
+    animation: none;
+  }
+}

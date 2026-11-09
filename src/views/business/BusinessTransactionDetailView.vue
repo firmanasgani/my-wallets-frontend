@@ -369,7 +369,7 @@
       confirmButtonText="Hapus"
       cancelButtonText="Batal"
       iconType="danger"
-      :isLoading="isDeleting"
+      :isConfirming="isDeleting"
       @confirm="handleDelete"
     />
   </div>

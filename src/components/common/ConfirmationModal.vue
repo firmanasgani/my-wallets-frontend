@@ -1,114 +1,39 @@
 <template>
-  <Transition
-    enter-active-class="transition ease-out duration-200"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-150"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="isOpen"
-      class="fixed inset-0 z-50 overflow-y-auto bg-slate-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
-      @keydown.esc="handleCancel"
-      tabindex="-1"
-      ref="modalBackdropRef"
-      @click.self="handleOverlayClick"
-    >
-      <Transition
-        enter-active-class="transition ease-out duration-200"
-        enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        enter-to-class="opacity-100 translate-y-0 sm:scale-100"
-        leave-active-class="transition ease-in duration-150"
-        leave-from-class="opacity-100 translate-y-0 sm:scale-100"
-        leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-      >
-        <div
-          v-if="isOpen"
-          class="bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg sm:w-full overflow-hidden"
-          role="dialog"
-          aria-modal="true"
-          :aria-labelledby="titleId"
-          ref="modalContentRef"
-        >
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
-            <div class="sm:flex sm:items-start">
-              <div
-                :class="[
-                  'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10',
-                  iconBgClass,
-                ]"
-              >
-                <slot name="icon">
-                  <svg
-                    class="h-6 w-6 text-red-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-                    />
-                  </svg>
-                </slot>
-              </div>
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 :id="titleId" class="text-lg leading-6 font-medium text-gray-900">
-                  <slot name="title">{{ title }}</slot>
-                </h3>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500">
-                    <slot name="message">{{ message }}</slot>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse space-y-2 sm:space-y-0 sm:space-x-reverse sm:space-x-3"
-          >
-            <button
-              type="button"
-              :class="[
-                'w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50',
-                confirmButtonClass,
-              ]"
-              @click="handleConfirm"
-              :disabled="isConfirming"
-              ref="confirmButtonRef"
-            >
-              <LoadingSpinner
-                v-if="isConfirming"
-                :visible="true"
-                size="xs"
-                color="text-white"
-                class="-ml-1 mr-2"
-              />
-              <slot name="confirmButtonText">{{ confirmButtonText }}</slot>
-            </button>
-            <button
-              type="button"
-              class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:mt-0 sm:w-auto sm:text-sm disabled:opacity-50"
-              @click="handleCancel"
-              :disabled="isConfirming"
-            >
-              <slot name="cancelButtonText">{{ cancelButtonText }}</slot>
-            </button>
-          </div>
+  <Teleport to="body">
+    <dialog ref="dialogRef" class="money-confirm" :class="`is-${variant}`"
+      :role="variant === 'danger' || variant === 'warning' ? 'alertdialog' : 'dialog'"
+      aria-modal="true" :aria-labelledby="`${id}-title`" :aria-describedby="`${id}-message`"
+      :aria-busy="busy" tabindex="-1" @cancel.prevent="handleCancel" @close="handleNativeClose"
+      @keydown.esc.stop.prevent="handleCancel" @click="handleBackdropClick">
+      <div class="confirm-content">
+        <div class="confirm-topline">
+          <span class="confirm-symbol" aria-hidden="true"><slot name="icon"><AppIcon :name="iconName" /></slot></span>
+          <button type="button" class="confirm-close" aria-label="Tutup konfirmasi" :disabled="busy" @click="handleCancel"><AppIcon name="close" /></button>
         </div>
-      </Transition>
-    </div>
-  </Transition>
+        <span class="confirm-eyebrow">{{ eyebrow }}</span>
+        <h2 :id="`${id}-title`"><slot name="title">{{ title }}</slot></h2>
+        <div :id="`${id}-message`" class="confirm-message"><slot name="message"><p>{{ message }}</p></slot></div>
+      </div>
+      <footer class="confirm-footer">
+        <div v-if="busy" class="confirm-progress" role="status"><span class="confirm-progress-dot" aria-hidden="true"></span>{{ confirmingText }}</div>
+        <div class="confirm-actions">
+          <button ref="cancelButtonRef" type="button" class="confirm-button confirm-cancel" :disabled="busy" @click="handleCancel"><slot name="cancelButtonText">{{ cancelButtonText }}</slot></button>
+          <button type="button" class="confirm-button confirm-primary" :class="confirmButtonClass" :disabled="busy" @click="handleConfirm">
+            <span v-if="busy" class="confirm-spinner" aria-hidden="true"></span>
+            <AppIcon v-else-if="variant === 'danger'" name="trash" />
+            <span v-if="busy">{{ confirmingText }}</span><slot v-else name="confirmButtonText">{{ confirmButtonText }}</slot>
+          </button>
+        </div>
+      </footer>
+    </dialog>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, computed } from 'vue'
-import LoadingSpinner from './LoadingSpinner.vue'
+import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
+import AppIcon from './AppIcon.vue'
+import { lockModalScroll } from '@/utils/modalScrollLock'
+import '@/assets/confirmation.css'
 
 interface Props {
   isOpen: boolean
@@ -116,71 +41,92 @@ interface Props {
   message?: string
   confirmButtonText?: string
   cancelButtonText?: string
+  /** Retained for existing callers; iconType controls the shared visual theme. */
   confirmButtonClass?: string
   iconType?: 'warning' | 'danger' | 'info' | 'success'
-  isConfirming?: boolean // Untuk menampilkan loading di tombol konfirmasi
+  isConfirming?: boolean
+  confirmingText?: string
   closeOnOverlayClick?: boolean
 }
-
 const props = withDefaults(defineProps<Props>(), {
-  isOpen: false,
-  title: 'Konfirmasi Aksi',
-  message: 'Apakah Anda yakin ingin melanjutkan aksi ini?',
-  confirmButtonText: 'Ya, Lanjutkan',
-  cancelButtonText: 'Batal',
-  confirmButtonClass: 'bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500',
-  iconType: 'warning',
-  isConfirming: false,
-  closeOnOverlayClick: true,
+  isOpen: false, title: 'Konfirmasi tindakan', message: 'Apakah kamu ingin melanjutkan tindakan ini?',
+  confirmButtonText: 'Ya, lanjutkan', cancelButtonText: 'Batal', confirmButtonClass: '',
+  iconType: 'warning', isConfirming: false, confirmingText: 'Memproses...', closeOnOverlayClick: true,
 })
+const emit = defineEmits<{ 'update:isOpen': [value: boolean]; confirm: []; cancel: [] }>()
+const id = useId()
+const dialogRef = ref<HTMLDialogElement | null>(null)
+const cancelButtonRef = ref<HTMLButtonElement | null>(null)
+const confirmationRequested = ref(false)
+const busy = computed(() => props.isConfirming || confirmationRequested.value)
+// Older delete dialogs pass red button classes without specifying iconType.
+const variant = computed(() => props.iconType === 'warning' && /(?:bg-red-|bg-rose-)/.test(props.confirmButtonClass) ? 'danger' : props.iconType)
+const iconName = computed(() => ({ danger: 'trash', warning: 'warning', info: 'info', success: 'check' })[variant.value])
+const eyebrow = computed(() => ({ danger: 'KONFIRMASI TINDAKAN', warning: 'PERIKSA SEBELUM LANJUT', info: 'KONFIRMASI', success: 'BERHASIL' })[variant.value])
+let opener: HTMLElement | null = null
+let releaseScroll: (() => void) | null = null
+let active = true
+let openVersion = 0
 
-const emit = defineEmits(['update:isOpen', 'confirm', 'cancel'])
-
-const modalBackdropRef = ref<HTMLElement | null>(null)
-const modalContentRef = ref<HTMLElement | null>(null)
-const confirmButtonRef = ref<HTMLButtonElement | null>(null)
-const titleId = computed(() => `modal-title-${Math.random().toString(36).substring(7)}`)
-
-const iconBgClass = computed(() => {
-  switch (props.iconType) {
-    case 'danger':
-    case 'warning':
-      return 'bg-red-100'
-    case 'info':
-      return 'bg-blue-100'
-    case 'success':
-      return 'bg-green-100'
-    default:
-      return 'bg-red-100' // Default untuk konfirmasi delete
+const closeDialog = (restoreFocus = true) => {
+  const wasOpen = dialogRef.value?.open
+  dialogRef.value?.close()
+  releaseScroll?.()
+  releaseScroll = null
+  confirmationRequested.value = false
+  if (wasOpen && restoreFocus) {
+    if (opener?.isConnected) opener.focus()
+    else document.getElementById('main-content')?.focus()
   }
-})
-
-const handleConfirm = () => {
-  emit('confirm')
+  opener = null
 }
-
 const handleCancel = () => {
+  if (busy.value || !props.isOpen) return
   emit('update:isOpen', false)
   emit('cancel')
 }
-
-const handleOverlayClick = () => {
-  if (props.closeOnOverlayClick) {
-    handleCancel()
-  }
+const handleConfirm = async () => {
+  if (busy.value || !props.isOpen) return
+  confirmationRequested.value = true
+  emit('confirm')
+  await nextTick()
+  // Synchronous actions need not provide a loading state; async callers use isConfirming.
+  if (!props.isConfirming) confirmationRequested.value = false
 }
-
-// Fokus ke tombol konfirmasi saat modal terbuka
-watch(
-  () => props.isOpen,
-  (newValue) => {
-    if (newValue) {
-      nextTick(() => {
-        confirmButtonRef.value?.focus()
-        // Jika Anda ingin modal bisa ditutup dengan tombol Escape
-        modalBackdropRef.value?.focus() // Set focus ke backdrop untuk keydown listener
-      })
-    }
-  },
-)
+const handleBackdropClick = (event: MouseEvent) => {
+  const dialog = dialogRef.value
+  if (!props.closeOnOverlayClick || busy.value || !dialog || event.target !== dialog) return
+  const rect = dialog.getBoundingClientRect()
+  if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) handleCancel()
+}
+const handleNativeClose = () => {
+  // Ignore a delayed native close event if the same dialog was already reopened.
+  if (dialogRef.value?.open) return
+  releaseScroll?.()
+  releaseScroll = null
+  confirmationRequested.value = false
+  if (active && props.isOpen) { emit('update:isOpen', false); emit('cancel') }
+}
+watch(() => props.isOpen, async (open) => {
+  const version = ++openVersion
+  if (!open) { closeDialog(); return }
+  confirmationRequested.value = false
+  await nextTick()
+  if (!active || version !== openVersion || !props.isOpen || !dialogRef.value || dialogRef.value.open) return
+  opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+  dialogRef.value.showModal()
+  releaseScroll = lockModalScroll()
+  // Native modal dialogs contain keyboard focus and make background controls inert.
+  if (busy.value) dialogRef.value.focus()
+  else cancelButtonRef.value?.focus()
+}, { immediate: true })
+watch(() => props.isConfirming, async (confirming) => {
+  if (!confirming) confirmationRequested.value = false
+  if (!props.isOpen) return
+  await nextTick()
+  if (!active || !props.isOpen) return
+  if (busy.value) dialogRef.value?.focus()
+  else cancelButtonRef.value?.focus()
+})
+onBeforeUnmount(() => { active = false; openVersion++; closeDialog(false) })
 </script>
