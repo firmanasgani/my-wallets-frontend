@@ -1,214 +1,41 @@
 <template>
-  <li class="bg-white rounded-md shadow dark:bg-slate-700">
-    <div
-      class="flex items-center justify-between p-3 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
-      :class="{ 'cursor-pointer': hasSubCategories }"
-      @click="hasSubCategories ? toggleExpand() : null"
-    >
-      <div class="flex items-center flex-1">
-        <!-- Chevron icon untuk parent categories -->
-        <button
-          v-if="hasSubCategories"
-          @click.stop="toggleExpand"
-          class="mr-2 p-0.5 text-slate-500 hover:text-slate-700 dark:text-slate-200 transition-transform duration-200"
-          :class="{ 'rotate-90': isExpanded }"
-          title="Expand/Collapse"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-4 h-4"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-        </button>
-        <!-- Spacer untuk kategori tanpa subcategories agar alignment konsisten -->
-        <div v-else class="w-5 mr-2"></div>
-
-        <span
-          class="w-6 h-6 rounded-full flex items-center justify-center mr-3 text-white text-xs flex-shrink-0"
-          :style="{ backgroundColor: category.color || '#CBD5E1' }"
-          :title="category.categoryName"
-        >
-          <span v-if="category.icon" class="flex items-center justify-center w-full h-full">
-            <i :class="['fa-solid', `fa-${category.icon}`, 'text-xs']"></i>
-          </span>
-          <span v-else class="font-semibold">{{
-            category.categoryName.charAt(0).toUpperCase()
-          }}</span>
-        </span>
-        <div class="flex items-center">
-          <span class="text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white">{{ category.categoryName }}</span>
-          <span
-            v-if="!category.userId"
-            class="ml-2 text-xs bg-sky-100 text-sky-700 px-1.5 py-0.5 rounded-full"
-            >Default</span
-          >
-          <!-- Badge untuk jumlah subcategories -->
-          <span
-            v-if="hasSubCategories"
-            class="ml-2 text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full"
-            >{{ category.subCategories?.length }}</span
-          >
-        </div>
+  <li class="category-tree-item">
+    <div class="category-tree-row">
+      <button v-if="hasChildren" type="button" class="category-expand" :aria-label="`${expanded ? 'Tutup' : 'Buka'} subkategori ${category.categoryName}`"
+        :aria-expanded="expanded" :aria-controls="`${id}-children`" @click="isExpanded = !isExpanded"><AppIcon name="chevron" :class="{ 'is-expanded': expanded }" /></button>
+      <span v-else class="category-expand-spacer" aria-hidden="true"></span>
+      <CategoryBadge :icon="category.icon" :color="category.color" />
+      <div class="category-row-name">
+        <button v-if="hasChildren" type="button" :aria-expanded="expanded" :aria-controls="`${id}-children`" @click="isExpanded = !isExpanded">{{ category.categoryName }}</button>
+        <strong v-else>{{ category.categoryName }}</strong>
+        <span>{{ level ? 'Subkategori' : 'Kategori utama' }}<span v-if="hasChildren"> · {{ category.subCategories?.length }} subkategori</span><span v-if="!category.userId"> · Bawaan</span></span>
       </div>
-      <div class="flex items-center space-x-2 print:hidden" @click.stop>
-        <button
-          @click="$emit('edit', category)"
-          title="Edit Kategori"
-          class="p-1 text-slate-500 hover:text-emerald-600 rounded-md hover:bg-emerald-50"
-        >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-            ></path>
-          </svg>
-        </button>
-        <button
-          v-if="category.userId"
-          @click="$emit('delete', category)"
-          title="Hapus Kategori"
-          class="p-1 text-slate-500 hover:text-red-600 rounded-md hover:bg-red-50"
-        >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            ></path>
-          </svg>
-        </button>
+      <div class="category-row-actions print:hidden">
+        <button type="button" class="category-icon-button" :disabled="disabled" :aria-label="`Edit kategori ${category.categoryName}`" title="Edit kategori" @click="emit('edit', category)"><AppIcon name="edit" /></button>
+        <button v-if="category.userId" type="button" class="category-icon-button is-danger" :disabled="disabled" :aria-label="`Hapus kategori ${category.categoryName}`" title="Hapus kategori" @click="emit('delete', category)"><AppIcon name="trash" /></button>
       </div>
     </div>
-
-    <!-- Accordion content dengan transition -->
-    <transition
-      name="accordion"
-      @enter="onEnter"
-      @after-enter="onAfterEnter"
-      @leave="onLeave"
-      @after-leave="onAfterLeave"
-    >
-      <ul
-        v-if="hasSubCategories && isExpanded"
-        class="ml-6 pl-3 border-l-2 border-slate-200 space-y-1 pb-2 pr-2 overflow-hidden"
-      >
-        <CategoryItem
-          v-for="subCategory in category.subCategories"
-          :key="subCategory.id"
-          :category="subCategory"
-          :level="level + 1"
-          @edit="$emit('edit', $event)"
-          @delete="$emit('delete', $event)"
-        />
-      </ul>
-    </transition>
+    <ul v-if="hasChildren && expanded" :id="`${id}-children`" class="category-children">
+      <CategoryItem v-for="child in category.subCategories" :key="child.id" :category="child" :level="level + 1"
+        :expand-all="expandAll" :expansion-version="expansionVersion" :searching="searching" :disabled="disabled"
+        @edit="emit('edit', $event)" @delete="emit('delete', $event)" />
+    </ul>
   </li>
 </template>
-
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
-// Impor tipe Category lagi di sini atau dari file global
-interface Category {
-  id: string
-  categoryName: string
-  categoryType: 'INCOME' | 'EXPENSE'
-  icon?: string | null
-  color?: string | null
-  parentCategoryId?: string | null
-  subCategories?: Category[]
-  userId?: string | null // Untuk membedakan global/default (null) dengan user-specific
-}
-
-interface Props {
-  category: Category
-  level: number // Untuk indentasi atau styling berbeda berdasarkan level hierarki
-}
-const props = defineProps<Props>()
-
-const emit = defineEmits(['edit', 'delete'])
-
-// State untuk accordion
-const isExpanded = ref(false)
-
-// Computed property untuk cek apakah kategori ini punya subcategories
-const hasSubCategories = computed(() => {
-  return props.category.subCategories && props.category.subCategories.length > 0
+import { computed, ref, useId, watch } from 'vue'
+import type { Category } from '@/types/enums'
+import AppIcon from '@/components/common/AppIcon.vue'
+import CategoryBadge from './CategoryBadge.vue'
+const props = withDefaults(defineProps<{ category: Category; level?: number; expandAll?: boolean; expansionVersion?: number; searching?: boolean; disabled?: boolean }>(), {
+  level: 0, expandAll: false, expansionVersion: 0, searching: false, disabled: false,
 })
-
-// Toggle expand/collapse
-const toggleExpand = () => {
-  isExpanded.value = !isExpanded.value
-}
-
-// Transition handlers untuk smooth accordion animation
-const onEnter = (el: Element) => {
-  const element = el as HTMLElement
-  element.style.height = '0'
-  element.style.opacity = '0'
-}
-
-const onAfterEnter = (el: Element) => {
-  const element = el as HTMLElement
-  element.style.height = element.scrollHeight + 'px'
-  element.style.opacity = '1'
-
-  // Remove inline height after transition untuk responsive behavior
-  setTimeout(() => {
-    element.style.height = 'auto'
-  }, 300)
-}
-
-const onLeave = (el: Element) => {
-  const element = el as HTMLElement
-  element.style.height = element.scrollHeight + 'px'
-  element.style.opacity = '1'
-
-  // Force reflow
-  element.offsetHeight
-
-  element.style.height = '0'
-  element.style.opacity = '0'
-}
-
-const onAfterLeave = (el: Element) => {
-  const element = el as HTMLElement
-  element.style.height = ''
-  element.style.opacity = ''
-}
+const emit = defineEmits<{ edit: [category: Category]; delete: [category: Category] }>()
+const id = useId()
+const isExpanded = ref(props.expandAll || props.searching)
+const hasChildren = computed(() => !!props.category.subCategories?.length)
+const expanded = computed(() => isExpanded.value)
+watch(() => props.expansionVersion, () => { isExpanded.value = props.expandAll })
+watch(() => props.searching, (searching) => { isExpanded.value = searching || props.expandAll })
+watch(() => props.category, () => { if (props.searching) isExpanded.value = true })
 </script>
-
-<style scoped>
-/* Transition untuk accordion */
-.accordion-enter-active,
-.accordion-leave-active {
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.accordion-enter-from,
-.accordion-leave-to {
-  height: 0;
-  opacity: 0;
-}
-</style>

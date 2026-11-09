@@ -1,340 +1,135 @@
-// src/components/categories/CategoryModal.vue
 <template>
-  <Transition
-    enter-active-class="transition ease-out duration-200"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-150"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="isOpen"
-      class="fixed inset-0 z-40 overflow-y-auto bg-slate-900  bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
-      @keydown.esc="closeModal"
-      tabindex="-1"
-      @click.self="closeModal"
-    >
-      <Transition
-        enter-active-class="transition ease-out duration-200"
-        enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        enter-to-class="opacity-100 translate-y-0 sm:scale-100"
-        leave-active-class="transition ease-in duration-150"
-        leave-from-class="opacity-100 translate-y-0 sm:scale-100"
-        leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-      >
-        <div
-          v-if="isOpen"
-          class="bg-white rounded-lg dark:bg-slate-700 shadow-xl transform transition-all sm:max-w-lg w-full"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="category-modal-title"
-        >
-          <form @submit.prevent="handleSubmit">
-            <div class="px-4 pt-5 pb-4 sm:p-6">
-              <h3 id="category-modal-title" class="text-xl font-semibold text-slate-800 mb-6 dark:text-slate-200">
-                {{ isEditMode ? 'Edit Kategori' : 'Tambah Kategori Baru' }}
-              </h3>
-
-              <div class="space-y-4">
-                <div>
-                  <label for="name" class="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-200"
-                    >Nama Kategori <span class="text-red-500">*</span></label
-                  >
-                  <input
-                    type="text"
-                    id="name"
-                    v-model="formData.name"
-                    required
-                    :class="inputClass"
-                    placeholder="Mis: Belanja Bulanan"
-                  />
-                </div>
-
-                <div>
-                  <label for="type" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
-                    >Tipe Kategori <span class="text-red-500">*</span></label
-                  >
-                  <select
-                    id="type"
-                    v-model="formData.type"
-                    required
-                    :class="inputClass"
-                    :disabled="isEditMode && hasTransactions"
-                  >
-                    <option disabled value="" >Pilih tipe...</option>
-                    <option
-                      v-for="typeOpt in categoryTypeOptions"
-                      :key="typeOpt.value"
-                      :value="typeOpt.value"
-                    >
-                      {{ typeOpt.text }}
-                    </option>
-                  </select>
-                  <p v-if="isEditMode && hasTransactions" class="text-xs text-slate-500 mt-1">
-                    Tipe kategori tidak dapat diubah jika sudah digunakan transaksi.
-                  </p>
-                </div>
-
-                <div>
-                  <label for="parentId" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1"
-                    >Induk Kategori (Opsional)</label
-                  >
-                  <select
-                    id="parentId"
-                    v-model="formData.parentId"
-                    :class="inputClass"
-                  >
-                    <option :value="null">-- Tidak Ada Induk (Kategori Utama) --</option>
-                    <option
-                      v-for="parentOpt in availableParentCategories"
-                      :key="parentOpt.id"
-                      :value="parentOpt.id"
-                    >
-                      {{ parentOpt.prefix }}{{ parentOpt.categoryName }} ({{
-                        parentOpt.categoryType
-                      }})
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label for="categoryIcon" class="block text-sm font-medium text-slate-700 mb-1"
-                    >Ikon (Opsional)</label
-                  >
-                  <div class="flex items-center space-x-2">
-                    <div class="relative w-full">
-                      <select
-                        id="categoryIcon"
-                        v-model="formData.icon"
-                        :class="[inputClass, 'pl-10 appearance-none']"
-                      >
-                        <option value="">Pilih Ikon...</option>
-                        <option v-for="icon in iconOptions" :key="icon" :value="icon">
-                          {{ icon }}
-                        </option>
-                      </select>
-                      <div
-                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 dark:bg-slate-800"
-                      >
-                        <i v-if="formData.icon" :class="['fa-solid', `fa-${formData.icon}`]"></i>
-                        <i v-else class="fa-solid fa-icons"></i>
-                      </div>
-                    </div>
-
-                    <div
-                      class="h-10 w-10 flex items-center justify-center rounded-md border border-emerald-300 text-emerald-600 flex-shrink-0 transition-all duration-200"
-                      :style="{ backgroundColor: formData.color || '#CBD5E1' }"
-                    >
-                      <i
-                        v-if="formData.icon"
-                        :class="['fa-solid', `fa-${formData.icon}`, 'text-lg', 'text-white']"
-                      ></i>
-                      <i v-else class="fa-regular fa-image text-slate-400 text-lg"></i>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label for="categoryColor" class="block text-sm font-medium text-slate-700 mb-1"
-                    >Warna (Opsional)</label
-                  >
-                  <div class="flex items-center">
-                    <input
-                      type="color"
-                      id="categoryColorPicker"
-                      v-model="formData.color"
-                      class="h-10 w-10 rounded-lg border border-slate-300 cursor-pointer dark:border-slate-600"
-                    />
-                    <input
-                      type="text"
-                      v-model="formData.color"
-                      class="ml-2 flex-1 rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors"
-                      placeholder="#FF0000"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="localError" class="mt-4 rounded-md bg-red-50 p-3">
-                <p class="text-sm font-medium text-red-700">{{ localError }}</p>
-              </div>
+  <Teleport to="body">
+    <dialog ref="dialog" class="money-category-modal" aria-modal="true" :aria-labelledby="`${id}-title`"
+      :aria-busy="busy" tabindex="-1" @cancel.prevent="closeModal" @keydown.esc.stop.prevent="closeModal" @close="nativeClose" @click="backdropClick">
+      <form @submit.prevent="submit">
+        <header class="category-modal-heading"><div><span class="category-eyebrow">RAPIKAN SETIAP CATATAN</span><h2 :id="`${id}-title`">{{ isEdit ? 'Edit kategori.' : 'Kategori baru.' }}</h2><p>{{ isEdit ? 'Perbarui nama, induk, dan tampilan kategori.' : 'Beri nama dan tampilan untuk kelompok transaksimu.' }}</p></div><button type="button" class="category-icon-button" :disabled="busy" aria-label="Tutup editor kategori" @click="closeModal"><AppIcon name="close" /></button></header>
+        <div class="category-modal-body">
+          <div v-if="localError" ref="errorBox" class="category-form-error" role="alert" tabindex="-1">{{ localError }}</div>
+          <fieldset :disabled="busy">
+            <legend class="shell-sr-only">Detail kategori</legend>
+            <div class="category-form-field"><label :for="`${id}-name`">Nama kategori <span aria-hidden="true">*</span></label><input :id="`${id}-name`" ref="nameInput" v-model="formData.name" type="text" required autocomplete="off" placeholder="Contoh: Belanja harian, Gaji" /></div>
+            <div class="category-form-grid">
+              <AppSelect :id="`${id}-type`" v-model="formData.type" :options="typeOptions" label="Jenis kategori" :disabled="busy || isEdit" required :helper-text="isEdit ? 'Jenis kategori tetap saat mengedit.' : 'Batas paket Dasar: 15 per jenis.'" />
+              <AppSelect :id="`${id}-parent`" v-model="formData.parentId" :options="parentOptions" label="Induk kategori" :disabled="busy" searchable placeholder="Pilih induk" helper-text="Pilih kategori utama jika tidak ingin membuat subkategori." />
             </div>
-            <div class="bg-gray-50 px-4 py-3 dark:bg-slate-700 sm:px-6 sm:flex sm:flex-row-reverse">
-              <button
-                type="submit"
-                :disabled="categoryStore.isSubmittingCategory"
-                class="inline-flex justify-center items-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#2E8B57] text-base font-medium text-white hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto sm:text-sm transition-colors"
-              >
-                <LoadingSpinner
-                  v-if="categoryStore.isSubmittingCategory"
-                  :visible="true"
-                  size="xs"
-                  color="text-white"
-                  class="-ml-1 mr-2"
-                />
-                {{
-                  categoryStore.isSubmittingCategory
-                    ? 'Menyimpan...'
-                    : isEditMode
-                      ? 'Simpan Perubahan'
-                      : 'Tambah Kategori'
-                }}
-              </button>
-              <button
-                type="button"
-                @click="closeModal"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed sm:mt-0 sm:w-auto sm:text-sm transition-colors"
-                :disabled="categoryStore.isSubmittingCategory"
-              >
-                Batal
-              </button>
+            <div class="category-form-grid">
+              <AppSelect :id="`${id}-icon`" v-model="formData.icon" :options="availableIcons" label="Ikon (opsional)" :disabled="busy" searchable />
+              <div class="category-form-field"><label :for="`${id}-color`">Warna (opsional)</label><div class="category-color-input"><input type="color" :value="previewColor" :aria-label="'Pilih warna kategori'" @input="formData.color = ($event.target as HTMLInputElement).value" /><input :id="`${id}-color`" v-model="formData.color" type="text" placeholder="#a780f2" autocomplete="off" :aria-describedby="`${id}-color-hint`" /></div><p :id="`${id}-color-hint`">Gunakan kode hex, misalnya #a780f2.</p></div>
             </div>
-          </form>
+            <div class="category-color-presets" role="group" aria-label="Pilihan warna cepat"><span>Palet Moneytory</span><button v-for="color in colors" :key="color.value" type="button" :aria-label="color.label" :aria-pressed="previewColor === color.value" :style="{ backgroundColor: color.value }" :class="{ 'is-selected': previewColor === color.value }" @click="formData.color = color.value"></button></div>
+          </fieldset>
+          <div class="category-live-preview"><CategoryBadge :color="previewColor" :icon="formData.icon" /><div><strong>{{ formData.name.trim() || 'Nama kategorimu' }}</strong><span>{{ formData.type === 'INCOME' ? 'Pemasukan' : 'Pengeluaran' }} · {{ parentLabel }}</span></div><small>Pratinjau</small></div>
         </div>
-      </Transition>
-    </div>
-  </Transition>
+        <footer class="category-modal-footer"><button type="button" class="category-button" :disabled="busy" @click="closeModal">Batal</button><button type="submit" class="category-button is-primary" :disabled="busy"><span v-if="busy" class="category-spinner" aria-hidden="true"></span><AppIcon v-else name="plus" />{{ busy ? 'Menyimpan...' : isEdit ? 'Simpan perubahan' : 'Tambah kategori' }}</button></footer>
+      </form>
+    </dialog>
+  </Teleport>
 </template>
-
 <script setup lang="ts">
-import { ref, reactive, watch, computed, onMounted } from 'vue'
-import { FrontendCategoryType } from '@/types/enums'
-import type { Category, CreateCategoryPayload, UpdateCategoryPayload } from '@/types/enums'
-import { useCategoryStore } from '@/stores/categories'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-
-interface Props {
-  isOpen: boolean
-  categoryToEdit?: Category | null // Data kategori jika mode edit
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  isOpen: false,
-  categoryToEdit: null,
-})
-
-const emit = defineEmits(['update:isOpen', 'saved'])
-
-const categoryStore = useCategoryStore()
-const localError = ref<string | null>(null)
-
-const isEditMode = computed(() => !!props.categoryToEdit && !!props.categoryToEdit.id)
-const hasTransactions = computed(() => isEditMode.value)
-
-const inputClass =
-  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
-
+import { computed, nextTick, onBeforeUnmount, reactive, ref, useId, watch } from 'vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import CategoryBadge from './CategoryBadge.vue'
 import { iconOptions } from '@/constants/icons'
+import { useCategoryStore } from '@/stores/categories'
+import { useAuthStore } from '@/stores/auth'
+import { FrontendCategoryType, type Category, type CreateCategoryPayload } from '@/types/enums'
+import type { SelectOption } from '@/types/select'
+import { buildCategoryPayload, categoryCounts, categoryParentOptions, normalizeCategoryColor } from '@/utils/categoryTree'
+import { lockModalScroll } from '@/utils/modalScrollLock'
+import '@/assets/categories.css'
 
-const categoryTypeOptions = [
-  { value: FrontendCategoryType.INCOME, text: 'Pemasukan (Income)' },
-  { value: FrontendCategoryType.EXPENSE, text: 'Pengeluaran (Expense)' },
-]
-
-interface FormData extends Omit<CreateCategoryPayload, 'parentCategoryId'> {
-  parentId: string | null // Memperbolehkan null secara eksplisit
-}
-
-const formData = reactive<FormData>({
-  name: '',
-  type: FrontendCategoryType.EXPENSE, // Default
-  parentId: null,
-  icon: '',
-  color: '#CBD5E1', // Default warna (slate-300)
+const props = withDefaults(defineProps<{ isOpen: boolean; categoryToEdit?: Category | null; initialType?: FrontendCategoryType }>(), {
+  categoryToEdit: null, initialType: FrontendCategoryType.EXPENSE,
 })
-
-// Mengisi form saat mode edit atau props.categoryToEdit berubah
-watch(
-  () => props.categoryToEdit,
-  (newVal) => {
-    if (newVal && isEditMode.value) {
-      formData.name = newVal.categoryName
-      formData.type = newVal.categoryType
-      formData.parentId = newVal.parentCategoryId || null
-      formData.icon = newVal.icon || ''
-      formData.color = newVal.color || '#CBD5E1'
-    } else {
-      // Reset form untuk mode tambah
-      formData.name = ''
-      formData.type = FrontendCategoryType.EXPENSE
-      formData.parentId = null
-      formData.icon = ''
-      formData.color = '#CBD5E1'
-    }
-  },
-  { immediate: true },
-)
-const closeModal = () => {
-  if (categoryStore.isSubmittingCategory) return
-  emit('update:isOpen', false)
-  localError.value = null
+const emit = defineEmits<{ 'update:isOpen': [value: boolean]; saved: [] }>()
+const categoryStore = useCategoryStore()
+const authStore = useAuthStore()
+const id = useId()
+const dialog = ref<HTMLDialogElement | null>(null)
+const nameInput = ref<HTMLInputElement | null>(null)
+const errorBox = ref<HTMLElement | null>(null)
+const localError = ref('')
+const saving = ref(false)
+const busy = computed(() => saving.value || categoryStore.isSubmittingCategory)
+const isEdit = computed(() => !!props.categoryToEdit)
+const formData = reactive({ name: '', type: FrontendCategoryType.EXPENSE, parentId: null as string | null, icon: '', color: '#a780f2' })
+const counts = computed(() => categoryCounts(categoryStore.allCategories))
+const canAddType = (type: FrontendCategoryType) => authStore.currentUser?.subscriptionPlan !== 'FREE' || (type === 'INCOME' ? counts.value.income : counts.value.expense) < 15
+const typeOptions = computed<SelectOption<FrontendCategoryType>[]>(() => [
+  { value: FrontendCategoryType.INCOME, label: 'Pemasukan', disabled: !isEdit.value && !canAddType(FrontendCategoryType.INCOME) },
+  { value: FrontendCategoryType.EXPENSE, label: 'Pengeluaran', disabled: !isEdit.value && !canAddType(FrontendCategoryType.EXPENSE) },
+])
+const parentOptions = computed<SelectOption<string | null>[]>(() => [{ value: null, label: 'Kategori utama (tanpa induk)' }, ...categoryParentOptions(categoryStore.allCategories, formData.type, props.categoryToEdit?.id)])
+const parentLabel = computed(() => parentOptions.value.find(({ value }) => value === formData.parentId)?.label || 'Kategori utama')
+const availableIcons = computed<SelectOption<string>[]>(() => [{ value: '', label: 'Tanpa ikon khusus' }, ...[...new Set([...iconOptions, ...(formData.icon ? [formData.icon] : [])])].map((value) => ({ value, label: value.replaceAll('-', ' ') }))])
+const previewColor = computed(() => normalizeCategoryColor(formData.color) || '#a780f2')
+const colors = [{ value: '#a780f2', label: 'Ungu muda' }, { value: '#c8edc6', label: 'Hijau mint' }, { value: '#ffd962', label: 'Kuning' }, { value: '#f2b9c4', label: 'Merah muda' }, { value: '#5026a5', label: 'Ungu tua' }, { value: '#d9cdbb', label: 'Krem' }]
+let opener: HTMLElement | null = null
+let releaseScroll: (() => void) | null = null
+let version = 0
+let active = true
+const closeDialog = () => {
+  const wasOpen = dialog.value?.open
+  dialog.value?.close()
+  releaseScroll?.(); releaseScroll = null
+  if (wasOpen) { if (opener?.isConnected) opener.focus(); else document.getElementById('category-list-heading')?.focus() }
+  opener = null
 }
-
-const handleSubmit = async () => {
-  localError.value = null
-  categoryStore.error = null
-
-  if (!formData.name.trim()) {
-    localError.value = 'Nama kategori wajib diisi.'
-    return
-  }
-  if (!formData.type) {
-    localError.value = 'Tipe kategori wajib dipilih.'
-    return
-  }
-
-  const payload: CreateCategoryPayload | UpdateCategoryPayload = {
-    name: formData.name,
-    type: formData.type,
-    parentId: formData.parentId || null,
-    icon: formData.icon?.trim() || null,
-    color: formData.color?.trim() || null,
-  }
-
+const closeModal = () => { if (!busy.value) emit('update:isOpen', false) }
+const nativeClose = () => {
+  if (dialog.value?.open) return
+  releaseScroll?.(); releaseScroll = null
+  if (active && props.isOpen) emit('update:isOpen', false)
+}
+const backdropClick = (event: MouseEvent) => {
+  const element = dialog.value
+  if (!element || event.target !== element || busy.value) return
+  const bounds = element.getBoundingClientRect()
+  if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) closeModal()
+}
+watch(() => formData.type, () => { if (formData.parentId && !parentOptions.value.some(({ value }) => value === formData.parentId)) formData.parentId = null })
+watch(busy, async (pending) => {
+  if (!pending || !props.isOpen) return
+  await nextTick()
+  if (active && props.isOpen && busy.value) dialog.value?.focus()
+})
+watch(() => props.isOpen, async (open) => {
+  const current = ++version
+  if (!open) { closeDialog(); return }
+  const category = props.categoryToEdit
+  const preferred = canAddType(props.initialType) ? props.initialType : props.initialType === 'INCOME' ? FrontendCategoryType.EXPENSE : FrontendCategoryType.INCOME
+  Object.assign(formData, category ? { name: category.categoryName, type: category.categoryType, parentId: category.parentCategoryId || null, icon: category.icon || '', color: category.color || '#a780f2' }
+    : { name: '', type: preferred, parentId: null, icon: '', color: '#a780f2' })
+  localError.value = ''
+  await nextTick()
+  if (!active || current !== version || !props.isOpen || !dialog.value || dialog.value.open) return
+  opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+  dialog.value.showModal()
+  releaseScroll = lockModalScroll()
+  nameInput.value?.focus()
+}, { immediate: true })
+const submit = async () => {
+  if (busy.value || !props.isOpen) return
+  localError.value = ''
+  let payload: CreateCategoryPayload
   try {
-    if (isEditMode.value && props.categoryToEdit?.id) {
-      await categoryStore.updateCategory(props.categoryToEdit.id, payload as UpdateCategoryPayload)
-    } else {
-      await categoryStore.createCategory(payload as CreateCategoryPayload)
-    }
-    emit('saved')
-    closeModal()
-  } catch (error: any) {
-    localError.value = categoryStore.error || error.message || 'Terjadi kesalahan.'
-    console.error('Error saving category:', error)
+    if (!isEdit.value && !canAddType(formData.type)) throw new Error('Batas 15 kategori untuk jenis ini sudah tercapai. Pilih jenis lain atau gunakan paket Premium.')
+    payload = buildCategoryPayload(formData, categoryStore.allCategories, props.categoryToEdit?.id)
+  } catch (error: unknown) {
+    localError.value = error instanceof Error ? error.message : 'Periksa kembali detail kategori.'
+    await nextTick(); errorBox.value?.focus(); return
   }
+  saving.value = true
+  try {
+    if (props.categoryToEdit) await categoryStore.updateCategory(props.categoryToEdit.id, payload)
+    else await categoryStore.createCategory(payload)
+    emit('saved'); emit('update:isOpen', false)
+  } catch (error: unknown) {
+    localError.value = categoryStore.categoryError || (typeof error === 'string' ? error : error instanceof Error ? error.message : '') || 'Kategori belum berhasil disimpan.'
+    await nextTick(); errorBox.value?.focus()
+  } finally { saving.value = false }
 }
-
-const availableParentCategories = computed(() => {
-  const flatCategories: {
-    id: string
-    categoryName: string
-    categoryType: FrontendCategoryType
-    prefix: string
-  }[] = []
-  function flatten(categories: Category[], level = 0, type: string = '') {
-    for (const cat of categories) {
-      if (isEditMode.value && props.categoryToEdit?.id === cat.id) continue
-      // make sure if type INCOME then only show INCOME categories and vice versa
-      if (type && cat.categoryType !== type) continue
-      flatCategories.push({
-        id: cat.id,
-        categoryName: cat.categoryName,
-        categoryType: cat.categoryType,
-        prefix: '- '.repeat(level),
-      })
-      if (cat.subCategories && cat.subCategories.length > 0) {
-        flatten(cat.subCategories, level + 1)
-      }
-    }
-  }
-  flatten(categoryStore.allCategories, 0, formData.type)
-  return flatCategories
-})
-onMounted(() => {
-  if (categoryStore.allCategories.length === 0) {
-    categoryStore.fetchCategories({ hierarchical: 'true' })
-  }
-})
+onBeforeUnmount(() => { active = false; version++; closeDialog() })
 </script>

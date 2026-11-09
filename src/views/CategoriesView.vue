@@ -1,337 +1,121 @@
 <template>
-  <div>
-    <div class="flex justify-between items-center mb-6 print:hidden flex-col md:flex-row gap-5">
-      <h1 class="text-3xl w-full font-semibold text-gray-800 dark:text-white">Kelola Kategori</h1>
-      <div class="flex items-center gap-3 flex-col md:flex-row w-full">
-        <div class="flex flex-col md:flex-row text-left w-full justify-end gap-2">
-        <button
-          @click="openCreateCategoryModal"
-          :disabled="!canAddCategory"
-          :title="addCategoryButtonTitle"
-          class="bg-[#2E8B57] text-white text-sm font-medium px-4 h-10 rounded-lg flex items-center transition-colors shadow-sm w-full md:w-auto justify-center"
-          :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#236B43]'"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5 mr-1.5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
-          Tambah Kategori
-        </button>
-        </div>
+  <div class="money-categories">
+    <header class="categories-heading print:hidden">
+      <div><span class="shell-overline">SETIAP CATATAN PUNYA TEMPAT</span><h1>Kelola kategori.</h1><p>Kelompokkan pemasukan dan pengeluaran agar laporan lebih mudah dibaca.</p></div>
+      <button type="button" class="category-button is-primary" :disabled="!canAddCategory || isLoading || !!loadError" @click="openCreate()"><AppIcon :name="canAddCategory ? 'plus' : 'lock'" />{{ canAddCategory ? 'Tambah kategori' : 'Batas kategori tercapai' }}</button>
+    </header>
+
+    <template v-if="!isLoading && !loadError">
+      <aside v-if="isFree" class="categories-plan-note print:hidden"><AppIcon name="book" /><p><strong>Paket Dasar</strong> · {{ counts.income }}/15 kategori pemasukan dan {{ counts.expense }}/15 kategori pengeluaran, termasuk subkategori.<RouterLink :to="{ name: 'settings', query: { upgrade: 'true' } }">Jelajahi Premium ↗</RouterLink></p></aside>
+      <div class="category-stats" role="group" aria-label="Filter jenis kategori">
+        <button v-for="stat in statistics" :key="stat.type" type="button" :class="[`is-${stat.type.toLowerCase()}`, { 'is-selected': selectedFilter === stat.type }]"
+          :aria-pressed="selectedFilter === stat.type" @click="selectedFilter = stat.type"><span><AppIcon :name="stat.icon" />{{ stat.label }}</span><strong>{{ stat.count }}</strong><small>{{ stat.hint }}</small></button>
       </div>
-    </div>
 
-    <LoadingSpinner
-      v-if="isLoading && categories.length === 0"
-      :visible="true"
-      text="Memuat data kategori..."
-      size="lg"
-      overlay
-    />
-    <div
-      v-if="error && !isLoading"
-      class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
-      role="alert"
-    >
-      <p class="font-bold">Gagal Memuat Kategori</p>
-      <p>{{ error }}</p>
-    </div>
-    <div
-      v-if="!isLoading && categories.length === 0 && !error"
-      class="text-center py-10 bg-white rounded-lg shadow-md print:hidden"
-    >
-      <svg
-        class="mx-auto h-16 w-16 text-slate-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 4.5 3.75h15A2.25 2.25 0 0 1 21.75 6v3.776"
-        />
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-slate-800">Belum Ada Kategori</h3>
-      <p class="mt-1 text-sm text-slate-500">Anda belum membuat kategori.</p>
-      <button
-        @click="openCreateCategoryModal"
-        :disabled="!canAddCategory"
-        :title="addCategoryButtonTitle"
-        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#2E8B57] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-        :class="!canAddCategory ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#236B43]'"
-      >
-        + Tambah Kategori Sekarang
-      </button>
-    </div>
-
-    <div
-      v-if="!isLoading && categories.length > 0"
-      class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8"
-    >
-      <StatsCard
-        title="Total Kategori"
-        :value="filteredCategoryCount"
-        variant="indigo"
-        :active="selectedFilter === 'ALL'"
-        :on-click="() => setFilter('ALL')"
-      >
-        <template #icon>
-          <svg
-            class="h-6 w-6 text-current"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
-            />
-          </svg>
-        </template>
-      </StatsCard>
-
-      <StatsCard
-        title="Income"
-        :value="incomeCategories.length"
-        variant="green"
-        :subtitle="`${categoryStore.totalIncomeParent} Kategori • ${categoryStore.totalIncomeSub} Sub Kategori`"
-        :active="selectedFilter === 'INCOME'"
-        :on-click="() => setFilter('INCOME')"
-      >
-        <template #icon>
-          <svg
-            class="h-6 w-6 text-current"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-        </template>
-      </StatsCard>
-
-      <StatsCard
-        title="Expense"
-        :value="expenseCategories.length"
-        variant="red"
-        :subtitle="`${categoryStore.totalExpenseParent} Kategori • ${categoryStore.totalExpenseSub} Sub Kategori`"
-        :active="selectedFilter === 'EXPENSE'"
-        :on-click="() => setFilter('EXPENSE')"
-      >
-        <template #icon>
-          <svg
-            class="h-6 w-6 text-current"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
-          </svg>
-        </template>
-      </StatsCard>
-    </div>
-
-    <div v-if="!isLoading && categories.length > 0" class="space-y-8">
-      <transition
-        enter-active-class="transition ease-out duration-200"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition ease-in duration-150"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 translate-y-2"
-      >
-        <div v-if="selectedFilter === 'ALL' || selectedFilter === 'INCOME'">
-          <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
-            <h2 class="text-xl font-semibold text-slate-700 dark:text-white">Kategori Pemasukan (Income)</h2>
-            <span class="text-sm bg-green-100 text-green-800 py-1 px-3 rounded-full font-medium"
-              >Total: {{ incomeCategories.length }}</span
-            >
-          </div>
-          <div v-if="incomeCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
-            Belum ada kategori pemasukan.
-          </div>
-          <ul v-else class="space-y-1">
-            <CategoryItem
-              v-for="category in incomeCategories"
-              :key="category.id"
-              :category="category"
-              :level="0"
-              @edit="openEditCategoryModal"
-              @delete="promptDeleteCategory"
-            />
-          </ul>
+      <section class="category-browser" aria-labelledby="category-list-heading">
+        <div class="category-list-heading"><div><h2 id="category-list-heading" ref="listHeading" tabindex="-1">Daftar kategori</h2><p aria-live="polite">{{ resultCount }} kategori ditampilkan, termasuk subkategori.</p></div><button v-if="search || selectedFilter !== 'ALL'" type="button" class="category-text-button print:hidden" @click="resetFilters">Reset filter</button></div>
+        <div class="category-toolbar print:hidden">
+          <div class="category-search"><AppIcon name="search" /><label for="category-search" class="shell-sr-only">Cari kategori</label><input id="category-search" v-model="search" type="search" placeholder="Cari kategori atau subkategori..." /></div>
+          <AppSelect v-model="sortOrder" :options="sortOptions" aria-label="Urutkan kategori" />
+          <div class="category-expand-actions"><button type="button" class="category-button" :disabled="!!search.trim()" @click="setExpanded(true)">Buka semua</button><button type="button" class="category-button" :disabled="!!search.trim()" @click="setExpanded(false)">Tutup semua</button></div>
         </div>
-      </transition>
-
-      <transition
-        enter-active-class="transition ease-out duration-200"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition ease-in duration-150"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 translate-y-2"
-      >
-        <div v-if="selectedFilter === 'ALL' || selectedFilter === 'EXPENSE'">
-          <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-300">
-            <h2 class="text-xl font-semibold text-slate-700 dark:text-white">Kategori Pengeluaran (Expense)</h2>
-            <span class="text-sm bg-red-100 text-red-800 py-1 px-3 rounded-full font-medium"
-              >Total: {{ expenseCategories.length }}</span
-            >
-          </div>
-          <div v-if="expenseCategories.length === 0" class="text-sm text-slate-500 italic pl-2">
-            Belum ada kategori pengeluaran.
-          </div>
-          <ul v-else class="space-y-1">
-            <CategoryItem
-              v-for="category in expenseCategories"
-              :key="category.id"
-              :category="category"
-              :level="0"
-              @edit="openEditCategoryModal"
-              @delete="promptDeleteCategory"
-            />
-          </ul>
+        <div v-if="!counts.total" class="category-state"><AppIcon name="tag" /><h3>Mulai dari kategori pertamamu.</h3><p>Buat kategori untuk memisahkan pemasukan, kebutuhan harian, dan rencana lainnya.</p><button type="button" class="category-button is-primary" :disabled="!canAddCategory" @click="openCreate()"><AppIcon name="plus" />Tambah kategori</button></div>
+        <div v-else-if="!resultCount" class="category-state"><AppIcon name="search" /><h3>Kategori belum ditemukan.</h3><p>Coba kata kunci lain atau tampilkan semua jenis kategori.</p><button type="button" class="category-button" @click="resetFilters">Tampilkan semua kategori</button></div>
+        <div v-else class="category-sections">
+          <section v-for="group in visibleGroups" :key="group.type" class="category-group" :class="`is-${group.type.toLowerCase()}`" :aria-labelledby="`category-group-${group.type}`">
+            <header><div><span class="category-group-icon"><AppIcon :name="group.type === 'INCOME' ? 'plus' : 'arrow'" /></span><div><h3 :id="`category-group-${group.type}`">{{ group.label }}</h3><p>{{ group.description }}</p></div></div>
+              <button type="button" class="category-text-button print:hidden" :disabled="!canAddType(group.type)" @click="openCreate(group.type)"><AppIcon name="plus" />Tambah</button>
+            </header>
+            <ul class="category-tree"><CategoryItem v-for="category in group.items" :key="category.id" :category="category" :expand-all="expandAll" :expansion-version="expansionVersion" :searching="!!search.trim()" :disabled="isDeleting" @edit="openEdit" @delete="promptDelete" /></ul>
+          </section>
         </div>
-      </transition>
-    </div>
+      </section>
+    </template>
+    <div v-else-if="isLoading" class="category-state" role="status"><span class="category-spinner" aria-hidden="true"></span><h2>Memuat kategori...</h2><p>Menyiapkan kelompok dan subkategori keuanganmu.</p></div>
+    <div v-else class="category-state" role="alert"><AppIcon name="help" /><h2>Kategori belum berhasil dimuat.</h2><p>{{ loadError }}</p><button type="button" class="category-button" @click="loadCategories">Coba lagi</button></div>
 
-    <CategoryModal
-      v-model:isOpen="isCategoryModalOpen"
-      :categoryToEdit="categoryToEdit"
-      @saved="handleCategorySaved"
-    />
-
-    <ConfirmationModal
-      v-model:isOpen="isDeleteModalOpen"
-      title="Konfirmasi Hapus Kategori"
-      :message="`Apakah Anda yakin ingin menghapus kategori '${categoryToDelete?.categoryName || ''}'? Jika kategori ini memiliki sub-kategori, sub-kategori tersebut akan menjadi kategori utama. Transaksi yang menggunakan kategori ini akan kehilangan kategorinya. Aksi ini tidak dapat dibatalkan.`"
-      confirmButtonText="Ya, Hapus"
-      confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-      iconType="danger"
-      :isConfirming="isDeletingCategory || categoryStore.isSubmittingCategory"
-      @confirm="handleConfirmDelete"
-      @cancel="closeDeleteModal"
-    />
+    <CategoryModal v-model:isOpen="isCategoryModalOpen" :category-to-edit="categoryToEdit" :initial-type="createType" @saved="handleSaved" />
+    <ConfirmationModal v-model:isOpen="isDeleteModalOpen" title="Hapus kategori?"
+      :message="`Hapus kategori '${categoryToDelete?.categoryName || ''}'? Tindakan ini tidak dapat dibatalkan. Kategori yang masih digunakan oleh transaksi tidak dapat dihapus.`"
+      confirmButtonText="Hapus kategori" iconType="danger" :isConfirming="isDeleting" @confirm="confirmDelete" @cancel="closeDelete" />
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
-import StatsCard from '@/components/common/StatsCard.vue'
 import CategoryItem from '@/components/categories/CategoryItem.vue'
 import CategoryModal from '@/components/categories/CategoryModal.vue'
 import { useCategoryStore } from '@/stores/categories'
-import type { Category } from '@/types/enums'
 import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
+import { FrontendCategoryType, type Category } from '@/types/enums'
+import { categoryCounts, filterCategoryTree } from '@/utils/categoryTree'
+import '@/assets/categories.css'
 
 const categoryStore = useCategoryStore()
 const authStore = useAuthStore()
-
+const toastStore = useToastStore()
 const selectedFilter = ref<'ALL' | 'INCOME' | 'EXPENSE'>('ALL')
-
-const setFilter = (filter: 'ALL' | 'INCOME' | 'EXPENSE') => {
-  selectedFilter.value = filter
-}
-
-const categories = computed(() => categoryStore.allCategories)
-const incomeCategories = computed(() => {
-  if (selectedFilter.value === 'EXPENSE') return []
-  return categoryStore.incomeCategories
-})
-const expenseCategories = computed(() => {
-  if (selectedFilter.value === 'INCOME') return []
-  return categoryStore.expenseCategories
-})
-const filteredCategoryCount = computed(() => {
-  if (selectedFilter.value === 'INCOME') return incomeCategories.value.length
-  if (selectedFilter.value === 'EXPENSE') return expenseCategories.value.length
-  return categories.value.length
-})
-const isLoading = computed(() => categoryStore.isLoadingCategories)
-const error = computed(() => categoryStore.categoryError)
-
-const canAddCategory = computed(() => {
-  const isFree = authStore.currentUser?.subscriptionPlan === 'FREE'
-  const countIncome = categoryStore.totalRecursiveIncome
-  const countExpense = categoryStore.totalRecursiveExpense
-  // Bisa tambah jika bukan Free, ATAU (salah satu dari Income/Expense belum mencapai 15)
-  return !isFree || countIncome < 15 || countExpense < 15
-})
-
-const addCategoryButtonTitle = computed(() => {
-  if (!canAddCategory.value) {
-    return 'Batas kategori untuk paket FREE telah tercapai (15 Income & 15 Expense). Upgrade untuk menambah.'
-  }
-  return 'Tambah Kategori Baru'
-})
-
-onMounted(async () => {
-  if (categoryStore.allCategories.length === 0) {
-    await categoryStore.fetchCategories({ hierarchical: 'true', includeGlobal: 'false' })
-  }
-})
-
-// State dan fungsi untuk Modal Tambah/Edit Kategori
+const search = ref('')
+const sortOrder = ref('asc')
+const sortOptions = [{ value: 'asc', label: 'Nama A–Z' }, { value: 'desc', label: 'Nama Z–A' }]
+const counts = computed(() => categoryCounts(categoryStore.allCategories))
+const isFree = computed(() => authStore.currentUser?.subscriptionPlan === 'FREE')
+const canAddType = (type: FrontendCategoryType) => !isFree.value || (type === FrontendCategoryType.INCOME ? counts.value.income : counts.value.expense) < 15
+const canAddCategory = computed(() => canAddType(FrontendCategoryType.INCOME) || canAddType(FrontendCategoryType.EXPENSE))
+const statistics = computed(() => [
+  { type: 'ALL' as const, label: 'Semua kategori', icon: 'grid', count: counts.value.total, hint: `${counts.value.parents} utama · ${counts.value.children} subkategori` },
+  { type: 'INCOME' as const, label: 'Pemasukan', icon: 'plus', count: counts.value.income, hint: 'Kelompokkan sumber pemasukanmu' },
+  { type: 'EXPENSE' as const, label: 'Pengeluaran', icon: 'arrow', count: counts.value.expense, hint: 'Kenali kebutuhan dan pengeluaranmu' },
+])
+const filteredTree = computed(() => filterCategoryTree(categoryStore.allCategories, search.value, sortOrder.value === 'desc'))
+const visibleGroups = computed(() => [
+  { type: FrontendCategoryType.INCOME, label: 'Pemasukan', description: 'Sumber dana yang masuk.', items: filteredTree.value.filter((category) => category.categoryType === 'INCOME') },
+  { type: FrontendCategoryType.EXPENSE, label: 'Pengeluaran', description: 'Ke mana uangmu digunakan.', items: filteredTree.value.filter((category) => category.categoryType === 'EXPENSE') },
+].filter((group) => (selectedFilter.value === 'ALL' || selectedFilter.value === group.type) && group.items.length))
+const resultCount = computed(() => visibleGroups.value.reduce((total, group) => total + categoryCounts(group.items).total, 0))
+const expandAll = ref(false)
+const expansionVersion = ref(0)
+const setExpanded = (expanded: boolean) => { expandAll.value = expanded; expansionVersion.value++ }
+const resetFilters = () => { search.value = ''; selectedFilter.value = 'ALL' }
 const isCategoryModalOpen = ref(false)
 const categoryToEdit = ref<Category | null>(null)
-
-const openCreateCategoryModal = () => {
-  categoryToEdit.value = null // Tidak ada data untuk diedit, berarti mode tambah
-  isCategoryModalOpen.value = true
-}
-
-const openEditCategoryModal = (category: Category) => {
-  categoryToEdit.value = { ...category } // Salin data kategori untuk diedit
-  isCategoryModalOpen.value = true
-}
-
-const handleCategorySaved = () => {
-  console.log('Category saved, modal should close.')
-}
-
-// State dan fungsi untuk Modal Hapus Kategori
+const createType = ref(FrontendCategoryType.EXPENSE)
 const isDeleteModalOpen = ref(false)
 const categoryToDelete = ref<Category | null>(null)
-const isDeletingCategory = ref(false) // Bisa juga pakai categoryStore.isSubmittingCategory
-
-const promptDeleteCategory = (category: Category) => {
+const isDeleting = ref(false)
+const isLoading = computed(() => categoryStore.isLoadingCategories && !isCategoryModalOpen.value && !isDeleting.value)
+const loadError = ref('')
+const listHeading = ref<HTMLElement | null>(null)
+const loadCategories = async () => {
+  loadError.value = ''
+  try { await categoryStore.fetchCategories({ hierarchical: 'true', includeGlobal: 'false' }); loadError.value = categoryStore.categoryError || '' }
+  catch { loadError.value = 'Kategori belum berhasil dimuat. Silakan coba lagi.' }
+}
+const openCreate = (type?: FrontendCategoryType) => {
+  if (!canAddCategory.value || isLoading.value || loadError.value || isDeleting.value) return
+  const preferred = type || (selectedFilter.value === 'INCOME' ? FrontendCategoryType.INCOME : FrontendCategoryType.EXPENSE)
+  createType.value = canAddType(preferred) ? preferred : preferred === FrontendCategoryType.INCOME ? FrontendCategoryType.EXPENSE : FrontendCategoryType.INCOME
+  categoryToEdit.value = null
+  isCategoryModalOpen.value = true
+}
+const openEdit = (category: Category) => { if (!isDeleting.value) { categoryToEdit.value = category; isCategoryModalOpen.value = true } }
+const handleSaved = () => { loadError.value = categoryStore.categoryError || ''; toastStore.show('Kategori berhasil disimpan.') }
+const promptDelete = (category: Category) => {
+  if (!category.userId || isDeleting.value) return
   categoryToDelete.value = category
   isDeleteModalOpen.value = true
 }
-
-const handleConfirmDelete = async () => {
-  if (!categoryToDelete.value) return
-  isDeletingCategory.value = true
-  try {
-    await categoryStore.deleteCategory(categoryToDelete.value.id)
-  } catch (error: any) {
-    console.error('Gagal menghapus kategori dari view:', error)
-  } finally {
-    isDeletingCategory.value = false
-    closeDeleteModal()
-  }
+const closeDelete = () => { if (!isDeleting.value) { isDeleteModalOpen.value = false; categoryToDelete.value = null } }
+const confirmDelete = async () => {
+  if (!categoryToDelete.value || isDeleting.value) return
+  isDeleting.value = true
+  try { await categoryStore.deleteCategory(categoryToDelete.value.id); loadError.value = categoryStore.categoryError || ''; toastStore.show('Kategori berhasil dihapus.') }
+  catch (error: unknown) { toastStore.show(categoryStore.categoryError || (error instanceof Error ? error.message : 'Kategori belum dapat dihapus.'), 'error') }
+  finally { isDeleting.value = false; closeDelete(); await nextTick(); listHeading.value?.focus() }
 }
-
-const closeDeleteModal = () => {
-  isDeleteModalOpen.value = false
-  categoryToDelete.value = null
-}
+onMounted(loadCategories)
 </script>
