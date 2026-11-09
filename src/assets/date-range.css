@@ -262,6 +262,17 @@
   min-width: 0;
   max-width: 140px;
 }
+.dr-month-jump .dr-month-select {
+  min-width: 0;
+  max-width: 140px;
+  flex: 1;
+}
+.dr-month-jump .ms-trigger {
+  min-height: 34px;
+  padding: 5px 8px;
+  gap: 5px;
+  font-size: 11px;
+}
 .dark .dr-month-jump select {
   color-scheme: dark;
 }

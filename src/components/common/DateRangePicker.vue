@@ -38,9 +38,7 @@
               <button type="button" class="dr-icon-button" aria-label="Bulan sebelumnya" @click="moveMonth(-1)"><AppIcon name="chevron" class="dr-back-arrow" /></button>
               <div class="dr-month-jump">
                 <label class="dr-sr-only" :for="`${id}-month`">Bulan</label>
-                <select :id="`${id}-month`" :value="viewMonth.getMonth()" @change="jumpMonth">
-                  <option v-for="(month, index) in monthNames" :key="month" :value="index">{{ month }}</option>
-                </select>
+                <AppSelect :id="`${id}-month`" class="dr-month-select" aria-label="Bulan" :model-value="viewMonth.getMonth()" :options="monthOptions" @change="jumpMonth" />
                 <label class="dr-sr-only" :for="`${id}-year`">Tahun</label>
                 <input :id="`${id}-year`" type="number" min="1" max="9999" :value="viewMonth.getFullYear()" @change="jumpYear" />
               </div>
@@ -83,6 +81,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, reactive, ref, useId } from 'vue'
 import AppIcon from './AppIcon.vue'
+import AppSelect from './AppSelect.vue'
 import { calendarDays, dateKey, monthOffset, orderedRange, parseDate, presetRange, type DatePreset, type DateRange } from '@/utils/dateRange'
 import '@/assets/date-range.css'
 
@@ -104,6 +103,7 @@ const awaitingEnd = ref(false)
 const months = computed(() => [viewMonth.value, monthOffset(viewMonth.value, 1)].filter((date) => date.getFullYear() <= 9999))
 const weekdays = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
 const monthNames = Array.from({ length: 12 }, (_, index) => new Date(2024, index, 1).toLocaleDateString('id-ID', { month: 'long' }))
+const monthOptions = monthNames.map((label, value) => ({ value, label }))
 const presets: { value: DatePreset; label: string }[] = [
   { value: 'today', label: 'Hari ini' }, { value: 'yesterday', label: 'Kemarin' }, { value: 'week', label: '7 hari terakhir' },
   { value: 'month', label: 'Bulan ini' }, { value: 'lastMonth', label: 'Bulan lalu' }, { value: 'year', label: 'Tahun ini' },
@@ -187,7 +187,7 @@ const moveMonth = (offset: number) => {
   viewMonth.value = next
   focusedDay.value = dateKey(next)
 }
-const jumpMonth = (event: Event) => moveMonth(Number((event.target as HTMLSelectElement).value) - viewMonth.value.getMonth())
+const jumpMonth = (month: number) => moveMonth(month - viewMonth.value.getMonth())
 const jumpYear = (event: Event) => {
   const input = event.target as HTMLInputElement
   const year = Number(input.value)

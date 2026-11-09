@@ -1,0 +1,257 @@
+.money-select {
+  --ms-paper: #fdf9ee;
+  --ms-surface: #fffcf5;
+  --ms-ink: #27231d;
+  --ms-muted: #6c6256;
+  --ms-rule: #e2d8c7;
+  --ms-line: #423a2d;
+  --ms-grape: #5026a5;
+  --ms-lilac: #eee4ff;
+  position: relative;
+  min-width: 0;
+  color: var(--ms-ink);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.dark .money-select {
+  --ms-paper: #17151d;
+  --ms-surface: #211e29;
+  --ms-ink: #f6f0e5;
+  --ms-muted: #b7aec2;
+  --ms-rule: #3c3549;
+  --ms-line: #736b7e;
+  --ms-grape: #cfb8f5;
+  --ms-lilac: #35264e;
+}
+.money-select *, .money-select *::before, .money-select *::after {
+  box-sizing: border-box;
+}
+.money-select .ms-label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--ms-ink);
+  font-size: 11px;
+  font-weight: 700;
+}
+.ms-label > span {
+  color: #b14b5b;
+}
+.money-select .ms-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  min-height: 42px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--ms-rule);
+  border-radius: 9px;
+  background: var(--ms-paper);
+  color: var(--ms-ink);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+}
+.ms-trigger > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.money-select .ms-trigger:hover:not(:disabled), .money-select .ms-trigger[aria-expanded='true'] {
+  border-color: var(--ms-grape);
+  background: var(--ms-lilac);
+}
+.money-select .ms-trigger:focus-visible, .money-select .ms-search input:focus-visible {
+  outline: 3px solid var(--ms-grape);
+  outline-offset: 3px;
+}
+.money-select .ms-trigger.is-placeholder {
+  color: var(--ms-muted);
+}
+.money-select .ms-trigger.is-invalid {
+  border-color: #b14b5b;
+}
+.money-select .ms-trigger:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+.money-select .ms-chevron {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--ms-muted);
+  transition: transform .15s;
+}
+.ms-chevron.is-open {
+  transform: rotate(180deg);
+}
+.money-select.ms-panel {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 6px;
+  margin: 0;
+  inset: auto;
+  border: 1px solid var(--ms-line);
+  border-radius: 13px;
+  background: var(--ms-surface);
+  box-shadow: 3px 4px 0 #27231d33, 0 10px 28px #27231d18;
+  z-index: 1000;
+  overflow: hidden;
+}
+.money-select.ms-panel[popover]:not(:popover-open) {
+  display: none;
+}
+.money-select.ms-panel::backdrop {
+  background: transparent;
+  pointer-events: none;
+}
+.ms-panel .ms-search {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 6px 8px 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--ms-rule);
+}
+.ms-panel .ms-search > svg {
+  width: 16px;
+  height: 16px;
+  color: var(--ms-muted);
+}
+.ms-panel .ms-search input {
+  min-width: 0;
+  width: 100%;
+  min-height: 32px;
+  padding: 5px 7px;
+  border: 1px solid var(--ms-rule);
+  border-radius: 7px;
+  background: var(--ms-paper);
+  color: var(--ms-ink);
+  font-size: 12px;
+}
+.ms-panel .ms-search input::placeholder {
+  opacity: 1;
+  color: var(--ms-muted);
+}
+.ms-panel .ms-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ms-rule) transparent;
+  min-height: 0;
+}
+.ms-panel .ms-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ms-panel .ms-group-label {
+  padding: 10px 10px 5px;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: var(--ms-muted);
+}
+.ms-panel .ms-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 38px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: var(--ms-ink);
+  cursor: pointer;
+  text-align: left;
+}
+.ms-option > span:first-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.ms-option strong {
+  font-size: 11px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.ms-option small {
+  font-size: 10px;
+  color: var(--ms-muted);
+}
+.ms-panel .ms-option.is-active {
+  background: var(--ms-lilac);
+  color: var(--ms-grape);
+}
+.ms-panel .ms-option.is-selected strong {
+  font-weight: 700;
+}
+.ms-option .ms-check {
+  color: var(--ms-grape);
+  font-size: 13px;
+  font-weight: 700;
+}
+.ms-panel .ms-option.is-disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+.ms-panel .ms-message {
+  padding: 18px 10px;
+  color: var(--ms-muted);
+  font-size: 11px;
+  text-align: center;
+}
+.money-select .ms-hint {
+  margin: 7px 0 0;
+  color: var(--ms-muted);
+  font-size: 11px;
+}
+.money-select .ms-hint.is-error {
+  color: #b14b5b;
+}
+.money-select .ms-validation, .ms-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  padding: 0;
+  margin: -1px;
+  opacity: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  border: 0;
+}
+.ms-spinner {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  border: 2px solid var(--ms-rule);
+  border-top-color: var(--ms-grape);
+  border-radius: 50%;
+  animation: ms-spin .8s linear infinite;
+}
+@keyframes ms-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ms-spinner {
+    animation: none;
+  }
+  .ms-chevron {
+    transition: none;
+  }
+}

@@ -55,36 +55,8 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- Start Date -->
         <DateRangePicker class="sm:col-span-2" :start-date="filters.startDate" :end-date="filters.endDate" @apply="applyDateRange" />
-        <!-- COA Filter -->
-        <div>
-          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Akun (COA)</label>
-          <select
-            v-model="filters.coaId"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          >
-            <option value="">Semua Akun</option>
-            <optgroup v-for="(group, type) in businessStore.chartOfAccounts" :key="type" :label="String(type)">
-              <option v-for="coa in group" :key="coa.id" :value="coa.id">
-                {{ coa.code }} {{ coa.name }}
-              </option>
-            </optgroup>
-          </select>
-        </div>
-        <!-- Status Filter (Phase 8) -->
-        <div>
-          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Status</label>
-          <select
-            v-model="filters.status"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          >
-            <option value="">Semua Status</option>
-            <option value="DRAFT">Draft</option>
-            <option value="PENDING_CHECK">Pending Check</option>
-            <option value="PENDING_APPROVAL">Pending Approval</option>
-            <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
-          </select>
-        </div>
+        <AppSelect v-model="filters.coaId" label="Akun (COA)" :options="coaFilterOptions" searchable />
+        <AppSelect v-model="filters.status" label="Status" :options="statusFilterOptions" />
         <!-- Actions -->
         <div class="flex items-end gap-2">
           <button
@@ -301,6 +273,8 @@
 
 <script setup lang="ts">
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import type { SelectOption } from '@/types/select'
 import { dateKey, type DateRange } from '@/utils/dateRange'
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -337,6 +311,16 @@ const filters = ref({
   status: '',
 })
 
+const coaFilterOptions = computed<SelectOption<string>[]>(() => [
+  { value: '', label: 'Semua akun' },
+  ...Object.entries(businessStore.chartOfAccounts).flatMap(([group, accounts]) =>
+    accounts.map((account) => ({ value: account.id, label: account.code + ' ' + account.name, group }))),
+])
+const statusFilterOptions: SelectOption<string>[] = [
+  { value: '', label: 'Semua status' }, { value: 'DRAFT', label: 'Draft' },
+  { value: 'PENDING_CHECK', label: 'Pending check' }, { value: 'PENDING_APPROVAL', label: 'Pending approval' },
+  { value: 'APPROVED', label: 'Approved' }, { value: 'REJECTED', label: 'Rejected' },
+]
 const isExporting = ref(false)
 
 async function doExportExcel() {

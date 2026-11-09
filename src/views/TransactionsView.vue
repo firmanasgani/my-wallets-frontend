@@ -53,19 +53,13 @@
         <DateRangePicker class="tx-range-field" :start-date="localFilters.startDate" :end-date="localFilters.endDate" @apply="applyDateRange" />
         <div class="tx-field">
           <label for="filter-account">Akun keuangan</label>
-          <select id="filter-account" v-model="localFilters.accountId" @change="applyCurrentFilters">
-            <option :value="undefined">Semua akun</option>
-            <option v-for="account in accountStore.allAccounts" :key="account.id" :value="account.id">{{ account.accountName }}</option>
-          </select>
+          <AppSelect id="filter-account" v-model="localFilters.accountId" :options="accountOptions" aria-label="Akun keuangan" searchable
+            :loading="accountStore.isLoading" @change="applyCurrentFilters" />
         </div>
         <div class="tx-field">
           <label for="filter-category">Kategori</label>
-          <select id="filter-category" v-model="localFilters.categoryId" @change="applyCurrentFilters">
-            <option :value="undefined">Semua kategori</option>
-            <option v-for="category in categoriesForFilter" :key="category.id" :value="category.id">
-              {{ category.label }} ({{ category.categoryType === 'INCOME' ? 'Pemasukan' : 'Pengeluaran' }})
-            </option>
-          </select>
+          <AppSelect id="filter-category" v-model="localFilters.categoryId" :options="categoryOptions" aria-label="Kategori" searchable
+            :loading="categoryStore.isLoadingCategories" @change="applyCurrentFilters" />
         </div>
       </div>
       <p v-if="dateRangeError" id="date-range-error" class="tx-inline-error" role="alert">{{ dateRangeError }}</p>
@@ -94,10 +88,7 @@
         </div>
         <div class="tx-field tx-sort print:hidden">
           <label for="transaction-sort" class="shell-sr-only">Urutkan transaksi</label>
-          <select id="transaction-sort" v-model="sortSelection" @change="changeSort">
-            <option value="transactionDate:desc">Terbaru dulu</option><option value="transactionDate:asc">Terlama dulu</option>
-            <option value="amount:desc">Nominal terbesar</option><option value="amount:asc">Nominal terkecil</option>
-          </select>
+          <AppSelect id="transaction-sort" v-model="sortSelection" :options="sortOptions" aria-label="Urutkan transaksi" @change="changeSort" />
         </div>
       </div>
       <div v-if="isLoading" class="tx-state" role="status"><span class="tx-spinner" aria-hidden="true"></span><h3>Memuat transaksi...</h3><p>Sedang menyiapkan catatan keuanganmu.</p></div>
@@ -133,6 +124,8 @@ import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import AppIcon from '@/components/common/AppIcon.vue'
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import type { SelectOption } from '@/types/select'
 import TransactionHistoryRow from '@/components/transactions/TransactionHistoryRow.vue'
 import CalendarViewModal from '@/components/transactions/CalendarViewModal.vue'
 import { useTransactionStore } from '@/stores/transactions'
@@ -169,6 +162,14 @@ const exportTrigger = ref<HTMLButtonElement | null>(null)
 const filterLoadError = ref('')
 const canExport = computed(() => !isLoading.value && !loadError.value && !invalidQueryRange.value && transactions.value.length > 0 && !isExporting.value)
 const sortSelection = ref(`${localFilters.sortBy}:${localFilters.sortOrder}`)
+const sortOptions: SelectOption<string>[] = [
+  { value: 'transactionDate:desc', label: 'Terbaru dulu' }, { value: 'transactionDate:asc', label: 'Terlama dulu' },
+  { value: 'amount:desc', label: 'Nominal terbesar' }, { value: 'amount:asc', label: 'Nominal terkecil' },
+]
+const accountOptions = computed<SelectOption<string | null | undefined>[]>(() => [
+  { value: undefined, label: 'Semua akun' },
+  ...accountStore.allAccounts.map((account) => ({ value: account.id, label: account.accountName })),
+])
 const firstResult = computed(() => (transactionStore.meta.page - 1) * transactionStore.meta.limit + 1)
 const lastResult = computed(() => Math.min(transactionStore.meta.page * transactionStore.meta.limit, transactionStore.meta.total))
 const hasPreviousPage = computed(() => !isLoading.value && transactionStore.meta.page > 1)
@@ -195,6 +196,11 @@ const periodLabel = computed(() => {
   const { startDate, endDate } = appliedFilters.value
   return startDate === endDate ? label(String(startDate)) : `${label(String(startDate))} – ${label(String(endDate))}`
 })
+const categoryOptions = computed<SelectOption<string | null | undefined>[]>(() => [
+  { value: undefined, label: 'Semua kategori' },
+  ...categoriesForFilter.value.map((category) => ({ value: category.id, label: category.label,
+    group: category.categoryType === 'INCOME' ? 'Pemasukan' : 'Pengeluaran' })),
+])
 const currency = (value: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value)
 
 let searchTimer: ReturnType<typeof setTimeout> | undefined
