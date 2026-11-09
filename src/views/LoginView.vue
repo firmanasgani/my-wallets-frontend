@@ -1,305 +1,168 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900 p-4">
-    <!-- Card Container -->
-    <div
-      class="flex w-full max-w-5xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden min-h-[600px]"
-    >
-      <!-- Left Side (Branding) -->
-      <div
-        class="hidden md:flex w-1/2 bg-gradient-to-br from-[#2E8B57] to-[#1B5E3B] p-12 flex-col justify-between relative text-white"
-      >
-        <!-- Decoration / Noise could go here -->
-        <div class="absolute inset-0 bg-pattern opacity-10"></div>
+  <div class="money-auth">
+    <header class="auth-header">
+      <a class="auth-brand" href="https://moneytory.my.id/id" aria-label="Beranda Moneytory Ledger">
+        <img src="/logo.png" alt="" width="36" height="36" />
+        <span>Moneytory Ledger</span>
+      </a>
+      <a class="auth-home-link" href="https://moneytory.my.id/id" aria-label="Tentang Moneytory">
+        <span class="auth-home-text">Tentang Moneytory</span> <span aria-hidden="true">↗</span>
+      </a>
+    </header>
 
-        <div class="relative z-10">
-          <div class="flex items-center gap-3 mb-2">
-            <!-- Simple Logo Placeholder -->
-            <div class="bg-emerald-500 bg-opacity-30 p-2 rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <span class="text-xl font-bold tracking-wider">Moneytory Ledger</span>
-          </div>
+    <main class="auth-main">
+      <section class="auth-story" aria-labelledby="story-title">
+        <span class="auth-eyebrow">CATAT RAPI. LANGKAH PASTI.</span>
+        <h1 id="story-title">Uang tertata.<br /> <span>Pikiran lega.</span></h1>
+        <p class="auth-story-copy">
+          Dari pengeluaran harian sampai keuangan bisnis, semua punya tempat. Mulai lagi dari sini.
+        </p>
+
+        <div class="auth-artwork" aria-hidden="true">
+          <span class="artwork-label">SEDIKIT CATATAN, BANYAK KETENANGAN.</span>
+          <svg viewBox="0 0 480 230" fill="none" focusable="false">
+            <ellipse cx="242" cy="208" rx="165" ry="9" fill="#27231d" fill-opacity=".08" />
+            <g stroke="#27231d" stroke-width="2.5" stroke-linejoin="round">
+              <path d="m84 63 158-26 24 147-158 26Z" fill="#fffcf5" />
+              <path d="m101 83 100-16m-96 36 117-19m-113 39 117-19m-113 39 80-13" stroke="#b4a48d" />
+              <rect x="163" y="43" width="198" height="151" rx="18" fill="#a780f2" />
+              <path d="M164 75h196M184 60h24" />
+              <rect x="185" y="94" width="153" height="77" rx="10" fill="#fffcf5" />
+              <path d="m201 148 30-18 27 9 29-29 30 8" stroke="#5026a5" stroke-width="4" stroke-linecap="round" />
+              <path d="M306 116h12v13" stroke="#5026a5" stroke-width="4" stroke-linecap="round" />
+              <rect x="322" y="140" width="63" height="44" rx="12" fill="#ffd962" />
+              <circle cx="343" cy="162" r="4" fill="#27231d" />
+              <circle cx="124" cy="164" r="31" fill="#c8edc6" />
+              <path d="m111 164 9 9 17-19" stroke-width="4" stroke-linecap="round" />
+              <path d="m377 38 5 15 15 5-15 5-5 15-5-15-15-5 15-5Z" fill="#ffd962" />
+              <path d="m91 25 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#cfb8f5" />
+            </g>
+          </svg>
+          <span class="artwork-note">Satu tempat untuk setiap cerita keuanganmu.</span>
         </div>
 
-        <div class="relative z-10 space-y-6">
-          <h2 class="text-xl font-semibold text-emerald-100">Moneytory Ledger</h2>
+        <ul class="auth-features" aria-label="Fitur Moneytory">
+          <li><span aria-hidden="true">✓</span> Catat transaksi</li>
+          <li><span aria-hidden="true">✓</span> Kelola anggaran</li>
+          <li><span aria-hidden="true">✓</span> Pantau laporan</li>
+        </ul>
+      </section>
 
-          <p class="text-emerald-200 text-sm leading-relaxed max-w-sm">
-            Solusi pembukuan cerdas untuk personal dan bisnis. Pantau arus kas, kelola budgeting,
-            hingga laporan keuangan profesional dalam satu platform yang terintegrasi.
-          </p>
+      <section class="auth-card" aria-labelledby="login-title">
+        <div class="auth-card-heading">
+          <span class="auth-eyebrow">RUANG KEUANGANMU</span>
+          <span class="auth-card-badge" aria-hidden="true">↗</span>
         </div>
-      </div>
+        <h2 id="login-title">Selamat datang<br />kembali.</h2>
+        <p class="auth-intro">Masuk untuk melanjutkan cerita keuanganmu.</p>
 
-      <!-- Right Side (Login Form) -->
-      <div
-        class="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center bg-white dark:bg-slate-800 relative"
-      >
-        <div class="max-w-md mx-auto w-full">
-          <!-- Mobile Logo (Visible only on small screens) -->
-          <div class="md:hidden flex justify-center mb-8">
-            <div class="bg-emerald-600 p-3 rounded-full shadow-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-8 w-8 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
+        <form @submit.prevent="handleLogin" :aria-busy="isLoading">
+          <div v-if="errorMessage" class="auth-error" role="alert">
+            <span>{{ errorMessage }}</span>
+            <button type="button" aria-label="Tutup pesan kesalahan" @click="errorMessage = null">×</button>
           </div>
 
-          <!-- Icon for Desktop Right Side -->
-          <div class="hidden md:flex justify-center mb-8">
-            <div class="text-emerald-600 dark:text-emerald-400">
-              <!-- Decorative Icon inspired by image -->
-              <img src="/logo.png" alt="Login Icon" class="w-20 h-20" />
-            </div>
-          </div>
-
-          <form @submit.prevent="handleLogin" class="space-y-6">
-            <div
-              v-if="errorMessage"
-              class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 text-sm rounded-r relative"
-              role="alert"
-            >
-              <span class="block sm:inline">{{ errorMessage }}</span>
-              <svg
-                class="absolute top-0 right-0 mt-4 mr-4 h-4 w-4 cursor-pointer text-red-400 hover:text-red-600"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                @click="errorMessage = null"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-
-            <div class="space-y-5">
-              <!-- Nama Field -->
-              <div>
-                <label
-                  for="login-field"
-                  class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-2"
-                  >Username / Email</label
-                >
-                <input
-                  type="text"
-                  id="login-field"
-                  v-model="loginField"
-                  class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                  placeholder="Nama"
-                />
-              </div>
-
-              <!-- Password Field -->
-              <div>
-                <label
-                  for="password"
-                  class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-2"
-                  >Kata Sandi</label
-                >
-                <div class="relative">
-                  <input
-                    :type="showPassword ? 'text' : 'password'"
-                    id="password"
-                    v-model="password"
-                    class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerad-500 focus:border-transparent transition-all pr-12"
-                    placeholder="Kata Sandi"
-                  />
-                  <div class="absolute inset-y-0 right-0 flex items-center pr-4">
-                    <button
-                      type="button"
-                      @click="showPassword = !showPassword"
-                      class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-200 focus:outline-none"
-                    >
-                      <svg
-                        v-if="!showPassword"
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                      <svg
-                        v-else
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Login Button -->
-            <button
-              type="submit"
-              class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600"
-              :disabled="isLoading"
-            >
-              <span v-if="!isLoading">Masuk</span>
-              <span v-else class="flex items-center justify-center">
-                <svg
-                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Memproses...
-              </span>
-            </button>
-
-            <!-- Links -->
-            <div class="flex flex-col space-y-3 pt-2 text-center">
-              <RouterLink
-                :to="{ name: 'forgot-password' }"
-                class="text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline"
-              >
-                Lupa Password?
-              </RouterLink>
-
-              <p class="text-sm text-gray-500 dark:text-slate-400">
-                Belum punya akun?
-                <RouterLink
-                  to="/register"
-                  class="font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300"
-                >
-                  Daftar disini
-                </RouterLink>
-              </p>
-            </div>
-          </form>
-        </div>
-
-        <!-- Decoration on white side -->
-        <div class="absolute bottom-4 right-4 hidden md:block opacity-5">
-          <svg class="h-32 w-32" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
-              clip-rule="evenodd"
+          <div class="auth-field">
+            <label for="login-field">Username atau email</label>
+            <input
+              id="login-field"
+              v-model="loginField"
+              name="username"
+              type="text"
+              autocomplete="username"
+              autocapitalize="none"
+              :spellcheck="false"
+              placeholder="Masukkan username atau email"
+              required
+              :readonly="isLoading"
             />
-          </svg>
-        </div>
-      </div>
-    </div>
-  </div>
+          </div>
 
-  <!-- Demo Account Footer -->
-  <div class="fixed bottom-0 left-0 right-0 z-50">
-    <!-- Minimized Bar -->
-    <div
-      v-if="isDemoMinimized"
-      class="flex items-center justify-between bg-amber-500 text-white px-4 py-2 text-sm shadow-lg cursor-pointer"
-      @click="isDemoMinimized = false"
-    >
-      <div class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span class="font-semibold">Info Akun Demo</span>
-      </div>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-      </svg>
-    </div>
+          <div class="auth-field">
+            <div class="auth-label-row">
+              <label for="password">Kata sandi</label>
+              <RouterLink :to="{ name: 'forgot-password' }">Lupa kata sandi?</RouterLink>
+            </div>
+            <div class="auth-password">
+              <input
+                id="password"
+                v-model="password"
+                name="password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="current-password"
+                placeholder="Masukkan kata sandi"
+                required
+                :readonly="isLoading"
+              />
+              <button
+                type="button"
+                class="auth-password-toggle"
+                :aria-label="showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'"
+                :aria-pressed="showPassword"
+                @click="showPassword = !showPassword"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                  <path v-if="showPassword" d="m3 3 18 18" />
+                </svg>
+              </button>
+            </div>
+          </div>
 
-    <!-- Expanded Panel -->
-    <div v-else class="bg-amber-50 dark:bg-amber-900/80 border-t-2 border-amber-400 shadow-lg px-6 py-4">
-      <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div class="flex items-start gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <p class="text-sm font-bold text-amber-800 dark:text-amber-200 mb-1">Akun Demo Bisnis</p>
-            <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-amber-700 dark:text-amber-300">
-              <span><span class="font-semibold">Akun:</span> demoaccount</span>
-              <span><span class="font-semibold">Email:</span> demo@moneytory.id</span>
-              <span><span class="font-semibold">Password:</span> DemoAccount@123</span>
+          <button class="auth-submit" type="submit" :disabled="isLoading">
+            <span v-if="isLoading" class="auth-spinner" aria-hidden="true"></span>
+            <span>{{ isLoading ? 'Sedang masuk...' : 'Masuk ke akun' }}</span>
+            <span v-if="!isLoading" aria-hidden="true">↗</span>
+          </button>
+        </form>
+
+        <div class="auth-demo">
+          <p>Ingin lihat-lihat dulu?</p>
+          <div
+            class="auth-demo-help"
+            @mouseenter="demoHovered = true"
+            @mouseleave="demoHovered = false"
+            @focusin="demoFocused = true"
+            @focusout="demoFocused = false"
+            @keydown.esc.prevent="dismissDemoHint"
+          >
+            <button
+              type="button"
+              class="auth-demo-trigger"
+              aria-describedby="demo-tooltip"
+              @click="openDemoOnClick"
+            >
+              Coba akun demo <span class="auth-info-icon" aria-hidden="true">i</span>
+            </button>
+            <div id="demo-tooltip" role="tooltip" class="auth-demo-tooltip" :hidden="!showDemoHint">
+              <strong>Akun demo bisnis</strong>
+              <p>Gunakan detail berikut untuk masuk dan menjelajahi fitur bisnis.</p>
+              <dl>
+                <div><dt>Username</dt><dd>demoaccount</dd></div>
+                <div><dt>Email</dt><dd>demo@moneytory.id</dd></div>
+                <div><dt>Kata sandi</dt><dd>DemoAccount@123</dd></div>
+              </dl>
             </div>
           </div>
         </div>
-        <button
-          @click="isDemoMinimized = true"
-          class="flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors flex-shrink-0"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-          Sembunyikan
-        </button>
-      </div>
-    </div>
+
+        <p class="auth-register">Baru di Moneytory? <RouterLink to="/register">Buat akun gratis <span aria-hidden="true">↗</span></RouterLink></p>
+      </section>
+    </main>
+
+    <footer class="auth-footer">
+      <span>© {{ new Date().getFullYear() }} Moneytory Ledger</span>
+      <span>Keuangan personal &amp; bisnis, lebih tertata.</span>
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import '@/assets/auth.css'
 
 const authStore = useAuthStore()
 const loginField = ref('')
@@ -307,35 +170,44 @@ const password = ref('')
 const showPassword = ref(false)
 const isLoading = ref(false)
 const errorMessage = ref<string | null>(null)
-const isDemoMinimized = ref(false)
+const demoHovered = ref(false)
+const demoFocused = ref(false)
+const demoHintDismissed = ref(false)
+const showDemoHint = computed(
+  () => (demoHovered.value || demoFocused.value) && !demoHintDismissed.value,
+)
+
+watch([demoHovered, demoFocused], ([hovered, focused]) => {
+  if (!hovered && !focused) demoHintDismissed.value = false
+})
+const openDemoOnClick = (event: MouseEvent) => {
+  // Explicit focus also supports touch browsers that do not focus buttons on tap.
+  const trigger = event.currentTarget as HTMLButtonElement
+  trigger.focus()
+  demoFocused.value = true
+  demoHintDismissed.value = false
+}
+const dismissDemoHint = () => {
+  demoHintDismissed.value = true
+}
 
 const handleLogin = async () => {
+  if (isLoading.value) return
   if (!loginField.value.trim() || !password.value.trim()) {
-    errorMessage.value = 'Nama dan Kata Sandi tidak boleh kosong.'
-    isLoading.value = false
+    errorMessage.value = 'Username atau email dan kata sandi tidak boleh kosong.'
     return
   }
 
   isLoading.value = true
   errorMessage.value = null
-
   try {
-    await authStore.login({
-      login: loginField.value,
-      password: password.value,
-    })
-    // Navigate done in store or router guard usually
-  } catch (error: any) {
+    await authStore.login({ login: loginField.value.trim(), password: password.value })
+  } catch (error: unknown) {
     errorMessage.value =
-      error.message || 'Login gagal. Silakan cek kembali nama dan kata sandi Anda.'
+      (typeof error === 'string' ? error : error instanceof Error ? error.message : '') ||
+      'Login gagal. Silakan cek kembali username atau email dan kata sandi Anda.'
   } finally {
     isLoading.value = false
   }
 }
 </script>
-
-<style scoped>
-.bg-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M1 6h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm0 2v10h18V8H1zM3 3h4v2H3V3zm6 0h4v2H9V3zm6 0h4v2h-4V3z'/%3E%3C/g%3E%3C/svg%3E");
-}
-</style>
