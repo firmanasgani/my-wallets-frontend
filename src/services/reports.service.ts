@@ -1,4 +1,5 @@
 import apiClient from './apiService'
+import type { BudgetReportItem } from '@/types/budget'
 import type {
   FinancialSummary,
   CategoryBreakdownItem,
@@ -12,6 +13,11 @@ import type {
 } from '@/types/reports'
 
 class ReportsService {
+  async getBudgetRealization(year: number, month: number): Promise<BudgetReportItem[]> {
+    const response = await apiClient.get<BudgetReportItem[]>('/budgets/report', { params: { year, month } })
+    return response.data.filter((item) => item.category?.categoryType === 'EXPENSE')
+  }
+
   async getSummary(startDate: string, endDate: string): Promise<FinancialSummary> {
     const response = await apiClient.get<FinancialSummary>('/reports/summary', {
       params: { startDate, endDate },

@@ -1,116 +1,17 @@
 <template>
-  <div class="bg-white dark:bg-slate-800 dark:border-slate-700 p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
-    <div class="flex justify-between items-center mb-6">
-      <h3 class="text-lg font-bold text-gray-800 dark:text-slate-200">Month-over-Month Comparison</h3>
-      <span v-if="data" class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">
-        {{ data.period.current }} vs {{ data.period.previous }}
-      </span>
-    </div>
-
-    <div v-if="data" class="grid grid-cols-2 gap-6 flex-grow">
-      <!-- Income Comparison -->
-      <div class="flex flex-col justify-center">
-        <p class="text-sm text-gray-500 mb-1 dark:text-slate-400">Income Change</p>
-        <div class="flex items-baseline gap-2">
-          <template v-if="data.income.previous === 0">
-            <span class="text-xl font-bold text-slate-700 dark:text-slate-200">No Data</span>
-            <span class="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600">
-              NEW
-            </span>
-          </template>
-          <template v-else>
-            <span class="text-2xl font-bold text-gray-800"
-              >{{ data.income.percentageChange > 0 ? '+' : ''
-              }}{{ data.income.percentageChange.toFixed(1) }}%</span
-            >
-            <span
-              :class="[
-                'text-xs font-medium px-2 py-0.5 rounded',
-                data.income.percentageChange >= 0
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700',
-              ]"
-            >
-              {{ data.income.status }}
-            </span>
-          </template>
-        </div>
-        <p class="text-xs text-gray-500 mt-2 dark:text-slate-200">
-          {{
-            data.income.previous === 0
-              ? 'Tidak ada data bulan lalu untuk dibandingkan.'
-              : data.income.message
-          }}
-        </p>
-        <div class="mt-3 w-full bg-gray-100 rounded-full h-1.5 dark:bg-gray-200">
-          <!-- Simple visual bar showing magnitude (capped at 100%) -->
-          <div
-            v-if="data.income.previous !== 0"
-            :class="[
-              'h-1.5 rounded-full',
-              data.income.percentageChange >= 0 ? 'bg-green-500' : 'bg-red-500',
-            ]"
-            :style="{ width: Math.min(Math.abs(data.income.percentageChange), 100) + '%' }"
-          ></div>
-        </div>
-      </div>
-
-      <!-- Expense Comparison -->
-      <div class="flex flex-col justify-center">
-        <p class="text-sm text-gray-500 mb-1 dark:text-slate-400">Expense Change</p>
-        <div class="flex items-baseline gap-2">
-          <template v-if="data.expense.previous === 0">
-            <span class="text-xl font-bold text-slate-700 dark:text-slate-200">No Data</span>
-            <span class="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600">
-              NEW
-            </span>
-          </template>
-          <template v-else>
-            <span class="text-2xl font-bold text-gray-800"
-              >{{ data.expense.percentageChange > 0 ? '+' : ''
-              }}{{ data.expense.percentageChange.toFixed(1) }}%</span
-            >
-            <span
-              :class="[
-                'text-xs font-medium px-2 py-0.5 rounded',
-                data.expense.percentageChange <= 0
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700',
-              ]"
-            >
-              {{ data.expense.status }}
-            </span>
-          </template>
-        </div>
-        <p class="text-xs text-gray-500 dark:text-slate-200 mt-2">
-          {{
-            data.expense.previous === 0
-              ? 'Tidak ada data bulan lalu untuk dibandingkan.'
-              : data.expense.message
-          }}
-        </p>
-        <div class="mt-3 w-full bg-gray-100 rounded-full h-1.5 dark:bg-gray-200">
-          <div
-            v-if="data.expense.previous !== 0"
-            :class="[
-              'h-1.5 rounded-full',
-              data.expense.percentageChange <= 0 ? 'bg-green-500' : 'bg-red-500',
-            ]"
-            :style="{ width: Math.min(Math.abs(data.expense.percentageChange), 100) + '%' }"
-          ></div>
-        </div>
-      </div>
-    </div>
-    <div v-else class="flex-grow flex items-center justify-center text-gray-400 dark:text-slate-200">
-      No comparison data available
-    </div>
+  <div v-if="data" class="analysis-comparison-grid">
+    <article v-for="item in comparisons" :key="item.label" class="analysis-comparison-item">
+      <span class="analysis-small-label">{{ item.label }}</span><div class="analysis-comparison-change"><strong>{{ item.change.percentage === null ? '—' : `${item.change.percentage > 0 ? '+' : ''}${item.change.percentage.toLocaleString('id-ID', { maximumFractionDigits: 1 })}%` }}</strong><span class="analysis-status" :class="`is-${item.change.tone}`">{{ item.change.label }}</span></div>
+      <p>{{ item.change.percentage === null ? 'Persentase belum tersedia karena nilai bulan sebelumnya nol.' : `Selisih ${accountMoney(Math.abs(item.change.difference), 'IDR')} dari bulan sebelumnya.` }}</p>
+      <dl><div><dt>Bulan pilihan</dt><dd>{{ accountMoney(item.change.current, 'IDR') }}</dd></div><div><dt>Bulan sebelumnya</dt><dd>{{ accountMoney(item.change.previous, 'IDR') }}</dd></div></dl>
+    </article>
   </div>
 </template>
-
 <script setup lang="ts">
+import { computed } from 'vue'
+import { accountMoney } from '@/utils/accountList'
+import { analysisComparison } from '@/utils/spendingAnalysis'
 import type { PeriodComparison } from '@/types/reports'
-
-defineProps<{
-  data: PeriodComparison | null
-}>()
+const props = defineProps<{ data: PeriodComparison | null }>()
+const comparisons = computed(() => props.data ? [{ label: 'Perubahan pemasukan', change: analysisComparison(props.data.income) }, { label: 'Perubahan pengeluaran', change: analysisComparison(props.data.expense, true) }] : [])
 </script>

@@ -1,3 +1,20 @@
+import type { BudgetReportItem } from './budget'
+
+export interface AnalysisFilters {
+  startDate: string
+  endDate: string
+  interval: ReportsInterval
+}
+export interface SpendingAnalysisData {
+  summary: FinancialSummary | null
+  trend: TrendAnalysis | null
+  categories: CategoryTrendAnalysis | null
+  comparison: PeriodComparison | null
+  insights: Insight[] | null
+  budgets: BudgetReportItem[] | null
+}
+export type AnalysisSection = keyof SpendingAnalysisData
+
 export interface FinancialSummary {
   period: { start: string; end: string }
   totalIncome: number

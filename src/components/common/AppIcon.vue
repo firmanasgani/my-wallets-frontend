@@ -8,6 +8,7 @@
 <script setup lang="ts">
 defineProps<{ name: string }>()
 const paths: Record<string, string> = {
+  refresh: 'M3 3v6h6m12 12v-6h-6M5 17a8 8 0 0 0 13 2l3-4M3 9l3-4a8 8 0 0 1 13 2',
   check: 'm5 12 4 4L19 6',
   warning: 'm12 3 10 18H2L12 3Zm0 6v5m0 3h.01',
   info: 'M12 11v6m0-10h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',

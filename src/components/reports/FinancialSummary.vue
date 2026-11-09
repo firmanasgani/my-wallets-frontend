@@ -1,133 +1,23 @@
 <template>
-  <div v-if="data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <!-- Income -->
-    <div
-      class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 flex items-center justify-between"
-    >
-      <div>
-        <p class="text-sm text-gray-500 font-medium dark:text-slate-400">Income</p>
-        <p class="text-xl font-bold text-green-600">{{ formatCurrency(data.totalIncome) }}</p>
-      </div>
-      <div class="bg-green-100 p-2 rounded-lg">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 text-green-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M7 11l5-5m0 0l5 5m-5-5v12"
-          />
-        </svg>
-      </div>
-    </div>
-
-    <!-- Expense -->
-    <div
-      class="bg-white dark:bg-slate-800 dark:border-slate-700 p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between"
-    >
-      <div>
-        <p class="text-sm text-gray-500 font-medium dark:text-slate-400">Expenses</p>
-        <p class="text-xl font-bold text-red-600">{{ formatCurrency(data.totalExpense) }}</p>
-      </div>
-      <div class="bg-red-100 p-2 rounded-lg">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 text-red-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M17 13l-5 5m0 0l-5-5m5 5V6"
-          />
-        </svg>
-      </div>
-    </div>
-
-    <!-- Net Cash Flow -->
-    <div
-      class="bg-white p-4 rounded-xl dark:bg-slate-800 dark:border-slate-700 shadow-sm border border-gray-100 flex items-center justify-between"
-    >
-      <div>
-        <p class="text-sm text-gray-500 font-medium dark:text-slate-400">Net Cash Flow</p>
-        <p :class="['text-xl font-bold', data.netCashFlow >= 0 ? 'text-emerald-600' : 'text-red-500']">
-          {{ formatCurrency(data.netCashFlow) }}
-        </p>
-      </div>
-      <div class="bg-blue-100 p-2 rounded-lg">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 text-emerald-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </div>
-    </div>
-
-    <!-- Savings Rate -->
-    <div
-      class="bg-white p-4 dark:bg-slate-800 dark:border-slate-700 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between"
-    >
-      <div>
-        <p class="text-sm text-gray-500 font-medium dark:text-slate-400">Savings Rate</p>
-        <p :class="['text-xl font-bold', getSavingsRateColor(data.savingsRate)]">
-          {{ data.savingsRate.toFixed(1) }}%
-        </p>
-      </div>
-      <div class="bg-purple-100 p-2 rounded-lg">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 text-purple-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-          />
-        </svg>
-      </div>
-    </div>
-  </div>
+  <section v-if="data" class="analysis-summary" aria-label="Ringkasan keuangan rentang pilihan">
+    <article v-for="card in cards" :key="card.label" class="analysis-summary-card" :class="`is-${card.tone}`"><span><AppIcon :name="card.icon" />{{ card.label }}</span><strong>{{ card.value }}</strong><p>{{ card.note }}</p></article>
+  </section>
 </template>
-
 <script setup lang="ts">
+import { computed } from 'vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import { accountMoney } from '@/utils/accountList'
+import { analysisNumber } from '@/utils/spendingAnalysis'
 import type { FinancialSummary } from '@/types/reports'
-
-defineProps<{
-  data: FinancialSummary | null
-}>()
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(amount)
-}
-
-const getSavingsRateColor = (rate: number) => {
-  if (rate >= 20) return 'text-green-600'
-  if (rate > 0) return 'text-emerald-600'
-  return 'text-red-500'
-}
+const props = defineProps<{ data: FinancialSummary | null }>()
+const cards = computed(() => {
+  if (!props.data) return []
+  const income = analysisNumber(props.data.totalIncome), expense = analysisNumber(props.data.totalExpense), net = income - expense
+  return [
+    { label: 'Total pemasukan', value: accountMoney(income, 'IDR'), note: 'Dana masuk pada rentang pilihan', icon: 'plus', tone: 'mint' },
+    { label: 'Total pengeluaran', value: accountMoney(expense, 'IDR'), note: 'Dana keluar pada rentang pilihan', icon: 'wallet', tone: 'sun' },
+    { label: 'Arus kas bersih', value: accountMoney(net, 'IDR'), note: net >= 0 ? 'Selisih pemasukan dan pengeluaran' : 'Pengeluaran melebihi pemasukan', icon: 'transfer', tone: 'lilac' },
+    { label: 'Rasio sisa dana', value: income > 0 ? `${(net / income * 100).toLocaleString('id-ID', { maximumFractionDigits: 1 })}%` : '—', note: income > 0 ? 'Sisa dana dibanding total pemasukan' : 'Belum ada pemasukan sebagai pembanding', icon: 'percent', tone: 'paper' },
+  ]
+})
 </script>

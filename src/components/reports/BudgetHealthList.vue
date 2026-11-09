@@ -1,113 +1,16 @@
 <template>
-  <div>
-    <h3 class="text-lg font-bold text-gray-800 mb-6 dark:text-slate-200">Budget Health</h3>
-
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead>
-          <tr>
-            <th
-              class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
-            >
-              Category
-            </th>
-            <th
-              class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
-            >
-              Budget
-            </th>
-            <th
-              class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
-            >
-              Spent
-            </th>
-            <th
-              class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
-            >
-              Remaining
-            </th>
-            <th
-              class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider dark:text-slate-200"
-            >
-              Status
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200">
-          <tr v-if="!data || data.length === 0">
-            <td colspan="5" class="px-3 py-4 text-center text-sm text-gray-500 dark:text-slate-200">
-              No active budgets for this period.
-            </td>
-          </tr>
-          <tr v-for="(item, index) in data" :key="index">
-            <td
-              class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-slate-100 flex items-center gap-3"
-            >
-              <div
-                class="w-8 h-8 rounded-full flex items-center justify-center text-xs dark:text-slate-200 flex-shrink-0"
-                :style="{
-                  backgroundColor: (item.color || '#64748b') + '20',
-                  color: item.color || '#64748b',
-                }"
-              >
-                <span v-if="item.icon">
-                  <i :class="['fa-solid', `fa-${item.icon}`]"></i>
-                </span>
-                <span v-else>🏷️</span>
-              </div>
-              {{ item.categoryName }}
-            </td>
-            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right dark:text-slate-200">
-              {{ formatCurrency(item.budgetAmount) }}
-            </td>
-            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right dark:text-slate-200">
-              {{ formatCurrency(item.actualSpent) }}
-            </td>
-            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 text-right font-medium dark:text-slate-200">
-              {{ formatCurrency(item.remaining || item.budgetAmount - item.actualSpent) }}
-            </td>
-            <td class="px-3 py-4 whitespace-nowrap text-center">
-              <span
-                :class="[
-                  'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                  getStatusClass(item.status),
-                ]"
-              >
-                {{ item.status }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div v-if="data.length" class="analysis-budget-scroll" role="region" aria-label="Realisasi anggaran pengeluaran" tabindex="0">
+    <table class="analysis-budget-table"><thead><tr><th scope="col">Kategori</th><th scope="col">Anggaran</th><th scope="col">Terpakai</th><th scope="col">Selisih</th><th scope="col">Status</th></tr></thead><tbody><tr v-for="item in rows" :key="item.id"><th scope="row"><div class="analysis-budget-category"><CategoryBadge :color="item.category?.color" :icon="item.category?.icon" />{{ item.category?.categoryName || 'Kategori tidak tersedia' }}</div></th><td>{{ accountMoney(item.amount, 'IDR') }}</td><td>{{ accountMoney(item.spent, 'IDR') }}</td><td>{{ accountMoney(item.progress.remaining, 'IDR') }}</td><td><span class="analysis-status" :class="`is-${item.progress.tone}`">{{ item.progress.status }}</span></td></tr></tbody></table>
   </div>
+  <div v-else class="analysis-empty is-compact"><AppIcon name="target" /><h3>Belum ada anggaran pengeluaran.</h3><p>Tentukan batas per kategori untuk memantau realisasinya.</p></div>
 </template>
-
 <script setup lang="ts">
-import type { BudgetHealthItem } from '@/types/reports'
-
-defineProps<{
-  data: BudgetHealthItem[]
-}>()
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(amount)
-}
-
-const getStatusClass = (status: string) => {
-  switch (status) {
-    case 'SAFE':
-      return 'bg-green-100 text-green-800'
-    case 'WARNING':
-      return 'bg-yellow-100 text-yellow-800'
-    case 'EXCEEDED':
-      return 'bg-red-100 text-red-800'
-    default:
-      return 'bg-gray-100 text-gray-800'
-  }
-}
+import { computed } from 'vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import CategoryBadge from '@/components/categories/CategoryBadge.vue'
+import { accountMoney } from '@/utils/accountList'
+import { budgetProgress } from '@/utils/budget'
+import type { BudgetReportItem } from '@/types/budget'
+const props = defineProps<{ data: BudgetReportItem[] }>()
+const rows = computed(() => props.data.map((item) => ({ ...item, progress: budgetProgress(item) })).sort((a, b) => b.progress.percentage - a.progress.percentage))
 </script>

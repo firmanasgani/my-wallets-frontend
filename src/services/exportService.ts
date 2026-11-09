@@ -5,6 +5,8 @@ import { useToastStore } from '@/stores/toast'
 import type { Transaction } from '@/types/transaction'
 import type { BudgetReportItem } from '@/types/budget'
 import { budgetNumber, budgetProgress } from '@/utils/budget'
+import type { AnalysisFilters, SpendingAnalysisData } from '@/types/reports'
+import { analysisExportTables } from '@/utils/spendingAnalysis'
 import type {
   Invoice,
   Company,
@@ -16,6 +18,43 @@ import type {
 } from '@/types/business'
 
 class ExportService {
+  async exportSpendingAnalysisToExcel(data: SpendingAnalysisData, filters: AnalysisFilters) {
+    const workbook = new ExcelJS.Workbook()
+    for (const table of analysisExportTables(data, filters)) {
+      const sheet = workbook.addWorksheet(table.title)
+      sheet.columns = table.headers.map((_, index) => ({ width: index === 0 ? 30 : 26 }))
+      sheet.addRow([table.title]).font = { name: 'Arial', size: 16, bold: true }
+      sheet.addRow([table.scope])
+      sheet.addRow([])
+      const header = sheet.addRow(table.headers)
+      header.eachCell((cell) => { cell.font = { bold: true, color: { argb: 'FFFFFF' } }; cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '5026A5' } } })
+      if (!table.rows.length) sheet.addRow(['Belum ada data.'])
+      for (const values of table.rows) {
+        const row = sheet.addRow(values)
+        row.alignment = { vertical: 'top', wrapText: true }
+        row.eachCell((cell) => { if (typeof cell.value === 'number') cell.numFmt = '#,##0.##' })
+      }
+      sheet.views = [{ state: 'frozen', ySplit: 4 }]
+    }
+    const buffer = await workbook.xlsx.writeBuffer()
+    this.downloadFile(buffer, `analisis_pengeluaran_${filters.startDate}_${filters.endDate}.xlsx`, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  }
+
+  exportSpendingAnalysisToPDF(data: SpendingAnalysisData, filters: AnalysisFilters) {
+    const doc = new jsPDF({ orientation: 'landscape' })
+    analysisExportTables(data, filters).forEach((table, index) => {
+      if (index) doc.addPage()
+      doc.setFontSize(17)
+      doc.setTextColor(80, 38, 165)
+      doc.text(table.title, 14, 18)
+      doc.setFontSize(10)
+      doc.setTextColor(65)
+      doc.text(table.scope, 14, 26)
+      autoTable(doc, { startY: 32, head: [table.headers], body: table.rows.length ? table.rows : [['Belum ada data.']], headStyles: { fillColor: [80, 38, 165] }, styles: { fontSize: 9, cellPadding: 3 }, alternateRowStyles: { fillColor: [253, 249, 238] } })
+    })
+    doc.save(`analisis_pengeluaran_${filters.startDate}_${filters.endDate}.pdf`)
+  }
+
   /**
    * Format currency for export
    */

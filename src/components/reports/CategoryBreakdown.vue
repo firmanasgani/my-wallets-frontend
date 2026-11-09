@@ -1,80 +1,15 @@
 <template>
-  <div class="h-full flex flex-col">
-    <h3 class="text-lg font-bold text-gray-800 mb-6 dark:text-slate-200">Top Spending Categories</h3>
-
-    <div
-      v-if="data && data.length > 0"
-      class="flex-grow overflow-auto pr-2 space-y-4 custom-scrollbar"
-    >
-      <div
-        v-for="item in data"
-        :key="item.categoryId"
-        class="flex items-center justify-between group"
-      >
-        <div class="flex items-center gap-3">
-          <!-- Icon Placeholder -->
-          <div
-            class="w-10 h-10 rounded-full flex items-center justify-center text-lg shadow-sm flex-shrink-0"
-            :style="{ backgroundColor: item.color + '20', color: item.color || '#666' }"
-          >
-            <span v-if="item.icon">
-              <i :class="['fa-solid', `fa-${item.icon}`]"></i>
-            </span>
-            <span v-else>🏷️</span>
-          </div>
-          <div>
-            <p class="font-semibold text-gray-800 text-sm dark:text-slate-200">{{ item.categoryName }}</p>
-            <p class="text-xs text-gray-500 dark:text-slate-200">{{ item.transactionCount }} transactions</p>
-          </div>
-        </div>
-
-        <div class="text-right">
-          <p class="font-bold text-gray-800 text-sm dark:text-slate-200">{{ formatCurrency(item.totalAmount) }}</p>
-          <p class="text-xs font-medium" :style="{ color: item.color || '#666' }">
-            {{ item.percentage.toFixed(1) }}%
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div
-      v-else
-      class="flex-grow flex flex-col items-center justify-center text-center text-gray-400"
-    >
-      <p>No expense data found for this period.</p>
-    </div>
-  </div>
+  <ol v-if="items.length" class="analysis-category-list">
+    <li v-for="(item, index) in items" :key="item.id"><div class="analysis-category-title"><span class="analysis-category-number">{{ String(index + 1).padStart(2, '0') }}</span><h3>{{ item.categoryName }}</h3><span>{{ item.percentage.toLocaleString('id-ID', { maximumFractionDigits: 1 }) }}%</span></div><strong>{{ accountMoney(item.totalAmount, 'IDR') }}</strong><div class="analysis-category-bar" aria-hidden="true"><span :style="{ width: `${item.percentage}%`, backgroundColor: item.color }"></span></div></li>
+  </ol>
+  <div v-else class="analysis-empty is-compact"><AppIcon name="tag" /><h3>Belum ada pengeluaran.</h3><p>Distribusi kategori akan tampil setelah ada transaksi.</p></div>
 </template>
-
 <script setup lang="ts">
-import type { CategoryBreakdownItem } from '@/types/reports'
-
-defineProps<{
-  data: CategoryBreakdownItem[]
-}>()
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(amount)
-}
+import { computed } from 'vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import { accountMoney } from '@/utils/accountList'
+import { analysisCategoryTotals } from '@/utils/spendingAnalysis'
+import type { CategoryTrendAnalysis } from '@/types/reports'
+const props = defineProps<{ data: CategoryTrendAnalysis | null }>()
+const items = computed(() => analysisCategoryTotals(props.data))
 </script>
-
-<style scoped>
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #ddd;
-  border-radius: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #ccc;
-}
-</style>

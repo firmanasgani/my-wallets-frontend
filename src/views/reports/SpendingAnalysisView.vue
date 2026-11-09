@@ -1,137 +1,42 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header & Controls -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Spending Analysis</h1>
-        <p class="text-gray-500 dark:text-gray-400">Deep dive into your financial habits</p>
+  <div class="money-analysis">
+    <header class="analysis-heading"><div><span class="shell-overline">KENALI POLANYA, ATUR LANGKAHNYA</span><h1>Pahami ke mana uangmu pergi.</h1><p>Lihat arus kas, kategori pengeluaran, dan perkembangan rencana keuanganmu.</p></div><div class="analysis-actions"><button type="button" class="analysis-button" :disabled="!canExport || exporting" @click="exportReport('excel')"><AppIcon name="download" />Excel</button><button type="button" class="analysis-button" :disabled="!canExport || exporting" @click="exportReport('pdf')"><AppIcon name="file" />PDF</button><button type="button" class="analysis-button is-primary" :disabled="store.isLoading" @click="fetchData"><span v-if="store.isLoading" class="analysis-spinner" aria-hidden="true"></span><AppIcon v-else name="refresh" />Muat ulang</button></div></header>
+    <section class="analysis-toolbar" aria-label="Filter analisis">
+      <DateRangePicker :start-date="filters.startDate" :end-date="filters.endDate" label="Rentang analisis" @apply="applyRange" />
+      <AppSelect id="analysis-interval" :model-value="filters.interval" :options="intervalOptions" label="Kelompokkan grafik" @update:model-value="setInterval" />
+      <div class="analysis-period-note"><AppIcon name="calendar" /><div><strong>{{ rangeLabel }}</strong><p>Ringkasan dan grafik mengikuti rentang ini.</p></div></div>
+    </section>
+    <p v-if="exporting" class="analysis-export-status" role="status">Menyiapkan laporan {{ exportFormat === 'excel' ? 'Excel' : 'PDF' }}...</p>
+    <div v-if="store.isLoading" class="analysis-state" role="status"><span class="analysis-spinner" aria-hidden="true"></span><h2>Menyusun gambaran keuanganmu...</h2><p>Memuat ringkasan, tren, dan sorotan periode pilihan.</p></div>
+    <div v-else-if="store.sectionErrors.length === 6" class="analysis-state" role="alert"><AppIcon name="help" /><h2>Analisis belum berhasil dimuat.</h2><p>Periksa koneksi, lalu coba muat ulang laporan.</p><button type="button" class="analysis-button is-primary" @click="fetchData">Coba lagi</button></div>
+    <template v-else-if="data">
+      <div v-if="store.sectionErrors.length" class="analysis-partial-error" role="alert"><AppIcon name="warning" /><p>Beberapa bagian belum tersedia. Bagian yang berhasil dimuat tetap bisa dilihat. Lengkapi laporan sebelum mengekspor.</p><button type="button" class="analysis-button" @click="fetchData">Muat ulang</button></div>
+      <FinancialSummary v-if="data.summary" :data="data.summary" />
+      <AnalysisSectionError v-else label="Ringkasan keuangan" @retry="fetchData" />
+      <div v-if="data.summary && !analysisNumber(data.summary.totalIncome) && !analysisNumber(data.summary.totalExpense)" class="analysis-zero-note"><AppIcon name="info" /><p>Belum ada pemasukan atau pengeluaran dalam rentang ini. Transfer antar akun tidak termasuk arus kas.</p><RouterLink :to="{ name: 'transaction-create', query: { startDate: filters.startDate, endDate: filters.endDate } }">Catat transaksi <AppIcon name="arrow" /></RouterLink></div>
+      <div class="analysis-charts-layout">
+        <section class="analysis-panel" aria-labelledby="cashflow-heading"><header class="analysis-panel-heading"><div><span class="shell-overline">GAMBARAN BESAR</span><h2 id="cashflow-heading">Pemasukan &amp; pengeluaran</h2><p>Arus kas pada rentang pilihan, per {{ filters.interval === 'DAY' ? 'hari' : 'bulan' }}.</p></div><RouterLink :to="{ name: 'transactions-list', query: { startDate: filters.startDate, endDate: filters.endDate } }" class="analysis-text-link">Lihat transaksi <AppIcon name="arrow" /></RouterLink></header><TrendAnalysisChart v-if="data.trend" :data="data.trend" /><AnalysisSectionError v-else label="Tren arus kas" @retry="fetchData" /></section>
+        <section class="analysis-panel" aria-labelledby="categories-heading"><header class="analysis-panel-heading"><div><span class="shell-overline">PORSI PENGELUARAN</span><h2 id="categories-heading">Kategori dominan</h2><p>Lima kategori teratas; kategori lain digabung sebagai Lainnya.</p></div></header><CategoryBreakdown v-if="data.categories" :data="data.categories" /><AnalysisSectionError v-else label="Distribusi kategori" @retry="fetchData" /></section>
       </div>
-
-      <!-- Controls -->
-      <div class="flex flex-wrap items-center gap-3 justify-end flex-col md:flex-row">
-        <!-- Month Selector -->
-        <select
-          v-model="selectedMonth"
-          class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg px-4 py-2 focus:ring-emerald-500 focus:border-emerald-500 w-full md:w-auto"
-        >
-          <option v-for="m in 12" :key="m" :value="m">{{ getMonthName(m) }}</option>
-        </select>
-
-        <!-- Year Selector -->
-        <select
-          v-model="selectedYear"
-          class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-200 rounded-lg px-4 py-2 focus:ring-emerald-500 focus:border-emerald-500 w-full md:w-auto"
-        >
-          <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
-        </select>
-
-        <!-- Export Dropdown -->
-        <div class="flex flex-row w-full gap-2 justify-end">
-          <div v-if="!reportsStore.isLoading" class="relative w-full md:w-auto" ref="exportDropdownRef">
-          <button
-            @click.stop="isExportDropdownOpen = !isExportDropdownOpen"
-            class="bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-200 px-4 py-2 rounded-lg flex items-center transition-colors shadow-sm w-full md:w-auto"
-          >
-            <i class="fa-solid fa-file-export mr-2 text-emerald-500"></i>
-            Ekspor Laporan
-            <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-gray-400"></i>
-          </button>
-          <div
-            v-show="isExportDropdownOpen"
-            class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-xl shadow-xl border border-gray-100 dark:border-slate-600 py-2 z-50"
-          >
-            <button
-              @click="exportFullReport('excel'); isExportDropdownOpen = false"
-              class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 flex items-center"
-            >
-              <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
-              Format Excel (.xlsx)
-            </button>
-            <button
-              @click="exportFullReport('pdf'); isExportDropdownOpen = false"
-              class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 flex items-center"
-            >
-              <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
-              Format PDF (.pdf)
-            </button>
-          </div>
-        </div>
-
-        <!-- Refresh Button -->
-        <button
-          @click="fetchData"
-          class="bg-[#2E8B57] hover:bg-[#236B43] text-white p-2 rounded-lg transition-colors shadow-sm"
-          title="Refresh Data"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-        </button>
-        </div>
+      <section class="analysis-panel" aria-labelledby="category-trend-heading"><header class="analysis-panel-heading"><div><span class="shell-overline">KEBIASAAN DARI WAKTU KE WAKTU</span><h2 id="category-trend-heading">Tren pengeluaran kategori</h2><p>Bandingkan komposisi kategori pada setiap {{ filters.interval === 'DAY' ? 'hari' : 'bulan' }} yang memiliki transaksi.</p></div><span class="analysis-period-pill">{{ rangeLabel }}</span></header><CategoryTrendChart v-if="data.categories" :data="data.categories" /><AnalysisSectionError v-else label="Tren kategori" @retry="fetchData" /></section>
+      <div class="analysis-month-divider"><AppIcon name="calendar" /><div><span class="shell-overline">KONTEKS BULANAN</span><h2>{{ monthly.label }}</h2><p>Perbandingan, sorotan, dan anggaran memakai satu bulan penuh sesuai tanggal akhir rentang pilihan.</p></div></div>
+      <div class="analysis-month-layout">
+        <section class="analysis-panel" aria-labelledby="comparison-heading"><header class="analysis-panel-heading"><div><span class="shell-overline">BANDINGKAN PERUBAHANNYA</span><h2 id="comparison-heading">Dibanding bulan sebelumnya</h2><p>{{ monthly.label }} dibanding {{ previousMonthLabel }}.</p></div></header><ComparisonCard v-if="data.comparison" :data="data.comparison" /><AnalysisSectionError v-else label="Perbandingan bulanan" @retry="fetchData" /></section>
+        <section class="analysis-panel is-insights" aria-labelledby="insights-heading"><header class="analysis-panel-heading"><div><span class="shell-overline">CATATAN UNTUK LANGKAH BERIKUTNYA</span><h2 id="insights-heading">Sorotan keuangan</h2><p>Catatan otomatis untuk {{ monthly.label }}.</p></div></header><InsightsList v-if="data.insights" :insights="data.insights" /><AnalysisSectionError v-else label="Sorotan bulanan" @retry="fetchData" /></section>
       </div>
-    </div>
-
-    <!-- Loading State -->
-    <div v-if="reportsStore.isLoading" class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
-    </div>
-
-    <!-- Main Content -->
-    <div v-else class="space-y-8">
-      <!-- 1. Financial Summary Cards -->
-      <FinancialSummary :data="reportsStore.summary" />
-
-      <!-- 2. Insights & Comparison -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2">
-          <ComparisonCard :data="reportsStore.comparison" />
-        </div>
-        <div>
-          <InsightsList :insights="reportsStore.insights" />
-        </div>
-      </div>
-
-      <!-- 3. Charts Row: Trend & Breakdown -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Trend Analysis (Line Chart) -->
-        <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-          <TrendAnalysisChart :data="reportsStore.trendAnalysis" title="Income vs Expense Trend" />
-        </div>
-
-        <!-- Category Breakdown (List/Pie) -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-          <CategoryBreakdown :data="reportsStore.categoryBreakdown" />
-        </div>
-      </div>
-
-      <!-- 4. Category Trend (Stacked Bar) -->
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-        <CategoryTrendChart :data="reportsStore.categoryTrend" />
-      </div>
-
-      <!-- 5. Budget Health -->
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-        <BudgetHealthList :data="reportsStore.budgetHealth" />
-      </div>
-    </div>
+      <section class="analysis-panel" aria-labelledby="budget-health-heading"><header class="analysis-panel-heading"><div><span class="shell-overline">JAGA RENCANAMU TETAP TERARAH</span><h2 id="budget-health-heading">Kondisi anggaran pengeluaran</h2><p>Realisasi anggaran {{ monthly.label }}. Selisih negatif berarti melewati batas.</p></div><RouterLink :to="{ name: 'budget-report', query: { year: String(monthly.year), month: String(monthly.month) } }" class="analysis-text-link">Lihat anggaran <AppIcon name="arrow" /></RouterLink></header><BudgetHealthList v-if="data.budgets" :data="data.budgets" /><AnalysisSectionError v-else label="Realisasi anggaran" @retry="fetchData" /></section>
+      <footer class="analysis-footnote"><AppIcon name="info" /><p>Ringkasan arus kas tidak mencakup transfer antar akun. Data kategori mengikuti pengelompokan transaksi; laporan bulanan memiliki cakupan tersendiri seperti tertulis di setiap bagian.</p></footer>
+    </template>
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useReportsStore } from '@/stores/reports'
-import ExportService from '@/services/exportService'
+import { useToastStore } from '@/stores/toast'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import FinancialSummary from '@/components/reports/FinancialSummary.vue'
 import InsightsList from '@/components/reports/InsightsList.vue'
 import ComparisonCard from '@/components/reports/ComparisonCard.vue'
@@ -139,71 +44,36 @@ import TrendAnalysisChart from '@/components/reports/TrendAnalysisChart.vue'
 import CategoryBreakdown from '@/components/reports/CategoryBreakdown.vue'
 import CategoryTrendChart from '@/components/reports/CategoryTrendChart.vue'
 import BudgetHealthList from '@/components/reports/BudgetHealthList.vue'
+import AnalysisSectionError from '@/components/reports/AnalysisSectionError.vue'
+import { analysisFilters, analysisMonth, analysisNumber, analysisRangeLabel } from '@/utils/spendingAnalysis'
+import type { DateRange } from '@/utils/dateRange'
+import type { ReportsInterval, SpendingAnalysisData } from '@/types/reports'
+import '@/assets/categories.css'
+import '@/assets/spending-analysis.css'
 
-const reportsStore = useReportsStore()
-
-// Export dropdown
-const isExportDropdownOpen = ref(false)
-const exportDropdownRef = ref<HTMLElement | null>(null)
-const handleClickOutsideExport = (event: MouseEvent) => {
-  if (exportDropdownRef.value && !exportDropdownRef.value.contains(event.target as Node)) {
-    isExportDropdownOpen.value = false
-  }
+const route = useRoute(), router = useRouter(), store = useReportsStore(), toast = useToastStore()
+const filters = computed(() => analysisFilters(route.query))
+const data = computed(() => store.analysis)
+const rangeLabel = computed(() => analysisRangeLabel(filters.value))
+const monthly = computed(() => analysisMonth(filters.value.endDate))
+const previousMonthLabel = computed(() => new Date(monthly.value.year, monthly.value.month - 2, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }))
+const intervalOptions: { value: ReportsInterval; label: string }[] = [{ value: 'DAY', label: 'Harian' }, { value: 'MONTH', label: 'Bulanan' }]
+const applyRange = (range: DateRange) => router.replace({ query: { ...route.query, startDate: range.startDate, endDate: range.endDate } })
+const setInterval = (interval: ReportsInterval) => router.replace({ query: { ...route.query, interval } })
+const fetchData = () => store.fetchAnalysis({ ...filters.value })
+const canExport = computed(() => !!data.value && !store.isLoading && !store.sectionErrors.length)
+const exporting = ref(false), exportFormat = ref<'excel' | 'pdf'>('excel')
+const exportReport = async (format: 'excel' | 'pdf') => {
+  if (!canExport.value || exporting.value || !data.value) return
+  const snapshot = JSON.parse(JSON.stringify(data.value)) as SpendingAnalysisData, period = { ...filters.value }
+  exporting.value = true; exportFormat.value = format
+  try {
+    const { default: service } = await import('@/services/exportService')
+    if (format === 'excel') await service.exportSpendingAnalysisToExcel(snapshot, period)
+    else await service.exportSpendingAnalysisToPDF(snapshot, period)
+  } catch { toast.show('Laporan belum berhasil diekspor. Silakan coba lagi.', 'error') }
+  finally { exporting.value = false }
 }
-
-const currentDate = new Date()
-const selectedMonth = ref(currentDate.getMonth() + 1)
-const selectedYear = ref(currentDate.getFullYear())
-
-// Generate last 5 years
-const availableYears = computed(() => {
-  const current = currentDate.getFullYear()
-  return Array.from({ length: 5 }, (_, i) => current - i)
-})
-
-const getMonthName = (m: number) => {
-  return new Date(2000, m - 1, 1).toLocaleString('default', { month: 'long' })
-}
-
-const getDatesFromMonthYear = (m: number, y: number) => {
-  // Start Date: YYYY-MM-01
-  const startDate = `${y}-${String(m).padStart(2, '0')}-01`
-  // End Date: Last day of month
-  const lastDay = new Date(y, m, 0).getDate()
-  const endDate = `${y}-${String(m).padStart(2, '0')}-${lastDay}`
-  return { startDate, endDate }
-}
-
-const fetchData = async () => {
-  const { startDate, endDate } = getDatesFromMonthYear(selectedMonth.value, selectedYear.value)
-
-  // Parallel Fetching
-  await Promise.all([
-    reportsStore.fetchSummary(startDate, endDate),
-    reportsStore.fetchComparison(selectedMonth.value, selectedYear.value),
-    reportsStore.fetchInsights(selectedMonth.value, selectedYear.value),
-    reportsStore.fetchCategoryBreakdown(startDate, endDate, 'EXPENSE'), // Default focus on Expense
-    reportsStore.fetchTrend(startDate, endDate, 'DAY'), // Daily trend for the month
-    reportsStore.fetchCategoryTrend(startDate, endDate, 'DAY', 'EXPENSE'),
-    reportsStore.fetchBudgetHealth(selectedMonth.value, selectedYear.value),
-  ])
-}
-
-const exportFullReport = async (format: 'excel' | 'pdf') => {
-  alert(`Ekspor laporan ${format.toUpperCase()} sedang disiapkan. Harap tunggu...`)
-  // Nanti: Implementasi ekspor data summary & charts
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutsideExport)
-  fetchData()
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutsideExport)
-})
-
-watch([selectedMonth, selectedYear], () => {
-  fetchData()
-})
+watch(() => `${filters.value.startDate}|${filters.value.endDate}|${filters.value.interval}`, fetchData, { immediate: true })
+onBeforeUnmount(() => store.cancelPending())
 </script>
