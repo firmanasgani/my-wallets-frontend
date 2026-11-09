@@ -1,19 +1,21 @@
 import { io, type Socket } from 'socket.io-client'
 
 let socket: Socket | null = null
+let chatToken: string | null = null
 let notificationSocket: Socket | null = null
 
 /** Lazily creates (or returns) the singleton /chat namespace socket, authenticated with the given user token. */
 export function getChatSocket(token: string): Socket {
-  if (socket && socket.connected) return socket
+  if (socket && chatToken === token) return socket
 
   if (socket) {
     socket.disconnect()
   }
 
+  chatToken = token
   socket = io(`${import.meta.env.VITE_API_BASE_URL}/chat`, {
     auth: { token },
-    autoConnect: true,
+    autoConnect: false,
     transports: ['websocket'],
   })
 
@@ -23,6 +25,7 @@ export function getChatSocket(token: string): Socket {
 export function disconnectChatSocket() {
   socket?.disconnect()
   socket = null
+  chatToken = null
 }
 
 /** Lazily creates (or returns) the singleton /notifications namespace socket, authenticated with the given user token. */
