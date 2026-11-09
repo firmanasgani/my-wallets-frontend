@@ -63,7 +63,7 @@ const typeOptions = computed<SelectOption<FrontendCategoryType>[]>(() => [
 ])
 const parentOptions = computed<SelectOption<string | null>[]>(() => [{ value: null, label: 'Kategori utama (tanpa induk)' }, ...categoryParentOptions(categoryStore.allCategories, formData.type, props.categoryToEdit?.id)])
 const parentLabel = computed(() => parentOptions.value.find(({ value }) => value === formData.parentId)?.label || 'Kategori utama')
-const availableIcons = computed<SelectOption<string>[]>(() => [{ value: '', label: 'Tanpa ikon khusus' }, ...[...new Set([...iconOptions, ...(formData.icon ? [formData.icon] : [])])].map((value) => ({ value, label: value.replaceAll('-', ' ') }))])
+const availableIcons = computed<SelectOption<string>[]>(() => [{ value: '', label: 'Tanpa ikon khusus' }, ...[...new Set([...iconOptions, ...(formData.icon ? [formData.icon] : [])])].map((value) => ({ value, label: value.replace(/-/g, ' ') }))])
 const previewColor = computed(() => normalizeCategoryColor(formData.color) || '#a780f2')
 const colors = [{ value: '#a780f2', label: 'Ungu muda' }, { value: '#c8edc6', label: 'Hijau mint' }, { value: '#ffd962', label: 'Kuning' }, { value: '#f2b9c4', label: 'Merah muda' }, { value: '#5026a5', label: 'Ungu tua' }, { value: '#d9cdbb', label: 'Krem' }]
 let opener: HTMLElement | null = null
