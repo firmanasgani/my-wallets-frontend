@@ -1,531 +1,316 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900 p-4">
-    <!-- Card Container -->
-    <div
-      class="flex w-full max-w-5xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden min-h-[550px]"
-    >
-      <!-- Left Side (Branding) -->
-      <div
-        class="hidden md:flex w-1/2 bg-gradient-to-br from-[#2E8B57] to-[#1B5E3B] p-12 flex-col justify-between relative text-white"
-      >
-        <div class="absolute inset-0 bg-pattern opacity-10"></div>
+  <div class="money-auth">
+    <header class="auth-header">
+      <a class="auth-brand" href="https://moneytory.my.id/id" aria-label="Beranda Moneytory Ledger">
+        <img src="/logo.png" alt="" width="36" height="36" />
+        <span>Moneytory Ledger</span>
+      </a>
+      <a class="auth-home-link" href="https://moneytory.my.id/id" aria-label="Tentang Moneytory">
+        <span class="auth-home-text">Tentang Moneytory</span> <span aria-hidden="true">↗</span>
+      </a>
+    </header>
 
-        <div class="relative z-10">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="bg-white rounded-xl p-1.5 shadow-md">
-              <img src="/logo.png" alt="Moneytory Ledger" class="h-8 w-auto" />
-            </div>
-            <span class="text-xl font-bold tracking-wider">Moneytory Ledger</span>
-          </div>
+    <main class="auth-main">
+      <section class="auth-story" aria-labelledby="story-title">
+        <span class="auth-eyebrow">LANGKAH KECIL. AWAL YANG BAIK.</span>
+        <h1 id="story-title">Mulai mencatat.<br /> <span>Mulai tertata.</span></h1>
+        <p class="auth-story-copy">
+          Beri setiap rencana keuangan tempat untuk tumbuh. Buat akun gratis untuk mulai mengelola
+          keuangan personal dan bisnis dengan lebih tenang.
+        </p>
+
+        <div class="auth-artwork" aria-hidden="true">
+          <span class="artwork-label">RENCANA BESAR DIMULAI DARI SINI.</span>
+          <svg viewBox="0 0 480 230" fill="none" focusable="false">
+            <ellipse cx="242" cy="208" rx="158" ry="9" fill="#27231d" fill-opacity=".08" />
+            <g stroke="#27231d" stroke-width="2.5" stroke-linejoin="round">
+              <rect x="135" y="27" width="188" height="170" rx="15" fill="#cfb8f5" />
+              <path d="M160 28v169" />
+              <rect x="179" y="53" width="124" height="120" rx="10" fill="#fffcf5" />
+              <rect x="194" y="72" width="16" height="16" rx="4" fill="#c8edc6" />
+              <path d="m198 80 3 3 6-7m15 4h61m-61 32h61m-61 32h43" stroke-linecap="round" />
+              <rect x="194" y="104" width="16" height="16" rx="4" fill="#ffd962" />
+              <rect x="194" y="136" width="16" height="16" rx="4" fill="#eee4ff" />
+              <path d="m332 73 15-8 13 24-15 8Zm13 24 15-8 42 80-15 8Zm42 80 15-8 1 25Z" fill="#ffd962" />
+              <circle cx="122" cy="166" r="32" fill="#c8edc6" />
+              <path d="M122 153v26m-13-13h26" stroke-width="4" stroke-linecap="round" />
+              <path d="m369 27 5 13 13 5-13 5-5 13-5-13-13-5 13-5Z" fill="#ffd962" />
+              <path d="m99 61 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#cfb8f5" />
+            </g>
+          </svg>
+          <span class="artwork-note">Catatan pertamamu, langkah menuju rencana berikutnya.</span>
         </div>
 
-        <div class="relative z-10 space-y-6">
-          <h1 class="text-4xl font-extrabold leading-tight">
-            Kendalikan Keuangan Bisnis Anda
-          </h1>
-          <h2 class="text-xl font-semibold text-emerald-100">
-            Platform Akuntansi & Pembukuan Cerdas
-          </h2>
-          <ul class="space-y-3 text-emerald-100 text-sm">
-            <li class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-emerald-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              <span><strong>Paket Premium</strong> — Kelola keuangan pribadi & investasi dengan laporan otomatis</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-emerald-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              <span><strong>Paket Bisnis</strong> — Invoice, manajemen tim, dan pembukuan multi-akun</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mt-0.5 text-emerald-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Laporan keuangan real-time & ekspor ke berbagai format</span>
-            </li>
-          </ul>
+        <ul class="auth-features" aria-label="Keuntungan akun Moneytory">
+          <li><span aria-hidden="true">✓</span> Mulai gratis</li>
+          <li><span aria-hidden="true">✓</span> Personal &amp; bisnis</li>
+          <li><span aria-hidden="true">✓</span> Satu tempat</li>
+        </ul>
+      </section>
+
+      <section class="auth-card auth-signup-card" aria-labelledby="register-title">
+        <div class="auth-card-heading">
+          <span class="auth-eyebrow">{{ registrationSuccess ? 'SIAP MELANGKAH' : 'MULAI DARI SINI' }}</span>
+          <span class="auth-card-badge" aria-hidden="true">{{ registrationSuccess ? '✓' : '↗' }}</span>
         </div>
 
-        <div class="relative z-10 text-xs text-emerald-200">
-          &copy; {{ new Date().getFullYear() }} Moneytory Ledger. Solusi keuangan untuk bisnis modern.
-        </div>
-      </div>
+        <ol v-if="!registrationSuccess" class="auth-steps" aria-label="Langkah pendaftaran">
+          <li :class="{ 'is-active': currentStep === 1, 'is-complete': currentStep === 2 }"
+            :aria-current="currentStep === 1 ? 'step' : undefined">
+            <span class="auth-step-number" aria-hidden="true">{{ currentStep === 2 ? '✓' : '1' }}</span>
+            <span><span class="auth-sr-only">Langkah 1: </span>Data akun</span>
+          </li>
+          <li :class="{ 'is-active': currentStep === 2 }"
+            :aria-current="currentStep === 2 ? 'step' : undefined">
+            <span class="auth-step-number" aria-hidden="true">2</span>
+            <span><span class="auth-sr-only">Langkah 2: </span>Keamanan</span>
+          </li>
+        </ol>
 
-      <!-- Right Side (Register Form) -->
-      <div
-        class="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center bg-white dark:bg-slate-800 relative overflow-y-auto max-h-[90vh]"
-      >
-        <div class="max-w-md mx-auto w-full py-4">
-          <!-- Mobile Logo -->
-          <div class="md:hidden flex flex-col items-center mb-6 gap-2">
-            <img src="/logo.png" alt="Moneytory Ledger" class="h-12 w-auto" />
-            <span  class="text-sm font-semibold text-emerald-600 dark:text-emerald-400">Moneytory Ledger</span>
-          </div>
+        <h2 id="register-title" ref="stepTitle" tabindex="-1">
+          {{ registrationSuccess ? 'Akunmu siap.' : currentStep === 1 ? 'Buat akun gratis.' : 'Amankan akunmu.' }}
+        </h2>
+        <p v-if="!registrationSuccess" class="auth-intro">
+          {{ currentStep === 1
+            ? 'Kenalan dulu, lalu mulai cerita keuanganmu.'
+            : 'Satu langkah lagi. Buat kata sandi untuk akunmu.' }}
+        </p>
 
-          <!-- Step Indicator -->
-          <div v-if="!registrationSuccess" class="flex items-center justify-center mb-6 gap-2">
-            <div class="flex items-center gap-2">
-              <div
-                :class="[
-                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all',
-                  currentStep >= 1
-                    ? 'bg-[#2E8B57] text-white'
-                    : 'bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-400',
-                ]"
-              >
-                <svg v-if="currentStep > 1" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-                <span v-else>1</span>
-              </div>
-              <span
-                :class="[
-                  'text-xs font-semibold',
-                  currentStep >= 1 ? 'text-[#2E8B57]' : 'text-gray-400 dark:text-slate-500',
-                ]"
-              >Data Akun</span>
-            </div>
-            <div
-              :class="[
-                'h-px w-8 transition-all',
-                currentStep >= 2 ? 'bg-[#2E8B57]' : 'bg-gray-200 dark:bg-slate-600',
-              ]"
-            ></div>
-            <div class="flex items-center gap-2">
-              <div
-                :class="[
-                  'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all',
-                  currentStep >= 2
-                    ? 'bg-[#2E8B57] text-white'
-                    : 'bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-400',
-                ]"
-              >2</div>
-              <span
-                :class="[
-                  'text-xs font-semibold',
-                  currentStep >= 2 ? 'text-[#2E8B57]' : 'text-gray-400 dark:text-slate-500',
-                ]"
-              >Keamanan</span>
-            </div>
-          </div>
-
-          <h2 class="text-2xl font-bold text-gray-800 dark:text-white text-center mb-1">
-            {{ currentStep === 1 ? 'Buat Akun Gratis' : 'Buat Kata Sandi' }}
-          </h2>
-          <p v-if="!registrationSuccess" class="text-center text-sm text-gray-500 dark:text-slate-400 mb-6">
-            {{ currentStep === 1
-              ? 'Mulai perjalanan finansial Anda — gratis, tanpa kartu kredit.'
-              : 'Amankan akun Anda dengan kata sandi yang kuat.' }}
+        <div v-if="registrationSuccess" class="auth-signup-success" role="status">
+          <span class="auth-success-icon" aria-hidden="true">✓</span>
+          <p>
+            Hubungi admin yang mengundangmu untuk mengirim ulang undangan ke
+            <strong>{{ formData.email }}</strong>. Setelah itu, cek emailmu untuk menerima akses ke perusahaan.
           </p>
-
-          <!-- Registration Success Panel -->
-          <div
-            v-if="registrationSuccess"
-            class="flex flex-col items-center gap-4 py-8 text-center"
-          >
-            <div class="bg-emerald-100 dark:bg-emerald-900/30 rounded-full p-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#2E8B57] dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Akun Berhasil Dibuat!</h3>
-            <p class="text-sm text-gray-600 dark:text-slate-300 max-w-xs">
-              Hubungi admin yang mengundangmu untuk mengirim ulang undangan ke
-              <span class="font-semibold text-[#2E8B57] dark:text-emerald-400">{{ formData.email }}</span>.
-              Setelah undangan dikirim, cek emailmu untuk menerima akses ke company.
-            </p>
-            <button
-              @click="router.push({ name: 'login' })"
-              class="mt-2 bg-[#2E8B57] hover:bg-[#236B43] text-white font-bold py-2.5 px-6 rounded-lg transition-all"
-            >
-              Masuk ke Akun
-            </button>
-          </div>
-
-          <!-- Error Message -->
-          <div
-            v-if="!registrationSuccess && (authStore.authError || clientSideError)"
-            class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-3 text-sm rounded-r relative shadow-sm mb-4"
-            role="alert"
-          >
-            <span class="block sm:inline">{{ authStore.authError || clientSideError }}</span>
-            <svg
-              class="absolute top-0 right-0 mt-3 mr-3 h-4 w-4 cursor-pointer text-red-400 hover:text-red-600"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              @click="clearErrors"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
-
-          <!-- STEP 1: Account Data -->
-          <form
-            v-if="!registrationSuccess && currentStep === 1"
-            @submit.prevent="goToStep2"
-            class="space-y-4"
-          >
-            <!-- Full Name -->
-            <div>
-              <label for="fullName" class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-1">
-                Nama Lengkap <span class="text-gray-400 font-normal text-xs">(Opsional)</span>
-              </label>
-              <input
-                type="text"
-                id="fullName"
-                v-model="formData.fullName"
-                class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent transition-all"
-                placeholder="Contoh: Budi Santoso"
-              />
-            </div>
-
-            <!-- Username -->
-            <div>
-              <label for="username" class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-1">
-                Username <span class="text-[#2E8B57] dark:text-emerald-400">*</span>
-              </label>
-              <input
-                type="text"
-                id="username"
-                v-model="formData.username"
-                @input="checkUsername"
-                required
-                :class="[
-                  'block w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all',
-                  usernameError
-                    ? 'border-red-400 dark:border-red-500 focus:ring-red-400'
-                    : 'border-gray-300 dark:border-slate-600 focus:ring-[#2E8B57]',
-                ]"
-                placeholder="Username unik Anda"
-              />
-              <p v-if="usernameError" class="mt-1 text-xs text-red-500 dark:text-red-400">
-                {{ usernameError }}
-              </p>
-            </div>
-
-            <!-- Email -->
-            <div>
-              <label for="email" class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-1">
-                Email <span class="text-[#2E8B57] dark:text-emerald-400">*</span>
-              </label>
-              <input
-                type="email"
-                id="email"
-                v-model="formData.email"
-                required
-                :readonly="emailReadonly"
-                :class="[
-                  'block w-full px-4 py-2.5 rounded-lg border text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent transition-all',
-                  emailReadonly
-                    ? 'border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-600 cursor-not-allowed'
-                    : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700',
-                ]"
-                placeholder="nama@email.com"
-              />
-              <p v-if="emailReadonly" class="mt-1 text-xs text-gray-500 dark:text-slate-400">
-                Email ini ditetapkan dari undangan dan tidak dapat diubah.
-              </p>
-            </div>
-
-            <!-- Next Button -->
-            <button
-              type="submit"
-              class="w-full bg-[#2E8B57] hover:bg-[#236B43] text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2E8B57]"
-            >
-              Lanjut ke Langkah Berikutnya &rarr;
-            </button>
-
-            <!-- Login Link -->
-            <div class="text-center mt-2">
-              <p class="text-sm text-gray-500 dark:text-slate-400">
-                Sudah punya akun?
-                <RouterLink to="/login" class="font-bold text-[#2E8B57] dark:text-emerald-400 hover:text-[#236B43] dark:hover:text-emerald-300">
-                  Masuk di sini
-                </RouterLink>
-              </p>
-            </div>
-          </form>
-
-          <!-- STEP 2: Password Setup -->
-          <form
-            v-if="!registrationSuccess && currentStep === 2"
-            @submit.prevent="handleRegister"
-            class="space-y-4"
-          >
-            <!-- Password -->
-            <div>
-              <label for="password" class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-1">
-                Kata Sandi <span class="text-[#2E8B57] dark:text-emerald-400">*</span>
-              </label>
-              <div class="relative">
-                <input
-                  :type="showPassword ? 'text' : 'password'"
-                  id="password"
-                  v-model="formData.password"
-                  @input="checkPassword"
-                  required
-                  class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent transition-all pr-12"
-                  placeholder="Min. 8 karakter"
-                />
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <button
-                    type="button"
-                    @click="showPassword = !showPassword"
-                    class="text-gray-400 dark:text-slate-400 hover:text-[#2E8B57] dark:hover:text-emerald-400 focus:outline-none"
-                  >
-                    <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              <!-- Password Criteria -->
-              <div class="mt-2 text-xs text-gray-600 dark:text-slate-400 space-y-1">
-                <p class="font-semibold">Syarat Kata Sandi:</p>
-                <ul class="list-disc list-inside pl-2 space-y-0.5">
-                  <li :class="passwordCriteria.minLength ? 'text-[#2E8B57] dark:text-emerald-400 font-bold' : 'text-gray-500 dark:text-slate-500'">Min. 8 Karakter</li>
-                  <li :class="passwordCriteria.hasUpper ? 'text-[#2E8B57] dark:text-emerald-400 font-bold' : 'text-gray-500 dark:text-slate-500'">Huruf Besar (A-Z)</li>
-                  <li :class="passwordCriteria.hasNumber ? 'text-[#2E8B57] dark:text-emerald-400 font-bold' : 'text-gray-500 dark:text-slate-500'">Angka (0-9)</li>
-                  <li :class="passwordCriteria.hasSpecial ? 'text-[#2E8B57] dark:text-emerald-400 font-bold' : 'text-gray-500 dark:text-slate-500'">Karakter Spesial (!@#...)</li>
-                </ul>
-              </div>
-            </div>
-
-            <!-- Confirm Password -->
-            <div>
-              <label for="confirmPassword" class="block text-sm font-bold text-emerald-900 dark:text-emerald-200 mb-1">
-                Konfirmasi Kata Sandi <span class="text-[#2E8B57] dark:text-emerald-400">*</span>
-              </label>
-              <div class="relative">
-                <input
-                  :type="showConfirmPassword ? 'text' : 'password'"
-                  id="confirmPassword"
-                  v-model="formData.confirmPassword"
-                  @input="checkMatch"
-                  required
-                  class="block w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent transition-all pr-12"
-                  placeholder="Ulangi kata sandi"
-                />
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <button
-                    type="button"
-                    @click="showConfirmPassword = !showConfirmPassword"
-                    class="text-gray-400 dark:text-slate-400 hover:text-[#2E8B57] dark:hover:text-emerald-400 focus:outline-none"
-                  >
-                    <svg v-if="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              <div v-if="formData.confirmPassword" class="mt-2 text-xs">
-                <span v-if="passwordMatchStatus === 'match'" class="text-[#2E8B57] dark:text-emerald-400 flex items-center gap-1">
-                  <i class="fa-solid fa-circle-check"></i> Kata sandi cocok
-                </span>
-                <span v-else-if="passwordMatchStatus === 'mismatch'" class="text-red-500 dark:text-red-400 flex items-center gap-1">
-                  <i class="fa-solid fa-circle-xmark"></i> Kata sandi tidak cocok
-                </span>
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex gap-3">
-              <button
-                type="button"
-                @click="currentStep = 1"
-                class="w-1/3 border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-slate-300 font-bold py-3 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all focus:outline-none"
-              >
-                &larr; Kembali
-              </button>
-              <button
-                type="submit"
-                class="flex-1 bg-[#2E8B57] hover:bg-[#236B43] text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2E8B57]"
-                :disabled="authStore.authIsLoading"
-              >
-                <span v-if="!authStore.authIsLoading">Buat Akun Sekarang</span>
-                <span v-else class="flex items-center justify-center">
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Memproses...
-                </span>
-              </button>
-            </div>
-
-            <!-- Login Link -->
-            <div class="text-center mt-2">
-              <p class="text-sm text-gray-500 dark:text-slate-400">
-                Sudah punya akun?
-                <RouterLink to="/login" class="font-bold text-[#2E8B57] dark:text-emerald-400 hover:text-[#236B43] dark:hover:text-emerald-300">
-                  Masuk di sini
-                </RouterLink>
-              </p>
-            </div>
-          </form>
+          <RouterLink class="auth-submit" :to="{ name: 'login' }">Masuk ke akun <span aria-hidden="true">↗</span></RouterLink>
         </div>
-      </div>
-    </div>
+
+        <template v-else>
+          <div v-if="emailReadonly" class="auth-invite-note">
+            <span class="auth-invite-label">{{ isInviteFlow ? 'KAMU DIUNDANG' : 'EMAIL PENDAFTARAN' }}</span>
+            <p>Email sudah diisi dari tautan pendaftaran dan tidak dapat diubah.</p>
+          </div>
+
+          <div v-if="clientSideError || authStore.authError" class="auth-error auth-signup-error" role="alert">
+            <span>{{ clientSideError || authStore.authError }}</span>
+            <button type="button" aria-label="Tutup pesan kesalahan" @click="clearErrors">×</button>
+          </div>
+
+          <form v-if="currentStep === 1" @submit.prevent="goToStep2">
+            <div class="auth-field">
+              <label for="fullName">Nama lengkap <span class="auth-optional">(opsional)</span></label>
+              <input id="fullName" v-model="formData.fullName" name="name" type="text"
+                autocomplete="name" placeholder="Nama panggilan juga boleh" />
+            </div>
+            <div class="auth-field">
+              <label for="username">Username</label>
+              <input id="username" v-model="formData.username" name="username" type="text"
+                autocomplete="username" autocapitalize="none" :spellcheck="false" required
+                aria-describedby="username-hint" :aria-invalid="!!usernameError"
+                placeholder="Pilih username unikmu" />
+              <p id="username-hint" class="auth-field-hint" :class="{ 'is-error': usernameError }">
+                {{ usernameError || '4–30 karakter. Gunakan huruf, angka, atau garis bawah (_).' }}
+              </p>
+            </div>
+            <div class="auth-field">
+              <label for="email">Email</label>
+              <input id="email" v-model="formData.email" name="email" type="email"
+                autocomplete="email" autocapitalize="none" :spellcheck="false" required maxlength="100"
+                :readonly="emailReadonly" :aria-describedby="emailReadonly ? 'email-hint' : undefined"
+                placeholder="nama@email.com" />
+              <p v-if="emailReadonly" id="email-hint" class="auth-field-hint">Email dari tautan pendaftaran.</p>
+            </div>
+            <button type="submit" class="auth-submit">Lanjut ke keamanan <span aria-hidden="true">→</span></button>
+          </form>
+
+          <form v-else @submit.prevent="handleRegister" :aria-busy="isSubmitting">
+            <div class="auth-account-summary">
+              <span>MENDAFTAR SEBAGAI</span>
+              <strong>{{ formData.email }}</strong>
+            </div>
+
+            <div class="auth-field">
+              <label for="password">Kata sandi</label>
+              <div class="auth-password">
+                <input id="password" v-model="formData.password" name="new-password"
+                  :type="showPassword ? 'text' : 'password'" autocomplete="new-password"
+                  placeholder="Buat kata sandi yang kuat" required minlength="8" :readonly="isSubmitting"
+                  aria-describedby="password-requirements" />
+                <button type="button" class="auth-password-toggle" @click="showPassword = !showPassword"
+                  :aria-label="showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'"
+                  :aria-pressed="showPassword">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                    <circle cx="12" cy="12" r="3" />
+                    <path v-if="showPassword" d="m3 3 18 18" />
+                  </svg>
+                </button>
+              </div>
+              <ul id="password-requirements" class="auth-password-rules" aria-label="Syarat kata sandi">
+                <li v-for="rule in passwordRules" :key="rule.label" :class="{ 'is-met': rule.met }">
+                  <span aria-hidden="true">{{ rule.met ? '✓' : '○' }}</span>
+                  <span class="auth-sr-only">{{ rule.met ? 'Terpenuhi: ' : 'Belum terpenuhi: ' }}</span>
+                  {{ rule.label }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="auth-field">
+              <label for="confirmPassword">Konfirmasi kata sandi</label>
+              <div class="auth-password">
+                <input id="confirmPassword" v-model="formData.confirmPassword" name="confirm-password"
+                  :type="showConfirmPassword ? 'text' : 'password'" autocomplete="new-password"
+                  placeholder="Ulangi kata sandimu" required :readonly="isSubmitting"
+                  :aria-invalid="passwordMismatch" aria-describedby="password-match-hint" />
+                <button type="button" class="auth-password-toggle" @click="showConfirmPassword = !showConfirmPassword"
+                  :aria-label="showConfirmPassword ? 'Sembunyikan konfirmasi kata sandi' : 'Tampilkan konfirmasi kata sandi'"
+                  :aria-pressed="showConfirmPassword">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                    <circle cx="12" cy="12" r="3" />
+                    <path v-if="showConfirmPassword" d="m3 3 18 18" />
+                  </svg>
+                </button>
+              </div>
+              <p id="password-match-hint" class="auth-field-hint" :class="{ 'is-error': passwordMismatch }"
+                aria-live="polite">
+                {{ !formData.confirmPassword ? 'Ketik ulang kata sandi untuk memastikan.'
+                  : passwordMismatch ? 'Kata sandi belum cocok.' : 'Kata sandi sudah cocok.' }}
+              </p>
+            </div>
+
+            <div class="auth-signup-actions">
+              <button type="button" class="auth-back" :disabled="isSubmitting" @click="backToAccount">
+                <span aria-hidden="true">←</span> Kembali
+              </button>
+              <button type="submit" class="auth-submit" :disabled="isSubmitting">
+                <span v-if="isSubmitting" class="auth-spinner" aria-hidden="true"></span>
+                <span>{{ isSubmitting ? 'Membuat akun...' : 'Buat akun gratis' }}</span>
+                <span v-if="!isSubmitting" aria-hidden="true">↗</span>
+              </button>
+            </div>
+          </form>
+
+          <p class="auth-register">Sudah punya akun? <RouterLink to="/login">Masuk di sini <span aria-hidden="true">↗</span></RouterLink></p>
+        </template>
+      </section>
+    </main>
+
+    <footer class="auth-footer">
+      <span>© {{ new Date().getFullYear() }} Moneytory Ledger</span>
+      <span>Keuangan personal &amp; bisnis, lebih tertata.</span>
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import '@/assets/auth.css'
 
 const authStore = useAuthStore()
 const route = useRoute()
-const router = useRouter()
-
-interface RegisterFormData {
-  fullName?: string | null
-  username: string
-  email: string
-  password: string
-  confirmPassword: string
-}
-
-const formData = reactive<RegisterFormData>({
-  fullName: '',
-  username: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-})
-
+const formData = reactive({ fullName: '', username: '', email: '', password: '', confirmPassword: '' })
 const currentStep = ref(1)
-const isInviteFlow = ref(false)
+const isInviteFlow = computed(() => route.query.ref === 'invite')
 const emailReadonly = ref(false)
 const registrationSuccess = ref(false)
-
-onMounted(() => {
-  const emailParam = route.query.email as string | undefined
-  if (emailParam) {
-    formData.email = emailParam
-    emailReadonly.value = true
-  }
-  if (route.query.ref === 'invite') {
-    isInviteFlow.value = true
-  }
-})
-
+const isSubmitting = ref(false)
+const stepTitle = ref<HTMLElement | null>(null)
 const clientSideError = ref<string | null>(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
-const usernameError = ref<string | null>(null)
 
-const USERNAME_PATTERN = /^[a-zA-Z0-9_]+$/
-
-const checkUsername = () => {
-  const value = formData.username.trim()
-  if (!value) {
-    usernameError.value = null
-    return
+onMounted(() => {
+  clearErrors()
+  if (typeof route.query.email === 'string' && route.query.email.trim()) {
+    formData.email = route.query.email.trim()
+    emailReadonly.value = true
   }
-  if (value.length < 4) {
-    usernameError.value = 'Username minimal 4 karakter.'
-  } else if (value.length > 30) {
-    usernameError.value = 'Username maksimal 30 karakter.'
-  } else if (!USERNAME_PATTERN.test(value)) {
-    usernameError.value = 'Username hanya boleh berisi huruf, angka, dan garis bawah (_).'
-  } else {
-    usernameError.value = null
-  }
-}
-
-const passwordCriteria = reactive({
-  minLength: false,
-  hasUpper: false,
-  hasNumber: false,
-  hasSpecial: false,
 })
 
-const passwordMatchStatus = ref<'idle' | 'match' | 'mismatch'>('idle')
+const usernameError = computed(() => {
+  const value = formData.username.trim()
+  if (!value) return null
+  if (value.length < 4) return 'Username minimal 4 karakter.'
+  if (value.length > 30) return 'Username maksimal 30 karakter.'
+  if (!/^[a-zA-Z0-9_]+$/.test(value)) return 'Gunakan huruf, angka, dan garis bawah (_) saja.'
+  return null
+})
 
-const checkPassword = () => {
-  const p = formData.password
-  passwordCriteria.minLength = p.length >= 8
-  passwordCriteria.hasUpper = /[A-Z]/.test(p)
-  passwordCriteria.hasNumber = /[0-9]/.test(p)
-  passwordCriteria.hasSpecial = /[^A-Za-z0-9]/.test(p)
-  if (formData.confirmPassword) checkMatch()
-}
-
-const checkMatch = () => {
-  if (!formData.confirmPassword) {
-    passwordMatchStatus.value = 'idle'
-    return
-  }
-  passwordMatchStatus.value = formData.password === formData.confirmPassword ? 'match' : 'mismatch'
-}
+const passwordRules = computed(() => [
+  { label: 'Minimal 8 karakter', met: formData.password.length >= 8 },
+  { label: 'Huruf kecil (a–z)', met: /[a-z]/.test(formData.password) },
+  { label: 'Huruf besar (A–Z)', met: /[A-Z]/.test(formData.password) },
+  { label: 'Angka (0–9)', met: /[0-9]/.test(formData.password) },
+  { label: 'Simbol (!@#...)', met: /[^A-Za-z0-9]/.test(formData.password) },
+])
+const passwordMismatch = computed(
+  () => !!formData.confirmPassword && formData.password !== formData.confirmPassword,
+)
 
 const clearErrors = () => {
   clientSideError.value = null
   authStore.error = null
 }
-
-const goToStep2 = () => {
-  clientSideError.value = null
+const focusStepTitle = async () => {
+  await nextTick()
+  stepTitle.value?.focus()
+}
+const goToStep2 = async () => {
+  clearErrors()
   if (!formData.username.trim() || !formData.email.trim()) {
-    clientSideError.value = 'Username dan Email wajib diisi.'
+    clientSideError.value = 'Username dan email wajib diisi.'
     return
   }
-  checkUsername()
   if (usernameError.value) {
     clientSideError.value = usernameError.value
     return
   }
+  formData.username = formData.username.trim()
+  formData.email = formData.email.trim()
   currentStep.value = 2
+  await focusStepTitle()
 }
-
+const backToAccount = async () => {
+  if (isSubmitting.value) return
+  clearErrors()
+  currentStep.value = 1
+  showPassword.value = false
+  showConfirmPassword.value = false
+  await focusStepTitle()
+}
 const handleRegister = async () => {
-  clientSideError.value = null
-  authStore.error = null
-
+  if (isSubmitting.value) return
+  clearErrors()
+  if (!passwordRules.value.every((rule) => rule.met)) {
+    clientSideError.value = 'Lengkapi semua syarat kata sandi sebelum melanjutkan.'
+    return
+  }
   if (formData.password !== formData.confirmPassword) {
-    clientSideError.value = 'Password dan Konfirmasi Password tidak cocok.'
-    return
-  }
-  if (formData.password.length < 8) {
-    clientSideError.value = 'Password minimal harus 8 karakter.'
+    clientSideError.value = 'Kata sandi dan konfirmasi kata sandi belum cocok.'
     return
   }
 
+  isSubmitting.value = true
   try {
-    const payload = {
+    await authStore.register({
       username: formData.username,
       email: formData.email,
       password: formData.password,
-      fullName: formData.fullName || null,
-    }
-    await authStore.register(payload, { skipRedirect: isInviteFlow.value })
+      fullName: formData.fullName.trim() || null,
+    }, { skipRedirect: isInviteFlow.value })
     if (isInviteFlow.value) {
       registrationSuccess.value = true
+      await focusStepTitle()
     }
-  } catch (error) {
-    console.error('Component-level registration error:', error)
+  } catch (error: unknown) {
+    clientSideError.value =
+      (typeof error === 'string' ? error : error instanceof Error ? error.message : '') ||
+      authStore.authError || 'Pendaftaran gagal. Silakan coba lagi.'
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>
-
-<style scoped>
-.bg-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M1 6h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm0 2v10h18V8H1zM3 3h4v2H3V3zm6 0h4v2H9V3zm6 0h4v2h-4V3z'/%3E%3C/g%3E%3C/svg%3E");
-}
-</style>
