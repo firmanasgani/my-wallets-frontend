@@ -54,23 +54,7 @@
     <div class="mb-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- Start Date -->
-        <div>
-          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Dari Tanggal</label>
-          <input
-            v-model="filters.startDate"
-            type="date"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-        </div>
-        <!-- End Date -->
-        <div>
-          <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Sampai Tanggal</label>
-          <input
-            v-model="filters.endDate"
-            type="date"
-            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-        </div>
+        <DateRangePicker class="sm:col-span-2" :start-date="filters.startDate" :end-date="filters.endDate" @apply="applyDateRange" />
         <!-- COA Filter -->
         <div>
           <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Akun (COA)</label>
@@ -316,6 +300,8 @@
 </template>
 
 <script setup lang="ts">
+import DateRangePicker from '@/components/common/DateRangePicker.vue'
+import { dateKey, type DateRange } from '@/utils/dateRange'
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBusinessTransactionsStore } from '@/stores/businessTransactions'
@@ -342,11 +328,11 @@ const selectedCoa = ref<ChartOfAccount | null>(null)
 const currentPage = ref(1)
 
 const today = new Date()
-const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().slice(0, 10)
+const firstOfMonth = dateKey(new Date(today.getFullYear(), today.getMonth(), 1))
 
 const filters = ref({
   startDate: firstOfMonth,
-  endDate: today.toISOString().slice(0, 10),
+  endDate: dateKey(today),
   coaId: '',
   status: '',
 })
@@ -424,7 +410,7 @@ async function applyFilters() {
 function resetFilters() {
   filters.value = {
     startDate: firstOfMonth,
-    endDate: today.toISOString().slice(0, 10),
+    endDate: dateKey(today),
     coaId: '',
     status: '',
   }
@@ -488,5 +474,9 @@ function formatRp(amount: string | number) {
 
 function formatDate(isoDate: string) {
   return new Date(isoDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+}
+const applyDateRange = (range: DateRange) => {
+  Object.assign(filters.value, range)
+  applyFilters()
 }
 </script>

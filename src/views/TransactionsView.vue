@@ -1,670 +1,274 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 print:hidden">
-      <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">Riwayat Transaksi</h1>
-      <div class="flex gap-2 flex-col md:flex-row w-full sm:w-auto">
-        <!-- Export Dropdown -->
-        <div class="relative" ref="exportDropdownRef">
-          <button
-            @click.stop="isExportDropdownOpen = !isExportDropdownOpen"
-            class="w-full sm:w-auto bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
-          >
-            <i class="fa-solid fa-download mr-2 text-slate-400"></i>
-            Ekspor
-            <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-slate-400"></i>
+  <div class="tx-history">
+    <header class="tx-heading print:hidden">
+      <div>
+        <span class="shell-overline">CATATAN KEUANGANMU</span>
+        <h1>Riwayat transaksi.</h1>
+        <p>Telusuri setiap pemasukan, pengeluaran, dan perpindahan dana.</p>
+      </div>
+      <div class="tx-heading-actions">
+        <div ref="exportDropdownRef" class="tx-export" @keydown.esc.stop="closeExport(true)">
+          <button ref="exportTrigger" type="button" class="tx-button" :disabled="!canExport"
+            :aria-expanded="isExportDropdownOpen" aria-controls="transaction-export-options"
+            @click="isExportDropdownOpen = !isExportDropdownOpen">
+            <AppIcon name="download" />{{ isExporting ? 'Mengekspor...' : 'Ekspor' }}<AppIcon name="down" />
           </button>
-
-          <!-- Dropdown Menu -->
-          <div
-            v-show="isExportDropdownOpen"
-            class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-xl shadow-xl border border-slate-100 dark:border-slate-600 py-2 z-50"
-          >
-            <button
-              @click="exportTransactions('excel'); isExportDropdownOpen = false"
-              class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center"
-            >
-              <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
-              Format Excel (.xlsx)
-            </button>
-            <button
-              @click="exportTransactions('pdf'); isExportDropdownOpen = false"
-              class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center"
-            >
-              <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
-              Format PDF (.pdf)
-            </button>
+          <div v-if="isExportDropdownOpen" id="transaction-export-options" class="tx-export-options">
+            <p>Ekspor halaman ini ({{ transactions.length }} transaksi)</p>
+            <button type="button" @click="exportTransactions('excel')"><AppIcon name="file" />Excel (.xlsx)</button>
+            <button type="button" @click="exportTransactions('pdf')"><AppIcon name="file" />PDF (.pdf)</button>
           </div>
         </div>
-
-        <button
-          @click="openCalendarModal"
-          class="w-full sm:w-auto bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
-        >
-          <i class="fa-regular fa-calendar-days mr-2 text-emerald-500"></i>
-          Kalender
-        </button>
-
-        <button
-          @click="openAddTransactionModal"
-          class="w-full sm:w-auto bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-2 px-4 rounded-lg flex items-center justify-center transition-colors shadow-sm"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5 mr-2"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Tambah Transaksi
-        </button>
+        <button type="button" class="tx-button" @click="isCalendarModalOpen = true"><AppIcon name="calendar" />Kalender</button>
+        <button type="button" class="tx-button is-primary" @click="addTransaction"><AppIcon name="plus" />Catat transaksi</button>
       </div>
-    </div>
+    </header>
 
-    <!-- Free Plan Alert -->
-    <div
-      v-if="authStore.user?.subscriptionPlan === 'FREE'"
-      class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4"
-    >
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg
-            class="h-5 w-5 text-yellow-400"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <p class="text-sm text-yellow-700">
-            <span class="font-bold">Info Paket Free:</span>
-            Anda hanya dapat melihat riwayat transaksi selama 12 bulan terakhir.
-            <RouterLink
-              :to="{ name: 'settings' }"
-              class="font-medium underline hover:text-yellow-600"
-            >
-              Upgrade ke Premium
-            </RouterLink>
-            untuk akses tanpa batas.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow print:hidden">
-      <h2 class="text-lg font-medium text-slate-700 dark:text-slate-200 mb-3">Filter Transaksi</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Global Search -->
-        <div class="md:col-span-2 lg:col-span-4">
-          <label for="filter-search" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
-            >Cari Transaksi</label
-          >
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-              <i class="fa-solid fa-magnifying-glass text-sm"></i>
-            </span>
-            <input
-              type="text"
-              id="filter-search"
-              v-model="localFilters.search"
-              placeholder="Cari deskripsi, kategori, atau akun..."
-              :class="[filterInputClass, 'pl-10']"
-              @input="handleSearchInput"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label for="filter-daterange-start" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
-            >Tanggal Mulai</label
-          >
-          <input
-            type="date"
-            id="filter-daterange-start"
-            v-model="localFilters.startDate"
-            :class="[filterInputClass, 'dark:[color-scheme:dark]']"
-            @change="applyCurrentFilters"
-          />
-        </div>
-        <div>
-          <label for="filter-daterange-end" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
-            >Tanggal Akhir</label
-          >
-          <input
-            type="date"
-            id="filter-daterange-end"
-            v-model="localFilters.endDate"
-            :class="[filterInputClass, 'dark:[color-scheme:dark]']"
-            @change="applyCurrentFilters"
-          />
-        </div>
-        <div>
-          <label for="filter-account" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
-            >Akun</label
-          >
-          <select
-            id="filter-account"
-            v-model="localFilters.accountId"
-            :class="filterInputClass"
-            @change="applyCurrentFilters"
-          >
-            <option :value="undefined">Semua Akun</option>
-            <option v-for="acc in accountsForFilter" :key="acc.id" :value="acc.id">
-              {{ acc.accountName }}
-            </option>
-          </select>
-          <p v-if="accountStore.isLoading" class="text-xs text-slate-500 mt-1">Memuat akun...</p>
-        </div>
-        <div>
-          <label for="filter-category" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
-            >Kategori</label
-          >
-          <select
-            id="filter-category"
-            v-model="localFilters.categoryId"
-            :class="filterInputClass"
-            @change="applyCurrentFilters"
-          >
-            <option :value="undefined">Semua Kategori</option>
-            <option v-for="cat in categoriesForFilter" :key="cat.id" :value="cat.id">
-              {{ cat.parentPrefix || '' }}{{ cat.categoryName }} ({{ cat.categoryType }})
-            </option>
-          </select>
-          <p v-if="categoryStore.isLoadingCategories" class="text-xs text-slate-500 mt-1">
-            Memuat kategori...
-          </p>
-        </div>
-        <div>
-          <label for="filter-type" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1"
-            >Tipe</label
-          >
-          <select
-            id="filter-type"
-            v-model="localFilters.type"
-            :class="filterInputClass"
-            @change="applyCurrentFilters"
-          >
-            <option :value="undefined">Semua Tipe</option>
-            <option value="INCOME">Pemasukan</option>
-            <option value="EXPENSE">Pengeluaran</option>
-            <option value="TRANSFER">Transfer</option>
-          </select>
-        </div>
-      </div>
-      <div class="mt-4 flex justify-end">
-        <button
-          @click="resetFilters"
-          class="inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors w-full sm:w-auto"
-        >
-          Reset
-        </button>
-      </div>
-    </div>
-
-    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow print:hidden">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-        <div>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Total Pemasukan</p>
-          <p class="text-xl font-semibold text-green-600">
-            {{ formatCurrency(summary.income, 'IDR') }}
-          </p>
-        </div>
-        <div>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Total Pengeluaran</p>
-          <p class="text-xl font-semibold text-red-600">
-            {{ formatCurrency(summary.expense, 'IDR') }}
-          </p>
-        </div>
-        <div>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Selisih</p>
-          <p
-            :class="[
-              'text-xl font-semibold',
-              summary.net >= 0 ? 'text-emerald-600' : 'text-orange-600',
-            ]"
-          >
-            {{ formatCurrency(summary.net, 'IDR') }}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <LoadingSpinner
-      v-if="transactionStore.isLoadingTransactions && transactionStore.transactionList.length === 0"
-      :visible="true"
-      text="Memuat data transaksi..."
-      size="lg"
-      overlay
-    />
-    <div
-      v-if="transactionStore.transactionError && !transactionStore.isLoadingTransactions"
-      class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
-      role="alert"
-    >
-      <p class="font-bold">Gagal Memuat Transaksi</p>
-      <p>{{ transactionStore.transactionError }}</p>
-    </div>
-
-    <div
-      v-if="
-        !transactionStore.isLoadingTransactions &&
-        transactionStore.transactionList.length === 0 &&
-        !transactionStore.transactionError
-      "
-      class="text-center py-10 bg-white rounded-lg shadow-md dark:bg-slate-800 dark:border-slate-700"
-    >
-      <svg
-        class="mx-auto h-16 w-16 text-slate-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
-        />
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-slate-800 dark:text-slate-200">Belum Ada Transaksi</h3>
-      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-        Tidak ada transaksi yang cocok dengan filter ini, atau Anda belum membuat transaksi.
+    <aside v-if="authStore.currentUser?.subscriptionPlan === 'FREE'" class="tx-plan-note print:hidden">
+      <AppIcon name="book" />
+      <p><strong>Paket Dasar</strong> menampilkan riwayat 12 bulan terakhir.
+        <RouterLink :to="{ name: 'settings', query: { upgrade: 'true' } }">Lihat paket Premium ↗</RouterLink>
       </p>
-      <button
-        @click="openAddTransactionModal"
-        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#2E8B57] hover:bg-[#236B43]"
-      >
-        + Tambah Transaksi
-      </button>
-    </div>
+    </aside>
 
-    <div
-      v-if="!transactionStore.isLoadingTransactions && transactionStore.transactionList.length > 0"
-      class="bg-white dark:bg-slate-800 rounded-lg shadow"
-    >
-      <ul role="list" class="divide-y divide-slate-200 dark:divide-slate-700">
-        <TransactionItem
-          v-for="transaction in transactionStore.transactionList"
-          :key="transaction.id"
-          :transaction="transaction"
-          @edit="editTransaction"
-          @delete="promptDeleteTransaction"
-        />
-      </ul>
-      <div
-        v-if="transactionStore.meta.lastPage > 1"
-        class="px-4 py-3 flex items-center justify-between border-t border-slate-200 dark:border-slate-700 sm:px-6 print:hidden"
-      >
-        <div class="flex-1 flex justify-between sm:hidden">
-          <button
-            @click="prevPage"
-            :disabled="!transactionStore.meta.hasPreviousPage"
-            class="btn-secondary-filter text-sm"
-          >
-            Sebelumnya
-          </button>
-          <button
-            @click="nextPage"
-            :disabled="!transactionStore.meta.hasNextPage"
-            class="btn-secondary-filter text-sm ml-3"
-          >
-            Berikutnya
-          </button>
+    <section class="tx-filter-panel print:hidden" aria-labelledby="filter-heading">
+      <div class="tx-panel-heading">
+        <div><h2 id="filter-heading">Temukan transaksi</h2><p>Cari catatan atau persempit berdasarkan periode dan akun.</p></div>
+        <button type="button" class="tx-reset" @click="resetFilters">Reset ke hari ini</button>
+      </div>
+      <div class="tx-search">
+        <AppIcon name="search" />
+        <label for="filter-search" class="shell-sr-only">Cari transaksi</label>
+        <input id="filter-search" v-model="localFilters.search" type="search"
+          placeholder="Cari deskripsi, kategori, atau akun..." @input="handleSearchInput" @keydown.enter.prevent="applyCurrentFilters" />
+      </div>
+      <div class="tx-type-tabs" role="group" aria-label="Jenis transaksi">
+        <button v-for="option in typeOptions" :key="option.value" type="button"
+          :aria-pressed="(localFilters.type || '') === option.value"
+          :class="{ 'is-active': (localFilters.type || '') === option.value }" @click="selectType(option.value)">
+          <AppIcon :name="option.icon" />{{ option.label }}
+        </button>
+      </div>
+      <div class="tx-filter-grid">
+        <DateRangePicker class="tx-range-field" :start-date="localFilters.startDate" :end-date="localFilters.endDate" @apply="applyDateRange" />
+        <div class="tx-field">
+          <label for="filter-account">Akun keuangan</label>
+          <select id="filter-account" v-model="localFilters.accountId" @change="applyCurrentFilters">
+            <option :value="undefined">Semua akun</option>
+            <option v-for="account in accountStore.allAccounts" :key="account.id" :value="account.id">{{ account.accountName }}</option>
+          </select>
         </div>
-        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-          <div>
-            <p class="text-sm text-slate-700 dark:text-slate-300">
-              Menampilkan
-              <span class="font-medium">{{
-                (transactionStore.meta.page - 1) * transactionStore.meta.limit + 1
-              }}</span>
-              sampai
-              <span class="font-medium">{{
-                Math.min(
-                  transactionStore.meta.page * transactionStore.meta.limit,
-                  transactionStore.meta.total,
-                )
-              }}</span>
-              dari
-              <span class="font-medium">{{ transactionStore.meta.total }}</span>
-              hasil
-            </p>
-          </div>
-          <div>
-            <nav
-              class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-              aria-label="Pagination"
-            >
-              <button
-                @click="prevPage"
-                :disabled="!transactionStore.meta.hasPreviousPage"
-                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-slate-300 bg-white text-sm font-medium text-slate-500 hover:bg-slate-50 disabled:opacity-50"
-              >
-                Sebelumnya
-              </button>
-              <span
-                class="relative inline-flex items-center px-4 py-2 border border-slate-300 bg-white text-sm font-medium text-slate-700"
-              >
-                Hal {{ transactionStore.meta.page }} dari {{ transactionStore.meta.lastPage }}
-              </span>
-              <button
-                @click="nextPage"
-                :disabled="!transactionStore.meta.hasNextPage"
-                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-slate-300 bg-white text-sm font-medium text-slate-500 hover:bg-slate-50 disabled:opacity-50"
-              >
-                Berikutnya
-              </button>
-            </nav>
-          </div>
+        <div class="tx-field">
+          <label for="filter-category">Kategori</label>
+          <select id="filter-category" v-model="localFilters.categoryId" @change="applyCurrentFilters">
+            <option :value="undefined">Semua kategori</option>
+            <option v-for="category in categoriesForFilter" :key="category.id" :value="category.id">
+              {{ category.label }} ({{ category.categoryType === 'INCOME' ? 'Pemasukan' : 'Pengeluaran' }})
+            </option>
+          </select>
         </div>
       </div>
-    </div>
-    <ConfirmationModal
-      v-model:isOpen="isDeleteModalOpen"
-      title="Konfirmasi Hapus Transaksi"
-      :message="`Apakah Anda yakin ingin menghapus transaksi '${transactionToDelete?.description || 'ini'}'? Aksi ini tidak dapat dibatalkan dan akan mengembalikan saldo akun terkait.`"
-      confirmButtonText="Ya, Hapus"
-      confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-      iconType="danger"
-      :isConfirming="isDeletingTransaction || transactionStore.isSubmittingTransaction"
-      @confirm="handleConfirmDelete"
-      @cancel="closeDeleteModal"
-    />
+      <p v-if="dateRangeError" id="date-range-error" class="tx-inline-error" role="alert">{{ dateRangeError }}</p>
+      <p v-if="filterLoadError" class="tx-inline-error" role="alert">{{ filterLoadError }}
+        <button type="button" class="tx-reset" @click="loadFilterOptions">Coba lagi</button>
+      </p>
+      <div class="tx-period-shortcuts">
+        <span>Pilih periode kustom atau gunakan periode cepat di pemilih tanggal.</span>
+        <span v-if="accountStore.isLoading || categoryStore.isLoadingCategories" role="status">Memuat pilihan filter...</span>
+      </div>
+    </section>
 
-    <CalendarViewModal :visible="isCalendarModalOpen" @close="closeCalendarModal" />
+    <section aria-labelledby="summary-heading" class="print:hidden">
+      <div class="tx-summary-heading"><h2 id="summary-heading">Ringkasan halaman ini</h2><span>Transfer tidak termasuk dalam selisih.</span></div>
+      <dl class="tx-summary-grid">
+        <div class="tx-summary-card is-income"><dt><AppIcon name="arrow" />Pemasukan</dt><dd>{{ isLoading ? '…' : currency(summary.income) }}</dd></div>
+        <div class="tx-summary-card is-expense"><dt><AppIcon name="arrow" />Pengeluaran</dt><dd>{{ isLoading ? '…' : currency(summary.expense) }}</dd></div>
+        <div class="tx-summary-card"><dt><AppIcon name="transfer" />Selisih</dt><dd>{{ isLoading ? '…' : currency(summary.net) }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="tx-results" aria-labelledby="results-heading" :aria-busy="isLoading">
+      <div class="tx-results-heading">
+        <div><h2 id="results-heading">Daftar transaksi <span v-if="!isLoading && !loadError && !invalidQueryRange" class="tx-result-count">{{ transactionStore.meta.total }}</span></h2>
+          <p>{{ periodLabel }}</p>
+        </div>
+        <div class="tx-field tx-sort print:hidden">
+          <label for="transaction-sort" class="shell-sr-only">Urutkan transaksi</label>
+          <select id="transaction-sort" v-model="sortSelection" @change="changeSort">
+            <option value="transactionDate:desc">Terbaru dulu</option><option value="transactionDate:asc">Terlama dulu</option>
+            <option value="amount:desc">Nominal terbesar</option><option value="amount:asc">Nominal terkecil</option>
+          </select>
+        </div>
+      </div>
+      <div v-if="isLoading" class="tx-state" role="status"><span class="tx-spinner" aria-hidden="true"></span><h3>Memuat transaksi...</h3><p>Sedang menyiapkan catatan keuanganmu.</p></div>
+      <div v-else-if="invalidQueryRange || loadError" class="tx-state is-error" role="alert">
+        <AppIcon name="help" /><h3>{{ invalidQueryRange ? 'Periksa rentang tanggal' : 'Transaksi belum berhasil dimuat' }}</h3>
+        <p>{{ invalidQueryRange ? 'Tanggal awal harus sama atau lebih awal dari tanggal akhir.' : loadError }}</p>
+        <button type="button" class="tx-button" @click="invalidQueryRange ? resetFilters() : retryTransactions()">{{ invalidQueryRange ? 'Reset ke hari ini' : 'Coba lagi' }}</button>
+      </div>
+      <div v-else-if="transactions.length === 0" class="tx-state">
+        <AppIcon name="wallet" /><h3>Belum ada transaksi di sini.</h3>
+        <p>Tidak ada catatan yang sesuai dengan periode dan filter ini. Ubah filter atau mulai catat transaksi baru.</p>
+        <button type="button" class="tx-button is-primary" @click="addTransaction"><AppIcon name="plus" />Catat transaksi</button>
+      </div>
+      <template v-else>
+        <div class="tx-column-headings" aria-hidden="true"><span>Tanggal</span><span>Transaksi</span><span>Akun</span><span>Jenis</span><span>Nominal</span><span></span></div>
+        <ul class="tx-list"><TransactionHistoryRow v-for="transaction in transactions" :key="transaction.id" :transaction="transaction" :return-query="route.query" /></ul>
+        <div class="tx-pagination print:hidden">
+          <p aria-live="polite">{{ firstResult }}–{{ lastResult }} dari {{ transactionStore.meta.total }} transaksi</p>
+          <nav aria-label="Halaman transaksi">
+            <button type="button" class="tx-button" :disabled="!hasPreviousPage" @click="changePage(-1)">Sebelumnya</button>
+            <span>Hal {{ transactionStore.meta.page }} / {{ transactionStore.meta.lastPage }}</span>
+            <button type="button" class="tx-button" :disabled="!hasNextPage" @click="changePage(1)">Berikutnya</button>
+          </nav>
+        </div>
+      </template>
+    </section>
+    <Teleport to="body"><CalendarViewModal :visible="isCalendarModalOpen" @close="isCalendarModalOpen = false" /></Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, reactive, watch } from 'vue'
-import { useRoute, useRouter, type LocationQuery } from 'vue-router'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
-import TransactionItem from '@/components/transactions/TransactionItem.vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
+import DateRangePicker from '@/components/common/DateRangePicker.vue'
+import TransactionHistoryRow from '@/components/transactions/TransactionHistoryRow.vue'
 import CalendarViewModal from '@/components/transactions/CalendarViewModal.vue'
 import { useTransactionStore } from '@/stores/transactions'
 import { useAccountStore } from '@/stores/accounts'
 import { useCategoryStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
-import ExportService from '@/services/exportService'
-import type { Transaction, QueryTransactionDto } from '@/types/transaction'
-import type { FrontendTransactionType } from '@/types/enums'
+import { useToastStore } from '@/stores/toast'
+import { FrontendTransactionType, type Category } from '@/types/enums'
+import { historyQuery, historySummary, parseHistoryFilters } from '@/utils/transactionHistory'
+import type { DateRange } from '@/utils/dateRange'
+import '@/assets/transactions.css'
 
 const route = useRoute()
 const router = useRouter()
 const transactionStore = useTransactionStore()
-
-const filterInputClass =
-  'block w-full rounded-lg border border-slate-300 bg-white shadow-sm py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 transition-colors'
-
-// Export dropdown
-const isExportDropdownOpen = ref(false)
-const exportDropdownRef = ref<HTMLElement | null>(null)
-const handleClickOutsideExport = (event: MouseEvent) => {
-  if (exportDropdownRef.value && !exportDropdownRef.value.contains(event.target as Node)) {
-    isExportDropdownOpen.value = false
-  }
-}
 const accountStore = useAccountStore()
 const categoryStore = useCategoryStore()
 const authStore = useAuthStore()
-
-// Helper function untuk mendapatkan current date dalam format YYYY-MM-DD
-const getCurrentDate = () => {
-  return new Date().toISOString().split('T')[0]
-}
-
-// Filter state hidup di URL query params — supaya filter tidak hilang saat
-// pindah halaman (mis. ke tambah transaksi lalu kembali) atau saat reload.
-const parseFiltersFromQuery = (query: LocationQuery): QueryTransactionDto => {
-  const single = (value: LocationQuery[string]): string | undefined =>
-    Array.isArray(value) ? (value[0] ?? undefined) : (value ?? undefined)
-
-  return {
-    page: query.page ? Number(single(query.page)) : 1,
-    limit: query.limit ? Number(single(query.limit)) : transactionStore.activeFilters.limit || 10,
-    accountId: single(query.accountId),
-    categoryId: single(query.categoryId),
-    type: single(query.type) as FrontendTransactionType | undefined,
-    startDate: single(query.startDate) || getCurrentDate(),
-    endDate: single(query.endDate) || getCurrentDate(),
-    search: single(query.search),
-    sortBy: single(query.sortBy) || 'transactionDate',
-    sortOrder: (single(query.sortOrder) as 'asc' | 'desc') || 'desc',
-  }
-}
-
-const buildQuery = (filters: QueryTransactionDto): Record<string, string> => {
-  const query: Record<string, string> = {}
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
-      query[key] = String(value)
-    }
-  })
-  return query
-}
-
-// Set default filter dengan current date
-const localFilters = reactive<QueryTransactionDto>(parseFiltersFromQuery(route.query))
-
-// Computed properties untuk mengambil data dari store
+const toastStore = useToastStore()
+const localFilters = reactive(parseHistoryFilters(route.query))
+const appliedFilters = computed(() => parseHistoryFilters(route.query))
 const transactions = computed(() => transactionStore.transactionList)
 const isLoading = computed(() => transactionStore.isLoadingTransactions)
-const error = computed(() => transactionStore.transactionError)
-
-const accountsForFilter = computed(() => accountStore.allAccounts)
+const loadError = computed(() => transactionStore.transactionError)
+const invalidQueryRange = computed(() => String(appliedFilters.value.startDate) > String(appliedFilters.value.endDate))
+const dateRangeError = computed(() => localFilters.startDate && localFilters.endDate && localFilters.startDate > localFilters.endDate
+  ? 'Tanggal awal harus sama atau lebih awal dari tanggal akhir.' : '')
+const summary = computed(() => historySummary(invalidQueryRange.value || loadError.value ? [] : transactions.value))
+const isCalendarModalOpen = ref(false)
+const isExportDropdownOpen = ref(false)
+const isExporting = ref(false)
+const exportDropdownRef = ref<HTMLElement | null>(null)
+const exportTrigger = ref<HTMLButtonElement | null>(null)
+const filterLoadError = ref('')
+const canExport = computed(() => !isLoading.value && !loadError.value && !invalidQueryRange.value && transactions.value.length > 0 && !isExporting.value)
+const sortSelection = ref(`${localFilters.sortBy}:${localFilters.sortOrder}`)
+const firstResult = computed(() => (transactionStore.meta.page - 1) * transactionStore.meta.limit + 1)
+const lastResult = computed(() => Math.min(transactionStore.meta.page * transactionStore.meta.limit, transactionStore.meta.total))
+const hasPreviousPage = computed(() => !isLoading.value && transactionStore.meta.page > 1)
+const hasNextPage = computed(() => !isLoading.value && transactionStore.meta.page < transactionStore.meta.lastPage)
+const typeOptions = [
+  { value: '', label: 'Semua transaksi', icon: 'grid' },
+  { value: FrontendTransactionType.INCOME, label: 'Pemasukan', icon: 'plus' },
+  { value: FrontendTransactionType.EXPENSE, label: 'Pengeluaran', icon: 'arrow' },
+  { value: FrontendTransactionType.TRANSFER, label: 'Transfer', icon: 'transfer' },
+]
 const categoriesForFilter = computed(() => {
-  // Buat daftar kategori flat untuk filter
-  const flatList: {
-    id: string
-    categoryName: string
-    categoryType: string
-    parentPrefix?: string
-  }[] = []
-  function flatten(items: any[], prefix = '') {
-    // Ganti any dengan tipe Category
-    items.forEach((item) => {
-      flatList.push({
-        id: item.id,
-        categoryName: item.categoryName,
-        categoryType: item.categoryType,
-        parentPrefix: prefix,
-      })
-      if (item.subCategories && item.subCategories.length > 0) {
-        flatten(item.subCategories, prefix + '- ')
-      }
-    })
+  const result: { id: string; label: string; categoryType: string }[] = []
+  const flatten = (categories: Category[], prefix = '') => {
+    for (const category of categories) {
+      result.push({ id: category.id, label: prefix + category.categoryName, categoryType: category.categoryType })
+      if (category.subCategories?.length) flatten(category.subCategories, prefix + '— ')
+    }
   }
   flatten(categoryStore.allCategories)
-  return flatList
+  return result
 })
+const periodLabel = computed(() => {
+  const label = (value: string) => new Date(`${value}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+  const { startDate, endDate } = appliedFilters.value
+  return startDate === endDate ? label(String(startDate)) : `${label(String(startDate))} – ${label(String(endDate))}`
+})
+const currency = (value: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value)
 
-const summary = reactive({ income: 0, expense: 0, net: 0 })
-
-const calculateSummary = (txns: Transaction[]) => {
-  let incomeTotal = 0
-  let expenseTotal = 0
-  txns.forEach((tx) => {
-    const amount = typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount
-    if (tx.transactionType === 'INCOME') incomeTotal += amount
-    else if (tx.transactionType === 'EXPENSE') expenseTotal += amount
-  })
-  summary.income = incomeTotal
-  summary.expense = expenseTotal
-  summary.net = incomeTotal - expenseTotal
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+const cancelSearch = () => { if (searchTimer) { clearTimeout(searchTimer); searchTimer = undefined } }
+const retryTransactions = () => {
+  if (!invalidQueryRange.value) return transactionStore.fetchTransactions(appliedFilters.value)
 }
-
-// Watch perubahan pada daftar transaksi untuk update summary
-watch(
-  transactions,
-  (newTransactions) => {
-    calculateSummary(newTransactions)
-  },
-  { deep: true },
-)
-
-// Satu-satunya sumber kebenaran untuk fetch transaksi: perubahan URL query.
-// Ini menangani perubahan filter dari UI (lihat applyCurrentFilters/resetFilters/
-// prevPage/nextPage di bawah), tombol back/forward browser, reload halaman
-// (query tetap ada di URL), dan kembali dari halaman tambah transaksi.
-watch(
-  () => route.query,
-  (query) => {
-    const filters = parseFiltersFromQuery(query)
-    Object.assign(localFilters, filters)
-    transactionStore.fetchTransactions(filters)
-  },
-  { immediate: true },
-)
-
-onMounted(async () => {
-  document.addEventListener('click', handleClickOutsideExport)
-  if (accountStore.accounts.length === 0) await accountStore.fetchAccounts()
-  if (categoryStore.categories.length === 0)
-    await categoryStore.fetchCategories({ hierarchical: 'true' }) // Untuk dropdown filter yang hierarkis
-})
+watch(() => route.query, (query) => {
+  cancelSearch()
+  const filters = parseHistoryFilters(query)
+  Object.assign(localFilters, filters)
+  sortSelection.value = `${filters.sortBy}:${filters.sortOrder}`
+  isExportDropdownOpen.value = false
+  if (!invalidQueryRange.value) transactionStore.fetchTransactions(filters)
+}, { immediate: true })
 
 const applyCurrentFilters = () => {
-  // Bersihkan field filter yang kosong agar tidak dikirim sebagai string kosong
-  const cleanFilters: QueryTransactionDto = { page: 1 } // Selalu reset ke page 1 saat filter baru
-  if (localFilters.accountId) cleanFilters.accountId = localFilters.accountId
-  if (localFilters.categoryId) cleanFilters.categoryId = localFilters.categoryId
-  if (localFilters.type) cleanFilters.type = localFilters.type as FrontendTransactionType
-  if (localFilters.startDate) cleanFilters.startDate = localFilters.startDate
-  if (localFilters.endDate) cleanFilters.endDate = localFilters.endDate
-  if (localFilters.limit) cleanFilters.limit = localFilters.limit
-  if (localFilters.sortBy) cleanFilters.sortBy = localFilters.sortBy
-  if (localFilters.sortOrder) cleanFilters.sortOrder = localFilters.sortOrder
-  if (localFilters.search) cleanFilters.search = localFilters.search.trim() || undefined
-
-  // Filter berubah lewat URL query — watcher di atas yang akan fetch datanya.
-  router.push({ query: buildQuery(cleanFilters) })
+  cancelSearch()
+  if (dateRangeError.value) return
+  const filters = parseHistoryFilters(historyQuery({ ...localFilters, page: 1 }))
+  Object.assign(localFilters, filters)
+  router.push({ query: historyQuery(filters) })
 }
-
-// Search diketik karakter demi karakter, jadi di-debounce supaya tidak
-// fetch+push query di setiap ketikan.
-let searchDebounceTimer: ReturnType<typeof setTimeout> | undefined
-const handleSearchInput = () => {
-  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
-  searchDebounceTimer = setTimeout(() => {
-    applyCurrentFilters()
-  }, 400)
+const handleSearchInput = () => { cancelSearch(); searchTimer = setTimeout(applyCurrentFilters, 400) }
+const selectType = (value: string) => { localFilters.type = (value || undefined) as FrontendTransactionType | undefined; applyCurrentFilters() }
+const applyDateRange = (range: DateRange) => {
+  Object.assign(localFilters, range)
+  applyCurrentFilters()
 }
-
 const resetFilters = () => {
-  const currentDate = getCurrentDate()
-  router.push({
-    query: buildQuery({
-      page: 1,
-      limit: localFilters.limit,
-      sortBy: 'transactionDate',
-      sortOrder: 'desc',
-      startDate: currentDate,
-      endDate: currentDate,
-    }),
-  })
+  cancelSearch()
+  const filters = parseHistoryFilters({ limit: String(localFilters.limit || 10) })
+  Object.assign(localFilters, filters)
+  sortSelection.value = `${filters.sortBy}:${filters.sortOrder}`
+  router.push({ query: historyQuery(filters) })
 }
-
-const prevPage = () => {
-  if (transactionStore.meta.hasPreviousPage && transactionStore.meta.page > 1) {
-    router.push({ query: { ...route.query, page: String(transactionStore.meta.page - 1) } })
-  }
+const changeSort = () => {
+  const [sortBy, sortOrder] = sortSelection.value.split(':')
+  localFilters.sortBy = sortBy
+  localFilters.sortOrder = sortOrder as 'asc' | 'desc'
+  applyCurrentFilters()
 }
-const nextPage = () => {
-  if (transactionStore.meta.hasNextPage) {
-    router.push({ query: { ...route.query, page: String(transactionStore.meta.page + 1) } })
-  }
+const changePage = (direction: -1 | 1) => {
+  if (direction === -1 ? !hasPreviousPage.value : !hasNextPage.value) return
+  cancelSearch()
+  router.push({ query: historyQuery({ ...appliedFilters.value, page: transactionStore.meta.page + direction }) })
 }
-
-const formatCurrency = (value: number | string, currency: string = 'IDR') => {
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value
-  if (isNaN(numericValue)) return 'N/A'
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 0,
-  }).format(numericValue)
-}
-
-// Logika Modal Tambah Transaksi (Placeholder)
-const openAddTransactionModal = () => {
-  // Bawa filter saat ini supaya saat kembali dari halaman tambah transaksi,
-  // AddTransactionView tahu ke mana harus kembali (lihat query di sana).
-  router.push({ name: 'transaction-create', query: route.query })
-}
-
-const isCalendarModalOpen = ref(false)
-const openCalendarModal = () => {
-  isCalendarModalOpen.value = true
-}
-const closeCalendarModal = () => {
-  isCalendarModalOpen.value = false
-}
-
-// Logika Modal Hapus Transaksi
-const isDeleteModalOpen = ref(false)
-const transactionToDelete = ref<Transaction | null>(null)
-const isDeletingTransaction = ref(false)
-
-const promptDeleteTransaction = (transaction: Transaction) => {
-  transactionToDelete.value = transaction
-  isDeleteModalOpen.value = true
-}
-// handleTransactionSaved removed as it is no longer needed
-const handleConfirmDelete = async () => {
-  if (!transactionToDelete.value) return
-  isDeletingTransaction.value = true
-  try {
-    await transactionStore.deleteTransaction(transactionToDelete.value.id)
-    // Notifikasi sukses
-    alert(`Transaksi '${transactionToDelete.value.description || 'ini'}' berhasil dihapus.`)
-  } catch (error: any) {
-    // Notifikasi error
-    alert(`Gagal menghapus transaksi: ${transactionStore.transactionError || error.message}`)
-  } finally {
-    isDeletingTransaction.value = false
-    closeDeleteModal()
-  }
-}
-
-const closeDeleteModal = () => {
-  isDeleteModalOpen.value = false
-  transactionToDelete.value = null
-}
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutsideExport)
-})
-
-const editTransaction = (transaction: Transaction) => {
-  alert(`Edit transaksi: ${transaction.description} (implementasi nanti)`)
-  // Nanti: buka modal edit atau navigasi ke halaman edit
-}
-
+const addTransaction = () => { cancelSearch(); router.push({ name: 'transaction-create', query: route.query }) }
+const closeExport = (restoreFocus = false) => { isExportDropdownOpen.value = false; if (restoreFocus) exportTrigger.value?.focus() }
+const handleOutsideClick = (event: MouseEvent) => { if (!exportDropdownRef.value?.contains(event.target as Node)) closeExport() }
 const exportTransactions = async (format: 'excel' | 'pdf') => {
-  if (transactionStore.transactionList.length === 0) return
-
-  // Untuk ekspor, sebaiknya ambil semua data yang sesuai filter (tanpa paginasi)
-  // Tapi untuk sekarang kita gunakan data yang ada di list saat ini
-  // Nanti bisa dikembangkan untuk fetch all
-
-  const title = `Laporan Transaksi ${localFilters.startDate} s/d ${localFilters.endDate}`
-
-  if (format === 'excel') {
-    await ExportService.exportTransactionsToExcel(transactionStore.transactionList, title)
-  } else {
-    ExportService.exportTransactionsToPDF(transactionStore.transactionList, title)
-  }
+  if (!canExport.value) return
+  closeExport()
+  isExporting.value = true
+  // Snapshot the visible page before the asynchronous export module loads.
+  const rows = [...transactions.value]
+  const title = `Transaksi ${periodLabel.value} — halaman ${transactionStore.meta.page}`
+  try {
+    const { default: ExportService } = await import('@/services/exportService')
+    if (format === 'excel') await ExportService.exportTransactionsToExcel(rows, title)
+    else ExportService.exportTransactionsToPDF(rows, title)
+  } catch {
+    toastStore.show('Ekspor belum berhasil. Silakan coba lagi.', 'error')
+  } finally { isExporting.value = false }
 }
+const loadFilterOptions = async () => {
+  filterLoadError.value = ''
+  const results = await Promise.allSettled([
+    accountStore.accounts.length ? Promise.resolve() : accountStore.fetchAccounts(),
+    categoryStore.categories.length ? Promise.resolve() : categoryStore.fetchCategories({ hierarchical: 'true' }),
+  ])
+  if (results.some((result) => result.status === 'rejected') || accountStore.error || categoryStore.error)
+    filterLoadError.value = 'Sebagian pilihan filter belum berhasil dimuat.'
+}
+onMounted(() => { document.addEventListener('click', handleOutsideClick); loadFilterOptions() })
+onUnmounted(() => { cancelSearch(); document.removeEventListener('click', handleOutsideClick) })
 </script>
-
-<style scoped></style>
