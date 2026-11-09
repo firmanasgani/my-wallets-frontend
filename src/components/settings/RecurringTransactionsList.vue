@@ -1,201 +1,54 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex items-center">
-      <button
-        @click="$emit('back')"
-        class="mr-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
-      </button>
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white">Daftar Transaksi Berulang</h2>
-    </div>
-
-    <div class="bg-white dark:bg-slate-800 dark:border-slate-700 shadow-sm rounded-xl border border-slate-200 overflow-hidden">
-      <div class="p-6">
-        <div v-if="isLoadingRecurring" class="flex justify-center py-4">
-          <p class="text-slate-500 dark:text-slate-400">Memuat data...</p>
-        </div>
-        <div v-else-if="recurringTransactions.length === 0" class="text-center py-4">
-          <div
-            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-700 mb-3"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-slate-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <h3 class="text-sm font-medium text-slate-900 dark:text-white">Belum ada transaksi berulang</h3>
-          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Anda belum mengatur jadwal transaksi otomatis.</p>
-        </div>
-        <div v-else class="space-y-4">
-          <div
-            v-for="rt in recurringTransactions"
-            :key="rt.id"
-            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-100 dark:border-slate-700 hover:border-emerald-200 dark:hover:border-emerald-500 transition-colors"
-          >
-            <div>
-              <div class="flex items-center gap-2">
-                <span
-                  class="px-2 py-0.5 rounded-full text-xs font-medium uppercase"
-                  :class="{
-                    'bg-green-100 text-green-800': rt.transactionType === 'INCOME',
-                    'bg-red-100 text-red-800': rt.transactionType === 'EXPENSE',
-                    'bg-blue-100 text-blue-800': rt.transactionType === 'TRANSFER',
-                  }"
-                >
-                  {{ rt.transactionType }}
-                </span>
-                <span class="text-sm font-medium text-slate-900 dark:text-slate-100">
-                  {{ formatCurrency(rt.amount) }}
-                </span>
-                <span class="text-xs text-slate-500 dark:text-slate-400"> / {{ getIntervalLabel(rt.interval) }} </span>
-              </div>
-              <p class="text-sm text-slate-600 dark:text-slate-300 mt-1 font-medium">
-                {{ rt.description || 'Tanpa deskripsi' }}
-              </p>
-              <div class="flex items-center gap-4 mt-2 text-xs text-slate-500 dark:text-slate-400">
-                <div class="flex items-center gap-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-3.5 w-3.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  Mulai: {{ formatDate(rt.startDate) }}
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-3.5 w-3.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Berikutnya: {{ formatDate(rt.nextRunDate) }}
-                </div>
-              </div>
-            </div>
-            <button
-              @click="confirmDeleteRecurring(rt.id)"
-              class="ml-4 p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
-              title="Hapus Transaksi Berulang"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="settings-subpage">
+    <header class="settings-subpage-heading"><div><button type="button" class="settings-back" @click="$emit('back')"><AppIcon name="arrow" />Pengaturan umum</button><span class="shell-overline">CATATAN YANG BERJALAN OTOMATIS</span><h2>Transaksi berulang.</h2><p>Kelola jadwal pemasukan, pengeluaran, dan transfer otomatis.</p></div><RouterLink :to="{ name: 'transaction-create' }" class="settings-button is-primary"><AppIcon name="plus" />Buat jadwal</RouterLink></header>
+    <div class="settings-filter-row"><div class="settings-search"><label for="recurring-search">Cari jadwal</label><div><AppIcon name="search" /><input id="recurring-search" v-model="search" type="search" placeholder="Catatan, kategori, atau akun..." /></div></div><AppSelect id="recurring-type" v-model="type" :options="typeOptions" label="Jenis transaksi" /><button type="button" class="settings-button" :disabled="loading || deleting" @click="loadRows"><AppIcon name="refresh" />Muat ulang</button></div>
+    <div v-if="loading" class="settings-state" role="status"><span class="settings-spinner" aria-hidden="true"></span><h3>Memuat jadwal transaksi...</h3></div>
+    <div v-else-if="loadError" class="settings-state" role="alert"><AppIcon name="help" /><h3>Jadwal belum berhasil dimuat.</h3><p>{{ loadError }}</p><button type="button" class="settings-button" @click="loadRows">Coba lagi</button></div>
+    <template v-else>
+      <section class="settings-summary" aria-label="Ringkasan jadwal"><article class="is-lilac"><span>Total jadwal</span><strong>{{ rows.length }}</strong><p>Seluruh transaksi berulang</p></article><article class="is-mint"><span>Jadwal aktif</span><strong>{{ activeCount }}</strong><p>Belum ditandai tidak aktif</p></article></section>
+      <div class="settings-result-heading"><h3>Daftar jadwal</h3><span class="settings-chip" role="status">{{ visibleRows.length }} dari {{ rows.length }} jadwal</span></div>
+      <div v-if="!visibleRows.length" class="settings-state"><AppIcon :name="rows.length ? 'search' : 'calendar'" /><h3>{{ rows.length ? 'Belum ada yang cocok.' : 'Mulai dari transaksi rutinmu.' }}</h3><p>{{ rows.length ? 'Coba kata kunci atau jenis transaksi lainnya.' : 'Buka formulir transaksi baru dan aktifkan Jadikan transaksi berulang.' }}</p><button v-if="rows.length" type="button" class="settings-button" @click="search = ''; type = ''">Reset pencarian</button><RouterLink v-else :to="{ name: 'transaction-create' }" class="settings-button is-primary">Buat jadwal</RouterLink></div>
+      <ul v-else class="settings-recurring-list"><li v-for="row in visibleRows" :key="row.id"><header><span class="settings-row-symbol" :class="`is-${row.transactionType.toLowerCase()}`"><AppIcon :name="row.transactionType === 'TRANSFER' ? 'transfer' : row.transactionType === 'INCOME' ? 'plus' : 'wallet'" /></span><div><div class="settings-recurring-labels"><span class="settings-type-chip" :class="`is-${row.transactionType.toLowerCase()}`">{{ recurringTypeLabel(row.transactionType) }}</span><span class="settings-chip" :class="row.status === 'INACTIVE' ? 'is-muted' : 'is-good'">{{ row.status === 'INACTIVE' ? 'Tidak aktif' : 'Aktif' }}</span></div><h3>{{ row.description || row.category?.categoryName || 'Transaksi berulang' }}</h3></div><button type="button" class="settings-icon-button is-danger" :aria-label="`Hapus jadwal ${row.description || recurringTypeLabel(row.transactionType)}`" title="Hapus jadwal" :disabled="deleting" @click="selected = row"><AppIcon name="trash" /></button></header><div class="settings-recurring-amount"><strong>{{ accountMoney(row.amount, 'IDR') }}</strong><span>{{ recurringIntervalLabel(row.interval) }}</span></div><dl class="settings-schedule-details"><div v-if="row.sourceAccount"><dt>Dari akun</dt><dd>{{ row.sourceAccount.accountName }}</dd></div><div v-if="row.destinationAccount"><dt>Ke akun</dt><dd>{{ row.destinationAccount.accountName }}</dd></div><div><dt>Mulai pada</dt><dd>{{ transactionDateLabel(row.startDate) }}</dd></div><div><dt>Jadwal berikutnya</dt><dd>{{ row.status === 'INACTIVE' ? 'Tidak dijadwalkan' : transactionDateLabel(row.nextRunDate) }}</dd></div><div><dt>Berakhir pada</dt><dd>{{ row.endDate ? transactionDateLabel(row.endDate) : 'Tanpa tanggal akhir' }}</dd></div><div v-if="row.category"><dt>Kategori</dt><dd>{{ row.category.categoryName }}</dd></div></dl></li></ul>
+      <p class="settings-footer-note"><AppIcon name="info" />Menghapus jadwal menghentikan transaksi otomatis berikutnya. Transaksi yang sudah tercatat tetap tersimpan.</p>
+    </template>
+    <ConfirmationModal :is-open="!!selected" title="Hapus jadwal transaksi?" :message="`Hentikan jadwal ${selected?.description || 'transaksi berulang'} ${selected ? accountMoney(selected.amount, 'IDR') : ''}? Jadwal tidak dapat dikembalikan setelah dihapus. Transaksi yang sudah tercatat tetap tersimpan.`" confirmButtonText="Hapus jadwal" iconType="danger" :is-confirming="deleting" @update:is-open="!$event && (selected = null)" @confirm="deleteSchedule" />
   </div>
 </template>
-
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import { useTransactionStore } from '@/stores/transactions'
-import { RecurringInterval } from '@/types/transaction'
-
-defineEmits(['back'])
-
-const transactionStore = useTransactionStore()
-
-const recurringTransactions = computed(() => transactionStore.recurringTransactions)
-const isLoadingRecurring = ref(false)
-
-const fetchRecurring = async () => {
-  isLoadingRecurring.value = true
-  await transactionStore.fetchRecurringTransactions()
-  isLoadingRecurring.value = false
+import { useToastStore } from '@/stores/toast'
+import { accountMoney } from '@/utils/accountList'
+import { transactionDateLabel } from '@/utils/transactionForm'
+import { filterRecurring, recurringIntervalLabel, recurringTypeLabel } from '@/utils/settings'
+import type { RecurringTransaction } from '@/types/transaction'
+defineEmits<{ back: [] }>()
+const store = useTransactionStore(), toast = useToastStore()
+const rows = ref<RecurringTransaction[]>([]), loading = ref(true), loadError = ref(''), search = ref(''), type = ref('')
+const selected = ref<RecurringTransaction | null>(null), deleting = ref(false)
+const typeOptions = [{ value: '', label: 'Semua jenis' }, ...['INCOME', 'EXPENSE', 'TRANSFER'].map((value) => ({ value, label: recurringTypeLabel(value) }))]
+const visibleRows = computed(() => filterRecurring(rows.value, search.value, type.value))
+const activeCount = computed(() => rows.value.filter((row) => row.status !== 'INACTIVE').length)
+let active = true, request = 0
+const loadRows = async () => {
+  const version = ++request
+  loading.value = true; loadError.value = ''
+  try { const data = await store.fetchRecurringTransactions(); if (!active || version !== request) return; if (data) rows.value = data; else loadError.value = store.transactionError || 'Silakan coba lagi.' }
+  catch { if (active && version === request) loadError.value = 'Silakan coba lagi.' }
+  finally { if (active && version === request) loading.value = false }
 }
-
-onMounted(() => {
-  fetchRecurring()
-})
-
-const confirmDeleteRecurring = async (id: string) => {
-  if (confirm('Apakah Anda yakin ingin menghapus transaksi berulang ini?')) {
-    try {
-      await transactionStore.deleteRecurringTransaction(id)
-    } catch (error) {
-      alert('Gagal menghapus transaksi berulang.')
-    }
-  }
+const deleteSchedule = async () => {
+  if (!selected.value || deleting.value) return
+  deleting.value = true
+  const id = selected.value.id
+  try { await store.deleteRecurringTransaction(id); if (active) { rows.value = rows.value.filter((row) => row.id !== id); selected.value = null; toast.show('Jadwal transaksi berhasil dihapus.') } }
+  catch (failure: unknown) { toast.show(failure instanceof Error ? failure.message : 'Jadwal belum berhasil dihapus.', 'error') }
+  finally { deleting.value = false }
 }
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(value)
-}
-
-const formatDate = (dateString: string) => {
-  if (!dateString) return '-'
-  return new Date(dateString).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
-const getIntervalLabel = (interval: RecurringInterval) => {
-  const map: Record<string, string> = {
-    DAILY: 'Harian',
-    WEEKLY: 'Mingguan',
-    MONTHLY: 'Bulanan',
-    YEARLY: 'Tahunan',
-  }
-  return map[interval] || interval
-}
+onMounted(loadRows)
+onBeforeUnmount(() => { active = false; request++ })
 </script>

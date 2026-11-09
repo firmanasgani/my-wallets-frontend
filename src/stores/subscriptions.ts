@@ -1,29 +1,7 @@
 import { defineStore } from 'pinia'
 import apiClient from '@/services/apiService'
-
-export interface SubscriptionPlan {
-  id: string
-  name: string
-  code: string
-  description: string | null
-  price: number
-  discountPrice: number | null
-  durationMonths: number | null
-}
-
-export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED'
-
-export interface PaymentHistory {
-  id: string
-  orderId: string
-  plan: SubscriptionPlan | null
-  midtransResponse: any
-  planCode: string
-  amount: number
-  status: PaymentStatus
-  createdAt: string
-  paidAt: string | null
-}
+import type { SubscriptionPlan, PaymentHistory } from '@/types/subscriptions'
+export type { SubscriptionPlan, PaymentHistory, PaymentStatus } from '@/types/subscriptions'
 
 
 export const useSubscriptionStore = defineStore('subscriptions', {
@@ -64,8 +42,10 @@ export const useSubscriptionStore = defineStore('subscriptions', {
       try {
         const response = await apiClient.get<PaymentHistory[]>('/subscriptions/payment-history')
         this.paymentHistory = response.data
+        return response.data
       } catch (err: any) {
         this.historyError = err.response?.data?.message || 'Gagal memuat histori pembayaran.'
+        return null
       } finally {
         this.isLoadingHistory = false
       }

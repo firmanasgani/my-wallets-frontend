@@ -1,267 +1,71 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header with Back Button -->
-    <div class="flex items-center">
-      <button
-        @click="$emit('back')"
-        class="mr-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
-      </button>
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white">Histori Pembayaran</h2>
-      <button
-        @click="store.fetchPaymentHistory()"
-        :disabled="store.isLoadingHistory"
-        class="ml-auto text-sm text-emerald-600 dark:text-emerald-400 hover:underline disabled:opacity-50"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4 inline-block mr-1"
-          :class="{ 'animate-spin': store.isLoadingHistory }"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-          />
-        </svg>
-        Refresh
-      </button>
-    </div>
-
-    <div
-      class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
-    >
-      <div class="p-6">
-        <!-- Loading -->
-        <div v-if="store.isLoadingHistory" class="flex justify-center py-4">
-          <p class="text-slate-500 dark:text-slate-400">Memuat data...</p>
-        </div>
-
-        <!-- Empty -->
-        <div
-          v-else-if="store.paymentHistory.length === 0 && !store.historyError"
-          class="text-center py-4"
-        >
-          <div
-            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-700 mb-3"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-slate-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 14l2 2 4-4M7 5H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-2M7 5a2 2 0 012-2h6a2 2 0 012 2M7 5h10"
-              />
-            </svg>
-          </div>
-          <h3 class="text-sm font-medium text-slate-900 dark:text-white">
-            Belum ada histori pembayaran
-          </h3>
-          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Anda belum pernah melakukan pembelian paket.
-          </p>
-        </div>
-
-        <!-- Error -->
-        <div v-else-if="store.historyError" class="text-center py-4">
-          <p class="text-sm text-red-500">{{ store.historyError }}</p>
-          <button
-            @click="store.fetchPaymentHistory()"
-            class="mt-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:underline"
-          >
-            Coba Lagi
-          </button>
-        </div>
-
-        <!-- Table -->
-        <div v-else class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-slate-200 dark:border-slate-700">
-                <th class="pb-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Order ID</th>
-                <th class="pb-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Paket</th>
-                <th class="pb-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Jumlah</th>
-                <th class="pb-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
-                <th class="pb-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Dibuat</th>
-                <th class="pb-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Dibayar</th>
-                <th class="pb-3"></th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
-              <tr
-                v-for="item in store.paymentHistory"
-                :key="item.id"
-                class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors"
-              >
-                <td class="py-3 pr-4 font-mono text-xs text-slate-400 dark:text-slate-500 whitespace-nowrap">
-                  {{ item.orderId }}
-                </td>
-                <td class="py-3 pr-4 font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
-                  {{ item.plan?.name || '—' }}
-                </td>
-                <td class="py-3 pr-4 font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
-                  {{ formatCurrency(item.amount) }}
-                </td>
-                <td class="py-3 pr-4 whitespace-nowrap">
-                  <span
-                    class="px-2 py-0.5 rounded-full text-xs font-medium uppercase"
-                    :class="statusClass(item.status)"
-                  >
-                    {{ statusLabel(item.status) }}
-                  </span>
-                </td>
-                <td class="py-3 pr-4 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                  {{ formatDate(item.createdAt) }}
-                </td>
-                <td class="py-3 pr-4 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                  {{ item.midtransResponse?.transaction_time ? formatDate(item.midtransResponse.transaction_time) :  '—' }}
-                </td>
-                <td class="py-3 whitespace-nowrap">
-                  <!-- Lanjutkan Bayar (hanya PENDING) -->
-                  <button
-                    v-if="item.status === 'PENDING'"
-                    @click="handleResume(item.orderId)"
-                    :disabled="resumingOrderId === item.orderId"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 disabled:opacity-60 disabled:cursor-not-allowed transition-colors dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-700"
-                  >
-                    <svg
-                      v-if="resumingOrderId !== item.orderId"
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-3.5 w-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M14 5l7 7m0 0l-7 7m7-7H3"
-                      />
-                    </svg>
-                    <svg
-                      v-else
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-3.5 w-3.5 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
-                    {{ resumingOrderId === item.orderId ? 'Memproses...' : 'Lanjutkan Bayar' }}
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+  <div class="settings-subpage">
+    <header class="settings-subpage-heading"><div><button type="button" class="settings-back" @click="$emit('back')"><AppIcon name="arrow" />Pengaturan umum</button><span class="shell-overline">JEJAK LANGGANANMU</span><h2>Riwayat pembayaran.</h2><p>Pantau status pembelian paket dan lanjutkan pembayaran yang tertunda.</p></div><button type="button" class="settings-button" :disabled="loading || !!resumingOrderId" @click="loadRows"><AppIcon name="refresh" />Muat ulang</button></header>
+    <section class="settings-payment-filters" aria-label="Filter riwayat pembayaran"><div class="settings-search"><label for="payment-search">Cari pembayaran</label><div><AppIcon name="search" /><input id="payment-search" v-model="search" type="search" placeholder="Nomor pesanan atau paket..." /></div></div><AppSelect id="payment-status" v-model="status" :options="statusOptions" label="Status pembayaran" /><DateRangePicker :start-date="range?.startDate" :end-date="range?.endDate" label="Tanggal dibuat" @apply="range = $event" /><button v-if="range" type="button" class="settings-text-button" @click="range = null">Semua tanggal</button></section>
+    <div v-if="actionError" class="settings-action-error" role="alert"><AppIcon name="warning" />{{ actionError }}</div>
+    <p v-if="resumingOrderId" class="settings-hint" role="status">Pembayaran sedang dibuka. Selesaikan atau tutup jendela pembayaran sebelum melanjutkan pesanan lain.</p>
+    <div v-if="loading" class="settings-state" role="status"><span class="settings-spinner" aria-hidden="true"></span><h3>Memuat riwayat pembayaran...</h3></div>
+    <div v-else-if="loadError" class="settings-state" role="alert"><AppIcon name="help" /><h3>Riwayat belum berhasil dimuat.</h3><p>{{ loadError }}</p><button type="button" class="settings-button" @click="loadRows">Coba lagi</button></div>
+    <template v-else>
+      <section class="settings-summary" aria-label="Ringkasan seluruh pembayaran"><article class="is-mint"><span>Total pembayaran berhasil</span><strong>{{ accountMoney(totalPaid, 'IDR') }}</strong><p>Dari {{ successfulCount }} pesanan berhasil</p></article><article class="is-sun"><span>Menunggu pembayaran</span><strong>{{ pendingCount }} pesanan</strong><p>Status seluruh riwayat, sebelum filter</p></article></section>
+      <div class="settings-result-heading"><h3>Daftar pembayaran</h3><span class="settings-chip" role="status">{{ visibleRows.length }} dari {{ rows.length }} pesanan</span></div>
+      <div v-if="!visibleRows.length" class="settings-state"><AppIcon :name="rows.length ? 'search' : 'credit'" /><h3>{{ rows.length ? 'Belum ada yang cocok.' : 'Belum ada riwayat pembayaran.' }}</h3><p>{{ rows.length ? 'Coba kata kunci, status, atau tanggal lainnya.' : 'Pembelian paket langganan akan tercatat di halaman ini.' }}</p><button v-if="rows.length" type="button" class="settings-button" @click="search = ''; status = ''; range = null">Reset pencarian</button><RouterLink v-else :to="{ name: 'subscription-checkout', query: { action: 'upgrade' } }" class="settings-button">Lihat pilihan paket</RouterLink></div>
+      <div v-else class="settings-payment-table-wrap" role="region" aria-label="Daftar pembayaran langganan" tabindex="0"><table class="settings-payment-table"><thead><tr><th scope="col">Paket & pesanan</th><th scope="col">Nominal</th><th scope="col">Status</th><th scope="col">Tanggal</th><th scope="col"><span class="shell-sr-only">Tindakan</span></th></tr></thead><tbody><tr v-for="item in visibleRows" :key="item.id"><th scope="row"><strong>{{ item.plan?.name || settingsPlanName(item.planCode) }}</strong><span class="settings-order-id">{{ item.orderId }}</span><small v-if="item.method">{{ item.method === 'MANUAL_TRANSFER' ? 'Transfer manual' : 'Pembayaran online' }}</small></th><td class="settings-payment-amount">{{ accountMoney(item.amount, 'IDR') }}</td><td><span class="settings-chip" :class="`is-${paymentStatusInfo(item.status).tone}`">{{ paymentStatusInfo(item.status).label }}</span></td><td><span class="settings-small-label">Dibuat</span><time :datetime="item.createdAt">{{ transactionDateLabel(item.createdAt, true) }}</time><template v-if="item.updatedAt"><span class="settings-small-label">Diperbarui</span><time :datetime="item.updatedAt">{{ transactionDateLabel(item.updatedAt, true) }}</time></template></td><td><button v-if="canResumePayment(item)" type="button" class="settings-button" :disabled="!!resumingOrderId" @click="resumePayment(item)"><span v-if="resumingOrderId === item.orderId" class="settings-spinner" aria-hidden="true"></span><AppIcon v-else name="arrow" />{{ resumingOrderId === item.orderId ? 'Memproses...' : 'Lanjutkan bayar' }}</button><span v-else-if="item.status === 'PENDING_REVIEW'" class="settings-hint">Menunggu verifikasi pembayaran</span><span v-else-if="item.status === 'PENDING' && item.method === 'MANUAL_TRANSFER'" class="settings-hint">Selesaikan sesuai instruksi transfer</span></td></tr></tbody></table></div>
+      <p class="settings-footer-note"><AppIcon name="info" />Status pembayaran mengikuti konfirmasi yang diterima sistem. Muat ulang jika status belum berubah setelah pembayaran.</p>
+    </template>
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useSubscriptionStore } from '../../stores/subscriptions'
-import type { PaymentStatus } from '../../stores/subscriptions'
-
-defineEmits(['back'])
-
-const store = useSubscriptionStore()
-const resumingOrderId = ref<string | null>(null)
-
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(amount)
-
-const formatDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-
-const statusLabel = (status: PaymentStatus): string => {
-  const map: Record<PaymentStatus, string> = {
-    PENDING: 'Menunggu',
-    SUCCESS: 'Berhasil',
-    FAILED: 'Gagal',
-    EXPIRED: 'Kadaluarsa',
-  }
-  return map[status] ?? status
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import DateRangePicker from '@/components/common/DateRangePicker.vue'
+import { useSubscriptionStore } from '@/stores/subscriptions'
+import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
+import { accountMoney } from '@/utils/accountList'
+import { transactionDateLabel } from '@/utils/transactionForm'
+import { canResumePayment, filterPayments, paymentStatusInfo, paymentStatusOptions, settingsPlanName } from '@/utils/settings'
+import type { PaymentHistory } from '@/types/subscriptions'
+import type { DateRange } from '@/utils/dateRange'
+defineEmits<{ back: [] }>()
+const store = useSubscriptionStore(), auth = useAuthStore(), toast = useToastStore()
+const rows = ref<PaymentHistory[]>([]), loading = ref(true), loadError = ref(''), actionError = ref('')
+const search = ref(''), status = ref(''), range = ref<DateRange | null>(null), resumingOrderId = ref<string | null>(null)
+const statusOptions = [{ value: '', label: 'Semua status' }, ...paymentStatusOptions.map((item) => ({ value: item.value, label: item.label }))]
+const visibleRows = computed(() => filterPayments(rows.value, search.value, status.value, range.value))
+const successfulCount = computed(() => rows.value.filter((item) => item.status === 'SUCCESS').length)
+const pendingCount = computed(() => rows.value.filter((item) => item.status === 'PENDING').length)
+const totalPaid = computed(() => rows.value.filter((item) => item.status === 'SUCCESS').reduce((sum, item) => sum + (Number(item.amount) || 0), 0))
+let active = true, request = 0
+const loadRows = async () => {
+  const version = ++request
+  loading.value = true; loadError.value = ''
+  try { const data = await store.fetchPaymentHistory(); if (!active || version !== request) return; if (data) rows.value = data; else loadError.value = store.historyError || 'Silakan coba lagi.' }
+  catch { if (active && version === request) loadError.value = 'Silakan coba lagi.' }
+  finally { if (active && version === request) loading.value = false }
 }
-
-const statusClass = (status: PaymentStatus): string => {
-  const map: Record<PaymentStatus, string> = {
-    PENDING: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-    SUCCESS: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    FAILED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-    EXPIRED: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400',
-  }
-  return map[status] ?? 'bg-slate-100 text-slate-600'
-}
-
-const handleResume = async (orderId: string) => {
-  resumingOrderId.value = orderId
+interface SnapClient { pay: (token: string, callbacks: { onSuccess: () => void; onPending: () => void; onError: () => void; onClose: () => void }) => void }
+const resumePayment = async (item: PaymentHistory) => {
+  if (resumingOrderId.value || !canResumePayment(item)) return
+  actionError.value = ''
+  const snap = (window as Window & { snap?: SnapClient }).snap
+  if (!snap) { actionError.value = 'Jendela pembayaran belum siap. Muat ulang halaman dan coba lagi.'; return }
+  resumingOrderId.value = item.orderId
   try {
-    const snapToken = await store.resumePayment(orderId)
-    // @ts-ignore
-    window.snap.pay(snapToken, {
-      onSuccess: () => {
-        store.fetchPaymentHistory()
-        resumingOrderId.value = null
-      },
-      onPending: () => {
-        resumingOrderId.value = null
-      },
-      onError: () => {
-        resumingOrderId.value = null
-        alert('Terjadi kesalahan saat pembayaran.')
-      },
-      onClose: () => {
-        resumingOrderId.value = null
-      },
+    const token = await store.resumePayment(item.orderId)
+    if (!active) return
+    if (!token) throw new Error('Token pembayaran belum tersedia. Silakan coba lagi.')
+    const isCurrent = () => active && resumingOrderId.value === item.orderId
+    snap.pay(token, {
+      onSuccess: () => { if (!isCurrent()) return; resumingOrderId.value = null; toast.show('Memperbarui status pembayaran...', 'info'); void loadRows(); void auth.fetchUserProfile().catch(() => { if (active) actionError.value = 'Informasi langganan belum berhasil diperbarui. Muat ulang halaman untuk memperbaruinya.' }) },
+      onPending: () => { if (!isCurrent()) return; resumingOrderId.value = null; void loadRows() },
+      onError: () => { if (!isCurrent()) return; resumingOrderId.value = null; actionError.value = 'Pembayaran belum berhasil. Periksa status pesanan sebelum mencoba lagi.' },
+      onClose: () => { if (isCurrent()) resumingOrderId.value = null },
     })
-  } catch (err: any) {
-    alert(err.message || 'Gagal melanjutkan pembayaran.')
-    resumingOrderId.value = null
-  }
+  } catch (failure: unknown) { if (active) { actionError.value = failure instanceof Error ? failure.message : 'Pembayaran belum dapat dilanjutkan.'; resumingOrderId.value = null } }
 }
-
-onMounted(() => {
-  store.fetchPaymentHistory()
-})
+onMounted(loadRows)
+onBeforeUnmount(() => { active = false; request++ })
 </script>

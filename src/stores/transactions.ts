@@ -347,11 +347,13 @@ export const useTransactionStore = defineStore('transactions', {
       try {
         const response = await apiClient.get<RecurringTransaction[]>('/recurring-transactions')
         this.recurringTransactions = response.data
+        return response.data
       } catch (err: any) {
         console.error('Failed to fetch recurring transactions:', err)
         const errorMessage =
           err.response?.data?.message || 'Gagal memuat daftar transaksi berulang.'
         this.error = Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage
+        return null
       } finally {
         this.isLoading = false
       }
@@ -359,7 +361,7 @@ export const useTransactionStore = defineStore('transactions', {
 
     async deleteRecurringTransaction(id: string) {
       const authStore = useAuthStore()
-      if (!authStore.isAuthenticated) return
+      if (!authStore.isAuthenticated) throw new Error('Silakan masuk kembali untuk menghapus jadwal.')
 
       this.isSubmitting = true
       this.error = null

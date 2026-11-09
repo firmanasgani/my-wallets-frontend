@@ -36,6 +36,7 @@ export interface Transaction {
 
 export interface RecurringTransaction {
   id: string
+  status?: 'ACTIVE' | 'INACTIVE'
   userId: string
   transactionType: FrontendTransactionType
   amount: number
