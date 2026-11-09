@@ -1,556 +1,144 @@
 <template>
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Back Button -->
-    <button
-      @click="$router.back()"
-      class="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors group"
-    >
-      <div
-        class="p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 group-hover:border-slate-300 dark:group-hover:border-slate-500"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </div>
-      <span class="text-sm font-medium">Kembali</span>
-    </button>
-
-    <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
-      <LoadingSpinner :visible="true" size="lg" />
-      <p class="mt-4 text-slate-500 dark:text-slate-400 animate-pulse">Memuat detail transaksi...</p>
-    </div>
-
-    <div
-      v-else-if="transaction"
-      class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700"
-    >
-      <!-- Main Card -->
-      <div
-        class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700 overflow-hidden"
-      >
-        <!-- Header Section -->
-        <div :class="['p-8 text-center border-b border-slate-50 dark:border-slate-700', typeClass]">
-          <div
-            class="inline-flex items-center justify-center p-4 bg-white/20 backdrop-blur-md rounded-2xl mb-4 shadow-inner"
-          >
-            <i :class="['text-3xl text-white fa-solid', typeIcon]"></i>
-          </div>
-          <h2 class="text-white/80 text-sm font-semibold uppercase tracking-widest mb-1">
-            {{ typeLabel }}
-          </h2>
-          <p class="text-4xl font-bold text-white tracking-tight">
-            {{ isTransfer ? '' : isExpense ? '-' : '+' }}{{ formatCurrency(transaction.amount) }}
-          </p>
-          <p class="text-white/70 text-sm mt-2">{{ formatDate(transaction.transactionDate) }}</p>
+  <div class="transaction-workflow">
+    <header class="transaction-page-heading"><RouterLink :to="historyLocation" class="transaction-back" :aria-disabled="busy || undefined" @click="busy && $event.preventDefault()"><AppIcon name="arrow" />Riwayat transaksi</RouterLink><span class="shell-overline">CERITA DI BALIK CATATANMU</span><h1>{{ isEditing ? 'Edit transaksi.' : 'Detail transaksi.' }}</h1><p>{{ isEditing ? 'Perbarui tanggal, kategori, dan catatan transaksi.' : 'Lihat rincian, akun terkait, dan bukti transaksi dalam satu tempat.' }}</p></header>
+    <div v-if="loading" class="transaction-state" role="status"><span class="transaction-spinner" aria-hidden="true"></span><h2>Memuat detail transaksi...</h2></div>
+    <div v-else-if="!transaction" class="transaction-state" role="alert"><AppIcon name="help" /><h2>Transaksi belum dapat ditampilkan.</h2><p>{{ loadError || 'Transaksi tidak ditemukan atau kamu tidak memiliki akses.' }}</p><button type="button" class="transaction-button" @click="loadTransaction">Coba lagi</button><RouterLink :to="historyLocation" class="transaction-button is-primary">Kembali ke riwayat</RouterLink></div>
+    <template v-else>
+      <section class="transaction-detail-hero" :class="`is-${transaction.transactionType.toLowerCase()}`" aria-labelledby="transaction-amount-title"><div class="transaction-detail-symbol"><AppIcon :name="typeIcon" /></div><div><span id="transaction-amount-title">{{ typeLabel }}</span><strong>{{ transaction.transactionType === 'TRANSFER' ? '' : transaction.transactionType === 'INCOME' ? '+' : '−' }}{{ accountMoney(transaction.amount, currency) }}</strong><time :datetime="transaction.transactionDate">{{ transactionDateLabel(transaction.transactionDate) }}</time></div><span v-if="transaction.isRecurring" class="transaction-detail-badge">Transaksi berulang</span></section>
+      <div class="transaction-detail-layout">
+        <div class="transaction-detail-main">
+          <section v-if="!isEditing" class="transaction-detail-panel" aria-labelledby="information-heading"><h2 id="information-heading">Informasi transaksi</h2><dl class="transaction-information"><div><dt>Catatan</dt><dd class="transaction-description">{{ transaction.description || 'Tanpa catatan' }}</dd></div><div v-if="transaction.transactionType !== 'TRANSFER'"><dt>Kategori</dt><dd class="transaction-category-display"><CategoryBadge v-if="transaction.category" :color="transaction.category.color" :icon="transaction.category.icon" />{{ transaction.category?.categoryName || 'Tanpa kategori' }}</dd></div><div><dt>Jenis transaksi</dt><dd>{{ typeLabel }}</dd></div></dl></section>
+          <form v-else class="transaction-detail-panel" :aria-busy="saving" @submit.prevent="saveChanges">
+            <h2>Perbarui catatan</h2><p class="transaction-hint">Jenis, nominal, dan akun transaksi tetap.</p>
+            <div v-if="actionError" ref="errorBox" class="transaction-error" role="alert" tabindex="-1">{{ actionError }}</div>
+            <fieldset :disabled="saving"><legend class="shell-sr-only">Detail yang bisa diperbarui</legend>
+              <div class="transaction-field"><label for="edit-date">Tanggal transaksi</label><input id="edit-date" v-model="editDraft.date" type="date" required /></div>
+              <div v-if="transaction.transactionType !== 'TRANSFER'" class="transaction-field"><AppSelect id="edit-category" v-model="editDraft.categoryId" :options="categoryOptions" label="Kategori" placeholder="Pilih kategori" searchable :disabled="saving || categoryLoading" :loading="categoryLoading" /><p v-if="categoryError" class="transaction-hint">{{ categoryError }} <button type="button" class="transaction-text-button" @click="loadCategories">Coba lagi</button></p></div>
+              <div class="transaction-field"><label for="edit-description">Catatan <span>(opsional)</span></label><textarea id="edit-description" v-model="editDraft.description" rows="3" placeholder="Tambahkan catatan transaksi"></textarea></div>
+            </fieldset>
+            <footer class="transaction-form-actions"><button type="button" class="transaction-button" :disabled="saving" @click="router.push(detailLocation)">Batal</button><button type="submit" class="transaction-button is-primary" :disabled="saving"><span v-if="saving" class="transaction-spinner" aria-hidden="true"></span>{{ saving ? 'Menyimpan...' : 'Simpan perubahan' }}</button></footer>
+          </form>
+          <section class="transaction-detail-panel" aria-labelledby="accounts-heading"><h2 id="accounts-heading">Akun terkait</h2><div class="transaction-linked-accounts">
+            <div v-if="transaction.sourceAccount" class="transaction-linked-account"><AppIcon name="wallet" /><div><span>Dari akun</span><RouterLink :to="{ name: 'account-detail', params: { id: transaction.sourceAccount.id } }">{{ transaction.sourceAccount.accountName }} <span aria-hidden="true">↗</span></RouterLink><small v-if="transaction.sourceAccount.bank">{{ transaction.sourceAccount.bank.name }}</small></div></div>
+            <AppIcon v-if="transaction.sourceAccount && transaction.destinationAccount" name="arrow" class="transaction-account-arrow" />
+            <div v-if="transaction.destinationAccount" class="transaction-linked-account"><AppIcon name="wallet" /><div><span>Ke akun</span><RouterLink :to="{ name: 'account-detail', params: { id: transaction.destinationAccount.id } }">{{ transaction.destinationAccount.accountName }} <span aria-hidden="true">↗</span></RouterLink><small v-if="transaction.destinationAccount.bank">{{ transaction.destinationAccount.bank.name }}</small></div></div>
+          </div></section>
         </div>
-
-        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-12">
-          <!-- Left Column: Primary Info -->
-          <div class="space-y-8">
-            <section>
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
-                Informasi Utama
-              </h3>
-              <div class="space-y-5">
-                <!-- Description -->
-                <div class="flex items-start gap-4">
-                  <div class="p-2.5 bg-slate-50 dark:bg-slate-700 rounded-xl text-slate-400 dark:text-slate-500">
-                    <i class="fa-solid fa-align-left w-5 text-center"></i>
-                  </div>
-                  <div>
-                    <p class="text-xs text-slate-400 font-medium mb-0.5">Deskripsi</p>
-                    <div v-if="isEditing" class="relative">
-                      <input
-                        v-model="editForm.description"
-                        type="text"
-                        class="w-full border-b border-slate-300 dark:border-slate-600 focus:border-emerald-500 outline-none py-1 text-slate-900 dark:text-slate-100 font-semibold bg-transparent"
-                        placeholder="Masukkan deskripsi"
-                      />
-                    </div>
-                    <p v-else class="text-slate-900 dark:text-slate-100 font-semibold">
-                      {{ transaction.description || 'Tidak ada deskripsi' }}
-                    </p>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-4">
-                  <div
-                    v-if="!isEditing && transaction.category"
-                    class="p-2.5 rounded-xl text-white"
-                    :style="{ backgroundColor: transaction.category.color || '#6366f1' }"
-                  >
-                    <i
-                      :class="[
-                        'fa-solid w-5 text-center',
-                        `fa-${transaction.category.icon || 'tag'}`,
-                      ]"
-                    ></i>
-                  </div>
-                  <div v-if="isEditing" class="w-full">
-                    <p class="text-xs text-slate-400 font-medium mb-0.5">Kategori</p>
-                    <CategorySelect
-                      v-model="editForm.categoryId"
-                      :categories="availableCategories"
-                    />
-                  </div>
-                  <div v-else-if="transaction.category">
-                    <p class="text-xs text-slate-400 font-medium mb-0.5">Kategori</p>
-                    <p class="text-slate-900 dark:text-slate-100 font-semibold">
-                      {{ transaction.category.categoryName }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section>
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
-                Akun Terkait
-              </h3>
-              <div class="space-y-5">
-                <!-- Source Account -->
-                <div
-                  v-if="transaction.sourceAccount"
-                  class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700"
-                >
-                  <div
-                    class="p-2.5 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-emerald-600 border border-slate-100 dark:border-slate-600"
-                  >
-                    <i class="fa-solid fa-wallet w-5 text-center"></i>
-                  </div>
-                  <div class="flex-1">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight mb-0.5">
-                      {{ isTransfer ? 'Dari Akun' : isExpense ? 'Dibayar Dengan' : 'Akun' }}
-                    </p>
-                    <p class="text-slate-900 dark:text-slate-100 font-bold text-sm leading-tight">
-                      {{ transaction.sourceAccount.accountName }}
-                    </p>
-                    <p v-if="transaction.sourceAccount.bank" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      {{ transaction.sourceAccount.bank.name }}
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Arrow for transfer -->
-                <div v-if="isTransfer" class="flex justify-center">
-                  <div
-                    class="bg-slate-100 dark:bg-slate-700 p-2 rounded-full text-emerald-500"
-                  >
-                    <i class="fa-solid fa-arrow-down"></i>
-                  </div>
-                </div>
-
-                <!-- Destination Account -->
-                <div
-                  v-if="transaction.destinationAccount"
-                  class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700"
-                >
-                  <div
-                    class="p-2.5 bg-white dark:bg-slate-700 rounded-xl shadow-sm text-green-600 border border-slate-100 dark:border-slate-600"
-                  >
-                    <i class="fa-solid fa-vault w-5 text-center"></i>
-                  </div>
-                  <div class="flex-1">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight mb-0.5">
-                      {{ isTransfer ? 'Tujuan Ke' : 'Masuk Ke' }}
-                    </p>
-                    <p class="text-slate-900 dark:text-slate-100 font-bold text-sm leading-tight">
-                      {{ transaction.destinationAccount.accountName }}
-                    </p>
-                    <p
-                      v-if="transaction.destinationAccount.bank"
-                      class="text-xs text-slate-500 dark:text-slate-400 mt-1"
-                    >
-                      {{ transaction.destinationAccount.bank.name }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-
-          <!-- Right Column: Meta & Attachment -->
-          <div class="space-y-8">
-            <section>
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
-                Riwayat
-              </h3>
-              <div class="bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 space-y-4">
-                <div class="flex justify-between items-center text-sm">
-                  <span class="text-slate-500 dark:text-slate-400">Dibuat pada</span>
-                  <span class="text-slate-900 dark:text-slate-100 font-medium">{{
-                    formatDateTime(transaction.createdAt)
-                  }}</span>
-                </div>
-                <div class="flex justify-between items-center text-sm">
-                  <span class="text-slate-500 dark:text-slate-400">Terakhir diupdate</span>
-                  <span class="text-slate-900 dark:text-slate-100 font-medium">{{
-                    formatDateTime(transaction.updatedAt)
-                  }}</span>
-                </div>
-              </div>
-            </section>
-
-            <section>
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
-                Lampiran
-              </h3>
-              <div
-                v-if="transaction.attachmentUrl"
-                class="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 transition-all hover:shadow-lg"
-              >
-                <!-- Image Preview -->
-                <div v-if="isImage" class="aspect-video w-full overflow-hidden">
-                  <img
-                    :src="transaction.attachmentUrl"
-                    class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    alt="Attachment"
-                  />
-                </div>
-                <!-- PDF / Other Placeholder -->
-                <div
-                  v-else
-                  class="aspect-video w-full flex flex-col items-center justify-center p-8 text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-800"
-                >
-                  <div class="p-4 bg-slate-50 dark:bg-slate-700 rounded-2xl mb-3 shadow-inner">
-                    <i class="fa-solid fa-file-pdf text-4xl text-red-500"></i>
-                  </div>
-                  <p class="text-sm font-bold text-slate-700 dark:text-slate-200">Dokumen PDF</p>
-                  <p class="text-xs mt-1 dark:text-slate-400">Klik untuk melihat detail</p>
-                </div>
-
-                <!-- Overlay Actions -->
-                <div
-                  class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3"
-                >
-                  <a
-                    :href="transaction.attachmentUrl"
-                    target="_blank"
-                    class="p-3 bg-white rounded-xl shadow-lg text-slate-900 hover:scale-110 transition-transform"
-                  >
-                    <i class="fa-solid fa-eye mr-2"></i>
-                    <span class="text-sm font-bold">Lihat</span>
-                  </a>
-                </div>
-              </div>
-              <div
-                v-else
-                class="p-8 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center"
-              >
-                <div class="p-3 bg-slate-50 dark:bg-slate-700 rounded-xl mb-2">
-                  <i class="fa-solid fa-paperclip text-slate-300 dark:text-slate-600"></i>
-                </div>
-                <p class="text-xs text-slate-400 font-medium">Tidak ada lampiran</p>
-              </div>
-            </section>
-          </div>
-        </div>
-
-        <!-- Footer Actions -->
-        <div class="bg-slate-50 dark:bg-slate-700/50 p-6 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
-          <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-            ID: {{ transaction.id }}
-          </p>
-          <div class="flex gap-3">
-            <button
-              v-if="!isEditing"
-              @click="startEditing"
-              class="px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-colors"
-            >
-              <i class="fa-solid fa-pen mr-2"></i>Edit
-            </button>
-            <div v-else class="flex gap-2">
-              <button
-                @click="cancelEditing"
-                class="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
-                :disabled="isSaving"
-              >
-                Batal
-              </button>
-              <button
-                @click="saveChanges"
-                class="px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-colors"
-                :disabled="isSaving"
-              >
-                <i class="fa-solid fa-check mr-2"></i>Simpan
-              </button>
-            </div>
-            <button
-              v-if="!isEditing"
-              @click="exportToPDF"
-              class="px-4 py-2 text-sm font-bold text-emerald-600 hover:bg-indigo-50 dark:hover:bg-emerald-900/20 rounded-xl transition-colors"
-            >
-              <i class="fa-solid fa-file-pdf mr-2"></i>Cetak PDF
-            </button>
-            <button
-              @click="showDeleteConfirm = true"
-              class="px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
-            >
-              <i class="fa-solid fa-trash mr-2"></i>Hapus
-            </button>
-          </div>
-        </div>
+        <aside class="transaction-detail-sidebar">
+          <section class="transaction-detail-panel"><h2>Lampiran</h2><template v-if="attachmentUrl"><a :href="attachmentUrl" target="_blank" rel="noopener noreferrer" class="transaction-attachment-link"><img v-if="isImage" :src="attachmentUrl" alt="Bukti lampiran transaksi" /><span v-else class="transaction-document-placeholder"><AppIcon name="file" />Dokumen transaksi</span><span>Buka lampiran <AppIcon name="arrow" /></span></a></template><div v-else class="transaction-no-attachment"><AppIcon name="attachment" /><p>Tidak ada lampiran.</p></div></section>
+          <section class="transaction-detail-panel"><h2>Riwayat pencatatan</h2><dl class="transaction-information"><div><dt>Dibuat pada</dt><dd>{{ transactionDateLabel(transaction.createdAt, true) }}</dd></div><div><dt>Terakhir diperbarui</dt><dd>{{ transactionDateLabel(transaction.updatedAt, true) }}</dd></div><div><dt>ID transaksi</dt><dd class="transaction-record-id">{{ transaction.id }}</dd></div></dl></section>
+        </aside>
       </div>
-    </div>
-
-    <!-- 404 Case -->
-    <div v-else class="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm">
-      <div class="inline-flex p-4 bg-red-50 dark:bg-red-900/20 rounded-2xl text-red-600 mb-4">
-        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
-      </div>
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white">Transaksi tidak ditemukan</h2>
-      <p class="text-slate-500 dark:text-slate-400 mt-1">Kami tidak dapat menemukan transaksi yang Anda cari.</p>
-      <button
-        @click="$router.push({ name: 'transactions-list' })"
-        class="mt-6 px-6 py-2.5 bg-[#2E8B57] text-white rounded-xl font-bold shadow-lg shadow-emerald-200 hover:bg-[#236B43] transition-all"
-      >
-        Kembali ke Daftar
-      </button>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <ConfirmationModal
-      v-model:isOpen="showDeleteConfirm"
-      title="Hapus Transaksi?"
-      message="Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan dan saldo akun Anda akan disesuaikan kembali."
-      confirmButtonText="Hapus Sekarang"
-      cancelButtonText="Batal"
-      iconType="danger"
-      :isConfirming="isDeleting"
-      @confirm="handleDelete"
-    />
+      <footer v-if="!isEditing" class="transaction-detail-actions print:hidden"><div><RouterLink :to="editLocation" class="transaction-button is-primary"><AppIcon name="edit" />Edit transaksi</RouterLink><button type="button" class="transaction-button" :disabled="exporting || busy" @click="exportPdf"><AppIcon name="download" />{{ exporting ? 'Mengekspor...' : 'Ekspor PDF' }}</button></div><button type="button" class="transaction-button is-danger" :disabled="busy" @click="showDelete = true"><AppIcon name="trash" />Hapus transaksi</button></footer>
+    </template>
+    <ConfirmationModal v-model:isOpen="showDelete" title="Hapus transaksi?" :message="`Hapus ${typeLabel.toLowerCase()} ${transaction ? accountMoney(transaction.amount, currency) : ''}${transaction?.description ? ` (${transaction.description})` : ''}? Tindakan ini tidak dapat dibatalkan dan saldo akun terkait akan disesuaikan kembali.`" confirmButtonText="Hapus transaksi" iconType="danger" :isConfirming="deleting" @confirm="deleteTransaction" />
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref, onMounted, computed, reactive } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+import CategoryBadge from '@/components/categories/CategoryBadge.vue'
 import { useTransactionStore } from '@/stores/transactions'
 import { useCategoryStore } from '@/stores/categories'
-import ExportService from '@/services/exportService'
+import { useToastStore } from '@/stores/toast'
 import type { Transaction } from '@/types/transaction'
-import { FrontendTransactionType } from '@/types/enums'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
-import CategorySelect from '@/components/transactions/CategorySelect.vue'
+import type { SelectOption } from '@/types/select'
+import { accountMoney } from '@/utils/accountList'
+import { buildTransactionUpdate, transactionCategoryOptions, transactionDateLabel } from '@/utils/transactionForm'
+import '@/assets/categories.css'
+import '@/assets/transaction-workflow.css'
 
-const route = useRoute()
-const router = useRouter()
-const transactionStore = useTransactionStore()
-const categoryStore = useCategoryStore()
-
+const route = useRoute(), router = useRouter()
+const transactionStore = useTransactionStore(), categoryStore = useCategoryStore(), toastStore = useToastStore()
+const id = computed(() => typeof route.params.id === 'string' ? route.params.id : '')
+const historyLocation = computed(() => ({ name: 'transactions-list', query: route.query }))
+const detailLocation = computed(() => ({ name: 'transaction-detail', params: { id: id.value }, query: route.query }))
+const editLocation = computed(() => ({ name: 'transaction-edit', params: { id: id.value }, query: route.query }))
+const isEditing = computed(() => route.name === 'transaction-edit')
 const transaction = ref<Transaction | null>(null)
-const isLoading = ref(true)
-const isDeleting = ref(false)
-const showDeleteConfirm = ref(false)
-const isEditing = ref(false)
-const isSaving = ref(false)
-
-const editForm = reactive({
-  description: '',
-  categoryId: '',
-})
-
-const isIncome = computed(
-  () => transaction.value?.transactionType === FrontendTransactionType.INCOME,
-)
-const isExpense = computed(
-  () => transaction.value?.transactionType === FrontendTransactionType.EXPENSE,
-)
-const isTransfer = computed(
-  () => transaction.value?.transactionType === FrontendTransactionType.TRANSFER,
-)
-
-const typeLabel = computed(() => {
-  if (isIncome.value) return 'Pemasukan'
-  if (isExpense.value) return 'Pengeluaran'
-  if (isTransfer.value) return 'Transfer'
-  return 'Transaksi'
-})
-
-const typeIcon = computed(() => {
-  if (isIncome.value) return 'fa-arrow-down'
-  if (isExpense.value) return 'fa-arrow-up'
-  if (isTransfer.value) return 'fa-right-left'
-  return 'fa-circle-info'
-})
-
-const typeClass = computed(() => {
-  if (isIncome.value) return 'bg-gradient-to-br from-green-500 to-emerald-600'
-  if (isExpense.value) return 'bg-gradient-to-br from-rose-500 to-red-600'
-  if (isTransfer.value) return 'bg-gradient-to-br from-emerald-500 to-[#236B43]'
-  return 'bg-slate-600'
-})
-
-const isImage = computed(() => {
-  if (!transaction.value?.attachmentPath) return false
-  const path = transaction.value.attachmentPath.toLowerCase()
-  return (
-    path.endsWith('.jpg') ||
-    path.endsWith('.jpeg') ||
-    path.endsWith('.png') ||
-    path.endsWith('.gif') ||
-    path.endsWith('.webp')
-  )
-})
-
-const loadTransaction = async () => {
-  isLoading.value = true
-  const id = route.params.id as string
-  try {
-    const data = await transactionStore.fetchTransactionById(id)
-    transaction.value = data
-  } catch (error) {
-    console.error('Failed to load transaction detail:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const exportToPDF = () => {
-  if (!transaction.value) return
-  const title = `Detail Transaksi - ${transaction.value.description || 'Tanpa Deskripsi'}`
-  ExportService.exportTransactionsToPDF([transaction.value], title)
-}
-
-const handleDelete = async () => {
-  if (!transaction.value) return
-  isDeleting.value = true
-  try {
-    await transactionStore.deleteTransaction(transaction.value.id)
-    router.push({ name: 'transactions-list' })
-  } catch (error) {
-    console.error('Failed to delete transaction:', error)
-  } finally {
-    isDeleting.value = false
-    showDeleteConfirm.value = false
-  }
-}
-
-const formatCurrency = (value: number | string | null | undefined): string => {
-  if (value === null || value === undefined) return 'Rp 0'
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(numericValue)
-}
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('id-ID', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
-
-const formatDateTime = (dateString: string) => {
-  return new Date(dateString).toLocaleString('id-ID', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
-const availableCategories = computed(() => {
+const loading = ref(true), loadError = ref(''), actionError = ref(''), saving = ref(false), deleting = ref(false), exporting = ref(false), showDelete = ref(false)
+const busy = computed(() => saving.value || deleting.value)
+const categoryLoading = ref(false), categoryError = ref('')
+const editDraft = reactive({ description: '', categoryId: '', date: '' })
+const errorBox = ref<HTMLElement | null>(null)
+const typeLabel = computed(() => transaction.value?.transactionType === 'INCOME' ? 'Pemasukan' : transaction.value?.transactionType === 'EXPENSE' ? 'Pengeluaran' : 'Transfer')
+const typeIcon = computed(() => transaction.value?.transactionType === 'INCOME' ? 'plus' : transaction.value?.transactionType === 'EXPENSE' ? 'arrow' : 'transfer')
+const currency = 'IDR'
+const categoryOptions = computed<SelectOption<string>[]>(() => {
   if (!transaction.value) return []
-
-  // Jika transfer, tidak perlu kategori
-  if (isTransfer.value) return []
-
-  const targetType = isIncome.value ? 'INCOME' : isExpense.value ? 'EXPENSE' : null
-  if (!targetType) return []
-
-  const result: { id: string; categoryName: string; icon?: string | null; color?: string | null; parentPrefix?: string }[] = []
-
-  function flatten(items: typeof categoryStore.allCategories, prefix = '') {
-    items.forEach((item) => {
-      if (item.categoryType === targetType) {
-        result.push({ id: item.id, categoryName: item.categoryName, icon: item.icon, color: item.color, parentPrefix: prefix })
-      }
-      if (item.subCategories && item.subCategories.length > 0) {
-        flatten(item.subCategories, prefix + '- ')
-      }
-    })
-  }
-
-  flatten(categoryStore.allCategories)
-  return result
+  const options = transactionCategoryOptions(categoryStore.allCategories, transaction.value.transactionType)
+  const original = transaction.value.category
+  if (original && !options.some((option) => option.value === original.id)) options.unshift({ value: original.id, label: original.categoryName, group: 'Kategori saat ini' })
+  return options
 })
-
-const startEditing = () => {
-  if (!transaction.value) return
-  editForm.description = transaction.value.description || ''
-  editForm.categoryId = transaction.value.category?.id || ''
-  isEditing.value = true
+const attachmentUrl = computed(() => {
+  if (!transaction.value?.attachmentUrl) return ''
+  try { const url = new URL(transaction.value.attachmentUrl, window.location.origin); return ['http:', 'https:'].includes(url.protocol) ? url.href : '' } catch { return '' }
+})
+const isImage = computed(() => /\.(?:jpe?g|png|gif|webp)(?:[?#]|$)/i.test(transaction.value?.attachmentPath || attachmentUrl.value))
+let active = true, version = 0
+const prepareEdit = () => { if (transaction.value) Object.assign(editDraft, { description: transaction.value.description || '', categoryId: transaction.value.categoryId || transaction.value.category?.id || '', date: transaction.value.transactionDate.slice(0, 10) }); actionError.value = '' }
+const loadCategories = async () => {
+  categoryLoading.value = true; categoryError.value = ''
+  try { await categoryStore.fetchCategories({ hierarchical: 'true' }); categoryError.value = categoryStore.categoryError || '' }
+  catch { categoryError.value = 'Pilihan kategori belum berhasil dimuat.' }
+  finally { categoryLoading.value = false }
 }
-
-const cancelEditing = () => {
-  isEditing.value = false
-  editForm.description = ''
-  editForm.categoryId = ''
-}
-
-const saveChanges = async () => {
-  if (!transaction.value) return
-  isSaving.value = true
+const loadTransaction = async () => {
+  const request = ++version
+  transaction.value = null; loading.value = true; loadError.value = ''; showDelete.value = false
+  if (!id.value) { loadError.value = 'ID transaksi tidak valid.'; loading.value = false; return }
   try {
-    const payload: { description?: string; categoryId?: string } = {}
-
-    if (editForm.description !== transaction.value.description) {
-      payload.description = editForm.description
-    }
-
-    if (editForm.categoryId && editForm.categoryId !== transaction.value.category?.id) {
-      payload.categoryId = editForm.categoryId
-    }
-
-    if (Object.keys(payload).length > 0) {
-      const updated = await transactionStore.updateTransactionDetails(transaction.value.id, payload)
-      transaction.value = updated
-    }
-
-    isEditing.value = false
-  } catch (error) {
-    console.error('Failed to update transaction:', error)
-    alert('Gagal memperbarui transaksi')
-  } finally {
-    isSaving.value = false
-  }
+    const data = await transactionStore.fetchTransactionById(id.value)
+    if (!active || request !== version) return
+    transaction.value = data
+    if (!data) loadError.value = transactionStore.transactionError || 'Transaksi tidak ditemukan.'
+    if (isEditing.value) prepareEdit()
+  } catch (failure: unknown) { if (active && request === version) loadError.value = failure instanceof Error ? failure.message : 'Detail transaksi belum berhasil dimuat.' }
+  finally { if (active && request === version) loading.value = false }
 }
-
-onMounted(async () => {
-  await loadTransaction()
-  await categoryStore.fetchCategories()
-})
+const saveChanges = async () => {
+  if (!transaction.value || busy.value) return
+  const currentId = transaction.value.id
+  actionError.value = ''
+  try {
+    const payload = buildTransactionUpdate(transaction.value, editDraft, categoryStore.allCategories)
+    saving.value = true
+    if (Object.keys(payload).length) {
+      const updated = await transactionStore.updateTransactionDetails(currentId, payload)
+      if (!active || id.value !== currentId) return
+      transaction.value = { ...transaction.value!, ...updated,
+        attachmentUrl: updated.attachmentUrl ?? transaction.value?.attachmentUrl,
+        sourceAccount: updated.sourceAccount ? { ...transaction.value?.sourceAccount, ...updated.sourceAccount } : updated.sourceAccount === undefined ? transaction.value?.sourceAccount : updated.sourceAccount,
+        destinationAccount: updated.destinationAccount ? { ...transaction.value?.destinationAccount, ...updated.destinationAccount } : updated.destinationAccount === undefined ? transaction.value?.destinationAccount : updated.destinationAccount,
+      }
+      toastStore.show('Perubahan transaksi berhasil disimpan.')
+    }
+    if (active && id.value === currentId) await router.push(detailLocation.value)
+  } catch (failure: unknown) {
+    if (active && id.value === currentId) { actionError.value = (failure instanceof Error ? failure.message : '') || transactionStore.transactionError || 'Perubahan belum berhasil disimpan.'; await nextTick(); errorBox.value?.focus() }
+  } finally { saving.value = false }
+}
+const deleteTransaction = async () => {
+  if (!transaction.value || busy.value) return
+  const currentId = transaction.value.id
+  deleting.value = true
+  try { await transactionStore.deleteTransaction(currentId); if (active && id.value === currentId) { toastStore.show('Transaksi berhasil dihapus.'); await router.push(historyLocation.value) } }
+  catch (failure: unknown) { toastStore.show(transactionStore.transactionError || (failure instanceof Error ? failure.message : 'Transaksi belum dapat dihapus.'), 'error') }
+  finally { deleting.value = false; showDelete.value = false }
+}
+const exportPdf = async () => {
+  if (!transaction.value || exporting.value || busy.value) return
+  const row = transaction.value
+  exporting.value = true
+  try { const { default: ExportService } = await import('@/services/exportService'); ExportService.exportTransactionsToPDF([row], 'Detail transaksi') }
+  catch { toastStore.show('Ekspor belum berhasil. Silakan coba lagi.', 'error') }
+  finally { exporting.value = false }
+}
+watch(id, loadTransaction, { immediate: true })
+watch(isEditing, (editing) => { if (editing) { prepareEdit(); loadCategories() } }, { immediate: true })
+onBeforeUnmount(() => { active = false; version++ })
 </script>
-
-<style scoped>
-.animate-in {
-  animation: animate-in 0.5s ease-out;
-}
-
-@keyframes animate-in {
-  from {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>

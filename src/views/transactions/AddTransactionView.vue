@@ -1,755 +1,110 @@
 <template>
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-      <button
-        @click="$router.back()"
-        class="mb-4 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        Kembali
-      </button>
-      <div>
-        <h1 class="text-2xl font-bold leading-7 text-slate-900 dark:text-white sm:truncate">Tambah Transaksi</h1>
-        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Catat transaksi baru untuk melacak keuanganmu.</p>
-      </div>
-    </div>
-
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-      <form @submit.prevent="handleSubmit">
-        <div class="p-6 space-y-8">
-          <!-- Transaction Type -->
-          <div class="space-y-3">
-            <label class="block text-sm font-medium text-slate-900 dark:text-slate-100">Tipe Transaksi</label>
-            <div class="grid grid-cols-3 gap-3">
-              <button
-                type="button"
-                v-for="typeOpt in transactionTypeOptions"
-                :key="typeOpt.value"
-                @click="selectedTransactionType = typeOpt.value"
-                :class="[
-                  'relative flex items-center justify-center py-3 px-4 text-sm font-medium rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200',
-                  selectedTransactionType === typeOpt.value
-                    ? 'border-transparent text-white shadow-md transform scale-105'
-                    : 'border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500',
-                  selectedTransactionType === typeOpt.value &&
-                  typeOpt.value === FrontendTransactionType.INCOME
-                    ? 'bg-green-600 focus:ring-green-500'
-                    : '',
-                  selectedTransactionType === typeOpt.value &&
-                  typeOpt.value === FrontendTransactionType.EXPENSE
-                    ? 'bg-red-600 focus:ring-red-500'
-                    : '',
-                  selectedTransactionType === typeOpt.value &&
-                  typeOpt.value === FrontendTransactionType.TRANSFER
-                    ? 'bg-[#2E8B57] focus:ring-emerald-500'
-                    : '',
-                ]"
-              >
-                {{ typeOpt.text }}
-              </button>
-            </div>
+  <div class="transaction-workflow">
+    <header class="transaction-page-heading"><RouterLink :to="historyLocation" class="transaction-back" :aria-disabled="saving || undefined" @click="saving && $event.preventDefault()"><AppIcon name="arrow" />Riwayat transaksi</RouterLink><span class="shell-overline">SETIAP TRANSAKSI, LEBIH TERTATA</span><h1>Catat transaksi baru.</h1><p>Catat dana masuk, pengeluaran, atau transfer antar akunmu.</p></header>
+    <div v-if="loading" class="transaction-state" role="status"><span class="transaction-spinner" aria-hidden="true"></span><h2>Menyiapkan formulir...</h2><p>Memuat akun dan kategori keuanganmu.</p></div>
+    <div v-else-if="loadError" class="transaction-state" role="alert"><AppIcon name="help" /><h2>Formulir belum siap.</h2><p>{{ loadError }}</p><button type="button" class="transaction-button" @click="loadOptions">Coba lagi</button></div>
+    <div v-else-if="!accountStore.allAccounts.length" class="transaction-state"><AppIcon name="wallet" /><h2>Tambahkan akun terlebih dahulu.</h2><p>Transaksi membutuhkan akun untuk mencatat perubahan saldo.</p><RouterLink :to="{ name: 'account-create' }" class="transaction-button is-primary"><AppIcon name="plus" />Tambah akun</RouterLink></div>
+    <div v-else class="transaction-editor-layout">
+      <form class="transaction-form-panel" :aria-busy="saving" @submit.prevent="submit">
+        <div v-if="error" ref="errorBox" class="transaction-error" role="alert" tabindex="-1"><AppIcon name="help" /><span>{{ error }}</span></div>
+        <fieldset :disabled="saving">
+          <legend class="transaction-section-title">01 <span>Detail transaksi</span></legend>
+          <div class="transaction-type-options" role="group" aria-label="Jenis transaksi"><button v-for="option in types" :key="option.value" type="button" :aria-pressed="draft.type === option.value" :class="{ 'is-selected': draft.type === option.value }" @click="draft.type = option.value"><AppIcon :name="option.icon" />{{ option.label }}</button></div>
+          <div class="transaction-field transaction-amount"><label for="new-amount">Nominal transaksi <span aria-hidden="true">*</span></label><div><span>IDR</span><CurrencyInput id="new-amount" v-model="draft.amount" :options="{ currency: 'IDR' }" required placeholder="0" /></div></div>
+          <div class="transaction-fields-grid">
+            <AppSelect v-if="draft.type !== 'INCOME'" id="new-source" v-model="draft.sourceAccountId" :options="sourceOptions" label="Dari akun" placeholder="Pilih akun sumber" required searchable :disabled="saving" />
+            <AppSelect v-if="draft.type !== 'EXPENSE'" id="new-destination" v-model="draft.destinationAccountId" :options="destinationOptions" label="Ke akun" placeholder="Pilih akun tujuan" required searchable :disabled="saving" />
+            <AppSelect v-if="draft.type !== 'TRANSFER'" id="new-category" v-model="draft.categoryId" :options="categoryOptions" label="Kategori" placeholder="Pilih kategori" required searchable :disabled="saving" />
           </div>
-
-          <!-- Amount -->
-          <div class="space-y-3">
-            <label for="txAmount" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
-              >Jumlah Transaksi</label
-            >
-            <div class="relative rounded-md shadow-sm">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-slate-500 dark:text-slate-400 sm:text-sm">Rp</span>
-              </div>
-              <CurrencyInput
-                v-model="commonFormData.amount"
-                id="txAmount"
-                class="focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 pr-12 sm:text-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-md py-3 placeholder:text-slate-300 dark:placeholder:text-slate-500 font-semibold"
-                placeholder="0"
-                required
-              />
-              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span class="text-slate-500 dark:text-slate-400 sm:text-sm">IDR</span>
-              </div>
+          <p v-if="draft.type !== 'TRANSFER' && !categoryOptions.length" class="transaction-hint">Belum ada kategori {{ draft.type === 'INCOME' ? 'pemasukan' : 'pengeluaran' }}. <RouterLink :to="{ name: 'categories-list' }">Kelola kategori ↗</RouterLink></p>
+          <p v-if="draft.type === 'TRANSFER' && accountStore.allAccounts.length < 2" class="transaction-hint">Transfer membutuhkan dua akun berbeda. <RouterLink :to="{ name: 'account-create' }">Tambah akun ↗</RouterLink></p>
+          <div class="transaction-fields-grid"><div class="transaction-field"><label for="new-date">Tanggal transaksi <span aria-hidden="true">*</span></label><input id="new-date" v-model="draft.date" type="date" required /></div><div class="transaction-field"><label for="new-description">Catatan <span>(opsional)</span></label><input id="new-description" v-model="draft.description" type="text" placeholder="Contoh: Belanja mingguan" /></div></div>
+        </fieldset>
+        <section class="transaction-form-section"><h2 class="transaction-section-title">02 <span>Jadwal &amp; lampiran</span></h2>
+          <fieldset :disabled="saving">
+            <legend class="shell-sr-only">Jadwal dan lampiran opsional</legend>
+            <label class="transaction-recurring-toggle" for="new-recurring"><input id="new-recurring" v-model="draft.recurring" type="checkbox" /><span><strong>Jadikan transaksi berulang</strong><small>Buat jadwal otomatis mulai tanggal yang dipilih.</small></span></label>
+            <div v-if="draft.recurring" class="transaction-recurring-fields"><AppSelect id="new-interval" v-model="draft.interval" :options="intervalOptions" label="Ulangi setiap" placeholder="Pilih interval" required :disabled="saving" /><div class="transaction-field"><label for="new-end-date">Berakhir pada <span>(opsional)</span></label><input id="new-end-date" v-model="draft.endDate" type="date" :min="draft.date" /></div></div>
+            <div class="transaction-attachment-field"><span class="transaction-field-label">Lampiran <small>(opsional)</small></span>
+              <p v-if="draft.recurring" class="transaction-hint">Lampiran tersedia untuk transaksi satu kali. Hapus lampiran yang dipilih jika ingin membuat jadwal berulang.</p>
+              <label v-else for="new-attachment" class="transaction-upload" :class="{ 'is-dragging': dragging }" @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="dropFile"><AppIcon name="attachment" /><strong>Pilih file atau seret ke sini</strong><span>JPG, PNG, PDF · Maksimal 5 MB</span><input id="new-attachment" ref="fileInput" type="file" accept="image/jpeg,image/png,application/pdf" @change="chooseFile" /></label>
+              <div v-if="file" class="transaction-selected-file"><img v-if="previewUrl" :src="previewUrl" alt="Pratinjau lampiran yang dipilih" /><AppIcon v-else name="file" /><span><strong>{{ file.name }}</strong><small>{{ (file.size / 1024 / 1024).toFixed(2) }} MB</small></span><button type="button" class="transaction-icon-button is-danger" aria-label="Hapus lampiran dari formulir" @click="removeFile"><AppIcon name="trash" /></button></div>
             </div>
-          </div>
-
-          <!-- Account Selection -->
-          <div class="space-y-6" v-if="selectedTransactionType">
-            <!-- Source Account (Expense & Transfer) -->
-            <div
-              v-if="
-                selectedTransactionType === FrontendTransactionType.EXPENSE ||
-                selectedTransactionType === FrontendTransactionType.TRANSFER
-              "
-              class="space-y-2 w-full"
-            >
-              <label for="txSourceAccount" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
-                >Dari Akun</label
-              >
-              <div class="relative">
-                <select
-                  id="txSourceAccount"
-                  v-model="accountFormFields.sourceAccountId"
-                  required
-                  class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-                >
-                  <option disabled value="">Pilih akun sumber...</option>
-                  <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
-                    {{ acc.accountName }} ({{ formatCurrency(acc.currentBalance, acc.currency) }})
-                  </option>
-                </select>
-                <div
-                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400"
-                >
-                  <svg
-                    class="h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Destination Account (Income & Transfer) -->
-            <div
-              v-if="
-                selectedTransactionType === FrontendTransactionType.INCOME ||
-                selectedTransactionType === FrontendTransactionType.TRANSFER
-              "
-              class="space-y-2 w-full"
-            >
-              <label for="txDestinationAccount" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
-                >Ke Akun</label
-              >
-              <div class="relative">
-                <select
-                  id="txDestinationAccount"
-                  v-model="accountFormFields.destinationAccountId"
-                  required
-                  class="appearance-none block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-4 pr-10 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-                >
-                  <option disabled value="">Pilih akun tujuan...</option>
-                  <option v-for="acc in availableAccounts" :key="acc.id" :value="acc.id">
-                    {{ acc.accountName }} ({{ formatCurrency(acc.currentBalance, acc.currency) }})
-                  </option>
-                </select>
-                <div
-                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 dark:text-slate-400"
-                >
-                  <svg
-                    class="h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-          <p
-            v-if="
-              selectedTransactionType === FrontendTransactionType.TRANSFER &&
-              accountFormFields.sourceAccountId &&
-              accountFormFields.sourceAccountId === accountFormFields.destinationAccountId
-            "
-            class="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 p-3 rounded-md"
-          >
-            Akun sumber dan tujuan tidak boleh sama.
-          </p>
-
-          <!-- Category (Income & Expense) -->
-          <div
-            v-if="
-              selectedTransactionType === FrontendTransactionType.INCOME ||
-              selectedTransactionType === FrontendTransactionType.EXPENSE
-            "
-            class="space-y-2"
-          >
-            <label class="block text-sm font-medium text-slate-900 dark:text-slate-100">Kategori</label>
-            <CategorySelect
-              v-model="accountFormFields.categoryId"
-              :categories="relevantCategories"
-            />
-          </div>
-
-          <div class="border-t border-slate-100 dark:border-slate-700 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Date -->
-            <div class="space-y-2">
-              <label for="txDate" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
-                >Tanggal Transaksi</label
-              >
-              <input
-                type="date"
-                id="txDate"
-                v-model="commonFormData.transactionDate"
-                required
-                class="block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-              />
-            </div>
-
-            <!-- Description -->
-            <div class="space-y-2">
-              <label for="txDescription" class="block text-sm font-medium text-slate-900 dark:text-slate-100"
-                >Deskripsi</label
-              >
-              <input
-                type="text"
-                id="txDescription"
-                v-model="commonFormData.description"
-                class="block w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg py-3 px-4 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500"
-                placeholder="Contoh: Makan siang, Gaji bulan ini..."
-              />
-            </div>
-          </div>
-
-          <!-- Recurring Toggle -->
-          <div class="bg-indigo-50 dark:bg-emerald-900/20 rounded-lg p-5 border border-emerald-100 dark:border-emerald-800">
-            <div class="flex items-center">
-              <div class="flex items-center h-5">
-                <input
-                  id="isRecurring"
-                  type="checkbox"
-                  v-model="recurringForm.isRecurring"
-                  class="focus:ring-emerald-500 h-5 w-5 text-emerald-600 border-gray-300 dark:border-slate-600 rounded"
-                />
-              </div>
-              <div class="ml-3 text-sm">
-                <label for="isRecurring" class="font-medium text-emerald-900 dark:text-emerald-100"
-                  >Jadikan Transaksi Berulang?</label
-                >
-                <p class="text-emerald-700 dark:text-emerald-300">Aktifkan untuk membuat jadwal otomatis.</p>
-              </div>
-            </div>
-
-            <div v-if="recurringForm.isRecurring" class="mt-6 flex flex-col md:flex-row gap-4">
-              <div class="flex-1">
-                <label
-                  for="recurringInterval"
-                  class="block text-xs font-semibold text-emerald-900 dark:text-emerald-100 uppercase tracking-wider mb-2"
-                  >Setiap</label
-                >
-                <select
-                  id="recurringInterval"
-                  v-model="recurringForm.interval"
-                  class="block w-full bg-white dark:bg-slate-700 border border-emerald-200 dark:border-emerald-700 rounded-lg py-2.5 px-3 text-emerald-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-                >
-                  <option :value="null" disabled>Pilih interval...</option>
-                  <option
-                    v-for="opt in recurringIntervalOptions"
-                    :key="opt.value"
-                    :value="opt.value"
-                  >
-                    {{ opt.label }}
-                  </option>
-                </select>
-              </div>
-
-              <div class="flex-1">
-                <label
-                  for="recurringEndDate"
-                  class="block text-xs font-semibold text-emerald-900 dark:text-emerald-100 uppercase tracking-wider mb-2"
-                  >Berakhir Pada (Opsional)</label
-                >
-                <input
-                  type="date"
-                  id="recurringEndDate"
-                  v-model="recurringForm.endDate"
-                  class="block w-full bg-white dark:bg-slate-700 border border-emerald-200 dark:border-emerald-700 rounded-lg py-2.5 px-3 text-emerald-900 dark:text-slate-100 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm placeholder-emerald-300 dark:placeholder:text-slate-500"
-                  :min="commonFormData.transactionDate"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- Attachment -->
-          <div class="space-y-3">
-            <label class="block text-sm font-medium text-slate-900 dark:text-slate-100">Lampiran (Opsional)</label>
-            <div
-              class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors cursor-pointer relative group"
-            >
-              <div class="space-y-1 text-center">
-                <svg
-                  class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500 group-hover:text-emerald-500 transition-colors"
-                  stroke="currentColor"
-                  fill="none"
-                  viewBox="0 0 48 48"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <div class="flex text-sm text-slate-600 dark:text-slate-400">
-                  <label
-                    for="file-upload"
-                    class="relative cursor-pointer bg-transparent rounded-md font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 focus-within:outline-none"
-                  >
-                    <span>Upload file</span>
-                    <input
-                      id="file-upload"
-                      name="file-upload"
-                      type="file"
-                      class="sr-only"
-                      accept="image/*,.pdf"
-                      @change="handleFileUpload"
-                    />
-                  </label>
-                  <p class="pl-1">atau seret dan lepas</p>
-                </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">PNG, JPG, PDF hingga 5MB</p>
-              </div>
-
-              <!-- Selected File name/preview -->
-              <div
-                v-if="selectedFile"
-                class="absolute inset-0 bg-white dark:bg-slate-800 rounded-lg flex flex-col items-center justify-center p-4"
-              >
-                <div class="flex items-center gap-3 mb-3">
-                  <div class="p-2 bg-indigo-50 dark:bg-emerald-900/40 rounded-lg">
-                    <svg
-                      v-if="selectedFile.type === 'application/pdf'"
-                      class="w-8 h-8 text-emerald-600 dark:text-emerald-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"
-                      />
-                      <path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
-                    </svg>
-                    <img
-                      v-else-if="previewUrl"
-                      :src="previewUrl"
-                      class="w-16 h-16 object-cover rounded shadow-sm"
-                    />
-                    <svg
-                      v-else
-                      class="w-8 h-8 text-emerald-600 dark:text-emerald-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div class="text-left">
-                    <p class="text-sm font-medium text-slate-900 dark:text-slate-100 truncate max-w-[200px]">
-                      {{ selectedFile.name }}
-                    </p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">
-                      {{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  @click="removeFile"
-                  class="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300"
-                >
-                  Hapus File
-                </button>
-              </div>
-            </div>
-
-            <!-- PDF Preview (if applicable and small/safe) -->
-            <div
-              v-if="selectedFile && selectedFile.type === 'application/pdf'"
-              class="mt-4 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600"
-            >
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Preview PDF</span>
-                <a
-                  :href="previewUrl || undefined"
-                  target="_blank"
-                  class="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 font-semibold"
-                  >Buka di tab baru</a
-                >
-              </div>
-              <div
-                class="aspect-auto h-40 bg-slate-200 dark:bg-slate-700 rounded flex items-center justify-center text-slate-500 overflow-hidden"
-              >
-                <iframe
-                  v-if="previewUrl"
-                  :src="previewUrl"
-                  class="w-full h-full pointer-events-none scale-110 origin-top"
-                ></iframe>
-              </div>
-            </div>
-          </div>
-
-          <!-- Errors -->
-          <div v-if="submissionError" class="rounded-md bg-red-50 dark:bg-red-900/30 p-4 border border-red-100 dark:border-red-800">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg
-                  class="h-5 w-5 text-red-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div class="ml-3">
-                <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Terdapat kesalahan</h3>
-                <div class="mt-2 text-sm text-red-700 dark:text-red-400">
-                  <p>{{ submissionError }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-slate-50 dark:bg-slate-700/50 px-6 py-4 flex items-center justify-end border-t border-slate-200 dark:border-slate-700 gap-3"
-        >
-          <button
-            type="button"
-            @click="$router.back()"
-            class="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
-            :disabled="isSubmittingForm"
-          >
-            Batal
-          </button>
-          <button
-            type="submit"
-            :disabled="isSubmittingForm"
-            class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <LoadingSpinner
-              v-if="isSubmittingForm"
-              :visible="true"
-              size="xs"
-              color="text-white"
-              class="-ml-1 mr-2"
-            />
-            {{ isSubmittingForm ? 'Menyimpan...' : 'Simpan Transaksi' }}
-          </button>
-        </div>
+          </fieldset>
+        </section>
+        <footer class="transaction-form-actions"><button type="button" class="transaction-button" :disabled="saving" @click="router.push(historyLocation)">Batal</button><button type="submit" class="transaction-button is-primary" :disabled="saving"><span v-if="saving" class="transaction-spinner" aria-hidden="true"></span><AppIcon v-else name="plus" />{{ saving ? 'Menyimpan...' : draft.recurring ? 'Simpan jadwal' : 'Simpan transaksi' }}</button></footer>
       </form>
+      <aside class="transaction-summary-panel"><span class="shell-overline">SEBELUM DISIMPAN</span><h2>Ringkasan catatanmu</h2><div class="transaction-summary-amount" :class="`is-${draft.type.toLowerCase()}`"><AppIcon :name="selectedType.icon" /><span>{{ selectedType.label }}</span><strong>{{ accountMoney(draft.amount ?? 0, 'IDR') }}</strong></div><dl><div v-if="draft.type !== 'INCOME'"><dt>Dari akun</dt><dd>{{ accountLabel(draft.sourceAccountId) }}</dd></div><div v-if="draft.type !== 'EXPENSE'"><dt>Ke akun</dt><dd>{{ accountLabel(draft.destinationAccountId) }}</dd></div><div v-if="draft.type !== 'TRANSFER'"><dt>Kategori</dt><dd>{{ categoryOptions.find((option) => option.value === draft.categoryId)?.label || 'Belum dipilih' }}</dd></div><div><dt>{{ draft.recurring ? 'Mulai jadwal' : 'Tanggal' }}</dt><dd>{{ transactionDateLabel(draft.date) }}</dd></div><div><dt>Pencatatan</dt><dd>{{ draft.recurring ? 'Berulang' : 'Sekali' }}</dd></div></dl><p class="transaction-summary-note">{{ draft.recurring ? 'Catatan ini membuat jadwal transaksi berulang.' : 'Saldo akun diperbarui setelah transaksi berhasil disimpan.' }}</p></aside>
     </div>
-
-    <!-- Success Modal -->
-    <ConfirmationModal
-      v-model:isOpen="isSuccessModalOpen"
-      title="Transaksi Berhasil"
-      message="Transaksi Anda telah berhasil dicatat."
-      confirmButtonText="Lihat Daftar Transaksi"
-      cancelButtonText="Tambah Lagi"
-      iconType="success"
-      confirmButtonClass="bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500"
-      @confirm="goToTransactionsList"
-      @cancel="resetForm"
-    >
-      <template #icon>
-        <svg
-          class="h-6 w-6 text-green-600"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-        </svg>
-      </template>
-    </ConfirmationModal>
+    <ConfirmationModal v-model:isOpen="showSuccess" :title="draft.recurring ? 'Jadwal tersimpan.' : 'Transaksi tersimpan.'" :message="draft.recurring ? 'Jadwal transaksi berulang berhasil dibuat.' : 'Catatan transaksi dan saldo akun sudah diperbarui.'" iconType="success" confirmButtonText="Lihat riwayat" cancelButtonText="Catat lagi" @confirm="goToHistory" @cancel="resetForm" />
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref, reactive, watch, computed, onMounted } from 'vue'
-import { FrontendTransactionType, FrontendCategoryType } from '@/types/enums'
-import type { Category } from '@/types/enums'
-import { RecurringInterval } from '@/types/transaction'
-import type {
-  CreateIncomePayload,
-  CreateExpensePayload,
-  CreateTransferPayload,
-} from '@/types/transaction'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
+import CurrencyInput from '@/components/common/CurrencyInput.vue'
+import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import { useTransactionStore } from '@/stores/transactions'
 import { useAccountStore } from '@/stores/accounts'
 import { useCategoryStore } from '@/stores/categories'
-import { useRoute, useRouter } from 'vue-router'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import CurrencyInput from '@/components/common/CurrencyInput.vue'
-import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
-import CategorySelect from '@/components/transactions/CategorySelect.vue'
+import { FrontendTransactionType } from '@/types/enums'
+import { RecurringInterval } from '@/types/transaction'
+import { dateKey } from '@/utils/dateRange'
+import { accountMoney } from '@/utils/accountList'
+import { buildNewTransaction, transactionCategoryOptions, transactionDateLabel, validateAttachment, type TransactionDraft } from '@/utils/transactionForm'
+import '@/assets/transaction-workflow.css'
 
-const route = useRoute()
-const router = useRouter()
-const transactionStore = useTransactionStore()
-const accountStore = useAccountStore()
-const categoryStore = useCategoryStore()
-
-const isSuccessModalOpen = ref(false)
-const selectedTransactionType = ref<FrontendTransactionType>(FrontendTransactionType.EXPENSE) // Default to Expense
-
-const transactionTypeOptions = [
-  { value: FrontendTransactionType.INCOME, text: 'Pemasukan' },
-  { value: FrontendTransactionType.EXPENSE, text: 'Pengeluaran' },
-  { value: FrontendTransactionType.TRANSFER, text: 'Transfer' },
-]
-
-const commonFormData = reactive({
-  amount: null as number | null,
-  transactionDate: new Date().toISOString().split('T')[0], // Default ke hari ini YYYY-MM-DD
-  description: '',
-})
-
-// Pisahkan field yang spesifik per tipe transaksi
-const accountFormFields = reactive({
-  sourceAccountId: '',
-  destinationAccountId: '',
-  categoryId: '',
-})
-
-const recurringForm = reactive({
-  isRecurring: false,
-  interval: null as RecurringInterval | null,
-  endDate: '',
-})
-
-const recurringIntervalOptions = [
-  { value: RecurringInterval.DAILY, label: 'Harian' },
-  { value: RecurringInterval.WEEKLY, label: 'Mingguan' },
-  { value: RecurringInterval.MONTHLY, label: 'Bulanan' },
-  { value: RecurringInterval.YEARLY, label: 'Tahunan' },
-]
-
-const submissionError = ref<string | null>(null)
-const isSubmittingForm = computed(() => transactionStore.isSubmittingTransaction) // Gunakan state dari store
-
-// Attachment logic
-const selectedFile = ref<File | null>(null)
-const previewUrl = ref<string | null>(null)
-
-const handleFileUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
-
-  // Validation
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf']
-  if (!allowedTypes.includes(file.type)) {
-    submissionError.value = 'Hanya file PDF dan gambar yang diperbolehkan.'
-    return
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-    submissionError.value = 'Ukuran file maksimal adalah 5MB.'
-    return
-  }
-
-  selectedFile.value = file
-  submissionError.value = null
-
-  // Create preview
-  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
-  previewUrl.value = URL.createObjectURL(file)
+const route = useRoute(), router = useRouter()
+const transactionStore = useTransactionStore(), accountStore = useAccountStore(), categoryStore = useCategoryStore()
+const historyLocation = computed(() => ({ name: 'transactions-list', query: route.query }))
+const loading = ref(true), loadError = ref(''), saving = ref(false), error = ref(''), showSuccess = ref(false)
+const errorBox = ref<HTMLElement | null>(null), fileInput = ref<HTMLInputElement | null>(null)
+const draft = reactive<TransactionDraft>({ type: FrontendTransactionType.EXPENSE, amount: null, date: dateKey(new Date()), description: '', sourceAccountId: '', destinationAccountId: '', categoryId: '', recurring: false, interval: null, endDate: '' })
+const types = [{ value: FrontendTransactionType.INCOME, label: 'Pemasukan', icon: 'plus' }, { value: FrontendTransactionType.EXPENSE, label: 'Pengeluaran', icon: 'arrow' }, { value: FrontendTransactionType.TRANSFER, label: 'Transfer', icon: 'transfer' }]
+const selectedType = computed(() => types.find((option) => option.value === draft.type) || types[1]!)
+const intervalOptions = [{ value: RecurringInterval.DAILY, label: 'Hari' }, { value: RecurringInterval.WEEKLY, label: 'Minggu' }, { value: RecurringInterval.MONTHLY, label: 'Bulan' }, { value: RecurringInterval.YEARLY, label: 'Tahun' }]
+const categoryOptions = computed(() => transactionCategoryOptions(categoryStore.allCategories, draft.type))
+const sourceOptions = computed(() => accountStore.allAccounts.map((account) => ({ value: account.id, label: account.accountName, description: account.currency, disabled: draft.type === 'TRANSFER' && account.id === draft.destinationAccountId })))
+const destinationOptions = computed(() => accountStore.allAccounts.map((account) => ({ value: account.id, label: account.accountName, description: account.currency, disabled: draft.type === 'TRANSFER' && account.id === draft.sourceAccountId })))
+const accountLabel = (id: string) => accountStore.allAccounts.find((account) => account.id === id)?.accountName || 'Belum dipilih'
+const file = ref<File | null>(null), previewUrl = ref(''), dragging = ref(false)
+const removeFile = () => { if (previewUrl.value) URL.revokeObjectURL(previewUrl.value); previewUrl.value = ''; file.value = null; if (fileInput.value) fileInput.value.value = '' }
+const useFile = (selected?: File) => {
+  if (!selected || saving.value) return
+  const message = validateAttachment(selected)
+  if (message) { error.value = message; return }
+  removeFile(); file.value = selected; error.value = ''
+  if (selected.type.startsWith('image/')) previewUrl.value = URL.createObjectURL(selected)
 }
-
-const removeFile = () => {
-  selectedFile.value = null
-  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
-  previewUrl.value = null
+const chooseFile = (event: Event) => { const input = event.target as HTMLInputElement; useFile(input.files?.[0]); input.value = '' }
+const dropFile = (event: DragEvent) => { dragging.value = false; useFile(event.dataTransfer?.files[0]) }
+const loadOptions = async () => {
+  loading.value = true; loadError.value = ''
+  const results = await Promise.allSettled([accountStore.fetchAccounts(), categoryStore.fetchCategories({ hierarchical: 'true' })])
+  if (results.some((result) => result.status === 'rejected') || accountStore.error || categoryStore.categoryError) loadError.value = accountStore.error || categoryStore.categoryError || 'Akun dan kategori belum berhasil dimuat.'
+  loading.value = false
 }
-
-// Computed properties untuk dropdown
-const availableAccounts = computed(() => accountStore.allAccounts)
-const relevantCategories = computed(() => {
-  const allCats: { id: string; categoryName: string; icon: string | null; parentPrefix?: string }[] = []
-  function flatten(items: Category[], prefix = '') {
-    items.forEach((item) => {
-      // Hanya tampilkan kategori yang sesuai dengan tipe transaksi yang dipilih
-      if (
-        selectedTransactionType.value === FrontendTransactionType.INCOME &&
-        item.categoryType === FrontendCategoryType.INCOME
-      ) {
-        allCats.push({ id: item.id, categoryName: item.categoryName, icon: item.icon ?? null, parentPrefix: prefix })
-      } else if (
-        selectedTransactionType.value === FrontendTransactionType.EXPENSE &&
-        item.categoryType === FrontendCategoryType.EXPENSE
-      ) {
-        allCats.push({ id: item.id, categoryName: item.categoryName, icon: item.icon ?? null, parentPrefix: prefix })
-      }
-      if (item.subCategories && item.subCategories.length > 0) {
-        flatten(item.subCategories, prefix + '- ')
-      }
-    })
-  }
-  flatten(categoryStore.allCategories) // Asumsi categoryStore.allCategories sudah hierarkis atau flat
-  return allCats
-})
-
-const formatCurrency = (
-  value: number | string | null | undefined,
-  currency: string = 'IDR',
-): string => {
-  if (value === null || value === undefined) return formatCurrency(0, currency)
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value
-  if (isNaN(numericValue)) return 'N/A'
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 0,
-  }).format(numericValue)
-}
-
-watch(selectedTransactionType, () => {
-  // We keep amount and date, but reset accounts/category on type change to avoid invalid state
-  accountFormFields.sourceAccountId = ''
-  accountFormFields.destinationAccountId = ''
-  accountFormFields.categoryId = ''
-  submissionError.value = null
-})
-
-watch(
-  () => recurringForm.isRecurring,
-  (newVal) => {
-    if (!newVal) {
-      recurringForm.interval = null
-      recurringForm.endDate = ''
-    }
-  },
-)
-
-onMounted(() => {
-  if (accountStore.accounts.length === 0) accountStore.fetchAccounts()
-  if (categoryStore.categories.length === 0) categoryStore.fetchCategories({ hierarchical: 'true' })
-})
-
-const resetForm = () => {
-  commonFormData.amount = null
-  commonFormData.description = ''
-  accountFormFields.sourceAccountId = ''
-  accountFormFields.destinationAccountId = ''
-  accountFormFields.categoryId = ''
-  recurringForm.isRecurring = false
-  recurringForm.interval = null
-  recurringForm.endDate = ''
-  submissionError.value = null
-  removeFile()
-  accountStore.fetchAccounts()
-}
-
-// Navigasi eksplisit ke daftar transaksi sambil membawa filter asal
-// (dibawa lewat query saat membuka halaman ini — lihat openAddTransactionModal
-// di TransactionsView.vue). Dibuat eksplisit (bukan router.back()) supaya
-// tidak bergantung pada riwayat browser dan selalu memicu fetch data terbaru.
-const goToTransactionsList = () => {
-  router.push({ name: 'transactions-list', query: route.query })
-}
-
-const handleSubmit = async () => {
-  submissionError.value = null
-  if (!selectedTransactionType.value || !commonFormData.amount) {
-    submissionError.value = 'Tipe transaksi dan jumlah wajib diisi.'
-    return
-  }
-  if (commonFormData.amount <= 0) {
-    submissionError.value = 'Jumlah transaksi harus lebih besar dari 0.'
-    return
-  }
-
-  const basePayload = {
-    amount: commonFormData.amount as number,
-    transactionDate: commonFormData.transactionDate || new Date().toISOString().split('T')[0],
-    description: commonFormData.description?.trim() || null,
-    isRecurring: recurringForm.isRecurring,
-    interval: recurringForm.isRecurring ? recurringForm.interval : null,
-    recurringStartDate: recurringForm.isRecurring
-      ? commonFormData.transactionDate || new Date().toISOString().split('T')[0]
-      : null,
-    recurringEndDate:
-      recurringForm.isRecurring && recurringForm.endDate ? recurringForm.endDate : null,
-    attachment: selectedFile.value,
-  }
-
-  if (recurringForm.isRecurring && !recurringForm.interval) {
-    submissionError.value = 'Interval ulangan wajib dipilih untuk transaksi berulang.'
-    return
-  }
-
+watch(() => draft.type, () => { draft.sourceAccountId = ''; draft.destinationAccountId = ''; draft.categoryId = ''; error.value = '' })
+watch(() => draft.recurring, (enabled) => { if (!enabled) { draft.interval = null; draft.endDate = '' } })
+const resetForm = () => { showSuccess.value = false; draft.amount = null; draft.description = ''; draft.sourceAccountId = ''; draft.destinationAccountId = ''; draft.categoryId = ''; draft.recurring = false; draft.interval = null; draft.endDate = ''; draft.date = dateKey(new Date()); error.value = ''; removeFile(); nextTick(() => document.getElementById('new-amount')?.focus()) }
+const goToHistory = () => { showSuccess.value = false; router.push(historyLocation.value) }
+const submit = async () => {
+  if (saving.value || loading.value || showSuccess.value) return
+  error.value = ''
   try {
-    if (selectedTransactionType.value === FrontendTransactionType.INCOME) {
-      if (!accountFormFields.destinationAccountId || !accountFormFields.categoryId) {
-        submissionError.value = 'Akun tujuan dan kategori wajib diisi untuk pemasukan.'
-        return
-      }
-      const payload: CreateIncomePayload = {
-        ...basePayload,
-        destinationAccountId: accountFormFields.destinationAccountId,
-        categoryId: accountFormFields.categoryId,
-      }
-      await transactionStore.createIncomeTransaction(payload)
-    } else if (selectedTransactionType.value === FrontendTransactionType.EXPENSE) {
-      if (!accountFormFields.sourceAccountId || !accountFormFields.categoryId) {
-        submissionError.value = 'Akun sumber dan kategori wajib diisi untuk pengeluaran.'
-        return
-      }
-      const payload: CreateExpensePayload = {
-        ...basePayload,
-        sourceAccountId: accountFormFields.sourceAccountId,
-        categoryId: accountFormFields.categoryId,
-      }
-      await transactionStore.createExpenseTransaction(payload)
-    } else if (selectedTransactionType.value === FrontendTransactionType.TRANSFER) {
-      if (!accountFormFields.sourceAccountId || !accountFormFields.destinationAccountId) {
-        submissionError.value = 'Akun sumber dan tujuan wajib diisi untuk transfer.'
-        return
-      }
-      if (accountFormFields.sourceAccountId === accountFormFields.destinationAccountId) {
-        submissionError.value = 'Akun sumber dan tujuan tidak boleh sama untuk transfer.'
-        return
-      }
-      const payload: CreateTransferPayload = {
-        ...basePayload,
-        sourceAccountId: accountFormFields.sourceAccountId,
-        destinationAccountId: accountFormFields.destinationAccountId,
-      }
-      await transactionStore.createTransferTransaction(payload)
-    }
-
-    // Success
-    isSuccessModalOpen.value = true
-  } catch (error: any) {
-    submissionError.value =
-      transactionStore.transactionError || error.message || 'Gagal menyimpan transaksi.'
-    console.error('Submit transaction error:', error)
-  }
+    const transaction = buildNewTransaction(draft, accountStore.allAccounts, categoryStore.allCategories, file.value)
+    saving.value = true
+    if (transaction.type === FrontendTransactionType.INCOME) await transactionStore.createIncomeTransaction(transaction.payload)
+    else if (transaction.type === FrontendTransactionType.EXPENSE) await transactionStore.createExpenseTransaction(transaction.payload)
+    else await transactionStore.createTransferTransaction(transaction.payload)
+    showSuccess.value = true
+  } catch (failure: unknown) {
+    error.value = (typeof failure === 'string' ? failure : failure instanceof Error ? failure.message : '') || transactionStore.transactionError || 'Transaksi belum berhasil disimpan.'
+    await nextTick(); errorBox.value?.focus()
+  } finally { saving.value = false }
 }
+onMounted(loadOptions)
+onUnmounted(removeFile)
 </script>

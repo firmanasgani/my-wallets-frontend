@@ -104,6 +104,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Tambah Transaksi' },
       },
       {
+        path: 'transactions/:id/edit',
+        name: 'transaction-edit',
+        component: () => import('@/views/transactions/TransactionDetailView.vue'),
+        meta: { title: 'Edit Transaksi' },
+      },
+      {
         path: 'transactions/:id',
         name: 'transaction-detail',
         component: () => import('@/views/transactions/TransactionDetailView.vue'),

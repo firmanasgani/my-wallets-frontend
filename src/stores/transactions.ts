@@ -377,10 +377,10 @@ export const useTransactionStore = defineStore('transactions', {
       }
     },
 
-    // Action untuk update detail transaksi (kategori & deskripsi)
+    // Action untuk update detail transaksi (tanggal, kategori & deskripsi)
     async updateTransactionDetails(
       transactionId: string,
-      payload: { categoryId?: string; description?: string },
+      payload: { categoryId?: string; description?: string; transactionDate?: string },
     ) {
       const authStore = useAuthStore()
       if (!authStore.isAuthenticated) throw new Error('User not authenticated.')
