@@ -8,6 +8,12 @@
 <script setup lang="ts">
 defineProps<{ name: string }>()
 const paths: Record<string, string> = {
+  eye: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
+  eyeOff: 'm3 3 18 18M9 5.5A11 11 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 4M6 6a17 17 0 0 0-4 6s3.5 7 10 7c1.6 0 3-.4 4.3-1M10 10a3 3 0 0 0 4 4',
+  edit: 'm15 5 4 4M3 21l4-1 13-13a3 3 0 0 0-4-4L3 16v5Z',
+  trash: 'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7',
+  credit: 'M3 5h18v14H3V5Zm0 5h18M7 15h4',
+  coins: 'M18 6c0 2-3.6 4-8 4S2 8 2 6s3.6-4 8-4 8 2 8 4ZM2 6v5c0 2 3.6 4 8 4m-8-4v5c0 2 3.6 4 8 4m12-7c0 2-2.7 3-6 3s-6-1-6-3 2.7-3 6-3 6 1 6 3Zm-12 0v5c0 2 2.7 3 6 3s6-1 6-3v-5',
   search: 'm21 21-5-5m2-6a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z',
   calendar: 'M4 5h16v16H4V5Zm0 5h16M8 3v4m8-4v4M8 14h2m4 0h2m-8 4h2',
   download: 'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',

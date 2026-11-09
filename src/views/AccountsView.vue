@@ -1,546 +1,186 @@
 <template>
-  <div>
-    <div class="flex flex-col md:flex-row gap-2 justify-between items-center mb-6 print:hidden ">
-      <div class="flex items-center space-x-3 w-full">
-        <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Akun Saya</h1>
-        <button
-          @click="showBalance = !showBalance"
-          class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-indigo-50 rounded-full transition-colors focus:outline-none"
-          :title="showBalance ? 'Sembunyikan Saldo' : 'Tampilkan Saldo'"
-        >
-          <svg
-            v-if="showBalance"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-6 h-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.036 12.322a1.012 1.012 0 0 1 0-.644C3.752 8.242 7.313 5 12 5c4.687 0 8.248 3.242 9.964 6.678a1.012 1.012 0 0 1 0 .644C20.248 15.758 16.687 19 12 19c-4.687 0-8.248-3.242-9.964-6.678Z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-            />
-          </svg>
-          <svg
-            v-else
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-6 h-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
-            />
-          </svg>
+  <div class="money-accounts">
+    <header class="accounts-heading print:hidden">
+      <div><span class="shell-overline">TEMPAT UANGMU TERSIMPAN</span><h1 ref="pageHeading" tabindex="-1">Daftar akun.</h1><p>Satu tempat untuk rekening, dompet digital, uang tunai, dan kartu kreditmu.</p></div>
+      <div class="accounts-actions">
+        <button type="button" class="accounts-icon-button" :aria-label="showBalance ? 'Sembunyikan saldo' : 'Tampilkan saldo'"
+          :title="showBalance ? 'Sembunyikan saldo' : 'Tampilkan saldo'" :aria-pressed="!showBalance" @click="showBalance = !showBalance">
+          <AppIcon :name="showBalance ? 'eyeOff' : 'eye'" />
+        </button>
+        <div ref="exportDropdownRef" class="accounts-export" @keydown.esc.stop="closeExport(true)">
+          <button ref="exportTrigger" type="button" class="accounts-button" :disabled="!canExport"
+            :aria-expanded="isExportOpen" aria-controls="account-export-options" @click="isExportOpen = !isExportOpen">
+            <AppIcon name="download" />{{ isExporting ? 'Mengekspor...' : 'Ekspor' }}
+          </button>
+          <div v-if="isExportOpen" id="account-export-options" class="accounts-export-options">
+            <p>Ekspor {{ filteredAccounts.length }} akun sesuai filter.<span>File menyertakan saldo asli.</span></p>
+            <button type="button" @click="exportAccounts('excel')"><AppIcon name="file" />Excel (.xlsx)</button>
+            <button type="button" @click="exportAccounts('pdf')"><AppIcon name="file" />PDF (.pdf)</button>
+          </div>
+        </div>
+        <RouterLink v-if="canAddAccount && !isLoading && !loadError" :to="{ name: 'account-create' }" class="accounts-button is-primary"><AppIcon name="plus" />Tambah akun</RouterLink>
+        <button v-else type="button" class="accounts-button is-primary" disabled :title="!canAddAccount ? 'Batas 4 akun paket Dasar tercapai' : 'Tunggu sampai data akun berhasil dimuat'">
+          <AppIcon :name="!canAddAccount ? 'lock' : 'plus'" />{{ !canAddAccount ? 'Batas akun tercapai' : 'Tambah akun' }}
         </button>
       </div>
-      <div v-if="!isLoading && accounts && accounts.length > 0" class="flex gap-2 flex-col md:flex-row w-full"  style="justify-content: flex-end;">
-        <!-- Export Dropdown -->
-        <div class="relative" ref="exportDropdownRef">
-          <button
-            @click.stop="isExportDropdownOpen = !isExportDropdownOpen"
-            class="bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm justify-center font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm w-full"
-          >
-            <i class="fa-solid fa-download mr-1.5 text-slate-400"></i>
-            Ekspor
-          </button>
+    </header>
 
-          <div
-            v-show="isExportDropdownOpen"
-            class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-xl shadow-xl border border-slate-100 dark:border-slate-600 py-2 z-50"
-          >
-            <button
-              @click="exportAccounts('excel'); isExportDropdownOpen = false"
-              class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center"
-            >
-              <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
-              Format Excel (.xlsx)
-            </button>
-            <button
-              @click="exportAccounts('pdf'); isExportDropdownOpen = false"
-              class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 flex items-center"
-            >
-              <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
-              Format PDF (.pdf)
-            </button>
-          </div>
-        </div>
+    <div v-if="!isLoading && !loadError" class="accounts-overview">
+      <section class="accounts-balance-panel" aria-labelledby="balance-heading">
+        <div class="accounts-panel-label"><AppIcon name="wallet" /><h2 id="balance-heading">Saldo tercatat di seluruh akun</h2></div>
+        <dl v-if="balanceTotals.length" class="accounts-balance-totals">
+          <div v-for="total in balanceTotals" :key="total.currency"><dt>{{ total.currency }} <span>· {{ total.count }} akun</span></dt><dd>{{ showBalance ? accountMoney(total.balance, total.currency) : '••••••••' }}</dd></div>
+        </dl>
+        <p v-else class="accounts-first-balance">Catatan keuanganmu dimulai dari akun pertama.</p>
+        <p class="accounts-balance-note">{{ balanceTotals.length > 1 ? 'Saldo setiap mata uang ditampilkan terpisah tanpa konversi.' : 'Saldo mencakup semua jenis akun, termasuk kartu kredit.' }}</p>
+      </section>
+      <aside class="accounts-plan-panel">
+        <span class="shell-overline">{{ isFreePlan ? 'PAKET DASAR' : 'RUANG UNTUK BERTUMBUH' }}</span>
+        <template v-if="isFreePlan"><h2>{{ allAccounts.length }} <span>/ 4 akun</span></h2>
+          <div class="accounts-usage-bar" aria-hidden="true"><span :style="{ width: `${Math.min(allAccounts.length / 4, 1) * 100}%` }"></span></div>
+          <p>{{ canAddAccount ? 'Tambahkan akun sesuai kebutuhan pencatatanmu.' : 'Batas akun tercapai. Paket Premium memberi ruang untuk lebih banyak akun.' }}</p>
+          <RouterLink :to="{ name: 'settings', query: { upgrade: 'true' } }" class="print:hidden">Jelajahi Premium <span aria-hidden="true">↗</span></RouterLink>
+        </template>
+        <template v-else><h2>{{ allAccounts.length }} <span>akun keuangan</span></h2><p>Pisahkan rekening dan dompet agar setiap catatan punya tempat.</p><RouterLink :to="{ name: 'account-create' }" class="print:hidden">Tambah akun baru <span aria-hidden="true">↗</span></RouterLink></template>
+      </aside>
+    </div>
 
-        <RouterLink
-          v-if="canAddAccount"
-          :to="{ name: 'account-create' }"
-          class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center transition-colors shadow-sm justify-center"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-4 h-4 mr-1.5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
-          Tambah Akun
-        </RouterLink>
-        <button
-          v-else
-          disabled
-          title="Batas akun paket FREE tercapai (Maks 4)"
-          class="bg-slate-300 text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center cursor-not-allowed shadow-sm"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-4 h-4 mr-1.5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
-            />
-          </svg>
-          Limit Tercapai
+    <section v-if="!isLoading && !loadError && allAccounts.length" class="accounts-browser" aria-labelledby="account-list-heading">
+      <div class="accounts-list-heading"><div><h2 id="account-list-heading">Akun keuanganmu</h2><p>{{ filteredAccounts.length }} dari {{ allAccounts.length }} akun ditampilkan.</p></div><button v-if="hasFilters" type="button" class="accounts-reset print:hidden" @click="resetFilters">Reset filter</button></div>
+      <div class="accounts-type-filters print:hidden" role="group" aria-label="Filter jenis akun">
+        <button type="button" :aria-pressed="activeType === null" :class="{ 'is-active': activeType === null }" @click="activeType = null"><AppIcon name="grid" /><span>Semua akun</span><strong>{{ allAccounts.length }}</strong></button>
+        <button v-for="type in accountTypes" :key="type.value" type="button" :aria-pressed="activeType === type.value" :class="{ 'is-active': activeType === type.value }" @click="activeType = activeType === type.value ? null : type.value">
+          <AppIcon :name="type.icon" /><span>{{ type.label }}</span><strong>{{ allAccounts.filter((account) => account.accountType === type.value).length }}</strong>
         </button>
       </div>
-    </div>
-
-    <!-- Limit Alert -->
-    <div
-      v-if="!canAddAccount"
-      class="rounded-md bg-yellow-50 p-4 border-l-4 border-yellow-400 mb-6"
-    >
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg
-            class="h-5 w-5 text-yellow-400"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h3 class="text-sm font-medium text-yellow-800">Batas Akun Tercapai</h3>
-          <div class="mt-2 text-sm text-yellow-700">
-            <p>
-              Anda telah mencapai batas maksimum 4 akun untuk paket FREE. Silakan upgrade ke Premium
-              untuk menambah akun tanpa batas.
-            </p>
-          </div>
-          <div class="mt-4">
-            <div class="-mx-2 -my-1.5 flex">
-              <RouterLink
-                :to="{ name: 'settings' }"
-                class="rounded-md bg-yellow-50 px-2 py-1.5 text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
-              >
-                Upgrade Sekarang &rarr;
-              </RouterLink>
-            </div>
-          </div>
-        </div>
+      <div class="accounts-toolbar print:hidden">
+        <div class="accounts-search"><AppIcon name="search" /><label for="account-search" class="shell-sr-only">Cari akun</label><input id="account-search" v-model="search" type="search" placeholder="Cari nama akun, bank, atau nomor akun..." /></div>
+        <AppSelect v-if="currencyOptions.length > 2" id="account-currency" v-model="currency" :options="currencyOptions" aria-label="Filter mata uang" />
+        <AppSelect id="account-sort" v-model="sort" :options="sortOptions" aria-label="Urutkan akun" />
       </div>
-    </div>
-
-    <!-- Account Statistics Cards -->
-    <div
-      v-if="!isLoading"
-      class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
-    >
-      <StatsCard title="Total Akun" :value="accountStore.accounts.length" variant="indigo" @click="filtersAccountsByType(null)" :class="activeTypeFilter === null ? 'ring-2 ring-emerald-500 cursor-pointer' : 'cursor-pointer'">
-        <template #icon>
-          <svg
-            class="h-6 w-6 text-current"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"
-            />
-          </svg>
-        </template>
-      </StatsCard>
-
-      <StatsCard title="Rekening Bank" :value="accountStore.totalBanks" variant="blue" @click="filtersAccountsByType('BANK')" :class="activeTypeFilter === 'BANK' ? 'ring-2 ring-emerald-500 cursor-pointer' : 'cursor-pointer'">
-        <template #icon>
-          <svg
-            class="h-6 w-6 text-current"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
-            />
-          </svg>
-        </template>
-      </StatsCard>
-
-      <StatsCard title="E-Wallet" :value="accountStore.totalWallets" variant="red" @click="filtersAccountsByType('E_WALLET')" :class="activeTypeFilter === 'E_WALLET' ? 'ring-2 ring-red-500 cursor-pointer' : 'cursor-pointer'">
-        <template #icon>
-          <svg
-            class="h-6 w-6 text-current"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
-            />
-          </svg>
-        </template>
-      </StatsCard>
-
-      <StatsCard title="Kartu Kredit" :value="accountStore.totalCards" variant="yellow" @click="filtersAccountsByType('CREDIT_CARD')" :class="activeTypeFilter === 'CREDIT_CARD' ? 'ring-2 ring-yellow-500 cursor-pointer' : 'cursor-pointer'">
-        <template #icon>
-          <svg
-            class="h-6 w-6 text-current"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.5 0 3.5-7.5h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0M6.75 7.5h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-5.25A2.25 2.25 0 0 0 4.5 13.5H6.75m-1.5-1.5h.75m-.75 3h.75m0-3a1.5 1.5 0 0 0-3 0m3 0V7.5"
-            />
-          </svg>
-        </template>
-      </StatsCard>
-    </div>
-
-    <LoadingSpinner
-      v-if="isLoading && (!accounts || accounts.length === 0)"
-      :visible="true"
-      text="Memuat data akun..."
-      size="lg"
-      overlay
-      color="text-sky-500"
-      text-color="text-sky-700"
-    />
-
-    <div
-      v-if="accountStore.error && !isLoading"
-      class="bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded relative mb-6"
-      role="alert"
-    >
-      <strong class="font-bold">Oops! Terjadi kesalahan:</strong>
-      <span class="block sm:inline">{{ accountStore.error }}</span>
-    </div>
-
-    <div
-      v-if="!isLoading && accounts && accounts.length === 0 && !accountStore.error"
-      class="text-center py-10 bg-white dark:bg-slate-800 rounded-lg shadow-md print:hidden"
-    >
-      <svg
-        class="mx-auto h-16 w-16 text-slate-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          vector-effect="non-scaling-stroke"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="1.5"
-          d="M9.5 10.75A2.25 2.25 0 1 1 5 10.75a2.25 2.25 0 0 1 4.5 0Zm0 0H20m0 0A2.25 2.25 0 1 0 15.5 13a2.25 2.25 0 0 0 4.5 0V7.5A2.25 2.25 0 0 0 15.5 5a2.25 2.25 0 0 0-4.5 0v2.25m0 0h-5.5M9.5 10.75v8.25M16.25 13.5a2.25 2.25 0 1 1 0-4.5m0 4.5a2.25 2.25 0 1 0 0-4.5M2.75 7.5A2.25 2.25 0 0 1 5 5.25h14A2.25 2.25 0 0 1 21.25 7.5v9A2.25 2.25 0 0 1 19 18.75H5A2.25 2.25 0 0 1 2.75 16.5v-9Z"
-        />
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-slate-800 dark:text-slate-200">Anda Belum Memiliki Akun</h3>
-      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-        Mulai kelola keuangan Anda dengan menambahkan akun pertama.
-      </p>
-
-      <RouterLink
-        :to="{ name: 'account-create' }"
-        class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#2E8B57] hover:bg-[#236B43] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-      >
-        + Tambah Akun Sekarang
-      </RouterLink>
-    </div>
-
-    <div
-      v-if="!isLoading && accounts && accounts.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
-    >
-      <div v-for="account in accounts" :key="account.id" class="flex flex-col gap-2">
-        <!-- Card Face -->
-        <div
-          :class="getCardGradient(account.accountType)"
-          class="relative rounded-2xl p-4 sm:p-5 text-white shadow-xl overflow-hidden cursor-pointer select-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl"
-          style="aspect-ratio: 1.586 / 1;"
-          @click="viewTransactions(account.id)"
-        >
-          <!-- Decorative background circles -->
-          <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/10 pointer-events-none"></div>
-          <div class="absolute -bottom-12 -left-10 w-56 h-56 rounded-full bg-white/10 pointer-events-none"></div>
-
-          <!-- Top row: Chip + Type badge -->
-          <div class="flex items-start justify-between relative z-10">
-            <!-- EMV Chip -->
-            <svg width="38" height="28" viewBox="0 0 38 28" class="mt-0.5 flex-shrink-0">
-              <rect width="38" height="28" rx="4" fill="#C9A227"/>
-              <rect x="1" y="1" width="36" height="26" rx="3" fill="none" stroke="#A8811A" stroke-width="0.6"/>
-              <rect x="13" y="0" width="12" height="28" fill="#B8902A" opacity="0.55"/>
-              <rect x="0" y="9" width="38" height="10" fill="#B8902A" opacity="0.55"/>
-              <rect x="13" y="9" width="12" height="10" fill="#9A7520" opacity="0.7"/>
-            </svg>
-            <!-- Account type label -->
-            <span class="text-xs font-bold tracking-widest uppercase bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full">
-              {{ getCardTypeLabel(account.accountType) }}
-            </span>
-          </div>
-
-          <!-- Balance -->
-          <div class="mt-3 relative z-10">
-            <p class="text-xs text-white/60 uppercase tracking-wider mb-0.5">Saldo</p>
-            <p v-if="showBalance" class="text-xl font-bold tracking-tight drop-shadow">
-              {{ formatCurrency(account.currentBalance, account.currency) }}
-            </p>
-            <p v-else class="text-xl font-bold tracking-widest drop-shadow">Rp ••••••</p>
-          </div>
-
-          <!-- Bottom row: account number + name -->
-          <div class="absolute bottom-4 sm:bottom-5 left-4 sm:left-5 right-4 sm:right-5 flex items-end justify-between z-10 gap-2">
-            <div class="flex-shrink-0">
-              <p class="text-[10px] sm:text-xs text-white/60 uppercase tracking-wider mb-0.5 whitespace-nowrap">No. Akun</p>
-              <p class="font-mono text-xs sm:text-sm tracking-widest whitespace-nowrap">
-                {{ account.accountNumber ? `•••• ${account.accountNumber.slice(-4)}` : '•••• ••••' }}
-              </p>
-            </div>
-            <div class="text-right min-w-0">
-              <p class="text-[10px] sm:text-xs text-white/60 uppercase tracking-wider mb-0.5 truncate">
-                {{ account.bank?.name || 'Akun' }}
-              </p>
-              <p class="text-xs sm:text-sm font-semibold truncate" :title="account.accountName">
-                {{ account.accountName }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action buttons -->
-        <div class="flex justify-end space-x-1 print:hidden px-1">
-          <button
-            @click="viewTransactions(account.id)"
-            title="Lihat Transaksi"
-            class="p-1.5 text-slate-500 hover:text-emerald-600 rounded-md hover:bg-indigo-50 dark:hover:bg-emerald-900/30 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-            </svg>
-          </button>
-          <RouterLink
-            :to="{ name: 'account-edit', params: { id: account.id } }"
-            title="Edit Akun"
-            class="p-1.5 text-slate-500 hover:text-emerald-600 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-            </svg>
+      <div v-if="filteredAccounts.length" class="accounts-card-grid">
+        <article v-for="account in filteredAccounts" :key="account.id" class="account-card" :class="`is-${account.accountType.toLowerCase()}`">
+          <RouterLink :to="{ name: 'account-detail', params: { id: account.id } }" class="account-card-main" :aria-label="`Lihat detail akun ${account.accountName}`">
+            <div class="account-card-top"><span class="account-card-icon"><AppIcon :name="accountTypeInfo(account.accountType).icon" /></span><span class="account-type-badge">{{ accountTypeInfo(account.accountType).label }}</span></div>
+            <h3>{{ account.accountName }}</h3><p class="account-provider">{{ account.bank?.name || accountTypeInfo(account.accountType).label }}</p>
+            <div class="account-card-balance"><span>Saldo saat ini · {{ accountCurrency(account) }}</span><strong :class="{ 'is-negative': showBalance && Number(account.currentBalance) < 0 }">{{ showBalance ? accountMoney(account.currentBalance, accountCurrency(account)) : '••••••••' }}</strong></div>
+            <div class="account-card-number"><span>{{ account.accountNumber ? `•••• ${account.accountNumber.slice(-4)}` : 'Tanpa nomor akun' }}</span><AppIcon name="arrow" /></div>
           </RouterLink>
-          <button
-            @click="promptDeleteAccount(account)"
-            title="Hapus Akun"
-            class="p-1.5 text-slate-500 hover:text-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-            </svg>
-          </button>
-        </div>
+          <footer class="account-card-footer print:hidden">
+            <RouterLink :to="{ name: 'account-detail', params: { id: account.id } }">Detail &amp; transaksi</RouterLink>
+            <div><RouterLink :to="{ name: 'account-edit', params: { id: account.id } }" class="accounts-icon-button" :aria-label="`Edit akun ${account.accountName}`" title="Edit akun"><AppIcon name="edit" /></RouterLink>
+              <button type="button" class="accounts-icon-button is-danger" :disabled="isDeletingAccount" :aria-label="`Hapus akun ${account.accountName}`" title="Hapus akun" @click="promptDelete(account, $event)"><AppIcon name="trash" /></button></div>
+          </footer>
+        </article>
       </div>
-    </div>
+      <div v-else class="accounts-state"><AppIcon name="search" /><h3>Akun yang dicari belum ditemukan.</h3><p>Coba kata kunci lain atau ubah jenis akun dan mata uang.</p><button type="button" class="accounts-button" @click="resetFilters">Tampilkan semua akun</button></div>
+    </section>
 
-    <ConfirmationModal
-      v-model:isOpen="isDeleteModalOpen"
-      title="Konfirmasi Hapus Akun"
-      :message="`Apakah Anda yakin ingin menghapus akun '${accountToDelete?.accountName || ''}'? Aksi ini tidak dapat dibatalkan. Semua transaksi terkait akun ini mungkin juga akan terpengaruh atau terhapus.`"
-      confirmButtonText="Ya, Hapus Akun Ini"
-      confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-      iconType="danger"
-      :isConfirming="isDeletingAccount"
-      @confirm="handleConfirmDelete"
-      @cancel="closeDeleteModal"
-    />
+    <div v-if="isLoading" class="accounts-state" role="status"><span class="accounts-spinner" aria-hidden="true"></span><h2>Memuat akun keuanganmu...</h2><p>Sedang menyiapkan saldo dan daftar akun.</p></div>
+    <div v-else-if="loadError" class="accounts-state is-error" role="alert"><AppIcon name="help" /><h2>Daftar akun belum berhasil dimuat.</h2><p>{{ loadError }}</p><button type="button" class="accounts-button" @click="loadAccounts">Coba lagi</button></div>
+    <div v-else-if="!allAccounts.length" class="accounts-state"><AppIcon name="wallet" /><h2>Mulai dari akun pertamamu.</h2><p>Tambahkan rekening bank, dompet digital, uang tunai, atau kartu kredit untuk mulai mencatat transaksi.</p><RouterLink :to="{ name: 'account-create' }" class="accounts-button is-primary"><AppIcon name="plus" />Tambah akun pertama</RouterLink></div>
+
+    <Teleport to="body">
+      <ConfirmationModal v-model:isOpen="isDeleteModalOpen" title="Hapus akun?"
+        :message="`Hapus akun '${accountToDelete?.accountName || ''}'? Tindakan ini tidak dapat dibatalkan dan dapat memengaruhi transaksi terkait.`"
+        confirmButtonText="Hapus akun" confirmButtonClass="bg-red-600 hover:bg-red-700 focus:ring-red-500" iconType="danger"
+        :isConfirming="isDeletingAccount" @confirm="confirmDelete" @cancel="closeDelete" />
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { RouterLink } from 'vue-router'
+import AppIcon from '@/components/common/AppIcon.vue'
+import AppSelect from '@/components/common/AppSelect.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
-import StatsCard from '@/components/common/StatsCard.vue'
 import { useAccountStore } from '@/stores/accounts'
 import { useAuthStore } from '@/stores/auth'
-import ExportService from '@/services/exportService'
+import { useToastStore } from '@/stores/toast'
 import type { Account } from '@/types/accounts'
+import type { SelectOption } from '@/types/select'
+import type { FrontendAccountType } from '@/types/enums'
+import { accountBalanceTotals, accountCurrency, accountMoney, accountTypes, canCreateAccount, filterAccountList, type AccountSort } from '@/utils/accountList'
+import '@/assets/accounts.css'
 
 const accountStore = useAccountStore()
 const authStore = useAuthStore()
-const router = useRouter()
+const toastStore = useToastStore()
+const allAccounts = computed(() => accountStore.accounts)
+const isDeletingAccount = ref(false)
+const loadError = ref('')
+const pageHeading = ref<HTMLElement | null>(null)
+const isLoading = computed(() => accountStore.isLoading && !isDeletingAccount.value)
+const isFreePlan = computed(() => authStore.currentUser?.subscriptionPlan === 'FREE')
+const canAddAccount = computed(() => canCreateAccount(authStore.currentUser?.subscriptionPlan, allAccounts.value.length))
+const balanceTotals = computed(() => accountBalanceTotals(allAccounts.value))
+const readBalancePreference = () => { try { return localStorage.getItem('show_balance') === 'true' } catch { return false } }
+const showBalance = ref(readBalancePreference())
+watch(showBalance, (visible) => { try { localStorage.setItem('show_balance', String(visible)) } catch { /* Keep session preference. */ } })
+const search = ref('')
+const activeType = ref<FrontendAccountType | null>(null)
+const currency = ref('')
+const sort = ref<AccountSort>('name')
+const sortOptions: SelectOption<AccountSort>[] = [{ value: 'name', label: 'Nama A–Z' }, { value: 'newest', label: 'Terbaru ditambahkan' }, { value: 'oldest', label: 'Terlama ditambahkan' }]
+const currencyOptions = computed<SelectOption<string>[]>(() => [{ value: '', label: 'Semua mata uang' }, ...balanceTotals.value.map(({ currency }) => ({ value: currency, label: currency }))])
+const filteredAccounts = computed(() => filterAccountList(allAccounts.value, search.value, activeType.value, currency.value, sort.value))
+const hasFilters = computed(() => !!search.value || !!activeType.value || !!currency.value)
+const resetFilters = () => { search.value = ''; activeType.value = null; currency.value = '' }
+const accountTypeInfo = (type: FrontendAccountType) => accountTypes.find((item) => item.value === type) || { label: 'Akun', icon: 'wallet' }
+watch(currencyOptions, (options) => { if (currency.value && !options.some((option) => option.value === currency.value)) currency.value = '' })
 
-// Export dropdown
-const isExportDropdownOpen = ref(false)
+const isExportOpen = ref(false)
+const isExporting = ref(false)
 const exportDropdownRef = ref<HTMLElement | null>(null)
-const handleClickOutsideExport = (event: MouseEvent) => {
-  if (exportDropdownRef.value && !exportDropdownRef.value.contains(event.target as Node)) {
-    isExportDropdownOpen.value = false
-  }
-}
-
-const showBalance = ref(localStorage.getItem('show_balance') === 'true')
-
-watch(showBalance, (val) => {
-  localStorage.setItem('show_balance', val.toString())
-})
-
-const activeTypeFilter = ref<string | null>(null)
-const accounts = computed(() => {
-  if (!activeTypeFilter.value) return accountStore.accounts
-  return accountStore.accounts.filter((a) => a.accountType === activeTypeFilter.value)
-})
-const isLoading = computed(() => accountStore.isLoading)
-
-const canAddAccount = computed(() => {
-  const isFree = authStore.currentUser?.subscriptionPlan === 'FREE'
-  return !isFree || (accounts.value && accounts.value.length < 4)
-})
-
-onMounted(async () => {
-  document.addEventListener('click', handleClickOutsideExport)
-  await accountStore.fetchAccounts()
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutsideExport)
-})
-
-const filtersAccountsByType = (type: string | null) => {
-  activeTypeFilter.value = activeTypeFilter.value === type ? null : type
-}
-
-const formatCurrency = (
-  value: number | string | null | undefined,
-  currency: string = 'IDR',
-): string => {
-  if (value === null || value === undefined) return formatCurrency(0, currency)
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value
-  if (isNaN(numericValue)) return 'N/A'
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 0,
-  }).format(numericValue)
-}
-
-const getCardGradient = (accountType: string): string => {
-  switch (accountType) {
-    case 'BANK':
-      return 'bg-gradient-to-br from-[#2E8B57] via-[#236B43] to-[#1a5233]'
-    case 'CREDIT_CARD':
-      return 'bg-gradient-to-br from-yellow-400 via-orange-500 to-rose-600'
-    case 'CASH':
-      return 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-700'
-    case 'E_WALLET':
-      return 'bg-gradient-to-br from-purple-500 via-violet-600 to-[#236B43]'
-    default:
-      return 'bg-gradient-to-br from-slate-500 via-slate-600 to-slate-800'
-  }
-}
-
-const getCardTypeLabel = (accountType: string): string => {
-  switch (accountType) {
-    case 'BANK': return 'Bank'
-    case 'CREDIT_CARD': return 'Credit'
-    case 'CASH': return 'Cash'
-    case 'E_WALLET': return 'E-Wallet'
-    default: return 'Akun'
-  }
-}
-
-const viewTransactions = (accountId: string) => {
-  router.push({ name: 'account-detail', params: { id: accountId } })
-}
-
+const exportTrigger = ref<HTMLButtonElement | null>(null)
+const canExport = computed(() => !isLoading.value && !loadError.value && !isExporting.value && !isDeletingAccount.value && filteredAccounts.value.length > 0)
+const closeExport = (restoreFocus = false) => { isExportOpen.value = false; if (restoreFocus) exportTrigger.value?.focus() }
+const outsideClick = (event: MouseEvent) => { if (!exportDropdownRef.value?.contains(event.target as Node)) closeExport() }
 const exportAccounts = async (format: 'excel' | 'pdf') => {
-  if (accounts.value.length === 0) return
-
-  const title = 'Laporan Daftar Akun Saya'
-  if (format === 'excel') {
-    await ExportService.exportAccountsToExcel(accounts.value, title)
-  } else {
-    ExportService.exportAccountsToPDF(accounts.value, title)
-  }
+  if (!canExport.value) return
+  const rows = [...filteredAccounts.value]
+  closeExport(true)
+  isExporting.value = true
+  try {
+    const { default: ExportService } = await import('@/services/exportService')
+    if (format === 'excel') await ExportService.exportAccountsToExcel(rows, 'Daftar akun keuangan')
+    else ExportService.exportAccountsToPDF(rows, 'Daftar akun keuangan')
+  } catch { toastStore.show('Ekspor belum berhasil. Silakan coba lagi.', 'error') }
+  finally { isExporting.value = false }
 }
 
-// Logika untuk Modal Hapus
 const isDeleteModalOpen = ref(false)
 const accountToDelete = ref<Account | null>(null)
-const isDeletingAccount = ref(false)
-
-const promptDeleteAccount = (account: Account) => {
+let deleteTrigger: HTMLElement | null = null
+const promptDelete = (account: Account, event: MouseEvent) => {
   accountToDelete.value = account
+  deleteTrigger = event.currentTarget as HTMLElement
+  closeExport()
   isDeleteModalOpen.value = true
 }
-
-const handleConfirmDelete = async () => {
-  if (!accountToDelete.value) return
+const closeDelete = async () => {
+  if (isDeletingAccount.value) return
+  isDeleteModalOpen.value = false
+  accountToDelete.value = null
+  await nextTick()
+  if (deleteTrigger?.isConnected) deleteTrigger.focus()
+  else pageHeading.value?.focus()
+}
+const confirmDelete = async () => {
+  if (!accountToDelete.value || isDeletingAccount.value) return
   isDeletingAccount.value = true
   try {
     await accountStore.deleteAccount(accountToDelete.value.id)
-  } catch (error) {
-    console.error('Gagal menghapus akun di view:', error)
-  } finally {
-    isDeletingAccount.value = false
-    closeDeleteModal()
-  }
+    toastStore.show('Akun berhasil dihapus.')
+  } catch { toastStore.show(accountStore.error || 'Akun belum berhasil dihapus.', 'error') }
+  finally { isDeletingAccount.value = false; closeDelete() }
 }
-
-const closeDeleteModal = () => {
-  isDeleteModalOpen.value = false
-  accountToDelete.value = null
+const loadAccounts = async () => {
+  loadError.value = ''
+  try { await accountStore.fetchAccounts(); loadError.value = accountStore.error || '' }
+  catch { loadError.value = 'Data akun belum berhasil dimuat.' }
 }
+onMounted(() => { document.addEventListener('click', outsideClick); loadAccounts() })
+onUnmounted(() => document.removeEventListener('click', outsideClick))
 </script>
