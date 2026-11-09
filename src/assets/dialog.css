@@ -1,0 +1,124 @@
+.money-dialog {
+  --shell-paper: #fdf9ee;
+  --shell-surface: #fffcf5;
+  --shell-ink: #27231d;
+  --shell-muted: #6c6256;
+  --shell-line: #423a2d;
+  --shell-rule: #e2d8c7;
+  --shell-grape: #5026a5;
+  --shell-lilac: #eee4ff;
+  --shell-mint: #ddf4d9;
+  --shell-sun: #fff0b6;
+  --shell-shadow: #27231d;
+  position: fixed;
+  inset: 0;
+  width: min(560px,calc(100% - 32px));
+  max-height: calc(100dvh - 48px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--shell-line);
+  border-radius: 22px;
+  background: var(--shell-surface);
+  color: var(--shell-ink);
+  box-shadow: 6px 8px 0 var(--shell-shadow),0 22px 70px #0003;
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 14px;
+}
+.dark .money-dialog {
+  --shell-paper: #17151d;
+  --shell-surface: #211e29;
+  --shell-ink: #f6f0e5;
+  --shell-muted: #b7aec2;
+  --shell-line: #736b7e;
+  --shell-rule: #3c3549;
+  --shell-grape: #cfb8f5;
+  --shell-lilac: #35264e;
+  --shell-mint: #243a32;
+  --shell-sun: #423822;
+  --shell-shadow: #0a080e;
+}
+.money-dialog *, .money-dialog *::before, .money-dialog *::after {
+  box-sizing: border-box;
+}
+.money-dialog::backdrop {
+  background: #16102099;
+  backdrop-filter: blur(4px);
+}
+.money-dialog :is(h2,p) {
+  margin: 0;
+}
+.money-dialog svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.money-dialog :is(a,button,input,[tabindex]):focus-visible {
+  outline: 3px solid var(--shell-grape);
+  outline-offset: 3px;
+}
+.app-dialog-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 26px 27px 23px;
+  border-bottom: 1px solid var(--shell-rule);
+}
+.app-dialog-heading > div {
+  min-width: 0;
+}
+.app-dialog-eyebrow {
+  color: var(--shell-muted);
+  font-family: Consolas,'Courier New',monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.app-dialog-heading h2 {
+  margin-top: 8px;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+.app-dialog-heading p {
+  margin-top: 12px;
+  color: var(--shell-muted);
+  font-size: 12px;
+  line-height: 1.75;
+}
+.app-dialog-close {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  padding: 8px;
+  border: 1px solid var(--shell-rule);
+  border-radius: 9px;
+  background: var(--shell-surface);
+  color: var(--shell-muted);
+  cursor: pointer;
+}
+.app-dialog-close:hover:not(:disabled) {
+  background: var(--shell-lilac);
+  color: var(--shell-grape);
+}
+.app-dialog-close:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+@media (max-width: 480px) {
+  .money-dialog {
+    width: calc(100% - 24px);
+    max-height: calc(100dvh - 32px);
+    border-radius: 18px;
+  }
+  .app-dialog-heading {
+    padding: 23px 19px;
+  }
+  .app-dialog-heading h2 {
+    font-size: 25px;
+  }
+}
