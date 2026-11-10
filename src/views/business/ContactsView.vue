@@ -1,9 +1,9 @@
 <template>
-  <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="business-contacts-page">
 
     <!-- Header -->
-    <div class="mb-6 flex justify-between items-start">
-      <div>
+    <div class="contacts-heading">
+      <div class="contacts-title">
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Kontak</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Customer, vendor, dan karyawan perusahaan.</p>
       </div>
@@ -40,6 +40,7 @@
               ? 'bg-[#2E8B57] text-white shadow-sm scale-[1.02]'
               : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-emerald-400 hover:text-emerald-600',
           ]"
+          :aria-pressed="activeFilter === tab.value"
         >
           {{ tab.label }}
           <span
@@ -220,6 +221,7 @@ import { useBusinessStore } from '@/stores/business'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import type { Contact, ContactType } from '@/types/business'
+import '@/assets/business-contacts.css'
 
 const router = useRouter()
 const contactsStore = useContactsStore()

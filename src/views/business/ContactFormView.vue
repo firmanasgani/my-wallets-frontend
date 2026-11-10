@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="business-contact-form-page">
 
     <!-- Page Header -->
     <div class="mb-6 flex items-center gap-3">
@@ -240,6 +240,7 @@ import { useBankStore } from '@/stores/banks'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
 import type { ContactType } from '@/types/business'
+import '@/assets/business-contacts.css'
 
 const router = useRouter()
 const route = useRoute()

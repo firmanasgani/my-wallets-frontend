@@ -1,0 +1,166 @@
+.business-contacts-page, .business-contact-form-page {
+  --contact-paper: var(--shell-paper, #fdf9ee);
+  --contact-surface: var(--shell-surface, #fffcf5);
+  --contact-ink: var(--shell-ink, #27231d);
+  --contact-muted: var(--shell-muted, #6c6256);
+  --contact-line: var(--shell-line, #423a2d);
+  --contact-rule: var(--shell-rule, #e2d8c7);
+  --contact-accent: var(--shell-grape, #5026a5);
+  --contact-tint: var(--shell-lilac, #eee4ff);
+  width: min(100%, 1280px);
+  margin: 0 auto;
+  padding: clamp(20px, 3.2vw, 40px) clamp(16px, 2.8vw, 30px);
+  color: var(--contact-ink);
+}
+.business-contacts-page *, .business-contact-form-page *,
+.business-contacts-page *::before, .business-contact-form-page *::before,
+.business-contacts-page *::after, .business-contact-form-page *::after { box-sizing: border-box; }
+.business-contacts-page :is(h1,h2,h3,p), .business-contact-form-page :is(h1,h2,h3,p) { margin-top: 0; }
+.business-contacts-page :is(button,a):focus-visible, .business-contact-form-page :is(button,a,input,textarea):focus-visible { outline: 3px solid var(--contact-accent); outline-offset: 3px; }
+
+/* Contact list */
+.contacts-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--contact-rule);
+}
+.contacts-title { display: grid; gap: 7px; }
+.contacts-title h1 { margin: 0; color: var(--contact-ink) !important; font-size: clamp(27px,3.2vw,39px); font-weight: 900; letter-spacing: -.05em; line-height: 1.05; }
+.contacts-title p { margin: 0 !important; color: var(--contact-muted) !important; font-size: 13px; }
+.contacts-heading > button,
+.business-contacts-page .text-center > button {
+  min-height: 42px;
+  padding: 10px 16px !important;
+  border: 1px solid var(--contact-ink);
+  border-radius: 999px !important;
+  background: var(--contact-ink) !important;
+  color: var(--contact-surface) !important;
+  font-weight: 800;
+  box-shadow: none !important;
+  transition: transform .16s ease, background .16s ease;
+}
+.contacts-heading > button:hover, .business-contacts-page .text-center > button:hover { transform: translateY(-1px); background: var(--contact-accent) !important; }
+.business-contacts-page > .mb-5.rounded-lg { border-radius: 14px !important; }
+.business-contacts-page > .mb-6.flex.items-center.justify-between { margin-bottom: 18px; }
+.business-contacts-page > .mb-6.flex.items-center.justify-between button {
+  min-height: 38px;
+  padding: 8px 14px !important;
+  border: 1px solid var(--contact-rule) !important;
+  border-radius: 999px !important;
+  background: var(--contact-surface) !important;
+  color: var(--contact-muted) !important;
+  font-size: 12px;
+  font-weight: 750;
+  transition: .16s ease;
+}
+.business-contacts-page > .mb-6.flex.items-center.justify-between button[aria-pressed="true"] { border-color: var(--contact-ink) !important; background: var(--contact-ink) !important; color: var(--contact-surface) !important; }
+.business-contacts-page > .mb-6.flex.items-center.justify-between button:hover:not([aria-pressed="true"]) { border-color: var(--contact-accent) !important; background: var(--contact-tint) !important; color: var(--contact-accent) !important; }
+.business-contacts-page > .mb-6.flex.items-center.justify-between button span { font-variant-numeric: tabular-nums; }
+.business-contacts-page > .mb-6.flex.items-center.justify-between button[aria-pressed="true"] span { background: color-mix(in srgb, var(--contact-surface) 18%, transparent) !important; color: var(--contact-surface) !important; }
+.business-contacts-page > .mb-6.flex.items-center.justify-between > p { color: var(--contact-muted) !important; }
+.business-contacts-page > .flex.justify-center { min-height: 190px; align-items: center; }
+.business-contacts-page > .bg-white.dark\:bg-slate-800.rounded-2xl {
+  border-color: var(--contact-rule) !important;
+  border-radius: 20px !important;
+  background: var(--contact-surface) !important;
+}
+.business-contacts-page > .bg-white.dark\:bg-slate-800.rounded-2xl p { color: var(--contact-muted) !important; }
+.business-contacts-page > .bg-white.dark\:bg-slate-800.rounded-2xl p.font-semibold { color: var(--contact-ink) !important; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 { gap: 15px; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div {
+  border-color: var(--contact-rule) !important;
+  border-radius: 18px !important;
+  background: var(--contact-surface) !important;
+  box-shadow: 0 8px 23px color-mix(in srgb, var(--contact-ink) 4%, transparent) !important;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div:hover { transform: translateY(-2px); box-shadow: 0 14px 32px color-mix(in srgb, var(--contact-ink) 8%, transparent) !important; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div > .h-2 { height: 4px; opacity: .85; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div > .p-5 { padding: 19px !important; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div > .p-5 > div:first-child > div:first-child {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px !important;
+  box-shadow: none !important;
+}
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div > .p-5 > div:first-child p { color: var(--contact-ink) !important; font-size: 14px; font-weight: 850; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div > .p-5 > div:first-child > div:last-child > span { border-radius: 999px !important; font-size: 10px; font-weight: 800; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div .bg-slate-100 { background: var(--contact-paper) !important; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div .text-slate-600,
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div .dark\:text-slate-300,
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div .text-slate-700 { color: var(--contact-ink) !important; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div .text-slate-400,
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div .dark\:text-slate-500 { color: var(--contact-muted) !important; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div .border-slate-100,
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div .dark\:border-slate-700 { border-color: var(--contact-rule) !important; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div button { min-height: 34px; border-radius: 999px !important; font-weight: 750; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div button[title="Edit"] { color: var(--contact-accent) !important; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div button[title="Edit"]:hover { background: var(--contact-tint) !important; }
+.business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div button[title="Hapus"]:hover { background: #fff0eb !important; }
+
+/* Create and edit form */
+.business-contact-form-page { max-width: 1120px; }
+.business-contact-form-page > .mb-6 { gap: 13px; margin-bottom: 22px; }
+.business-contact-form-page > .mb-6 > button { border: 1px solid var(--contact-rule); background: var(--contact-surface); color: var(--contact-muted) !important; }
+.business-contact-form-page > .mb-6 h1 { margin: 0; color: var(--contact-ink) !important; font-size: clamp(25px,3vw,35px); font-weight: 900; letter-spacing: -.045em; }
+.business-contact-form-page > .mb-6 p { color: var(--contact-muted) !important; }
+.business-contact-form-page form { display: grid; gap: 17px; }
+.business-contact-form-page form > .grid { gap: 16px; }
+.business-contact-form-page form section {
+  border: 1px solid var(--contact-rule) !important;
+  border-radius: 18px !important;
+  background: var(--contact-surface) !important;
+  box-shadow: 0 9px 24px color-mix(in srgb, var(--contact-ink) 4%, transparent);
+}
+.business-contact-form-page form section > div:first-child.flex { padding: 15px 19px !important; border-color: var(--contact-rule) !important; }
+.business-contact-form-page form section h2 { color: var(--contact-ink) !important; font-size: 13px; font-weight: 850; }
+.business-contact-form-page form section .p-5 { padding: 20px !important; }
+.business-contact-form-page form label:not(:has(input[type="radio"])) { color: var(--contact-ink) !important; font-weight: 700; }
+.business-contact-form-page form :is(input:not([type="radio"]),textarea) {
+  border-color: var(--contact-rule) !important;
+  border-radius: 11px !important;
+  background: var(--contact-paper) !important;
+  color: var(--contact-ink) !important;
+}
+.business-contact-form-page form :is(input,textarea)::placeholder { color: var(--contact-muted) !important; opacity: .75; }
+.business-contact-form-page form :is(input,textarea):focus { border-color: var(--contact-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--contact-accent) 15%, transparent) !important; }
+.business-contact-form-page form label:has(input[type="radio"]) {
+  min-height: 92px;
+  border: 1px solid var(--contact-rule) !important;
+  border-radius: 15px !important;
+  background: var(--contact-paper);
+  color: var(--contact-muted) !important;
+}
+.business-contact-form-page form label:has(input[type="radio"]:checked) { border-color: var(--contact-accent) !important; background: var(--contact-tint) !important; color: var(--contact-accent) !important; box-shadow: inset 0 0 0 1px var(--contact-accent); }
+.business-contact-form-page form label:has(input[type="radio"]:focus-visible) { outline: 3px solid var(--contact-accent); outline-offset: 3px; }
+.business-contact-form-page form .text-slate-700,
+.business-contact-form-page form .text-slate-800,
+.business-contact-form-page form .dark\:text-slate-100,
+.business-contact-form-page form .dark\:text-slate-200 { color: var(--contact-ink) !important; }
+.business-contact-form-page form .text-slate-400,
+.business-contact-form-page form .dark\:text-slate-500 { color: var(--contact-muted) !important; }
+.business-contact-form-page form .border-slate-100,
+.business-contact-form-page form .border-slate-300,
+.business-contact-form-page form .dark\:border-slate-600,
+.business-contact-form-page form .dark\:border-slate-700 { border-color: var(--contact-rule) !important; }
+.business-contact-form-page form .bg-slate-50 { background: var(--contact-paper) !important; }
+.business-contact-form-page form > .flex.justify-end button { min-height: 44px; padding: 10px 18px !important; border-radius: 999px !important; font-weight: 800; box-shadow: none !important; }
+.business-contact-form-page form > .flex.justify-end button[type="button"] { border-color: var(--contact-rule) !important; background: var(--contact-surface) !important; color: var(--contact-ink) !important; }
+.business-contact-form-page form > .flex.justify-end button[type="submit"] { background: var(--contact-ink) !important; color: var(--contact-surface) !important; }
+.business-contact-form-page form > .flex.justify-end button[type="submit"]:hover:not(:disabled) { background: var(--contact-accent) !important; }
+@media (max-width: 680px) {
+  .business-contacts-page, .business-contact-form-page { padding-top: 22px; }
+  .contacts-heading { align-items: center; }
+  .contacts-heading > button { padding: 9px 12px !important; font-size: 11px; }
+  .business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 { gap: 11px; }
+  .business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div > .p-5 { padding: 16px !important; }
+  .business-contacts-page > .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 > div button { padding-inline: 9px; }
+  .business-contact-form-page form > .grid { gap: 12px; }
+  .business-contact-form-page form section .p-5 { padding: 16px !important; }
+  .business-contact-form-page form > .flex.justify-end { position: sticky; bottom: 0; z-index: 5; padding: 12px; margin: 0 -12px; border-top: 1px solid var(--contact-rule); background: var(--contact-paper); }
+  .business-contact-form-page form > .flex.justify-end button { flex: 1; justify-content: center; }
+}
