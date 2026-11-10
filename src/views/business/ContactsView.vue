@@ -27,6 +27,18 @@
       <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ errorMsg }}</p>
     </div>
 
+    <div class="contacts-overview" aria-label="Ringkasan kontak">
+      <div v-for="tab in tabs" :key="tab.value" class="contacts-stat">
+        <span>{{ tab.label === 'Semua' ? 'Total kontak' : tab.label }}</span>
+        <strong>{{ countByType(tab.value) }}</strong>
+      </div>
+    </div>
+
+    <div class="contacts-directory-heading">
+      <div><span class="shell-overline">DIREKTORI</span><h2>Daftar kontak</h2><p>Temukan dan kelola koneksi bisnismu.</p></div>
+      <label class="contacts-search"><span class="sr-only">Cari kontak</span><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke-width="2"/><path d="m20 20-4-4" stroke-width="2" stroke-linecap="round"/></svg><input v-model.trim="searchQuery" type="search" placeholder="Cari nama, email, atau telepon..." /></label>
+    </div>
+
     <!-- Filter Tabs + Count Summary -->
     <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
       <div class="flex gap-2 flex-wrap">
@@ -77,12 +89,12 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       </div>
-      <p class="text-base font-semibold text-slate-700 dark:text-slate-300">Belum ada kontak</p>
+      <p class="text-base font-semibold text-slate-700 dark:text-slate-300">{{ searchQuery || activeFilter !== 'ALL' ? 'Kontak tidak ditemukan' : 'Belum ada kontak' }}</p>
       <p class="text-sm text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
-        {{ canCreate ? 'Tambahkan pelanggan, pemasok, atau karyawan untuk memudahkan pencatatanmu.' : 'Kontak akan ditampilkan di sini.' }}
+        {{ searchQuery || activeFilter !== 'ALL' ? 'Coba kata kunci atau kategori lain.' : canCreate ? 'Tambahkan pelanggan, pemasok, atau karyawan untuk memudahkan pencatatanmu.' : 'Kontak akan ditampilkan di sini.' }}
       </p>
       <button
-        v-if="canCreate"
+        v-if="canCreate && !searchQuery && activeFilter === 'ALL'"
         @click="router.push({ name: 'business-contacts-create' })"
         class="mt-5 inline-flex items-center gap-2 bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-sm"
       >
@@ -232,6 +244,7 @@ const isDeleteModalOpen = ref(false)
 const isDeleting = ref(false)
 const selectedContact = ref<Contact | null>(null)
 const activeFilter = ref<ContactType | 'ALL'>('ALL')
+const searchQuery = ref('')
 
 const tabs = [
   { value: 'ALL' as const, label: 'Semua' },
@@ -251,9 +264,11 @@ const canDelete = computed(() => {
 })
 
 const filteredContacts = computed(() => {
-  if (!contactsStore.contacts.length) return []
-  if (activeFilter.value === 'ALL') return contactsStore.contacts
-  return contactsStore.contacts.filter((c) => c.type === activeFilter.value)
+  const query = searchQuery.value.toLocaleLowerCase()
+  return contactsStore.contacts.filter((c) =>
+    (activeFilter.value === 'ALL' || c.type === activeFilter.value) &&
+    (!query || [c.name, c.email, c.phone].some((value) => value?.toLocaleLowerCase().includes(query)))
+  )
 })
 
 const countByType = (type: ContactType | 'ALL') => {
