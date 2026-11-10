@@ -6,22 +6,23 @@
       class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden"
     >
       <!-- Section Header -->
-      <div
+      <button
+        type="button" :aria-expanded="!!expandedSections[type.toString()]"
         @click="toggleSection(type.toString())"
-        class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors"
+        class="w-full text-left px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors"
       >
-        <h3 class="text-md sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 text-white" :class="getBadgeClass(type.toString())">
+        <span class="text-md sm:text-lg font-semibold text-slate-800 dark:text-slate-200 flex items-center">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center mr-3 text-white" :class="getBadgeClass(type.toString())">
             <svg v-if="type === 'ASSET'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <svg v-else-if="type === 'LIABILITY'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             <svg v-else-if="type === 'EQUITY'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             <svg v-else-if="type === 'REVENUE'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
             <svg v-else-if="type === 'EXPENSE'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
             <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
-          </div>
+          </span>
           {{ formatTypeHeader(type.toString()) }}
-        </h3>
-        <div class="flex items-center gap-3">
+        </span>
+        <span class="flex items-center gap-3">
           <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
             {{ accountsList.length }} Akun
           </span>
@@ -32,8 +33,8 @@
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
-        </div>
-      </div>
+        </span>
+      </button>
 
       <!-- Table -->
       <div v-show="expandedSections[type.toString()]" class="overflow-x-auto">

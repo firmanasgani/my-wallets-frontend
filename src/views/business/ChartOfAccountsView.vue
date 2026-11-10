@@ -1,21 +1,8 @@
 <template>
-  <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <div class="mb-8 flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Chart of Accounts</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Daftar akun perkiraan akuntansi perusahaan.</p>
-      </div>
-      <button
-        v-if="isAdmin"
-        @click="openCreateModal"
-        class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        Tambah COA
-      </button>
-    </div>
-
+  <div class="accounts-page">
+    <header class="accounts-heading"><div><span class="shell-overline">PENGATURAN PEMBUKUAN</span><h1>Bagan akun</h1><p>Kelola daftar akun yang digunakan untuk mencatat transaksi bisnis.</p></div><button v-if="isAdmin" type="button" class="add-button" @click="openCreateModal"><span aria-hidden="true">+</span> Tambah akun</button></header>
+    <section class="accounts-overview"><div><span class="overview-label">BAGAN AKUN</span><h2>Struktur pembukuan</h2><p>Temukan akun berdasarkan kode atau nama, lalu buka kelompoknya untuk melihat rincian.</p></div><div class="overview-count"><strong>{{ totalAccounts }}</strong><span>akun terdaftar</span></div><div class="overview-count"><strong>{{ Object.keys(businessStore.chartOfAccounts).length }}</strong><span>kelompok akun</span></div></section>
+    <section class="accounts-toolbar"><div><span class="section-label">DAFTAR AKUN</span><h2>Semua akun</h2><p>Saldo awal dan tipe akun tersusun menurut kelompok.</p></div><div class="search-field"><label for="account-search">Cari akun</label><input id="account-search" v-model.trim="search" type="search" placeholder="Cari nama atau kode akun" /></div></section>
     <!-- Error -->
     <div v-if="errorMsg" class="mb-6 rounded-md bg-red-50 dark:bg-red-900/30 p-4 border border-red-200 dark:border-red-800">
       <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ errorMsg }}</p>
@@ -27,9 +14,10 @@
     </div>
 
     <!-- Table -->
+    <div v-else-if="search && Object.keys(filteredAccounts).length === 0" class="search-empty">Tidak ada akun yang cocok dengan pencarian.</div>
     <COATable
       v-else
-      :accounts="businessStore.chartOfAccounts"
+      :accounts="filteredAccounts"
       :is-admin="isAdmin"
       @edit="openEditModal"
       @delete="openDeleteConfirm"
@@ -68,6 +56,13 @@ import type { ChartOfAccount } from '@/types/business'
 
 const businessStore = useBusinessStore()
 
+const search = ref('')
+const totalAccounts = computed(() => Object.values(businessStore.chartOfAccounts).reduce((total, accounts) => total + accounts.length, 0))
+const filteredAccounts = computed(() => {
+  const query = search.value.toLocaleLowerCase()
+  if (!query) return businessStore.chartOfAccounts
+  return Object.fromEntries(Object.entries(businessStore.chartOfAccounts).map(([type, accounts]) => [type, accounts.filter(account => account.name.toLocaleLowerCase().includes(query) || account.code.toLocaleLowerCase().includes(query))]).filter(([, accounts]) => (accounts as ChartOfAccount[]).length > 0))
+})
 const errorMsg = ref('')
 const isModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
@@ -122,3 +117,7 @@ const handleDelete = async () => {
   }
 }
 </script>
+
+<style scoped>
+.accounts-page { --ink:var(--shell-ink,#27231d); --muted:var(--shell-muted,#6c6256); --surface:var(--shell-surface,#fffcf5); --rule:var(--shell-rule,#e2d8c7); max-width:1280px; margin:auto; padding:clamp(20px,3vw,40px) clamp(16px,3vw,32px); color:var(--ink); }.accounts-heading { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:28px; }.accounts-heading h1 { font-size:clamp(34px,4vw,52px); line-height:1; letter-spacing:-.055em; font-weight:900; margin:9px 0; }.accounts-heading p,.accounts-toolbar p { color:var(--muted); font-size:14px; }.add-button { background:var(--shell-grape,#5026a5); color:white; padding:11px 18px; border-radius:999px; font-weight:750; white-space:nowrap; }.add-button span { font-size:20px; vertical-align:middle; margin-right:4px; }.accounts-overview { display:flex; align-items:center; gap:36px; padding:30px 32px; border-radius:24px; background:radial-gradient(circle at 100% 0%,#7756ad,transparent 55%),#3d2c60; color:white; }.accounts-overview > div:first-child { flex:1; }.overview-label,.section-label { font-size:10px; letter-spacing:.13em; font-weight:800; }.overview-label { color:#d7c9ef; }.accounts-overview h2 { font-size:25px; font-weight:850; letter-spacing:-.04em; margin:7px 0; }.accounts-overview p { color:#e0d5ef; font-size:13px; max-width:460px; }.overview-count { display:flex; flex-direction:column; min-width:105px; border-left:1px solid #ffffff44; padding-left:24px; }.overview-count strong { font-size:32px; line-height:1; }.overview-count span { color:#e0d5ef; font-size:12px; margin-top:8px; }.accounts-toolbar { display:flex; justify-content:space-between; align-items:end; gap:20px; margin:32px 0 16px; }.section-label { color:var(--muted); }.accounts-toolbar h2 { font-size:26px; font-weight:850; letter-spacing:-.04em; margin:4px 0; }.search-field { display:flex; flex-direction:column; gap:5px; min-width:260px; }.search-field label { font-size:12px; font-weight:700; color:var(--muted); }.search-field input { background:var(--surface); border:1px solid var(--rule); border-radius:12px; padding:10px 14px; color:var(--ink); }.search-empty { padding:40px; background:var(--surface); border:1px solid var(--rule); border-radius:20px; text-align:center; color:var(--muted); }.accounts-page :deep(button:focus-visible),.accounts-page input:focus-visible { outline:3px solid #9a78d5; outline-offset:3px; } @media(max-width:700px) { .accounts-heading,.accounts-toolbar { align-items:start; flex-direction:column; }.accounts-overview { flex-wrap:wrap; padding:24px; gap:20px; }.accounts-overview > div:first-child { flex-basis:100%; }.overview-count:first-of-type { border:0; padding:0; }.search-field { width:100%; min-width:0; } }
+</style>
