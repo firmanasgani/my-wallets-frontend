@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="business-transaction-detail-page">
     <!-- Back Button -->
     <button
       @click="$router.back()"
@@ -384,6 +384,7 @@ import { BusinessService } from '@/services/business.service'
 import ExportService from '@/services/exportService'
 import type { BusinessTransaction } from '@/types/business'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
+import '@/assets/business-transactions.css'
 
 const route = useRoute()
 const router = useRouter()

@@ -2,18 +2,23 @@
   <Teleport to="body">
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4"
+      class="business-tx-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4"
       @click.self="$emit('close')"
     >
       <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="$emit('close')" />
 
       <div
-        class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700"
+        class="business-tx-modal relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="business-tx-modal-title"
       >
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-          <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Jurnal Baru</h2>
+        <div class="business-tx-modal-header flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+          <div><span class="business-tx-eyebrow">AKUNTANSI PERUSAHAAN</span><h2 id="business-tx-modal-title" class="text-lg font-semibold text-slate-800 dark:text-slate-100">Jurnal Baru</h2></div>
           <button
+            type="button"
+            aria-label="Tutup dialog"
             @click="$emit('close')"
             class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
@@ -95,6 +100,7 @@ import { useBusinessTransactionsStore } from '@/stores/businessTransactions'
 import { useBusinessStore } from '@/stores/business'
 import { useContactsStore } from '@/stores/contacts'
 import JournalLinesEditor from './JournalLinesEditor.vue'
+import '@/assets/business-transactions.css'
 
 const props = defineProps<{ isOpen: boolean }>()
 const emit = defineEmits<{ (e: 'close'): void; (e: 'saved'): void }>()

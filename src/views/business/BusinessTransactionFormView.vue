@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="business-transaction-form-page">
     <!-- Header -->
     <div class="mb-6 flex items-center gap-3 border-b border-slate-200 dark:border-slate-700 pb-4">
       <RouterLink
@@ -182,6 +182,7 @@ import { useContactsStore } from '@/stores/contacts'
 import { BusinessService } from '@/services/business.service'
 import JournalLinesEditor from '@/components/business/JournalLinesEditor.vue'
 import type { TaxSuggestion } from '@/types/business'
+import '@/assets/business-transactions.css'
 
 const router = useRouter()
 const txStore = useBusinessTransactionsStore()

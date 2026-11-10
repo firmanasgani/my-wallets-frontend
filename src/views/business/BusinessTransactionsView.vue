@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="business-transactions-page">
     <!-- Header -->
     <div class="mb-6 flex justify-between items-start border-b border-slate-200 dark:border-slate-700 pb-4">
       <div>
@@ -286,6 +286,7 @@ import TransactionFormModal from '@/components/business/TransactionFormModal.vue
 import GeneralLedgerModal from '@/components/business/GeneralLedgerModal.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import type { BusinessTransaction, ChartOfAccount } from '@/types/business'
+import '@/assets/business-transactions.css'
 
 const router = useRouter()
 const txStore = useBusinessTransactionsStore()
