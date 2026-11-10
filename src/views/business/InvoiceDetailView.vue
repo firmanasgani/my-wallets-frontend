@@ -30,7 +30,7 @@
       <RouterLink :to="{ name: 'business-invoices' }" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
       </RouterLink>
-      <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">Detail Invoice</h1>
+      <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">Detail invoice</h1>
     </div>
 
     <!-- Loading -->
@@ -67,12 +67,12 @@
             <RouterLink
               :to="{ name: 'invoice-export', params: { id: invoice.id } }"
               class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-              title="Export / Cetak Invoice"
+              title="Ekspor / cetak invoice"
             >
               <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Export
+              Ekspor
             </RouterLink>
 
             <!-- Print PDF — always visible -->
@@ -116,7 +116,7 @@
               @click="isSendModalOpen = true"
               class="px-4 py-2 text-sm font-medium bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B43] transition-colors"
             >
-              Kirim Invoice
+              Kirim invoice
             </button>
             <button
               v-if="(invoice.status === 'SENT' || invoice.status === 'OVERDUE') && canCreate"
@@ -146,7 +146,7 @@
       <!-- Client & Contact -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
-          <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Informasi Klien</h3>
+          <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Informasi pelanggan</h3>
           <p class="font-semibold text-slate-800 dark:text-slate-100">{{ invoice.clientName }}</p>
           <p v-if="invoice.clientEmail" class="text-sm text-slate-500 dark:text-slate-400">{{ invoice.clientEmail }}</p>
           <p v-if="invoice.clientAddress" class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ invoice.clientAddress }}</p>
@@ -200,7 +200,7 @@
       <!-- Items Table -->
       <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-          <h3 class="text-base font-semibold text-slate-800 dark:text-slate-100">Item / Layanan</h3>
+          <h3 class="text-base font-semibold text-slate-800 dark:text-slate-100">Item / layanan</h3>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left">
@@ -208,7 +208,7 @@
               <tr>
                 <th class="px-6 py-3">Deskripsi</th>
                 <th class="px-6 py-3 text-right w-20">Qty</th>
-                <th class="px-6 py-3 text-right w-36">Harga Satuan</th>
+                <th class="px-6 py-3 text-right w-36">Harga satuan</th>
                 <th class="px-6 py-3 text-right w-32">Diskon</th>
                 <th class="px-6 py-3 text-center w-16">PPN</th>
                 <th class="px-6 py-3 text-right w-36">Total</th>
@@ -236,7 +236,7 @@
 
       <!-- Payment Bank Account -->
       <div v-if="invoice.paymentBankAccount" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
-        <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Rekening Tujuan Transfer</h3>
+        <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Rekening tujuan transfer</h3>
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
             <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -294,7 +294,7 @@
             <!-- Header -->
             <div class="flex items-center gap-2 mb-3">
               <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-emerald-300">
-                Dari Invoice
+                Dari invoice
               </span>
               <span class="text-sm font-medium text-slate-800 dark:text-slate-100">{{ tx.description }}</span>
               <span class="ml-auto text-xs text-slate-400 dark:text-slate-500">{{ formatDate(tx.transactionDate) }}</span>
@@ -354,9 +354,9 @@
     <!-- Send Confirmation -->
     <ConfirmationModal
       :is-open="isSendModalOpen"
-      title="Kirim Invoice"
+      title="Kirim invoice"
       message="Setelah dikirim, invoice tidak bisa diedit lagi. Lanjutkan?"
-      confirm-button-text="Ya, Kirim"
+      confirm-button-text="Ya, kirim"
       confirm-button-class="bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500"
       icon-type="info"
       :is-confirming="invoicesStore.isSubmitting"
@@ -369,7 +369,7 @@
       :is-open="isSendEmailModalOpen"
       title="Kirim Email Invoice"
       message="Email invoice akan dikirim ulang ke klien. Lanjutkan?"
-      confirm-button-text="Ya, Kirim"
+      confirm-button-text="Ya, kirim"
       confirm-button-class="bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500"
       icon-type="info"
       :is-confirming="invoicesStore.isSubmitting"
@@ -380,9 +380,9 @@
     <!-- Delete Confirmation -->
     <ConfirmationModal
       :is-open="isDeleteModalOpen"
-      title="Hapus Invoice"
+      title="Hapus invoice"
       :message="`Hapus ${invoice?.invoiceNumber}? Tindakan ini tidak dapat dibatalkan.`"
-      confirm-button-text="Ya, Hapus"
+      confirm-button-text="Ya, hapus"
       confirm-button-class="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       :is-confirming="invoicesStore.isSubmitting"
       @update:is-open="isDeleteModalOpen = $event"
@@ -465,7 +465,7 @@ onMounted(async () => {
     if (!businessStore.members.length) fetchList.push(businessStore.fetchMembers().catch(() => {}))
     await Promise.all(fetchList)
   } catch {
-    errorMsg.value = 'Gagal memuat data invoice.'
+    errorMsg.value = 'Belum berhasil memuat data invoice.'
   }
 })
 
@@ -475,7 +475,7 @@ const handleSend = async () => {
     await invoicesStore.sendInvoice(invoice.value.id)
     isSendModalOpen.value = false
   } catch (err: any) {
-    errorMsg.value = err.response?.data?.message || 'Gagal mengirim invoice.'
+    errorMsg.value = err.response?.data?.message || 'Belum berhasil mengirim invoice.'
     isSendModalOpen.value = false
   }
 }
@@ -505,7 +505,7 @@ const handleDelete = async () => {
     await invoicesStore.deleteInvoice(invoice.value.id)
     router.push({ name: 'business-invoices' })
   } catch (err: any) {
-    errorMsg.value = err.response?.data?.message || 'Gagal menghapus invoice.'
+    errorMsg.value = err.response?.data?.message || 'Belum berhasil menghapus invoice.'
     isDeleteModalOpen.value = false
   }
 }
@@ -520,7 +520,7 @@ const handlePrintPDF = async () => {
       : await invoicesStore.fetchInvoiceById(invoice.value.id)
     await exportService.exportInvoiceToPDF(invoiceToExport, businessStore.currentCompany)
   } catch (err: any) {
-    showToast('error', err.response?.data?.message || 'Gagal mengunduh PDF invoice.')
+    showToast('error', err.response?.data?.message || 'Belum berhasil mengunduh PDF invoice.')
   }
 }
 
@@ -531,7 +531,7 @@ const handleDuplicate = async () => {
     const newInvoice = await invoicesStore.duplicateInvoice(invoice.value.id)
     router.push({ name: 'invoice-edit', params: { id: newInvoice.id } })
   } catch (err: any) {
-    errorMsg.value = err.response?.data?.message || 'Gagal menduplikat invoice.'
+    errorMsg.value = err.response?.data?.message || 'Belum berhasil menduplikat invoice.'
   } finally {
     isDuplicating.value = false
   }
@@ -555,7 +555,7 @@ const formatCurrency = (val: string | number) => {
 }
 
 const formatContactType = (type: ContactType) => {
-  const map: Record<ContactType, string> = { CUSTOMER: 'Customer', VENDOR: 'Vendor', EMPLOYEE: 'Karyawan' }
+  const map: Record<ContactType, string> = { CUSTOMER: 'Pelanggan', VENDOR: 'Pemasok', EMPLOYEE: 'Karyawan' }
   return map[type]
 }
 

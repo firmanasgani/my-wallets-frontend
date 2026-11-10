@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="mb-6 flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-4">
       <div class="invoice-list-title">
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Invoice</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola invoice dan pembayaran pelanggan.</p>
+        <span class="shell-overline">DARI TAGIHAN HINGGA PEMBAYARAN</span><h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Kelola tagihan bisnismu.</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Buat invoice, pantau jatuh tempo, dan catat pembayaran pelangganmu.</p>
       </div>
       <RouterLink
         v-if="canCreate"
@@ -12,7 +12,7 @@
         class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-colors shadow-sm"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        Buat Invoice
+        Buat invoice
       </RouterLink>
     </div>
 
@@ -50,7 +50,7 @@
         <svg class="w-12 h-12 mx-auto mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         <p class="text-base font-medium text-slate-700 dark:text-slate-300">Belum ada invoice</p>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          {{ canCreate ? 'Klik Buat Invoice untuk membuat invoice baru.' : 'Invoice akan ditampilkan di sini.' }}
+          {{ canCreate ? 'Mulai dari invoice pertama untuk mencatat tagihan pelangganmu.' : 'Invoice akan ditampilkan di sini.' }}
         </p>
       </div>
 
@@ -122,7 +122,7 @@
                   @click="openPayModal(invoice)"
                   class="px-3 py-1 text-xs font-medium rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
                 >
-                  Tandai Lunas
+                  Catat pembayaran
                 </button>
               </div>
             </div>
@@ -134,9 +134,9 @@
     <!-- Send Confirmation -->
     <ConfirmationModal
       :is-open="isSendModalOpen"
-      title="Kirim Invoice"
+      title="Kirim invoice"
       message="Setelah dikirim, invoice tidak bisa diedit lagi. Lanjutkan?"
-      confirm-button-text="Ya, Kirim"
+      confirm-button-text="Ya, kirim"
       confirm-button-class="bg-[#2E8B57] hover:bg-[#236B43] focus:ring-emerald-500"
       icon-type="info"
       :is-confirming="invoicesStore.isSubmitting"
@@ -147,9 +147,9 @@
     <!-- Delete Confirmation -->
     <ConfirmationModal
       :is-open="isDeleteModalOpen"
-      title="Hapus Invoice"
+      title="Hapus invoice"
       :message="`Hapus invoice ${selectedInvoice?.invoiceNumber}? Tindakan ini tidak dapat dibatalkan.`"
-      confirm-button-text="Ya, Hapus"
+      confirm-button-text="Ya, hapus"
       confirm-button-class="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       :is-confirming="invoicesStore.isSubmitting"
       @update:is-open="isDeleteModalOpen = $event"
@@ -191,9 +191,9 @@ const activeStatus = ref<InvoiceStatus | 'ALL'>('ALL')
 
 const statusTabs = [
   { value: 'ALL' as const, label: 'Semua' },
-  { value: 'DRAFT' as const, label: 'Draft' },
+  { value: 'DRAFT' as const, label: 'Draf' },
   { value: 'SENT' as const, label: 'Terkirim' },
-  { value: 'OVERDUE' as const, label: '🔴 Terlambat' },
+  { value: 'OVERDUE' as const, label: 'Terlambat' },
   { value: 'PAID' as const, label: 'Lunas' },
 ]
 
@@ -219,7 +219,7 @@ onMounted(async () => {
     if (!businessStore.members.length) promises.push(businessStore.fetchMembers().catch(() => {}))
     await Promise.all(promises)
   } catch {
-    errorMsg.value = 'Gagal memuat daftar invoice.'
+    errorMsg.value = 'Belum berhasil memuat daftar invoice.'
   }
 })
 
@@ -249,7 +249,7 @@ const handleSend = async () => {
     isSendModalOpen.value = false
     selectedInvoice.value = null
   } catch (err: any) {
-    errorMsg.value = err.response?.data?.message || 'Gagal mengirim invoice.'
+    errorMsg.value = err.response?.data?.message || 'Belum berhasil mengirim invoice.'
     isSendModalOpen.value = false
   }
 }
@@ -261,7 +261,7 @@ const handleDelete = async () => {
     isDeleteModalOpen.value = false
     selectedInvoice.value = null
   } catch (err: any) {
-    errorMsg.value = err.response?.data?.message || 'Gagal menghapus invoice.'
+    errorMsg.value = err.response?.data?.message || 'Belum berhasil menghapus invoice.'
     isDeleteModalOpen.value = false
   }
 }

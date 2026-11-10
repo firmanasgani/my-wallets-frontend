@@ -4,8 +4,8 @@
     <!-- Header -->
     <div class="contacts-heading">
       <div class="contacts-title">
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Kontak</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Customer, vendor, dan karyawan perusahaan.</p>
+        <span class="shell-overline">ORANG DI BALIK SETIAP TRANSAKSI</span><h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Simpan koneksi penting bisnismu.</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola informasi pelanggan, pemasok, dan karyawan dalam satu tempat.</p>
       </div>
       <button
         v-if="canCreate"
@@ -15,7 +15,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        Tambah Kontak
+        Tambah kontak
       </button>
     </div>
 
@@ -79,7 +79,7 @@
       </div>
       <p class="text-base font-semibold text-slate-700 dark:text-slate-300">Belum ada kontak</p>
       <p class="text-sm text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
-        {{ canCreate ? 'Klik tombol Tambah Kontak untuk membuat kontak baru.' : 'Kontak akan ditampilkan di sini.' }}
+        {{ canCreate ? 'Tambahkan pelanggan, pemasok, atau karyawan untuk memudahkan pencatatanmu.' : 'Kontak akan ditampilkan di sini.' }}
       </p>
       <button
         v-if="canCreate"
@@ -89,7 +89,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        Tambah Kontak Pertama
+        Tambah kontak pertama
       </button>
     </div>
 
@@ -159,7 +159,7 @@
 
             <!-- No info placeholder -->
             <div v-if="!contact.email && !contact.phone && !contact.bankName" class="text-xs text-slate-400 dark:text-slate-500 italic">
-              Tidak ada info tambahan
+              Informasi tambahan belum diisi
             </div>
           </div>
 
@@ -202,9 +202,9 @@
     <!-- Delete Confirmation -->
     <ConfirmationModal
       :is-open="isDeleteModalOpen"
-      title="Hapus Kontak"
-      :message="`Apakah Anda yakin ingin menghapus kontak '${selectedContact?.name}'?`"
-      confirm-button-text="Ya, Hapus"
+      title="Hapus kontak"
+      :message="`Hapus kontak '${selectedContact?.name}'?`"
+      confirm-button-text="Ya, hapus"
       confirm-button-class="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       :is-confirming="isDeleting"
       @update:is-open="isDeleteModalOpen = $event"
@@ -235,8 +235,8 @@ const activeFilter = ref<ContactType | 'ALL'>('ALL')
 
 const tabs = [
   { value: 'ALL' as const, label: 'Semua' },
-  { value: 'CUSTOMER' as const, label: 'Customer' },
-  { value: 'VENDOR' as const, label: 'Vendor' },
+  { value: 'CUSTOMER' as const, label: 'Pelanggan' },
+  { value: 'VENDOR' as const, label: 'Pemasok' },
   { value: 'EMPLOYEE' as const, label: 'Karyawan' },
 ]
 
@@ -268,7 +268,7 @@ onMounted(async () => {
       businessStore.fetchMembers().catch(() => {}),
     ])
   } catch {
-    errorMsg.value = 'Gagal memuat daftar kontak.'
+    errorMsg.value = 'Belum berhasil memuat daftar kontak.'
   }
 })
 
@@ -289,7 +289,7 @@ const handleDelete = async () => {
     if (err.response?.status === 400) {
       errorMsg.value = 'Kontak ini tidak bisa dihapus karena masih terhubung dengan invoice atau transaksi yang ada.'
     } else {
-      errorMsg.value = msg || 'Gagal menghapus kontak.'
+      errorMsg.value = msg || 'Belum berhasil menghapus kontak.'
     }
     isDeleteModalOpen.value = false
   } finally {
@@ -299,8 +299,8 @@ const handleDelete = async () => {
 
 const formatType = (type: ContactType) => {
   const map: Record<ContactType, string> = {
-    CUSTOMER: 'Customer',
-    VENDOR: 'Vendor',
+    CUSTOMER: 'Pelanggan',
+    VENDOR: 'Pemasok',
     EMPLOYEE: 'Karyawan',
   }
   return map[type]

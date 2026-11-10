@@ -79,7 +79,7 @@
   border-radius: 999px !important;
   background: var(--bank-surface);
 }
-.company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Jadikan default"] { padding: 7px 12px; color: var(--bank-accent) !important; font-weight: 750; }
+.company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Jadikan utama"] { padding: 7px 12px; color: var(--bank-accent) !important; font-weight: 750; }
 .company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Edit"],
 .company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Hapus"] { width: 36px; display: grid; place-items: center; }
 .company-bank-accounts-page > .space-y-3 > div > div:last-child > button:hover { border-color: var(--bank-accent); background: var(--bank-tint) !important; color: var(--bank-accent) !important; }
@@ -128,7 +128,7 @@
   .bank-accounts-heading > button { padding: 9px 12px !important; font-size: 11px; }
   .company-bank-accounts-page > .space-y-3 > div { align-items: flex-start; padding: 15px !important; }
   .company-bank-accounts-page > .space-y-3 > div > div:last-child { flex-wrap: wrap; justify-content: flex-end; }
-  .company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Jadikan default"] { width: 100%; }
+  .company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Jadikan utama"] { width: 100%; }
   .bank-account-modal-backdrop { align-items: end !important; padding: 8px !important; }
   .bank-account-modal { border-radius: 22px 22px 16px 16px !important; }
   .bank-account-modal-heading { padding: 16px 18px !important; }

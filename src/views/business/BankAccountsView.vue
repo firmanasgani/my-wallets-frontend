@@ -2,8 +2,8 @@
   <div class="company-bank-accounts-page">
     <div class="bank-accounts-heading">
       <div class="bank-accounts-title">
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Rekening Perusahaan</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Rekening bank yang ditampilkan di invoice sebagai tujuan transfer pembayaran.</p>
+        <span class="shell-overline">TEMPAT PEMBAYARAN DITERIMA</span><h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Rekening untuk pembayaran bisnismu.</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Simpan rekening tujuan transfer agar pelangganmu tahu ke mana harus membayar.</p>
       </div>
       <button
         v-if="isAdmin"
@@ -13,7 +13,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
         </svg>
-        Tambah Rekening
+        Tambah rekening
       </button>
     </div>
 
@@ -39,7 +39,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
       </svg>
       <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Belum ada rekening</p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Tambahkan rekening bank agar bisa dipilih di invoice.</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Tambahkan rekening tujuan transfer untuk invoice pelangganmu.</p>
     </div>
 
     <!-- Bank Account List -->
@@ -62,7 +62,7 @@
                 v-if="account.isDefault"
                 class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
               >
-                Default
+                Utama
               </span>
             </div>
             <p class="text-sm font-mono text-slate-600 dark:text-slate-300 mt-0.5">{{ account.accountNumber }}</p>
@@ -75,9 +75,9 @@
             v-if="!account.isDefault"
             @click="handleSetDefault(account.id)"
             class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 px-2 py-1 rounded-md hover:bg-indigo-50 dark:hover:bg-emerald-900/30 transition-colors"
-            title="Jadikan default"
+            title="Jadikan utama"
           >
-            Set Default
+            Jadikan utama
           </button>
           <button
             @click="openEditModal(account)"
@@ -110,7 +110,7 @@
       <div class="bank-account-modal relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md" role="dialog" aria-modal="true" aria-labelledby="bank-account-modal-title">
         <div class="bank-account-modal-heading px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
           <div><span class="bank-modal-eyebrow">PEMBAYARAN PERUSAHAAN</span><h2 id="bank-account-modal-title" class="text-base font-semibold text-slate-800 dark:text-slate-100">
-            {{ editingAccount ? 'Edit Rekening' : 'Tambah Rekening' }}
+            {{ editingAccount ? 'Edit rekening' : 'Tambah rekening' }}
           </h2></div>
           <button type="button" aria-label="Tutup dialog" @click="closeFormModal" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +124,7 @@
             <SearchableSelect
               v-model="form.bankName"
               :options="bankOptions"
-              label="Nama Bank"
+              label="Nama bank"
               placeholder="Ketik untuk mencari bank..."
               :required="true"
               :disabled="bankStore.isLoadingBanks"
@@ -134,7 +134,7 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Nomor Rekening <span class="text-red-500">*</span>
+              Nomor rekening <span class="text-red-500">*</span>
             </label>
             <input
               v-model="form.accountNumber"
@@ -146,7 +146,7 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Nama Pemilik Rekening <span class="text-red-500">*</span>
+              Nama pemilik rekening <span class="text-red-500">*</span>
             </label>
             <input
               v-model="form.accountHolder"
@@ -164,7 +164,7 @@
               class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
             />
             <label for="isDefaultCheck" class="text-sm text-slate-700 dark:text-slate-300">
-              Jadikan rekening default
+              Gunakan sebagai rekening utama
             </label>
           </div>
 
@@ -197,9 +197,9 @@
     <!-- Delete Confirmation -->
     <ConfirmationModal
       :is-open="isDeleteModalOpen"
-      title="Hapus Rekening"
+      title="Hapus rekening"
       :message="`Hapus rekening ${deletingAccount?.bankName} - ${deletingAccount?.accountNumber}? Tindakan ini tidak dapat dibatalkan.`"
-      confirm-button-text="Ya, Hapus"
+      confirm-button-text="Ya, hapus"
       confirm-button-class="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       :is-confirming="isSubmitting"
       @update:is-open="isDeleteModalOpen = $event"
@@ -297,7 +297,7 @@ const handleFormSubmit = async () => {
     }
     closeFormModal()
   } catch (err: any) {
-    formError.value = err.response?.data?.message || 'Gagal menyimpan rekening.'
+    formError.value = err.response?.data?.message || 'Belum berhasil menyimpan rekening.'
   } finally {
     isSubmitting.value = false
   }
@@ -306,9 +306,9 @@ const handleFormSubmit = async () => {
 const handleSetDefault = async (id: string) => {
   try {
     await store.setDefaultBankAccount(id)
-    showSuccess('Rekening default berhasil diubah.')
+    showSuccess('Rekening utama berhasil diperbarui.')
   } catch (err: any) {
-    errorMsg.value = err.response?.data?.message || 'Gagal mengubah rekening default.'
+    errorMsg.value = err.response?.data?.message || 'Belum berhasil mengubah rekening default.'
     setTimeout(() => { errorMsg.value = '' }, 3000)
   }
 }
@@ -321,7 +321,7 @@ const handleDelete = async () => {
     isDeleteModalOpen.value = false
     showSuccess('Rekening berhasil dihapus.')
   } catch (err: any) {
-    errorMsg.value = err.response?.data?.message || 'Gagal menghapus rekening.'
+    errorMsg.value = err.response?.data?.message || 'Belum berhasil menghapus rekening.'
     isDeleteModalOpen.value = false
     setTimeout(() => { errorMsg.value = '' }, 3000)
   } finally {

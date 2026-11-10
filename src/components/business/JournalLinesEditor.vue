@@ -8,8 +8,8 @@
             <th class="px-3 py-2.5 text-left w-28">Tipe</th>
             <th class="px-3 py-2.5 text-left">Akun COA</th>
             <th class="px-3 py-2.5 text-left w-36">Jumlah (Rp)</th>
-            <th class="px-3 py-2.5 text-left w-36">Contact</th>
-            <th class="px-3 py-2.5 text-left">Keterangan Baris</th>
+            <th class="px-3 py-2.5 text-left w-36">Kontak</th>
+            <th class="px-3 py-2.5 text-left">Keterangan baris</th>
             <th class="px-3 py-2.5 w-8"></th>
           </tr>
         </thead>
@@ -31,8 +31,8 @@
                 class="w-full px-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 :class="line.type === 'DEBIT' ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'"
               >
-                <option value="DEBIT">DEBIT</option>
-                <option value="CREDIT">CREDIT</option>
+                <option value="DEBIT">Debit</option>
+                <option value="CREDIT">Kredit</option>
               </select>
             </td>
 
@@ -126,7 +126,7 @@
           Debit: <span class="font-semibold text-green-700 dark:text-green-400">{{ formatRp(totalDebit) }}</span>
         </span>
         <span class="text-slate-600 dark:text-slate-400">
-          Credit: <span class="font-semibold text-red-700 dark:text-red-400">{{ formatRp(totalCredit) }}</span>
+          Kredit: <span class="font-semibold text-red-700 dark:text-red-400">{{ formatRp(totalCredit) }}</span>
         </span>
         <span
           v-if="totalDebit > 0 || totalCredit > 0"

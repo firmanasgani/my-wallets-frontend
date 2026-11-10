@@ -11,8 +11,8 @@
         </svg>
       </RouterLink>
       <div>
-        <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Jurnal Baru</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Input jurnal compound double-entry secara manual.</p>
+        <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Buat jurnal baru</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Catat jurnal dengan debit dan kredit yang seimbang.</p>
       </div>
     </div>
 
@@ -25,11 +25,11 @@
     </div>
 
     <form @submit.prevent="handleSubmit">
-      <!-- Two-column grid: Detail | Baris Jurnal -->
+      <!-- Two-column grid: Detail | Baris jurnal -->
       <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5 items-start">
-        <!-- Card: Detail Jurnal -->
+        <!-- Card: Detail jurnal -->
         <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Detail Jurnal</h2>
+          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Detail jurnal</h2>
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tanggal</label>
@@ -41,7 +41,7 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Keterangan Jurnal</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Keterangan jurnal</label>
               <input
                 v-model="form.description"
                 type="text"
@@ -88,7 +88,7 @@
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                {{ isSubmitting ? 'Menyimpan...' : 'Simpan Jurnal' }}
+                {{ isSubmitting ? 'Menyimpan...' : 'Simpan jurnal' }}
               </button>
               <RouterLink
                 :to="{ name: 'business-transactions' }"
@@ -100,9 +100,9 @@
           </div>
         </div>
 
-        <!-- Card: Baris Jurnal -->
+        <!-- Card: Baris jurnal -->
         <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 min-w-0 space-y-4">
-          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Baris Jurnal</h2>
+          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Baris jurnal</h2>
           <JournalLinesEditor ref="linesEditor" :coa-grouped="coaGrouped" :contacts="contacts" />
 
           <!-- Tax Suggestion Panel -->
@@ -166,7 +166,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          {{ isSubmitting ? 'Menyimpan...' : 'Simpan Jurnal' }}
+          {{ isSubmitting ? 'Menyimpan...' : 'Simpan jurnal' }}
         </button>
       </div>
     </form>
@@ -278,7 +278,7 @@ async function handleSubmit() {
   const lines = linesEditor.value.toPayload()
 
   if (!linesEditor.value.isBalanced) {
-    errorMsg.value = 'Total Debit harus sama dengan total Credit.'
+    errorMsg.value = 'Total debit harus sama dengan total kredit.'
     return
   }
 
@@ -305,7 +305,7 @@ async function handleSubmit() {
     router.push({ name: 'business-transactions' })
   } catch (err: any) {
     const msg = err.response?.data?.message
-    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Gagal menyimpan jurnal.')
+    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Belum berhasil menyimpan jurnal.')
   } finally {
     isSubmitting.value = false
   }

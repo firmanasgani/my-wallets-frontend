@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="mb-6 flex justify-between items-start border-b border-slate-200 dark:border-slate-700 pb-4">
       <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Transaksi Bisnis</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Jurnal double-entry perusahaan.</p>
+        <span class="shell-overline">CATATAN RAPI, BISNIS TERARAH</span><h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Catat setiap transaksi bisnismu.</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola jurnal, telusuri akun, dan pantau transaksi perusahaanmu.</p>
       </div>
       <div class="flex items-center gap-2 shrink-0">
         <!-- Export buttons -->
@@ -13,7 +13,7 @@
             @click="doExportExcel"
             :disabled="isExporting"
             class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50"
-            title="Export Excel"
+            title="Ekspor Excel"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -24,7 +24,7 @@
             @click="doExportPDF"
             :disabled="isExporting"
             class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors disabled:opacity-50"
-            title="Export PDF"
+            title="Ekspor PDF"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -40,7 +40,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          Transaksi Baru
+          Tambah transaksi
         </RouterLink>
       </div>
     </div>
@@ -55,7 +55,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- Start Date -->
         <DateRangePicker class="sm:col-span-2" :start-date="filters.startDate" :end-date="filters.endDate" @apply="applyDateRange" />
-        <AppSelect v-model="filters.coaId" label="Akun (COA)" :options="coaFilterOptions" searchable />
+        <AppSelect v-model="filters.coaId" label="Akun jurnal (COA)" :options="coaFilterOptions" searchable />
         <AppSelect v-model="filters.status" label="Status" :options="statusFilterOptions" />
         <!-- Actions -->
         <div class="flex items-end gap-2">
@@ -74,17 +74,17 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           </button>
-          <!-- Buku Besar button (only when COA selected) -->
+          <!-- Buku besar button (only when COA selected) -->
           <button
             v-if="filters.coaId"
             @click="openLedger"
             class="px-3 py-1.5 text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors whitespace-nowrap flex items-center gap-1"
-            title="Lihat Buku Besar"
+            title="Lihat Buku besar"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
-            Buku Besar
+            Buku besar
           </button>
         </div>
       </div>
@@ -93,7 +93,7 @@
     <!-- Stats -->
     <div v-if="!txStore.isLoading && txStore.transactions.length > 0" class="mb-4 grid grid-cols-3 gap-3">
       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-3 text-center">
-        <p class="text-xs text-slate-500 dark:text-slate-400">Total Transaksi</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Total transaksi</p>
         <p class="text-lg font-bold text-slate-800 dark:text-slate-100">{{ txStore.total }}</p>
       </div>
       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-3 text-center">
@@ -101,7 +101,7 @@
         <p class="text-lg font-bold text-slate-800 dark:text-slate-100">{{ manualCount }}</p>
       </div>
       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-3 text-center">
-        <p class="text-xs text-slate-500 dark:text-slate-400">Dari Invoice</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Dari invoice</p>
         <p class="text-lg font-bold text-slate-800 dark:text-slate-100">{{ invoiceCount }}</p>
       </div>
     </div>
@@ -124,7 +124,7 @@
       </svg>
       <p class="text-base font-medium text-slate-700 dark:text-slate-300">Belum ada transaksi</p>
       <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-        {{ canCreate ? 'Klik tombol Transaksi Baru untuk membuat jurnal.' : 'Transaksi akan muncul di sini.' }}
+        {{ canCreate ? 'Mulai dari jurnal pertama untuk mencatat transaksi bisnismu.' : 'Transaksi akan muncul di sini.' }}
       </p>
     </div>
 
@@ -146,7 +146,7 @@
                 :to="{ name: 'invoice-detail', params: { id: tx.invoiceId } }"
                 class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-emerald-300 hover:bg-blue-200 dark:hover:bg-emerald-900/50 transition-colors"
               >
-                Dari Invoice {{ tx.invoice.invoiceNumber }}
+                Dari invoice {{ tx.invoice.invoiceNumber }}
               </RouterLink>
               <!-- Manual badge -->
               <span
@@ -196,7 +196,7 @@
             <button
               @click="openDetail(tx)"
               class="p-2 rounded-md text-slate-400 hover:text-emerald-600 hover:bg-indigo-50 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
-              title="Lihat Detail"
+              title="Lihat detail"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -261,9 +261,9 @@
   <!-- Delete Confirmation -->
   <ConfirmationModal
     :is-open="isDeleteModalOpen"
-    title="Hapus Transaksi"
+    title="Hapus transaksi"
     :message="`Hapus transaksi '${selectedTx?.description}'? Tindakan ini tidak dapat dibatalkan.`"
-    confirm-button-text="Ya, Hapus"
+    confirm-button-text="Ya, hapus"
     confirm-button-class="bg-red-600 hover:bg-red-700 focus:ring-red-500"
     :is-confirming="isDeleting"
     @update:is-open="isDeleteModalOpen = $event"
@@ -318,9 +318,9 @@ const coaFilterOptions = computed<SelectOption<string>[]>(() => [
     accounts.map((account) => ({ value: account.id, label: account.code + ' ' + account.name, group }))),
 ])
 const statusFilterOptions: SelectOption<string>[] = [
-  { value: '', label: 'Semua status' }, { value: 'DRAFT', label: 'Draft' },
-  { value: 'PENDING_CHECK', label: 'Pending check' }, { value: 'PENDING_APPROVAL', label: 'Pending approval' },
-  { value: 'APPROVED', label: 'Approved' }, { value: 'REJECTED', label: 'Rejected' },
+  { value: '', label: 'Semua status' }, { value: 'DRAFT', label: 'Draf' },
+  { value: 'PENDING_CHECK', label: 'Menunggu pemeriksaan' }, { value: 'PENDING_APPROVAL', label: 'Menunggu persetujuan' },
+  { value: 'APPROVED', label: 'Disetujui' }, { value: 'REJECTED', label: 'Ditolak' },
 ]
 const isExporting = ref(false)
 
@@ -367,7 +367,7 @@ onMounted(async () => {
       contactsStore.fetchContacts().catch(() => {}),
     ])
   } catch {
-    errorMsg.value = 'Gagal memuat data transaksi.'
+    errorMsg.value = 'Belum berhasil memuat data transaksi.'
   }
 })
 
@@ -388,7 +388,7 @@ async function applyFilters() {
   try {
     await loadTransactions()
   } catch {
-    errorMsg.value = 'Gagal memuat transaksi.'
+    errorMsg.value = 'Belum berhasil memuat transaksi.'
   }
 }
 
@@ -427,7 +427,7 @@ async function handleDelete() {
     selectedTx.value = null
   } catch (err: any) {
     const msg = err.response?.data?.message
-    errorMsg.value = msg || 'Gagal menghapus transaksi.'
+    errorMsg.value = msg || 'Belum berhasil menghapus transaksi.'
     isDeleteModalOpen.value = false
   } finally {
     isDeleting.value = false

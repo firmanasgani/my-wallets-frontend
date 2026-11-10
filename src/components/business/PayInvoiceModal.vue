@@ -31,7 +31,7 @@
           <div class="paid-modal-header flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
             <div>
               <span class="paid-modal-eyebrow">CATAT PEMBAYARAN</span>
-              <h2 id="paid-modal-title" class="text-lg font-semibold text-slate-800 dark:text-slate-100">Tandai Lunas</h2>
+              <h2 id="paid-modal-title" class="text-lg font-semibold text-slate-800 dark:text-slate-100">Catat pembayaran</h2>
             </div>
             <button type="button" aria-label="Tutup dialog" @click="$emit('close')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -60,7 +60,7 @@
               <!-- COA Selector -->
               <div>
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Akun Penerima Pembayaran (Kas/Bank) <span class="text-red-500">*</span>
+                  Akun penerima pembayaran (kas/bank) <span class="text-red-500">*</span>
                 </label>
                 <select
                   v-model="form.paymentCoaId"
@@ -78,7 +78,7 @@
               <!-- Payment Date -->
               <div>
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Tanggal Pembayaran <span class="text-red-500">*</span>
+                  Tanggal pembayaran <span class="text-red-500">*</span>
                 </label>
                 <input
                   v-model="form.paymentDate"
@@ -91,8 +91,8 @@
               <!-- Amount (partial) -->
               <div>
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Jumlah Dibayar
-                  <span class="ml-1 text-xs font-normal text-slate-400">(kosongkan = bayar sisa penuh)</span>
+                  Jumlah pembayaran
+                  <span class="ml-1 text-xs font-normal text-slate-400">(kosongkan atau isi 0 untuk membayar seluruh sisa tagihan)</span>
                 </label>
                 <CurrencyInput
                   v-model="form.amount"
@@ -150,7 +150,7 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                   </svg>
-                  Konfirmasi Pembayaran
+                  Simpan pembayaran
                 </button>
               </div>
             </form>
@@ -241,7 +241,7 @@ const handleSubmit = async () => {
     emit('paid')
   } catch (err: any) {
     const msg = err.response?.data?.message
-    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Gagal memproses pembayaran.')
+    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Belum berhasil memproses pembayaran.')
   } finally {
     isSubmitting.value = false
   }

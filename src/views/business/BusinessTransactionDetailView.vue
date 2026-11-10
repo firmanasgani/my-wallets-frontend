@@ -37,7 +37,7 @@
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  Dari Invoice
+                  Dari invoice
                 </span>
                 <span
                   v-else
@@ -50,7 +50,7 @@
               <p class="text-emerald-100 text-sm mt-1">{{ formatDate(tx.transactionDate) }}</p>
             </div>
             <div class="text-right shrink-0">
-              <p class="text-emerald-100 text-xs font-medium uppercase tracking-wide">Total Debit</p>
+              <p class="text-emerald-100 text-xs font-medium uppercase tracking-wide">Total debit</p>
               <p class="text-white text-2xl font-bold">{{ formatRp(totalDebit) }}</p>
             </div>
           </div>
@@ -85,7 +85,7 @@
             <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
-            Entri Jurnal
+            Entri jurnal
           </h2>
         </div>
 
@@ -169,7 +169,7 @@
             <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            Status Persetujuan
+            Status persetujuan
           </h2>
           <span :class="statusBadgeClass(tx.status)" class="px-2.5 py-1 rounded-full text-xs font-semibold">{{ statusLabel(tx.status) }}</span>
         </div>
@@ -200,7 +200,7 @@
               <div :class="tx.checkerUserId ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'"
                 class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">✓</div>
               <div>
-                <span class="font-medium text-slate-700 dark:text-slate-300">Dicek oleh CHECKER</span>
+                <span class="font-medium text-slate-700 dark:text-slate-300">Diperiksa oleh pemeriksa</span>
                 <span v-if="tx.checker" class="text-slate-500 dark:text-slate-400 ml-1">— {{ tx.checker.fullName ?? tx.checker.email }}</span>
                 <span v-if="tx.checkedAt" class="text-slate-400 dark:text-slate-500 ml-1 text-xs">{{ formatDateTime(tx.checkedAt) }}</span>
                 <span v-if="!tx.checkerUserId" class="text-slate-400 dark:text-slate-500 ml-1">— Menunggu</span>
@@ -210,7 +210,7 @@
               <div :class="tx.approverUserId ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'"
                 class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0">✓</div>
               <div>
-                <span class="font-medium text-slate-700 dark:text-slate-300">Disetujui oleh ADMIN</span>
+                <span class="font-medium text-slate-700 dark:text-slate-300">Disetujui oleh admin</span>
                 <span v-if="tx.approver" class="text-slate-500 dark:text-slate-400 ml-1">— {{ tx.approver.fullName ?? tx.approver.email }}</span>
                 <span v-if="tx.approvedAt" class="text-slate-400 dark:text-slate-500 ml-1 text-xs">{{ formatDateTime(tx.approvedAt) }}</span>
                 <span v-if="!tx.approverUserId" class="text-slate-400 dark:text-slate-500 ml-1">— Menunggu</span>
@@ -223,15 +223,15 @@
         <div v-if="!tx.isSystemGenerated" class="px-6 pb-4 flex flex-wrap gap-2">
           <!-- Staff: submit DRAFT/REJECTED -->
           <button v-if="canSubmit" @click="doAction('submit')" :disabled="isActioning" class="bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-            Submit untuk Review
+            Ajukan pemeriksaan
           </button>
           <!-- Checker: check PENDING_CHECK -->
           <button v-if="canCheck" @click="doAction('check')" :disabled="isActioning" class="bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-            Check (Gate 1)
+            Konfirmasi pemeriksaan
           </button>
           <!-- Admin: approve PENDING_APPROVAL -->
           <button v-if="canApprove" @click="doAction('approve')" :disabled="isActioning" class="bg-[#2E8B57] hover:bg-[#236B43] text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-            Approve
+            Setujui
           </button>
           <!-- Checker/Admin: reject -->
           <button v-if="canReject" @click="showRejectModal = true" class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-4 text-sm rounded-lg transition-colors">
@@ -364,8 +364,8 @@
     <!-- Delete Confirmation -->
     <ConfirmationModal
       v-model:isOpen="showDeleteConfirm"
-      title="Hapus Jurnal?"
-      message="Apakah Anda yakin ingin menghapus jurnal ini? Tindakan ini tidak dapat dibatalkan."
+      title="Hapus jurnal?"
+      message="Hapus jurnal ini? Tindakan ini tidak dapat dibatalkan."
       confirmButtonText="Hapus"
       cancelButtonText="Batal"
       iconType="danger"
@@ -464,7 +464,7 @@ async function doAction(action: 'submit' | 'check' | 'approve' | 'reject') {
 }
 
 function statusLabel(status: string) {
-  return { DRAFT: 'Draft', PENDING_CHECK: 'Menunggu Check', PENDING_APPROVAL: 'Menunggu Approve', APPROVED: 'Disetujui', REJECTED: 'Ditolak' }[status] ?? status
+  return { DRAFT: 'Draf', PENDING_CHECK: 'Menunggu pemeriksaan', PENDING_APPROVAL: 'Menunggu persetujuan', APPROVED: 'Disetujui', REJECTED: 'Ditolak' }[status] ?? status
 }
 function statusBadgeClass(status: string) {
   return {
@@ -502,7 +502,7 @@ async function uploadAttachment(event: Event) {
     if (!tx.value.attachments) tx.value.attachments = []
     tx.value.attachments.push(att as any)
   } catch (e: any) {
-    attachmentError.value = e.response?.data?.message ?? 'Gagal upload lampiran.'
+    attachmentError.value = e.response?.data?.message ?? 'Belum berhasil upload lampiran.'
   } finally {
     isUploadingAttachment.value = false
     ;(event.target as HTMLInputElement).value = ''
@@ -515,7 +515,7 @@ async function deleteAttachment(attachmentId: string) {
     await BusinessService.deleteJournalAttachment(tx.value.id, attachmentId)
     tx.value.attachments = tx.value.attachments?.filter(a => a.id !== attachmentId) ?? []
   } catch (e: any) {
-    attachmentError.value = e.response?.data?.message ?? 'Gagal menghapus lampiran.'
+    attachmentError.value = e.response?.data?.message ?? 'Belum berhasil menghapus lampiran.'
   }
 }
 

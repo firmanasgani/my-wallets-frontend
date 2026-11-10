@@ -13,10 +13,10 @@
       </button>
       <div>
         <h1 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">
-          {{ isEdit ? 'Edit Invoice' : 'Buat Invoice Baru' }}
+          {{ isEdit ? 'Edit invoice' : 'Buat invoice baru' }}
         </h1>
         <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-          Status: <span class="font-medium text-slate-600 dark:text-slate-300">Draft</span> · Nomor invoice di-generate otomatis
+          Status: <span class="font-medium text-slate-600 dark:text-slate-300">Draf</span> · Nomor invoice dibuat otomatis
         </p>
       </div>
     </div>
@@ -39,14 +39,14 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Informasi Klien</h2>
+          <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Informasi pelanggan</h2>
         </div>
 
         <div class="p-5 space-y-4">
           <!-- Contact Picker -->
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Pilih dari Kontak
+              Pilih dari kontak
               <span class="ml-1 text-xs font-normal text-slate-400 dark:text-slate-500">(opsional)</span>
             </label>
             <div class="relative">
@@ -56,12 +56,12 @@
                 class="w-full pl-3.5 pr-9 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer"
               >
                 <option value="">— Tanpa kontak terdaftar —</option>
-                <optgroup label="Customer">
+                <optgroup label="Pelanggan">
                   <option v-for="c in contacts.filter(x => x.type === 'CUSTOMER')" :key="c.id" :value="c.id">
                     {{ c.name }}
                   </option>
                 </optgroup>
-                <optgroup label="Vendor">
+                <optgroup label="Pemasok">
                   <option v-for="c in contacts.filter(x => x.type === 'VENDOR')" :key="c.id" :value="c.id">
                     {{ c.name }}
                   </option>
@@ -85,19 +85,19 @@
             <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p class="text-xs text-emerald-700 dark:text-emerald-300">Data klien diambil otomatis dari kontak terpilih.</p>
+            <p class="text-xs text-emerald-700 dark:text-emerald-300">Informasi pelanggan terisi dari kontak yang kamu pilih.</p>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Nama -->
             <div>
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Nama Klien <span class="text-red-500">*</span>
+                Nama pelanggan <span class="text-red-500">*</span>
               </label>
               <input
                 v-model="form.clientName"
                 type="text"
-                placeholder="Nama klien / perusahaan"
+                placeholder="Nama pelanggan / perusahaan"
                 :required="!selectedContactId"
                 :readonly="!!selectedContactId"
                 :class="[
@@ -110,7 +110,7 @@
             </div>
             <!-- Email -->
             <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email Klien</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email pelanggan</label>
               <input
                 v-model="form.clientEmail"
                 type="email"
@@ -126,7 +126,7 @@
             </div>
             <!-- Alamat -->
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Alamat Klien</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Alamat pelanggan</label>
               <input
                 v-model="form.clientAddress"
                 type="text"
@@ -152,14 +152,14 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
-          <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Detail Invoice</h2>
+          <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Detail invoice</h2>
         </div>
 
         <div class="p-5">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Tanggal Terbit <span class="text-red-500">*</span>
+                Tanggal terbit <span class="text-red-500">*</span>
               </label>
               <input
                 v-model="form.issueDate"
@@ -170,7 +170,7 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Jatuh Tempo <span class="text-red-500">*</span>
+                Jatuh tempo <span class="text-red-500">*</span>
               </label>
               <input
                 v-model="form.dueDate"
@@ -181,7 +181,7 @@
             </div>
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Rekening Tujuan Transfer
+                Rekening tujuan transfer
                 <span class="ml-1 text-xs font-normal text-slate-400 dark:text-slate-500">(opsional)</span>
               </label>
               <div class="relative">
@@ -202,7 +202,7 @@
               </div>
             </div>
 
-            <!-- Jenis Pajak -->
+            <!-- Jenis pajak -->
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Withholding Tax <span class="text-xs font-normal text-slate-400 dark:text-slate-500">(PPh, opsional)</span>
@@ -259,7 +259,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
-            <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Item / Layanan</h2>
+            <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Item / layanan</h2>
             <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
               {{ form.items.length }} item
             </span>
@@ -272,7 +272,7 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
             </svg>
-            Tambah Item
+            Tambah item
           </button>
         </div>
 
@@ -308,7 +308,7 @@
               </button>
             </div>
 
-            <!-- Row 2: Qty | Harga Satuan | Diskon | PPN | Total -->
+            <!-- Row 2: Qty | Harga satuan | Diskon | PPN | Total -->
             <div class="flex flex-wrap items-end gap-x-3 gap-y-2 px-4 pb-3 pt-1 border-t border-slate-200 dark:border-slate-600/50 bg-white/50 dark:bg-slate-800/30">
 
               <!-- Qty -->
@@ -324,9 +324,9 @@
                 />
               </div>
 
-              <!-- Harga Satuan -->
+              <!-- Harga satuan -->
               <div class="flex flex-col gap-1 w-36">
-                <label class="text-xs font-medium text-slate-400 dark:text-slate-500">Harga Satuan</label>
+                <label class="text-xs font-medium text-slate-400 dark:text-slate-500">Harga satuan</label>
                 <CurrencyInput
                   v-model="item.unitPrice"
                   class="w-full px-2.5 py-2 border border-slate-200 dark:border-slate-600 !rounded-lg text-sm text-right bg-slate-50 dark:bg-slate-700/60 focus:bg-white dark:focus:bg-slate-700 transition-all"
@@ -370,7 +370,7 @@
 
           <!-- Empty state -->
           <div v-if="form.items.length === 0" class="py-8 text-center text-slate-400 dark:text-slate-500 text-sm">
-            Belum ada item. Klik <strong>Tambah Item</strong> untuk menambahkan.
+            Belum ada item. Klik <strong>Tambah item</strong> untuk menambahkan.
           </div>
         </div>
 
@@ -447,7 +447,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          {{ isEdit ? 'Simpan Perubahan' : 'Simpan sebagai Draft' }}
+          {{ isEdit ? 'Simpan perubahan' : 'Simpan sebagai draf' }}
         </button>
       </div>
     </form>
@@ -581,7 +581,7 @@ onMounted(async () => {
         })),
       }
     } catch {
-      errorMsg.value = 'Gagal memuat data invoice.'
+      errorMsg.value = 'Belum berhasil memuat data invoice.'
     } finally {
       isLoadingDetail.value = false
     }
@@ -656,7 +656,7 @@ const handleSubmit = async () => {
     }
   } catch (err: any) {
     const msg = err.response?.data?.message
-    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Gagal menyimpan invoice.')
+    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Belum berhasil menyimpan invoice.')
   } finally {
     isSubmitting.value = false
   }

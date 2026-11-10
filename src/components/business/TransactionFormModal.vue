@@ -15,7 +15,7 @@
       >
         <!-- Header -->
         <div class="business-tx-modal-header flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-          <div><span class="business-tx-eyebrow">AKUNTANSI PERUSAHAAN</span><h2 id="business-tx-modal-title" class="text-lg font-semibold text-slate-800 dark:text-slate-100">Jurnal Baru</h2></div>
+          <div><span class="business-tx-eyebrow">AKUNTANSI PERUSAHAAN</span><h2 id="business-tx-modal-title" class="text-lg font-semibold text-slate-800 dark:text-slate-100">Buat jurnal baru</h2></div>
           <button
             type="button"
             aria-label="Tutup dialog"
@@ -50,7 +50,7 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Keterangan Jurnal</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Keterangan jurnal</label>
               <input
                 v-model="form.description"
                 type="text"
@@ -63,7 +63,7 @@
 
           <!-- Lines Editor -->
           <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Baris Jurnal</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Baris jurnal</label>
             <JournalLinesEditor ref="linesEditor" :coa-grouped="coaGrouped" :contacts="contacts" />
           </div>
 
@@ -85,7 +85,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              {{ isSubmitting ? 'Menyimpan...' : 'Simpan Jurnal' }}
+              {{ isSubmitting ? 'Menyimpan...' : 'Simpan jurnal' }}
             </button>
           </div>
         </form>
@@ -140,7 +140,7 @@ async function handleSubmit() {
   const lines = linesEditor.value.toPayload()
 
   if (!linesEditor.value.isBalanced) {
-    errorMsg.value = 'Total Debit harus sama dengan total Credit.'
+    errorMsg.value = 'Total debit harus sama dengan total kredit.'
     return
   }
 
@@ -167,7 +167,7 @@ async function handleSubmit() {
     emit('close')
   } catch (err: any) {
     const msg = err.response?.data?.message
-    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Gagal menyimpan jurnal.')
+    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Belum berhasil menyimpan jurnal.')
   } finally {
     isSubmitting.value = false
   }

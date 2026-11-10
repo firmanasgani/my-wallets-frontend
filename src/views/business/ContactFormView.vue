@@ -13,10 +13,10 @@
       </button>
       <div>
         <h1 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">
-          {{ isEdit ? 'Edit Kontak' : 'Tambah Kontak' }}
+          {{ isEdit ? 'Edit kontak' : 'Tambah kontak' }}
         </h1>
         <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-          Lengkapi informasi kontak perusahaan
+          Lengkapi identitas dan informasi pembayaran kontakmu.
         </p>
       </div>
     </div>
@@ -39,14 +39,14 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Informasi Kontak</h2>
+            <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Informasi kontak</h2>
           </div>
 
           <div class="p-5 space-y-4">
-            <!-- Tipe Kontak -->
+            <!-- Jenis kontak -->
             <div>
               <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-                Tipe Kontak <span class="text-red-500">*</span>
+                Jenis kontak <span class="text-red-500">*</span>
               </label>
               <div class="grid grid-cols-3 gap-2">
                 <label
@@ -118,7 +118,7 @@
         <!-- ── KOLOM KANAN: BANK + CATATAN ──────────── -->
         <div class="flex flex-col gap-5">
 
-          <!-- Informasi Bank -->
+          <!-- Informasi bank -->
           <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
             <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2">
               <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
@@ -126,26 +126,26 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
-              <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Informasi Bank</h2>
+              <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Informasi bank</h2>
               <span class="text-xs text-slate-400 dark:text-slate-500">(opsional)</span>
             </div>
 
             <div class="p-5 space-y-4">
-              <!-- Nama Bank -->
+              <!-- Nama bank -->
               <SearchableSelect
                 v-model="form.bankName"
                 :options="bankOptions"
-                label="Nama Bank"
+                label="Nama bank"
                 placeholder="Ketik untuk mencari bank..."
                 :disabled="bankStore.isLoadingBanks"
                 :helper-text="bankStore.isLoadingBanks ? 'Memuat daftar bank...' : ''"
                 input-id="contact-bank-name"
               />
 
-              <!-- No. Rekening & Atas Nama -->
+              <!-- Nomor rekening & Atas nama -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">No. Rekening</label>
+                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nomor rekening</label>
                   <input
                     v-model="form.bankAccountNumber"
                     type="text"
@@ -154,7 +154,7 @@
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Atas Nama</label>
+                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Atas nama</label>
                   <input
                     v-model="form.bankAccountHolder"
                     type="text"
@@ -224,7 +224,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          {{ isEdit ? 'Simpan Perubahan' : 'Tambah Kontak' }}
+          {{ isEdit ? 'Simpan perubahan' : 'Tambah kontak' }}
         </button>
       </div>
 
@@ -253,8 +253,8 @@ const isSubmitting = ref(false)
 const errorMsg = ref('')
 
 const contactTypes = [
-  { value: 'CUSTOMER', label: 'Customer', icon: '🧑‍💼' },
-  { value: 'VENDOR', label: 'Vendor', icon: '🏭' },
+  { value: 'CUSTOMER', label: 'Pelanggan', icon: '🧑‍💼' },
+  { value: 'VENDOR', label: 'Pemasok', icon: '🏭' },
   { value: 'EMPLOYEE', label: 'Karyawan', icon: '👷' },
 ]
 
@@ -330,7 +330,7 @@ const handleSubmit = async () => {
     router.push({ name: 'business-contacts' })
   } catch (err: any) {
     const msg = err.response?.data?.message
-    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Gagal menyimpan kontak.')
+    errorMsg.value = Array.isArray(msg) ? msg.join(', ') : (msg || 'Belum berhasil menyimpan kontak.')
   } finally {
     isSubmitting.value = false
   }
