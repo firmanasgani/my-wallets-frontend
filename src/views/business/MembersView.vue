@@ -86,119 +86,17 @@
     </div>
   </div>
 
-  <!-- Invite Modal -->
-  <Transition
-    enter-active-class="transition ease-out duration-200"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-150"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="isInviteModalOpen"
-      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
-      @click.self="closeInviteModal"
-    >
-      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-md">
-        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-          <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Undang Member Baru</h2>
-          <p class="text-xs text-slate-500 mt-1">User harus sudah terdaftar di Moneytory. Link undangan berlaku 30 menit.</p>
-        </div>
-        <form @submit.prevent="handleInvite" class="px-6 py-4 space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
-            <input
-              v-model="inviteForm.email"
-              type="email"
-              required
-              placeholder="budi@example.com"
-              class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Role</label>
-            <select
-              v-model="inviteForm.role"
-              class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="ADMIN">ADMIN — Approve, manage aset & pajak</option>
-              <option value="CHECKER">CHECKER — Check (gate pertama) & reject</option>
-              <option value="STAFF">STAFF — Buat transaksi, submit untuk review</option>
-              <option value="VIEWER">VIEWER — Read-only</option>
-            </select>
-          </div>
-          <div v-if="inviteError" class="rounded-md bg-red-50 dark:bg-red-900/30 p-3 border border-red-200 dark:border-red-700">
-            <p class="text-sm text-red-700 dark:text-red-400">{{ inviteError }}</p>
-          </div>
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="button" @click="closeInviteModal" class="px-4 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
-              Batal
-            </button>
-            <button
-              type="submit"
-              :disabled="isInviting"
-              class="px-4 py-2 text-sm bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 text-white rounded-md font-medium flex items-center gap-2"
-            >
-              <LoadingSpinner v-if="isInviting" :visible="true" size="xs" color="text-white" />
-              Kirim Undangan
-            </button>
-          </div>
-        </form>
-      </div>
+  <Teleport to="body">
+    <div v-if="isInviteModalOpen" class="team-modal-overlay" @click.self="closeInviteModal" @keydown.esc="closeInviteModal">
+      <section class="team-modal" role="dialog" aria-modal="true" aria-labelledby="invite-title">
+        <header class="modal-hero"><div><span class="modal-overline">AKSES PERUSAHAAN</span><h2 id="invite-title">Undang anggota</h2><p>Ajak rekan kerja untuk berkolaborasi dalam pembukuan.</p></div><button type="button" class="modal-close" aria-label="Tutup" @click="closeInviteModal">&#10005;</button></header>
+        <form class="modal-form" @submit.prevent="handleInvite"><div class="modal-note"><strong>Sebelum mengundang</strong><p>Anggota harus sudah terdaftar di Moneytory. Tautan undangan berlaku selama 30 menit.</p></div><div class="modal-field"><label for="invite-email">Email anggota</label><input id="invite-email" v-model="inviteForm.email" type="email" required placeholder="budi@example.com" /></div><div class="modal-field"><label for="invite-role">Peran</label><select id="invite-role" v-model="inviteForm.role"><option value="ADMIN">ADMIN - Approve, kelola aset dan pajak</option><option value="CHECKER">CHECKER - Periksa dan tolak jurnal</option><option value="STAFF">STAFF - Buat dan ajukan transaksi</option><option value="VIEWER">VIEWER - Hanya melihat</option></select><p>Pilih peran sesuai tanggung jawab anggota.</p></div><div v-if="inviteError" class="modal-error" role="alert">{{ inviteError }}</div><footer class="modal-actions"><button type="button" class="modal-secondary" :disabled="isInviting" @click="closeInviteModal">Batal</button><button type="submit" class="modal-primary" :disabled="isInviting"><LoadingSpinner v-if="isInviting" :visible="true" size="xs" color="text-white" />{{ isInviting ? 'Mengirim...' : 'Kirim undangan' }}</button></footer></form>
+      </section>
     </div>
-  </Transition>
-
-  <!-- Edit Role Modal -->
-  <Transition
-    enter-active-class="transition ease-out duration-200"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-150"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="isEditRoleModalOpen && selectedMember"
-      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
-      @click.self="closeEditRoleModal"
-    >
-      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-sm">
-        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-          <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Ubah Role</h2>
-          <p class="text-sm text-slate-500 mt-1">{{ selectedMember.user.fullName || selectedMember.user.username }}</p>
-        </div>
-        <div class="px-6 py-4 space-y-3">
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Role baru</label>
-          <select
-            v-model="newRole"
-            class="w-full border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          >
-            <option value="ADMIN">ADMIN</option>
-            <option value="CHECKER">CHECKER</option>
-            <option value="STAFF">STAFF</option>
-            <option value="VIEWER">VIEWER</option>
-          </select>
-          <div v-if="editRoleError" class="rounded-md bg-red-50 dark:bg-red-900/30 p-3 border border-red-200 dark:border-red-700">
-            <p class="text-sm text-red-700 dark:text-red-400">{{ editRoleError }}</p>
-          </div>
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="button" @click="closeEditRoleModal" class="px-4 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
-              Batal
-            </button>
-            <button
-              @click="handleUpdateRole"
-              :disabled="isUpdatingRole"
-              class="px-4 py-2 text-sm bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 text-white rounded-md font-medium flex items-center gap-2"
-            >
-              <LoadingSpinner v-if="isUpdatingRole" :visible="true" size="xs" color="text-white" />
-              Simpan
-            </button>
-          </div>
-        </div>
-      </div>
+    <div v-if="isEditRoleModalOpen && selectedMember" class="team-modal-overlay" @click.self="closeEditRoleModal" @keydown.esc="closeEditRoleModal">
+      <section class="team-modal" role="dialog" aria-modal="true" aria-labelledby="role-title"><header class="modal-hero"><div><span class="modal-overline">AKSES ANGGOTA</span><h2 id="role-title">Ubah peran</h2><p>Sesuaikan akses anggota sesuai tanggung jawabnya.</p></div><button type="button" class="modal-close" aria-label="Tutup" @click="closeEditRoleModal">&#10005;</button></header><div class="modal-form"><div class="selected-person"><span class="person-avatar">{{ (selectedMember.user.fullName || selectedMember.user.username).charAt(0).toUpperCase() }}</span><div><strong>{{ selectedMember.user.fullName || selectedMember.user.username }}</strong><p>{{ selectedMember.user.email }}</p></div></div><div class="modal-field"><label for="new-role">Peran baru</label><select id="new-role" v-model="newRole"><option value="ADMIN">ADMIN</option><option value="CHECKER">CHECKER</option><option value="STAFF">STAFF</option><option value="VIEWER">VIEWER</option></select><p>Perubahan akan berlaku untuk akses anggota ini.</p></div><div v-if="editRoleError" class="modal-error" role="alert">{{ editRoleError }}</div><footer class="modal-actions"><button type="button" class="modal-secondary" :disabled="isUpdatingRole" @click="closeEditRoleModal">Batal</button><button type="button" class="modal-primary" :disabled="isUpdatingRole" @click="handleUpdateRole"><LoadingSpinner v-if="isUpdatingRole" :visible="true" size="xs" color="text-white" />{{ isUpdatingRole ? 'Menyimpan...' : 'Simpan perubahan' }}</button></footer></div></section>
     </div>
-  </Transition>
+  </Teleport>
 
   <!-- Revoke Confirmation Modal -->
   <ConfirmationModal
@@ -215,7 +113,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick, onBeforeUnmount } from 'vue'
+import { lockModalScroll } from '@/utils/modalScrollLock'
 import { useBusinessStore } from '@/stores/business'
 import { useAuthStore } from '@/stores/auth'
 import type { CompanyMember, CompanyMemberRole } from '@/types/business'
@@ -304,6 +203,7 @@ function openInviteModal() {
 }
 
 function closeInviteModal() {
+  if (isInviting.value) return
   isInviteModalOpen.value = false
 }
 
@@ -313,7 +213,7 @@ async function handleInvite() {
   try {
     const result = await businessStore.inviteMember(inviteForm.value)
     successMsg.value = result.message
-    closeInviteModal()
+    isInviteModalOpen.value = false
     setTimeout(() => (successMsg.value = ''), 5000)
   } catch (err: any) {
     const status = err.response?.status
@@ -343,6 +243,7 @@ function openEditRoleModal(member: CompanyMember) {
 }
 
 function closeEditRoleModal() {
+  if (isUpdatingRole.value) return
   isEditRoleModalOpen.value = false
   selectedMember.value = null
 }
@@ -354,7 +255,8 @@ async function handleUpdateRole() {
   try {
     await businessStore.updateMemberRole(selectedMember.value.id, newRole.value)
     successMsg.value = 'Role berhasil diperbarui.'
-    closeEditRoleModal()
+    isEditRoleModalOpen.value = false
+    selectedMember.value = null
     setTimeout(() => (successMsg.value = ''), 3000)
   } catch (err: any) {
     editRoleError.value = err.response?.data?.message || 'Gagal mengubah role.'
@@ -362,6 +264,23 @@ async function handleUpdateRole() {
     isUpdatingRole.value = false
   }
 }
+
+let releaseTeamModalScroll: (() => void) | null = null
+let modalOpener: HTMLElement | null = null
+watch([isInviteModalOpen, isEditRoleModalOpen], async ([invite, edit]) => {
+  if (invite || edit) {
+    modalOpener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    releaseTeamModalScroll = lockModalScroll()
+    await nextTick()
+    document.querySelector<HTMLElement>(invite ? '#invite-email' : '#new-role')?.focus()
+  } else {
+    releaseTeamModalScroll?.()
+    releaseTeamModalScroll = null
+    modalOpener?.focus()
+    modalOpener = null
+  }
+})
+onBeforeUnmount(() => releaseTeamModalScroll?.())
 
 // --- Revoke ---
 const isRevokeModalOpen = ref(false)
@@ -392,4 +311,8 @@ async function handleRevoke() {
 
 <style scoped>
 .team-page { --ink:var(--shell-ink,#27231d); --muted:var(--shell-muted,#6c6256); --surface:var(--shell-surface,#fffcf5); --rule:var(--shell-rule,#e2d8c7); max-width:1280px; margin:auto; padding:clamp(20px,3vw,40px) clamp(16px,3vw,32px); color:var(--ink); }.team-heading { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:28px; }.team-heading h1 { font-size:clamp(34px,4vw,52px); line-height:1; letter-spacing:-.055em; font-weight:900; margin:9px 0; }.team-heading p,.team-section p { color:var(--muted); font-size:14px; }.invite-button { background:var(--shell-grape,#5026a5); color:white; padding:11px 18px; border-radius:999px; font-weight:750; white-space:nowrap; }.invite-button span { font-size:20px; vertical-align:middle; margin-right:4px; }.invite-button:disabled { opacity:.5; cursor:not-allowed; }.team-overview { display:flex; justify-content:space-between; align-items:center; gap:32px; padding:30px 32px; border-radius:24px; background:radial-gradient(circle at 100% 0%,#7756ad,transparent 55%),#3d2c60; color:white; }.overview-label,.section-label,.capacity > span { font-size:10px; letter-spacing:.13em; font-weight:800; }.overview-label,.capacity > span { color:#d7c9ef; }.team-overview h2 { font-size:26px; font-weight:850; letter-spacing:-.04em; margin:7px 0; }.team-overview p { color:#e0d5ef; font-size:13px; }.capacity { min-width:210px; border-left:1px solid #ffffff44; padding-left:28px; }.capacity strong { display:block; font-size:36px; line-height:1; margin:8px 0 12px; }.capacity small { color:#d7c9ef; font-size:18px; }.capacity-track { height:6px; background:#ffffff33; border-radius:999px; overflow:hidden; }.capacity-track div { height:100%; background:#bce8cc; border-radius:inherit; }.capacity p { margin-top:8px; }.team-section { margin:32px 0 16px; }.section-label { color:var(--muted); }.team-section h2 { font-size:26px; font-weight:850; letter-spacing:-.04em; margin:4px 0; }.member-list { background:var(--surface); border:1px solid var(--rule); border-radius:20px; overflow:hidden; }.member-row { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:20px; padding:20px 24px; }.member-identity { display:flex; align-items:center; gap:12px; min-width:0; }.member-badges,.member-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }.member-actions button { border-radius:999px; padding:7px 12px; font-weight:700; }.team-page :deep(button:focus-visible) { outline:3px solid #9a78d5; outline-offset:3px; } @media(max-width:700px) { .team-heading { align-items:start; flex-direction:column; }.team-overview { align-items:start; flex-direction:column; padding:24px; }.capacity { border-left:0; border-top:1px solid #ffffff44; padding:18px 0 0; width:100%; }.member-row { grid-template-columns:1fr; gap:12px; padding:18px; }.member-actions { padding-left:48px; }.member-badges { padding-left:48px; } }
+</style>
+
+<style scoped>
+.team-modal-overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(24,19,35,.65); }.team-modal { --ink:var(--shell-ink,#27231d); --muted:var(--shell-muted,#6c6256); --surface:var(--shell-surface,#fffcf5); --rule:var(--shell-rule,#e2d8c7); width:min(100%,500px); max-height:calc(100dvh - 32px); overflow:auto; border-radius:24px; background:var(--surface); color:var(--ink); box-shadow:0 24px 80px #0005; }.modal-hero { display:flex; justify-content:space-between; gap:20px; padding:28px; background:radial-gradient(circle at 100% 0%,#7756ad,transparent 60%),#3d2c60; color:white; }.modal-overline { font-size:10px; letter-spacing:.13em; font-weight:800; color:#d7c9ef; }.modal-hero h2 { font-size:28px; line-height:1.1; letter-spacing:-.04em; font-weight:900; margin:8px 0; }.modal-hero p { color:#e0d5ef; font-size:13px; line-height:1.5; }.modal-close { flex:none; width:36px; height:36px; border-radius:50%; background:#ffffff20; color:white; }.modal-form { display:flex; flex-direction:column; gap:20px; padding:26px 28px; }.modal-note { padding:15px 16px; background:var(--shell-lilac,#eee4ff); border-radius:14px; color:#31244c; font-size:13px; }.modal-note strong { font-weight:800; }.modal-note p { margin-top:4px; line-height:1.5; }.modal-field { display:flex; flex-direction:column; gap:7px; }.modal-field label { font-size:13px; font-weight:800; }.modal-field input,.modal-field select { width:100%; min-height:44px; padding:10px 12px; border:1px solid var(--rule); border-radius:12px; background:var(--surface); color:var(--ink); font-size:14px; }.modal-field p,.selected-person p { color:var(--muted); font-size:12px; line-height:1.5; }.selected-person { display:flex; align-items:center; gap:12px; padding:14px; border:1px solid var(--rule); border-radius:14px; }.selected-person strong,.selected-person p { overflow-wrap:anywhere; }.selected-person strong { font-size:14px; }.person-avatar { display:grid; place-items:center; width:42px; height:42px; flex:none; border-radius:14px; background:var(--shell-lilac,#eee4ff); color:#5026a5; font-weight:800; }.modal-error { padding:12px; border-radius:12px; background:#fff0ee; color:#a8322b; font-size:13px; }.modal-actions { display:flex; justify-content:flex-end; gap:8px; padding-top:4px; }.modal-actions button { display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 17px; border-radius:999px; font-size:13px; font-weight:800; }.modal-actions button:disabled { opacity:.5; }.modal-secondary { border:1px solid var(--rule); color:var(--ink); }.modal-primary { background:var(--shell-grape,#5026a5); color:white; }.team-modal :is(button,input,select):focus-visible { outline:3px solid #9a78d5; outline-offset:3px; } @media(max-width:520px) { .modal-hero,.modal-form { padding:22px; }.modal-actions button { flex:1; } }
 </style>
