@@ -1,166 +1,14 @@
 <template>
-  <div class="profit-loss-page">
-    <!-- Header -->
-    <div class="profit-heading">
-      <div>
-        <span class="shell-overline">RINGKASAN KINERJA BISNIS</span>
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Laporan Laba Rugi</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Profit & Loss — pendapatan vs beban dalam periode tertentu.</p>
-      </div>
-      <div v-if="data" class="flex items-center gap-1.5 shrink-0">
-        <button @click="doExportExcel" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-          <span>Excel</span>
-        </button>
-        <button @click="doExportPDF" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors disabled:opacity-50">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-          <span>PDF</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Disclaimer -->
-    <div class="mb-4 flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3">
-      <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-      </svg>
-      <p class="text-xs text-amber-700 dark:text-amber-300">Laporan ini belum termasuk Penutupan Periode (Period Closing). Nilai kumulatif sejak company dibuat.</p>
-    </div>
-
-    <!-- Filters -->
-    <div class="profit-filters">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <DateRangePicker class="sm:col-span-2" :start-date="filters.startDate" :end-date="filters.endDate" @apply="applyDateRange" />
-        <div class="flex items-end gap-2">
-          <button
-            @click="loadReport"
-            class="flex-1 px-4 py-1.5 text-sm font-medium bg-[#2E8B57] hover:bg-[#236B43] text-white rounded-lg transition-colors"
-          >
-            Tampilkan
-          </button>
-          <button
-            @click="resetFilters"
-            class="px-3 py-1.5 text-sm font-medium bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
-            title="Reset ke bulan ini"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Error -->
-    <div v-if="errorMsg" class="mb-4 rounded-md bg-red-50 dark:bg-red-900/30 p-4 border border-red-200 dark:border-red-800">
-      <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ errorMsg }}</p>
-    </div>
-
-    <!-- Loading -->
-    <div v-if="reportsStore.isLoading" class="flex justify-center p-12">
-      <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-      </svg>
-    </div>
-
-    <!-- Report Content -->
-    <div v-else-if="data" class="space-y-4">
-      <!-- Period Badge -->
-      <div class="text-sm text-slate-500 dark:text-slate-400">
-        Periode:
-        <span class="font-medium text-slate-700 dark:text-slate-200">
-          {{ data.period.startDate ? formatDate(data.period.startDate) : 'Awal' }}
-          –
-          {{ data.period.endDate ? formatDate(data.period.endDate) : 'Sekarang' }}
-        </span>
-      </div>
-
-      <div class="profit-summary">
-        <div><span>Total pendapatan</span><strong>{{ formatRp(data.revenue.total) }}</strong></div>
-        <div><span>Total beban</span><strong>{{ formatRp(data.expense.total) }}</strong></div>
-        <div><span>{{ data.isProfit ? 'Laba bersih' : 'Rugi bersih' }}</span><strong>{{ formatRp(data.netProfit) }}</strong></div>
-      </div>
-      <div class="profit-detail-heading"><span class="shell-overline">RINCIAN LAPORAN</span><h2>Pendapatan &amp; beban</h2><p>Rincian akun untuk periode yang dipilih.</p></div>
-      <!-- Revenue Section -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-        <div class="px-5 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-b border-slate-200 dark:border-slate-700">
-          <h2 class="text-sm font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">Pendapatan</h2>
-        </div>
-        <div class="divide-y divide-slate-100 dark:divide-slate-700">
-          <div
-            v-for="acc in data.revenue.accounts"
-            :key="acc.coaCode"
-            class="flex justify-between items-center px-5 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
-          >
-            <span class="text-sm text-slate-600 dark:text-slate-300">
-              <span class="font-mono text-xs text-slate-400 dark:text-slate-500 mr-2">{{ acc.coaCode }}</span>
-              {{ acc.coaName }}
-            </span>
-            <span class="text-sm font-medium text-slate-800 dark:text-slate-100 tabular-nums">{{ formatRp(acc.amount) }}</span>
-          </div>
-        </div>
-        <div class="flex justify-between items-center px-5 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-t border-slate-200 dark:border-slate-700">
-          <span class="text-sm font-semibold text-emerald-700 dark:text-emerald-400">Total Pendapatan</span>
-          <span class="text-base font-bold text-emerald-700 dark:text-emerald-400 tabular-nums">{{ formatRp(data.revenue.total) }}</span>
-        </div>
-      </div>
-
-      <!-- Expense Section -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-        <div class="px-5 py-3 bg-red-50 dark:bg-red-900/20 border-b border-slate-200 dark:border-slate-700">
-          <h2 class="text-sm font-semibold text-red-700 dark:text-red-400 uppercase tracking-wide">Beban</h2>
-        </div>
-        <div class="divide-y divide-slate-100 dark:divide-slate-700">
-          <div
-            v-for="acc in data.expense.accounts"
-            :key="acc.coaCode"
-            class="flex justify-between items-center px-5 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
-          >
-            <span class="text-sm text-slate-600 dark:text-slate-300">
-              <span class="font-mono text-xs text-slate-400 dark:text-slate-500 mr-2">{{ acc.coaCode }}</span>
-              {{ acc.coaName }}
-            </span>
-            <span class="text-sm font-medium text-slate-800 dark:text-slate-100 tabular-nums">{{ formatRp(acc.amount) }}</span>
-          </div>
-        </div>
-        <div class="flex justify-between items-center px-5 py-3 bg-red-50 dark:bg-red-900/20 border-t border-slate-200 dark:border-slate-700">
-          <span class="text-sm font-semibold text-red-700 dark:text-red-400">Total Beban</span>
-          <span class="text-base font-bold text-red-700 dark:text-red-400 tabular-nums">{{ formatRp(data.expense.total) }}</span>
-        </div>
-      </div>
-
-      <!-- Net Profit / Loss -->
-      <div
-        :class="[
-          'rounded-xl border p-5 flex justify-between items-center',
-          data.isProfit
-            ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700'
-            : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700',
-        ]"
-      >
-        <span :class="['text-base font-bold', data.isProfit ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400']">
-          {{ data.isProfit ? 'Laba Bersih' : 'Rugi Bersih' }}
-        </span>
-        <span :class="['text-xl font-extrabold tabular-nums', data.isProfit ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400']">
-          {{ formatRp(data.netProfit) }}
-        </span>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div
-      v-else-if="!reportsStore.isLoading"
-      class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center"
-    >
-      <svg class="w-12 h-12 mx-auto mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-      <p class="text-base font-medium text-slate-700 dark:text-slate-300">Pilih periode lalu klik Tampilkan</p>
-    </div>
-  </div>
+  <main class="cash-page">
+    <header class="page-header"><div><span class="shell-overline">LAPORAN KEUANGAN</span><h1>Laba rugi</h1><p>Pahami pendapatan dan beban bisnis dalam periode pilihan.</p></div><div v-if="data" class="exports"><button type="button" :disabled="isExporting" @click="doExportExcel">&#8595; &nbsp; Excel</button><button type="button" :disabled="isExporting" @click="doExportPDF">&#8595; &nbsp; PDF</button></div></header>
+    <section class="controls" aria-label="Periode laporan"><div><span class="eyebrow">PERIODE LAPORAN</span><h2>Telusuri kinerja</h2><p>Pilih rentang waktu untuk melihat pendapatan dan beban.</p></div><div class="control-actions"><DateRangePicker :start-date="filters.startDate" :end-date="filters.endDate" @apply="applyDateRange" /><button type="button" class="show-button" @click="loadReport">Tampilkan</button><button type="button" class="reset-button" title="Reset ke bulan ini" aria-label="Reset ke bulan ini" @click="resetFilters">&#8635;</button></div></section>
+    <div v-if="errorMsg" class="error" role="alert">{{ errorMsg }}</div><div v-if="reportsStore.isLoading" class="state" role="status">Memuat laporan...</div>
+    <template v-else-if="data"><section class="overview" aria-label="Ringkasan laba rugi"><div class="overview-main"><span class="eyebrow">KINERJA BISNIS</span><p class="period">{{ data.period.startDate ? formatDate(data.period.startDate) : 'Awal' }} - {{ data.period.endDate ? formatDate(data.period.endDate) : 'Sekarang' }}</p><p class="balance-label">{{ data.isProfit ? 'Laba bersih' : 'Rugi bersih' }}</p><strong class="balance">{{ formatRp(data.netProfit) }}</strong><p class="balance-note">Pendapatan dikurangi beban</p></div><div class="overview-side"><span class="eyebrow">RINGKASAN PERIODE INI</span><div class="movement"><span><i class="dot in"></i>Total pendapatan</span><strong>{{ formatRp(data.revenue.total) }}</strong></div><div class="movement"><span><i class="dot out"></i>Total beban</span><strong>{{ formatRp(data.expense.total) }}</strong></div><div class="movement net"><span>{{ data.isProfit ? 'Laba bersih' : 'Rugi bersih' }}</span><strong>{{ formatRp(data.netProfit) }}</strong></div></div></section>
+      <div class="section-heading"><span class="eyebrow">RINCIAN LAPORAN</span><h2>Pendapatan dan beban</h2><p>Rincian akun untuk periode yang dipilih.</p></div>
+      <div class="report-grid"><section v-for="section in [{ key: 'revenue', label: 'Pendapatan', group: data.revenue }, { key: 'expense', label: 'Beban', group: data.expense }]" :key="section.key" class="report-card" :aria-labelledby="section.key + '-heading'"><header class="report-card-header"><div class="report-card-title"><span class="report-icon" :class="section.key" aria-hidden="true">{{ section.key === 'revenue' ? '+' : '-' }}</span><div><h3 :id="section.key + '-heading'">{{ section.label }}</h3><p>{{ section.group.accounts.length }} akun</p></div></div><div class="report-total"><span>Total {{ section.label.toLowerCase() }}</span><strong>{{ formatRp(section.group.total) }}</strong></div></header><div class="report-table-wrap"><table><thead><tr><th scope="col">Akun</th><th scope="col">Jumlah</th></tr></thead><tbody><tr v-for="acc in section.group.accounts" :key="acc.coaCode"><td><span class="account-code">{{ acc.coaCode }}</span><span class="account-name">{{ acc.coaName }}</span></td><td class="account-amount">{{ formatRp(acc.amount) }}</td></tr><tr v-if="!section.group.accounts.length"><td colspan="2" class="report-empty">Tidak ada akun {{ section.label.toLowerCase() }} pada periode ini.</td></tr></tbody></table></div></section></div>
+    </template><div v-else class="state">Pilih periode lalu klik Tampilkan.</div><aside class="notice"><strong>Catatan laporan</strong><p>Laporan ini belum termasuk Penutupan Periode (Period Closing). Nilai kumulatif sejak perusahaan dibuat.</p></aside>
+  </main>
 </template>
-
 <script setup lang="ts">
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import { dateKey, type DateRange } from '@/utils/dateRange'
@@ -233,24 +81,35 @@ const applyDateRange = (range: DateRange) => {
   loadReport()
 }
 </script>
-
 <style scoped>
-.profit-loss-page { --ink: var(--shell-ink, #27231d); --muted: var(--shell-muted, #6c6256); --surface: var(--shell-surface, #fffcf5); --rule: var(--shell-rule, #e2d8c7); width: min(100%, 1280px); margin: auto; padding: clamp(20px, 3.2vw, 40px) clamp(16px, 2.8vw, 30px); color: var(--ink); }
-.profit-heading { display: flex; justify-content: space-between; align-items: end; gap: 20px; padding: 28px; margin-bottom: 18px; border: 1px solid var(--rule); border-radius: 22px; background: var(--surface); }
-.profit-heading h1 { margin: 7px 0 0; color: var(--ink); font-size: clamp(27px, 3.2vw, 39px); font-weight: 900; letter-spacing: -.05em; line-height: 1.05; }
-.profit-heading p { color: var(--muted); line-height: 1.6; }
-.profit-heading button { min-height: 40px; padding: 9px 15px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); color: var(--ink); font-weight: 750; }
-.profit-heading button:hover { background: var(--shell-lilac, #eee4ff); }
-.profit-filters { margin-bottom: 24px; padding: 20px; border: 1px solid var(--rule); border-radius: 18px; background: var(--surface); }
-.profit-filters button { min-height: 38px; border-radius: 999px; }
-.profit-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 18px; background: var(--surface); overflow: hidden; }
-.profit-summary > div { display: flex; flex-direction: column; gap: 10px; padding: 22px 24px; min-width: 0; }
-.profit-summary > div + div { border-left: 1px solid var(--rule); }
-.profit-summary span { color: var(--muted); font-size: 12px; font-weight: 700; }
-.profit-summary strong { color: var(--ink); font-size: clamp(17px, 2vw, 25px); letter-spacing: -.04em; overflow-wrap: anywhere; }
-.profit-detail-heading { padding: 20px 0 2px; }
-.profit-detail-heading h2 { margin: 5px 0 3px; color: var(--ink); font-size: 24px; font-weight: 850; letter-spacing: -.04em; }
-.profit-detail-heading p { margin: 0; color: var(--muted); font-size: 13px; }
-.profit-loss-page :deep(button:focus-visible), .profit-loss-page :deep(input:focus-visible) { outline: 3px solid var(--shell-grape, #5026a5); outline-offset: 3px; }
-@media (max-width: 680px) { .profit-heading { align-items: flex-start; flex-direction: column; padding: 22px; } .profit-summary { grid-template-columns: 1fr; } .profit-summary > div { padding: 16px; } .profit-summary > div + div { border-left: 0; border-top: 1px solid var(--rule); } }
+.cash-page { --ink: var(--shell-ink, #27231d); --muted: var(--shell-muted, #6c6256); --surface: var(--shell-surface, #fffcf5); --rule: var(--shell-rule, #e2d8c7); max-width: 1280px; margin: auto; padding: clamp(20px,3vw,40px) clamp(16px,3vw,32px); color: var(--ink); }
+.page-header { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:28px; }.page-header h1 { font-size:clamp(34px,4vw,52px); line-height:1; letter-spacing:-.055em; font-weight:900; margin:9px 0; }.page-header p,.controls p,.section-heading p { color:var(--muted); font-size:14px; }.exports { display:flex; gap:8px; }.exports button,.reset-button { border:1px solid var(--rule); background:var(--surface); border-radius:999px; padding:10px 16px; font-weight:700; }.exports button:disabled { opacity:.5; }
+.eyebrow { font-size:10px; letter-spacing:.13em; font-weight:800; color:var(--muted); }.controls { display:flex; justify-content:space-between; align-items:center; gap:20px; background:var(--surface); border:1px solid var(--rule); border-radius:20px; padding:20px 24px; margin-bottom:20px; }.controls h2 { font-size:18px; font-weight:800; margin:3px 0; }.control-actions { display:flex; align-items:end; gap:8px; }.show-button { background:var(--shell-grape, #5026a5); color:white; border-radius:999px; padding:10px 18px; font-weight:700; white-space:nowrap; }.reset-button { font-size:20px; line-height:1; }
+.overview { display:grid; grid-template-columns:1.15fr 1fr; border-radius:24px; overflow:hidden; background:#31244c; color:#fff; }.overview-main { padding:32px; background:radial-gradient(circle at 100% 0%, #7756ad, transparent 55%), #3d2c60; }.overview .eyebrow { color:#d7c9ef; }.period { font-size:13px; color:#e0d5ef; margin-top:8px; }.balance-label { margin-top:40px; font-size:14px; color:#e0d5ef; }.balance { display:block; font-size:clamp(30px,4vw,48px); letter-spacing:-.045em; overflow-wrap:anywhere; }.balance-note { margin-top:8px; color:#e0d5ef; font-size:13px; }.overview-side { padding:32px; }.movement { display:flex; justify-content:space-between; gap:16px; padding:17px 0; border-bottom:1px solid #ffffff26; font-size:14px; }.movement strong { text-align:right; overflow-wrap:anywhere; }.movement.net { border:0; padding-bottom:0; font-size:16px; }.negative { color:#ffb7b7; }.dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:9px; }.dot.in { background:#a5e7c0; }.dot.out { background:#ffb3a9; }
+.section-heading { margin:36px 0 16px; }.section-heading h2 { font-size:26px; font-weight:850; letter-spacing:-.04em; margin:4px 0; }.detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }.detail-card { background:var(--surface); border:1px solid var(--rule); border-radius:20px; overflow:hidden; }.detail-card header { display:flex; justify-content:space-between; gap:12px; align-items:center; padding:22px; border-bottom:1px solid var(--rule); }.detail-card header > div { display:flex; align-items:center; gap:12px; }.detail-card header > strong { text-align:right; overflow-wrap:anywhere; }.detail-card h3 { font-size:17px; font-weight:800; }.detail-card header p { font-size:12px; color:var(--muted); }.direction { display:grid; place-items:center; width:42px; height:42px; border-radius:14px; font-size:22px; }.direction.in { background:#d9f2e2; color:#267447; }.direction.out { background:#ffe2dc; color:#ac493b; }.account { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:15px 22px; border-bottom:1px solid var(--rule); }.account:last-child { border:0; }.account span { color:var(--muted); font-size:11px; }.account p { font-size:14px; font-weight:700; }.account strong { font-size:14px; text-align:right; overflow-wrap:anywhere; }.empty { padding:30px 22px; color:var(--muted); font-size:14px; }.notice { display:flex; gap:16px; margin-top:22px; padding:18px 22px; border:1px solid var(--rule); border-radius:16px; color:var(--muted); font-size:12px; }.notice strong { color:var(--ink); white-space:nowrap; }.state,.error { padding:32px; text-align:center; background:var(--surface); border:1px solid var(--rule); border-radius:18px; }.error { color:#b42318; margin-bottom:16px; }.cash-page :deep(button:focus-visible),.cash-page :deep(input:focus-visible) { outline:3px solid #9a78d5; outline-offset:3px; }
+@media(max-width:800px) { .controls { align-items:stretch; flex-direction:column; }.control-actions { flex-wrap:wrap; }.overview { grid-template-columns:1fr; }.detail-grid { grid-template-columns:1fr; } } @media(max-width:520px) { .page-header { align-items:start; flex-direction:column; }.overview-main,.overview-side { padding:24px; }.balance-label { margin-top:28px; }.control-actions :deep(.date-range-picker) { width:100%; }.notice { flex-direction:column; gap:5px; } }
+
+.report-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.report-card { min-width:0; overflow:hidden; border:1px solid var(--rule); border-radius:20px; background:var(--surface); }
+.report-card-header { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:22px; border-bottom:1px solid var(--rule); }
+.report-card-title { display:flex; align-items:center; gap:12px; min-width:0; }
+.report-icon { display:grid; place-items:center; flex:none; width:42px; height:42px; border-radius:14px; font-size:22px; font-weight:800; }
+.report-icon.revenue { background:var(--shell-mint,#ddf4d9); color:var(--shell-ink,#27231d); }
+.report-icon.expense { background:var(--shell-lilac,#eee4ff); color:var(--shell-grape,#5026a5); }
+.report-card-title h3 { color:var(--ink); font-size:17px; font-weight:800; }
+.report-card-title p,.report-total span { color:var(--muted); font-size:12px; }
+.report-total { display:flex; flex-direction:column; align-items:end; text-align:right; min-width:0; gap:4px; }
+.report-total strong { color:var(--ink); font-size:16px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.report-table-wrap { overflow-x:auto; }
+.report-card table { width:100%; border-collapse:collapse; text-align:left; }
+.report-card th { padding:11px 22px; color:var(--muted); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.09em; }
+.report-card th:last-child { text-align:right; }
+.report-card td { padding:14px 22px; border-top:1px solid var(--rule); vertical-align:middle; }
+.account-code { display:block; color:var(--muted); font-size:11px; font-family:monospace; }
+.account-name { display:block; margin-top:3px; color:var(--ink); font-size:13px; font-weight:700; overflow-wrap:anywhere; }
+.account-amount { color:var(--ink); font-size:13px; font-weight:750; text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.report-card .report-empty { color:var(--muted); font-size:13px; text-align:center; padding:28px 22px; }
+@media(max-width:800px) { .report-grid { grid-template-columns:1fr; } }
+@media(max-width:420px) { .report-card-header { align-items:flex-start; flex-direction:column; }.report-total { align-items:start; text-align:left; }.report-card th,.report-card td { padding-left:16px; padding-right:16px; } }
+
 </style>

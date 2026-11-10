@@ -1,10 +1,11 @@
 <template>
-  <Teleport to="body"><div v-if="isOpen" class="coa-overlay" @click.self="requestClose" @keydown.esc="requestClose"><section class="coa-modal" role="dialog" aria-modal="true" aria-labelledby="coa-title"><header class="coa-hero"><div><span>PENGATURAN PEMBUKUAN</span><h2 id="coa-title">{{ isEdit ? 'Edit akun' : 'Tambah akun' }}</h2><p>{{ isEdit ? 'Perbarui informasi akun kustom perusahaan.' : 'Tambahkan akun kustom ke bagan akun perusahaan.' }}</p></div><button type="button" aria-label="Tutup" :disabled="isSubmitting" @click="requestClose">&#10005;</button></header><form class="coa-form" @submit.prevent="handleSubmit"><div v-if="isEdit" class="code-note"><span>KODE AKUN</span><strong>{{ form.code }}</strong></div><div v-if="!isEdit" class="field"><label for="coa-code">Kode akun <span>*</span></label><input id="coa-code" v-model="form.code" type="text" placeholder="Contoh: 1-005" required /><p>Awalan kode: 1 aset, 2 kewajiban, 3 ekuitas, 4 pendapatan, 5 beban.</p></div><div class="field"><label for="coa-name">Nama akun <span>*</span></label><input id="coa-name" v-model="form.name" type="text" placeholder="Nama akun" required /></div><div class="field"><label for="coa-type">Tipe akun <span>*</span></label><select id="coa-type" v-model="form.type" required><option value="ASSET">Aset (Harta)</option><option value="LIABILITY">Kewajiban (Hutang)</option><option value="EQUITY">Ekuitas (Modal)</option><option value="REVENUE">Pendapatan</option><option value="EXPENSE">Beban</option></select></div><div class="field"><label for="coa-balance">Saldo awal</label><div class="money-input"><span>Rp</span><input id="coa-balance" v-model.number="form.openingBalance" type="number" min="0" step="any" placeholder="0" /></div><p>Isi untuk migrasi dari pembukuan lain, atau biarkan nol untuk akun baru.</p></div><div v-if="errorMsg" class="coa-error" role="alert">{{ errorMsg }}</div><footer class="coa-actions"><button type="button" class="secondary" :disabled="isSubmitting" @click="requestClose">Batal</button><button type="submit" class="primary" :disabled="isSubmitting">{{ isSubmitting ? 'Menyimpan...' : isEdit ? 'Simpan perubahan' : 'Tambah akun' }}</button></footer></form></section></div></Teleport>
+  <Teleport to="body"><div v-if="isOpen" class="coa-overlay" @click.self="requestClose" @keydown.esc="requestClose"><section class="coa-modal" role="dialog" aria-modal="true" aria-labelledby="coa-title"><header class="coa-hero"><div><span>PENGATURAN PEMBUKUAN</span><h2 id="coa-title">{{ isEdit ? 'Edit akun' : 'Tambah akun' }}</h2><p>{{ isEdit ? 'Perbarui informasi akun kustom perusahaan.' : 'Tambahkan akun kustom ke bagan akun perusahaan.' }}</p></div><button type="button" aria-label="Tutup" :disabled="isSubmitting" @click="requestClose">&#10005;</button></header><form class="coa-form" @submit.prevent="handleSubmit"><div v-if="isEdit" class="code-note"><span>KODE AKUN</span><strong>{{ form.code }}</strong></div><div v-if="!isEdit" class="field"><label for="coa-code">Kode akun <span>*</span></label><input id="coa-code" v-model="form.code" type="text" placeholder="Contoh: 1-005" required /><p>Awalan kode: 1 aset, 2 kewajiban, 3 ekuitas, 4 pendapatan, 5 beban.</p></div><div class="field"><label for="coa-name">Nama akun <span>*</span></label><input id="coa-name" v-model="form.name" type="text" placeholder="Nama akun" required /></div><AppSelect id="coa-type" v-model="form.type" :options="accountTypeOptions" label="Tipe akun" required :disabled="isSubmitting" /><div class="field"><label for="coa-balance">Saldo awal</label><div class="money-input"><span>Rp</span><input id="coa-balance" v-model.number="form.openingBalance" type="number" min="0" step="any" placeholder="0" /></div><p>Isi untuk migrasi dari pembukuan lain, atau biarkan nol untuk akun baru.</p></div><div v-if="errorMsg" class="coa-error" role="alert">{{ errorMsg }}</div><footer class="coa-actions"><button type="button" class="secondary" :disabled="isSubmitting" @click="requestClose">Batal</button><button type="submit" class="primary" :disabled="isSubmitting">{{ isSubmitting ? 'Menyimpan...' : isEdit ? 'Simpan perubahan' : 'Tambah akun' }}</button></footer></form></section></div></Teleport>
 </template>
 <script setup lang="ts">
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import { lockModalScroll } from '@/utils/modalScrollLock'
 import { useBusinessStore } from '@/stores/business'
+import AppSelect from '@/components/common/AppSelect.vue'
 import type { ChartOfAccount, CoaType } from '@/types/business'
 
 const props = defineProps<{
@@ -16,6 +17,14 @@ const emit = defineEmits<{
   close: []
   saved: []
 }>()
+
+const accountTypeOptions: { value: CoaType; label: string }[] = [
+  { value: 'ASSET', label: 'Aset (Harta)' },
+  { value: 'LIABILITY', label: 'Kewajiban (Hutang)' },
+  { value: 'EQUITY', label: 'Ekuitas (Modal)' },
+  { value: 'REVENUE', label: 'Pendapatan' },
+  { value: 'EXPENSE', label: 'Beban' },
+]
 
 const businessStore = useBusinessStore()
 
