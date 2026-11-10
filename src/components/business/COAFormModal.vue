@@ -1,144 +1,9 @@
 <template>
-  <Transition
-    enter-active-class="transition ease-out duration-200"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-150"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div
-      v-if="isOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
-      @click.self="$emit('close')"
-    >
-      <Transition
-        enter-active-class="transition ease-out duration-200"
-        enter-from-class="opacity-0 scale-95"
-        enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition ease-in duration-150"
-        leave-from-class="opacity-100 scale-100"
-        leave-to-class="opacity-0 scale-95"
-      >
-        <div
-          v-if="isOpen"
-          class="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md border border-slate-200 dark:border-slate-700"
-        >
-          <!-- Header -->
-          <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-            <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">
-              {{ isEdit ? 'Edit COA' : 'Tambah COA Custom' }}
-            </h2>
-            <button @click="$emit('close')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-          </div>
-
-          <!-- Form -->
-          <form @submit.prevent="handleSubmit" class="px-6 py-5 space-y-4">
-            <!-- Kode (create only) -->
-            <div v-if="!isEdit">
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Kode Akun <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="form.code"
-                type="text"
-                placeholder="Contoh: 1-005"
-                required
-                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
-              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                Konvensi: 1-xxx=ASSET, 2-xxx=LIABILITY, 3-xxx=EQUITY, 4-xxx=REVENUE, 5-xxx=EXPENSE
-              </p>
-            </div>
-
-            <!-- Nama -->
-            <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Nama Akun <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="form.name"
-                type="text"
-                placeholder="Nama akun"
-                required
-                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
-            </div>
-
-            <!-- Tipe -->
-            <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Tipe Akun <span class="text-red-500">*</span>
-              </label>
-              <select
-                v-model="form.type"
-                required
-                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              >
-                <option value="ASSET">ASSET — Aset (Harta)</option>
-                <option value="LIABILITY">LIABILITY — Kewajiban (Hutang)</option>
-                <option value="EQUITY">EQUITY — Ekuitas (Modal)</option>
-                <option value="REVENUE">REVENUE — Pendapatan</option>
-                <option value="EXPENSE">EXPENSE — Beban</option>
-              </select>
-            </div>
-
-            <!-- Saldo Awal -->
-            <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Saldo Awal (Opening Balance)
-              </label>
-              <input
-                v-model.number="form.openingBalance"
-                type="number"
-                min="0"
-                step="any"
-                placeholder="0"
-                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
-              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                Isi jika sedang migrasi dari pembukuan manual/Excel. Kosongkan jika mulai dari nol.
-              </p>
-            </div>
-
-            <!-- Error -->
-            <div v-if="errorMsg" class="rounded-md bg-red-50 dark:bg-red-900/30 p-3 border border-red-200 dark:border-red-800">
-              <p class="text-sm text-red-700 dark:text-red-300">{{ errorMsg }}</p>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex justify-end gap-3 pt-2">
-              <button
-                type="button"
-                @click="$emit('close')"
-                :disabled="isSubmitting"
-                class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                :disabled="isSubmitting"
-                class="px-4 py-2 text-sm font-medium text-white bg-[#2E8B57] hover:bg-[#236B43] rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
-              >
-                <svg v-if="isSubmitting" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                {{ isEdit ? 'Simpan Perubahan' : 'Tambah COA' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </Transition>
-    </div>
-  </Transition>
+  <Teleport to="body"><div v-if="isOpen" class="coa-overlay" @click.self="requestClose" @keydown.esc="requestClose"><section class="coa-modal" role="dialog" aria-modal="true" aria-labelledby="coa-title"><header class="coa-hero"><div><span>PENGATURAN PEMBUKUAN</span><h2 id="coa-title">{{ isEdit ? 'Edit akun' : 'Tambah akun' }}</h2><p>{{ isEdit ? 'Perbarui informasi akun kustom perusahaan.' : 'Tambahkan akun kustom ke bagan akun perusahaan.' }}</p></div><button type="button" aria-label="Tutup" :disabled="isSubmitting" @click="requestClose">&#10005;</button></header><form class="coa-form" @submit.prevent="handleSubmit"><div v-if="isEdit" class="code-note"><span>KODE AKUN</span><strong>{{ form.code }}</strong></div><div v-if="!isEdit" class="field"><label for="coa-code">Kode akun <span>*</span></label><input id="coa-code" v-model="form.code" type="text" placeholder="Contoh: 1-005" required /><p>Awalan kode: 1 aset, 2 kewajiban, 3 ekuitas, 4 pendapatan, 5 beban.</p></div><div class="field"><label for="coa-name">Nama akun <span>*</span></label><input id="coa-name" v-model="form.name" type="text" placeholder="Nama akun" required /></div><div class="field"><label for="coa-type">Tipe akun <span>*</span></label><select id="coa-type" v-model="form.type" required><option value="ASSET">Aset (Harta)</option><option value="LIABILITY">Kewajiban (Hutang)</option><option value="EQUITY">Ekuitas (Modal)</option><option value="REVENUE">Pendapatan</option><option value="EXPENSE">Beban</option></select></div><div class="field"><label for="coa-balance">Saldo awal</label><div class="money-input"><span>Rp</span><input id="coa-balance" v-model.number="form.openingBalance" type="number" min="0" step="any" placeholder="0" /></div><p>Isi untuk migrasi dari pembukuan lain, atau biarkan nol untuk akun baru.</p></div><div v-if="errorMsg" class="coa-error" role="alert">{{ errorMsg }}</div><footer class="coa-actions"><button type="button" class="secondary" :disabled="isSubmitting" @click="requestClose">Batal</button><button type="submit" class="primary" :disabled="isSubmitting">{{ isSubmitting ? 'Menyimpan...' : isEdit ? 'Simpan perubahan' : 'Tambah akun' }}</button></footer></form></section></div></Teleport>
 </template>
-
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
+import { lockModalScroll } from '@/utils/modalScrollLock'
 import { useBusinessStore } from '@/stores/business'
 import type { ChartOfAccount, CoaType } from '@/types/business'
 
@@ -186,6 +51,24 @@ watch(
   },
 )
 
+let releaseScroll: (() => void) | null = null
+let opener: HTMLElement | null = null
+watch(() => props.isOpen, async (open) => {
+  if (open) {
+    opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    releaseScroll = lockModalScroll()
+    await nextTick()
+    document.getElementById(props.account ? 'coa-name' : 'coa-code')?.focus()
+  } else {
+    releaseScroll?.()
+    releaseScroll = null
+    opener?.focus()
+    opener = null
+  }
+})
+onBeforeUnmount(() => releaseScroll?.())
+const requestClose = () => { if (!isSubmitting.value) emit('close') }
+
 const handleSubmit = async () => {
   errorMsg.value = ''
   isSubmitting.value = true
@@ -214,3 +97,6 @@ const handleSubmit = async () => {
   }
 }
 </script>
+<style scoped>
+.coa-overlay { position:fixed; inset:0; z-index:50; display:flex; justify-content:center; align-items:center; padding:16px; background:rgba(24,19,35,.65); }.coa-modal { --ink:var(--shell-ink,#27231d); --muted:var(--shell-muted,#6c6256); --surface:var(--shell-surface,#fffcf5); --rule:var(--shell-rule,#e2d8c7); width:min(100%,520px); max-height:calc(100dvh - 32px); overflow:auto; border-radius:24px; background:var(--surface); color:var(--ink); box-shadow:0 24px 80px #0005; }.coa-hero { display:flex; justify-content:space-between; gap:20px; padding:28px; color:white; background:radial-gradient(circle at 100% 0%,#7756ad,transparent 60%),#3d2c60; }.coa-hero span,.code-note span { font-size:10px; font-weight:800; letter-spacing:.13em; color:#d7c9ef; }.coa-hero h2 { font-size:28px; font-weight:900; letter-spacing:-.04em; margin:7px 0; }.coa-hero p { color:#e0d5ef; font-size:13px; }.coa-hero button { flex:none; width:36px; height:36px; border-radius:50%; background:#ffffff20; }.coa-form { display:flex; flex-direction:column; gap:18px; padding:24px 28px 28px; }.field { display:flex; flex-direction:column; gap:7px; }.field label { font-size:13px; font-weight:800; }.field label span { color:#bd4038; }.field input,.field select { width:100%; min-height:44px; padding:10px 12px; border:1px solid var(--rule); border-radius:12px; background:var(--surface); color:var(--ink); font-size:14px; }.field p { color:var(--muted); font-size:12px; line-height:1.5; }.code-note { display:flex; justify-content:space-between; align-items:center; padding:13px 15px; border-radius:12px; background:var(--shell-lilac,#eee4ff); color:#31244c; }.code-note span { color:#6c5e7b; }.money-input { display:flex; align-items:center; border:1px solid var(--rule); border-radius:12px; overflow:hidden; }.money-input > span { padding:0 13px; color:var(--muted); font-size:13px; font-weight:700; }.money-input input { border:0; border-left:1px solid var(--rule); border-radius:0; }.coa-error { padding:12px; border-radius:12px; background:#fff0ee; color:#a8322b; font-size:13px; }.coa-actions { display:flex; justify-content:flex-end; gap:8px; padding-top:4px; }.coa-actions button { padding:10px 17px; border-radius:999px; font-size:13px; font-weight:800; }.coa-actions button:disabled { opacity:.5; }.secondary { border:1px solid var(--rule); }.primary { background:var(--shell-grape,#5026a5); color:white; }.coa-modal :is(button,input,select):focus-visible { outline:3px solid #9a78d5; outline-offset:3px; } @media(max-width:520px) { .coa-hero,.coa-form { padding:22px; }.coa-actions button { flex:1; } }
+</style>
