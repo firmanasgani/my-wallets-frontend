@@ -1,155 +1,27 @@
 <template>
-  <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <div class="mb-6 border-b border-slate-200 dark:border-slate-700 pb-4 flex justify-between items-start gap-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Jurnal Umum</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">General Journal — audit trail seluruh entri jurnal akuntansi secara kronologis.</p>
-      </div>
-      <div v-if="data && data.data.length > 0" class="flex items-center gap-1.5 shrink-0">
-        <button @click="doExportExcel" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50">
-          <svg v-if="!isExporting" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-          <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-          <span class="hidden sm:inline">Excel</span>
-        </button>
-        <button @click="doExportPDF" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors disabled:opacity-50">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-          <span class="hidden sm:inline">PDF</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="mb-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <DateRangePicker class="sm:col-span-2" :start-date="filters.startDate" :end-date="filters.endDate" @apply="applyDateRange" />
-        <div class="flex items-end gap-2">
-          <button
-            @click="applyFilters"
-            class="flex-1 px-4 py-1.5 text-sm font-medium bg-[#2E8B57] hover:bg-[#236B43] text-white rounded-lg transition-colors"
-          >
-            Filter
-          </button>
-          <button
-            @click="resetFilters"
-            class="px-3 py-1.5 text-sm font-medium bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
-            title="Reset ke bulan ini"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Error -->
-    <div v-if="errorMsg" class="mb-4 rounded-md bg-red-50 dark:bg-red-900/30 p-4 border border-red-200 dark:border-red-800">
-      <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ errorMsg }}</p>
-    </div>
-
-    <!-- Loading -->
-    <div v-if="reportsStore.isLoading" class="flex justify-center p-12">
-      <svg class="w-8 h-8 animate-spin text-emerald-500" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-      </svg>
-    </div>
-
-    <!-- Empty State -->
-    <div
-      v-else-if="!data || data.data.length === 0"
-      class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center"
-    >
-      <svg class="w-12 h-12 mx-auto mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-      <p class="text-base font-medium text-slate-700 dark:text-slate-300">Tidak ada jurnal dalam periode ini</p>
-    </div>
-
-    <!-- Journal Entries -->
-    <div v-else class="space-y-2">
-      <div
-        v-for="entry in data.data"
-        :key="entry.id"
-        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden cursor-pointer hover:border-emerald-300 dark:hover:border-[#2E8B57] hover:shadow-sm transition-all"
-        @click="router.push({ name: 'business-transaction-detail', params: { id: entry.id } })"
-      >
-        <div class="flex items-center justify-between gap-4 px-5 py-3.5">
-          <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span
-                v-if="entry.isSystemGenerated"
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-emerald-300 shrink-0"
-              >
-                Dari Invoice
-              </span>
-              <span
-                v-else
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-600 dark:text-slate-300 shrink-0"
-              >
-                Manual
-              </span>
-              <span v-if="entry.reference" class="text-xs font-mono text-emerald-600 dark:text-emerald-400 shrink-0">{{ entry.reference }}</span>
-              <span class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{{ entry.description }}</span>
-            </div>
-            <div class="flex items-center gap-3 mt-1 text-xs text-slate-400 dark:text-slate-500 flex-wrap">
-              <span>{{ formatDate(entry.date) }}</span>
-              <span v-if="entry.contacts && entry.contacts.length > 0">· {{ entry.contacts.join(', ') }}</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-3 shrink-0">
-            <div class="text-right">
-              <p class="text-xs text-slate-400 dark:text-slate-500">Total</p>
-              <p class="text-sm font-bold text-slate-800 dark:text-slate-100 tabular-nums">{{ formatRp(entry.totalDebit) }}</p>
-            </div>
-            <svg class="w-4 h-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pagination -->
-    <div
-      v-if="data && data.totalPages > 1"
-      class="mt-4 flex items-center justify-between"
-    >
-      <p class="text-sm text-slate-500 dark:text-slate-400">
-        Halaman {{ data.page }} dari {{ data.totalPages }} ({{ data.total }} entri)
-      </p>
-      <div class="flex gap-2">
-        <button
-          :disabled="currentPage <= 1"
-          @click="goToPage(currentPage - 1)"
-          class="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-300"
-        >
-          ← Sebelumnya
-        </button>
-        <button
-          :disabled="currentPage >= data.totalPages"
-          @click="goToPage(currentPage + 1)"
-          class="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-300"
-        >
-          Berikutnya →
-        </button>
-      </div>
-    </div>
-  </div>
+  <main class="cash-page journal-page">
+    <header class="page-header"><div><span class="shell-overline">LAPORAN KEUANGAN</span><h1>Jurnal umum</h1><p>Telusuri catatan jurnal bisnis secara kronologis.</p></div><div v-if="data && data.data.length" class="exports"><button type="button" :disabled="isExporting" @click="doExportExcel">&#8595; &nbsp; Excel</button><button type="button" :disabled="isExporting" @click="doExportPDF">&#8595; &nbsp; PDF</button></div></header>
+    <section class="controls" aria-label="Periode jurnal"><div><span class="eyebrow">PERIODE LAPORAN</span><h2>Telusuri jurnal</h2><p>Pilih rentang tanggal untuk melihat entri jurnal.</p></div><div class="control-actions"><DateRangePicker :start-date="filters.startDate" :end-date="filters.endDate" @apply="applyDateRange" /><button type="button" class="show-button" @click="applyFilters">Tampilkan</button><button type="button" class="reset-button" title="Reset ke bulan ini" aria-label="Reset ke bulan ini" @click="resetFilters">&#8635;</button></div></section>
+    <div v-if="errorMsg" class="error" role="alert">{{ errorMsg }}</div>
+    <div v-if="reportsStore.isLoading" class="state">Memuat jurnal...</div>
+    <template v-else-if="data">
+      <section class="journal-overview"><div><span class="eyebrow">IKHTISAR JURNAL</span><h2>Catatan periode ini</h2><p>{{ formatDate(filters.startDate) }} - {{ formatDate(filters.endDate) }}</p></div><div class="entry-count"><strong>{{ data.total }}</strong><span>entri jurnal</span></div><div class="page-count"><span>DITAMPILKAN</span><strong>{{ data.data.length }} entri</strong><small>Halaman {{ data.page }} dari {{ data.totalPages || 1 }}</small></div></section>
+      <div class="section-heading"><span class="eyebrow">DAFTAR JURNAL</span><h2>Entri jurnal</h2><p>Pilih entri untuk melihat rincian transaksi dan akun.</p></div>
+      <div v-if="!data.data.length" class="state"><strong>Tidak ada jurnal dalam periode ini</strong><p class="empty-caption">Coba pilih rentang tanggal lain.</p></div>
+      <div v-else class="journal-list"><RouterLink v-for="entry in data.data" :key="entry.id" :to="{ name: 'business-transaction-detail', params: { id: entry.id } }" class="journal-entry"><div class="entry-date"><span>TANGGAL</span><strong>{{ formatDate(entry.date) }}</strong></div><div class="entry-main"><div class="entry-meta"><span class="entry-type" :class="{ system: entry.isSystemGenerated }">{{ entry.isSystemGenerated ? 'Dari Invoice' : 'Manual' }}</span><span v-if="entry.reference" class="reference">{{ entry.reference }}</span></div><h3>{{ entry.description || 'Tanpa deskripsi' }}</h3><p v-if="entry.contacts && entry.contacts.length">{{ entry.contacts.join(', ') }}</p></div><div class="entry-total"><span>TOTAL DEBIT</span><strong>{{ formatRp(entry.totalDebit) }}</strong></div><span class="entry-arrow" aria-hidden="true">&#8594;</span></RouterLink></div>
+      <nav v-if="data.totalPages > 1" class="pagination" aria-label="Halaman jurnal"><p>Halaman {{ data.page }} dari {{ data.totalPages }} <span>({{ data.total }} entri)</span></p><div><button type="button" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">&#8592; Sebelumnya</button><button type="button" :disabled="currentPage >= data.totalPages" @click="goToPage(currentPage + 1)">Berikutnya &#8594;</button></div></nav>
+    </template><div v-else class="state">Belum ada laporan untuk ditampilkan.</div>
+  </main>
 </template>
-
 <script setup lang="ts">
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import { dateKey, type DateRange } from '@/utils/dateRange'
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useBusinessReportsStore } from '@/stores/businessReports'
 import { useBusinessStore } from '@/stores/business'
 import { BusinessService } from '@/services/business.service'
 import ExportService from '@/services/exportService'
 
-const router = useRouter()
 
 const reportsStore = useBusinessReportsStore()
 const businessStore = useBusinessStore()
@@ -243,3 +115,14 @@ const applyDateRange = (range: DateRange) => {
   applyFilters()
 }
 </script>
+<style scoped>
+.cash-page { --ink: var(--shell-ink, #27231d); --muted: var(--shell-muted, #6c6256); --surface: var(--shell-surface, #fffcf5); --rule: var(--shell-rule, #e2d8c7); max-width: 1280px; margin: auto; padding: clamp(20px,3vw,40px) clamp(16px,3vw,32px); color: var(--ink); }
+.page-header { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:28px; }.page-header h1 { font-size:clamp(34px,4vw,52px); line-height:1; letter-spacing:-.055em; font-weight:900; margin:9px 0; }.page-header p,.controls p,.section-heading p { color:var(--muted); font-size:14px; }.exports { display:flex; gap:8px; }.exports button,.reset-button { border:1px solid var(--rule); background:var(--surface); border-radius:999px; padding:10px 16px; font-weight:700; }.exports button:disabled { opacity:.5; }
+.eyebrow { font-size:10px; letter-spacing:.13em; font-weight:800; color:var(--muted); }.controls { display:flex; justify-content:space-between; align-items:center; gap:20px; background:var(--surface); border:1px solid var(--rule); border-radius:20px; padding:20px 24px; margin-bottom:20px; }.controls h2 { font-size:18px; font-weight:800; margin:3px 0; }.control-actions { display:flex; align-items:end; gap:8px; }.show-button { background:var(--shell-grape, #5026a5); color:white; border-radius:999px; padding:10px 18px; font-weight:700; white-space:nowrap; }.reset-button { font-size:20px; line-height:1; }
+.overview { display:grid; grid-template-columns:1.15fr 1fr; border-radius:24px; overflow:hidden; background:#31244c; color:#fff; }.overview-main { padding:32px; background:radial-gradient(circle at 100% 0%, #7756ad, transparent 55%), #3d2c60; }.overview .eyebrow { color:#d7c9ef; }.period { font-size:13px; color:#e0d5ef; margin-top:8px; }.balance-label { margin-top:40px; font-size:14px; color:#e0d5ef; }.balance { display:block; font-size:clamp(30px,4vw,48px); letter-spacing:-.045em; overflow-wrap:anywhere; }.balance-note { margin-top:8px; color:#e0d5ef; font-size:13px; }.overview-side { padding:32px; }.movement { display:flex; justify-content:space-between; gap:16px; padding:17px 0; border-bottom:1px solid #ffffff26; font-size:14px; }.movement strong { text-align:right; overflow-wrap:anywhere; }.movement.net { border:0; padding-bottom:0; font-size:16px; }.negative { color:#ffb7b7; }.dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:9px; }.dot.in { background:#a5e7c0; }.dot.out { background:#ffb3a9; }
+.section-heading { margin:36px 0 16px; }.section-heading h2 { font-size:26px; font-weight:850; letter-spacing:-.04em; margin:4px 0; }.detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }.detail-card { background:var(--surface); border:1px solid var(--rule); border-radius:20px; overflow:hidden; }.detail-card header { display:flex; justify-content:space-between; gap:12px; align-items:center; padding:22px; border-bottom:1px solid var(--rule); }.detail-card header > div { display:flex; align-items:center; gap:12px; }.detail-card header > strong { text-align:right; overflow-wrap:anywhere; }.detail-card h3 { font-size:17px; font-weight:800; }.detail-card header p { font-size:12px; color:var(--muted); }.direction { display:grid; place-items:center; width:42px; height:42px; border-radius:14px; font-size:22px; }.direction.in { background:#d9f2e2; color:#267447; }.direction.out { background:#ffe2dc; color:#ac493b; }.account { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:15px 22px; border-bottom:1px solid var(--rule); }.account:last-child { border:0; }.account span { color:var(--muted); font-size:11px; }.account p { font-size:14px; font-weight:700; }.account strong { font-size:14px; text-align:right; overflow-wrap:anywhere; }.empty { padding:30px 22px; color:var(--muted); font-size:14px; }.notice { display:flex; gap:16px; margin-top:22px; padding:18px 22px; border:1px solid var(--rule); border-radius:16px; color:var(--muted); font-size:12px; }.notice strong { color:var(--ink); white-space:nowrap; }.state,.error { padding:32px; text-align:center; background:var(--surface); border:1px solid var(--rule); border-radius:18px; }.error { color:#b42318; margin-bottom:16px; }.cash-page :deep(button:focus-visible),.cash-page :deep(input:focus-visible) { outline:3px solid #9a78d5; outline-offset:3px; }
+@media(max-width:800px) { .controls { align-items:stretch; flex-direction:column; }.control-actions { flex-wrap:wrap; }.overview { grid-template-columns:1fr; }.detail-grid { grid-template-columns:1fr; } } @media(max-width:520px) { .page-header { align-items:start; flex-direction:column; }.overview-main,.overview-side { padding:24px; }.balance-label { margin-top:28px; }.control-actions :deep(.date-range-picker) { width:100%; }.notice { flex-direction:column; gap:5px; } }
+</style>
+<style scoped>
+.journal-overview { display:flex; align-items:center; gap:36px; padding:28px 32px; border-radius:24px; background:radial-gradient(circle at 100% 0%, #7756ad, transparent 55%), #3d2c60; color:white; }.journal-overview > div:first-child { flex:1; }.journal-overview .eyebrow,.journal-overview p,.page-count span,.page-count small,.entry-count span { color:#e0d5ef; }.journal-overview h2 { font-size:24px; font-weight:850; letter-spacing:-.04em; margin:6px 0; }.journal-overview p { font-size:13px; }.entry-count,.page-count { display:flex; flex-direction:column; }.entry-count strong { font-size:44px; line-height:1; letter-spacing:-.05em; }.entry-count span,.page-count small { font-size:12px; margin-top:5px; }.page-count { border-left:1px solid #ffffff33; padding-left:30px; }.page-count span { font-size:10px; font-weight:800; letter-spacing:.12em; }.page-count strong { font-size:18px; margin-top:7px; }.journal-list { border:1px solid var(--rule); border-radius:20px; background:var(--surface); overflow:hidden; }.journal-entry { display:grid; grid-template-columns:140px minmax(0,1fr) minmax(130px,auto) 24px; gap:20px; align-items:center; padding:20px 24px; border-bottom:1px solid var(--rule); color:var(--ink); text-decoration:none; transition:background .2s; }.journal-entry:last-child { border-bottom:0; }.journal-entry:hover { background:var(--shell-lilac, #eee4ff); }.entry-date,.entry-total { display:flex; flex-direction:column; gap:6px; }.entry-date span,.entry-total span { color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; }.entry-date strong,.entry-total strong { font-size:14px; }.entry-total { text-align:right; }.entry-total strong { overflow-wrap:anywhere; }.entry-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }.entry-type { background:var(--shell-lilac, #eee4ff); color:#5026a5; border-radius:999px; font-size:11px; font-weight:700; padding:4px 9px; }.entry-type.system { background:#d9f2e2; color:#267447; }.reference { color:var(--muted); font-size:12px; overflow-wrap:anywhere; }.entry-main { min-width:0; }.entry-main h3 { font-size:15px; font-weight:800; margin-top:7px; overflow-wrap:anywhere; }.entry-main p { color:var(--muted); font-size:12px; margin-top:4px; }.entry-arrow { font-size:20px; color:var(--muted); text-align:right; }.empty-caption { color:var(--muted); font-size:13px; margin-top:6px; }.pagination { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:18px; color:var(--muted); font-size:13px; }.pagination div { display:flex; gap:8px; }.pagination button { padding:9px 14px; border:1px solid var(--rule); background:var(--surface); color:var(--ink); border-radius:999px; font-weight:700; }.pagination button:disabled { opacity:.4; }.journal-entry:focus-visible { outline:3px solid #9a78d5; outline-offset:-3px; } @media(max-width:700px) { .journal-overview { flex-wrap:wrap; gap:20px; padding:24px; }.journal-overview > div:first-child { flex-basis:100%; }.journal-entry { grid-template-columns:minmax(0,1fr) auto; gap:10px; padding:18px; }.entry-date { grid-column:1 / -1; flex-direction:row; align-items:baseline; }.entry-main { grid-column:1; }.entry-total { grid-column:1; text-align:left; margin-top:4px; }.entry-arrow { grid-column:2; grid-row:2 / 4; }.pagination { align-items:flex-start; flex-direction:column; } }
+</style>
