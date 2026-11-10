@@ -1,8 +1,8 @@
 <template>
-  <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="kpi-dashboard">
     <!-- Header -->
     <div class="mb-6 border-b border-slate-200 dark:border-slate-700 pb-4 flex items-center justify-between">
-      <div>
+      <div class="kpi-title">
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">KPI Dashboard</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Ringkasan performa bisnis bulan
@@ -25,8 +25,9 @@
     </div>
 
     <!-- Error -->
-    <div v-if="errorMsg" class="mb-4 rounded-md bg-red-50 dark:bg-red-900/30 p-4 border border-red-200 dark:border-red-800">
-      <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ errorMsg }}</p>
+    <div v-if="errorMsg" class="kpi-error">
+      <p class="text-sm font-medium">{{ errorMsg }}</p>
+      <button type="button" @click="loadKpi">Coba lagi</button>
     </div>
 
     <!-- Loading -->
@@ -38,6 +39,24 @@
     </div>
 
     <div v-else-if="data" class="space-y-4">
+      <section class="kpi-highlights" aria-label="Indikator utama bulan ini">
+        <article class="kpi-highlight kpi-highlight--revenue">
+          <span>Pendapatan bulan ini</span>
+          <strong>{{ formatRpShort(data.profitability.totalRevenue) }}</strong>
+          <small>{{ data.profitability.revenueGrowth === null ? 'Belum ada pembanding' : `${Number(data.profitability.revenueGrowth) >= 0 ? '+' : ''}${data.profitability.revenueGrowth}% dari periode sebelumnya` }}</small>
+        </article>
+        <article class="kpi-highlight kpi-highlight--profit">
+          <span>{{ data.profitability.isProfit ? 'Laba bersih' : 'Rugi bersih' }}</span>
+          <strong>{{ formatRpShort(data.profitability.netProfit) }}</strong>
+          <small>Margin {{ parseFloat(data.profitability.totalRevenue) > 0 ? `${data.profitability.profitMargin}%` : '—' }}</small>
+        </article>
+        <article class="kpi-highlight kpi-highlight--cash">
+          <span>Kas tersedia</span>
+          <strong>{{ formatRpShort(data.liquidity.cashPosition) }}</strong>
+          <small>Posisi kas dan bank</small>
+        </article>
+      </section>
+
       <!-- Row 1: Profitabilitas + Posisi Kas -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -280,6 +299,7 @@ import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useBusinessReportsStore } from '@/stores/businessReports'
 import type { KpiCoaItem } from '@/types/business'
+import '@/assets/kpi-dashboard.css'
 
 const reportsStore = useBusinessReportsStore()
 const errorMsg = ref('')
