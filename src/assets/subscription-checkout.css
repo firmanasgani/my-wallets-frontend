@@ -1,0 +1,120 @@
+.subscription-checkout {
+  --checkout-paper: var(--shell-paper, #fdf9ee);
+  --checkout-surface: var(--shell-surface, #fffcf5);
+  --checkout-ink: var(--shell-ink, #27231d);
+  --checkout-muted: var(--shell-muted, #6c6256);
+  --checkout-line: var(--shell-line, #423a2d);
+  --checkout-rule: var(--shell-rule, #e2d8c7);
+  --checkout-accent: var(--shell-grape, #5026a5);
+  --checkout-tint: var(--shell-lilac, #eee4ff);
+  width: min(100%, 1080px);
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 48px) clamp(16px, 3vw, 32px);
+  color: var(--checkout-ink);
+}
+.subscription-checkout * { box-sizing: border-box; }
+.subscription-checkout :is(h1,h2,h3,p) { margin-top: 0; }
+.subscription-checkout :is(button,input):focus-visible { outline: 3px solid var(--checkout-accent); outline-offset: 3px; }
+.checkout-heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.checkout-heading > button {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  border: 1px solid var(--checkout-rule);
+  background: var(--checkout-surface);
+  color: var(--checkout-ink) !important;
+  transition: background .18s ease, transform .18s ease;
+}
+.checkout-heading > button:hover { background: var(--checkout-tint); transform: translateX(-2px); }
+.checkout-heading h1 {
+  margin: 0 0 4px;
+  color: var(--checkout-ink) !important;
+  font-size: clamp(25px, 3vw, 36px);
+  font-weight: 900;
+  letter-spacing: -.045em;
+  line-height: 1.12;
+}
+.checkout-heading p { margin: 0; color: var(--checkout-muted) !important; font-size: 13px; }
+.subscription-checkout .grid { gap: 20px; }
+.subscription-checkout .grid > .space-y-6 { display: grid; align-content: start; gap: 16px; }
+.subscription-checkout .grid > .space-y-6 > div,
+.subscription-checkout .grid > div.bg-white {
+  padding: 20px;
+  border: 1px solid var(--checkout-rule) !important;
+  border-radius: 18px !important;
+  background: var(--checkout-surface) !important;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--checkout-ink) 5%, transparent) !important;
+}
+.subscription-checkout .grid > .space-y-6 > div > p {
+  margin-bottom: 12px !important;
+  color: var(--checkout-ink) !important;
+  font-size: 14px;
+  font-weight: 800;
+}
+.subscription-checkout label.flex {
+  min-height: 50px;
+  padding: 12px 14px !important;
+  border: 1px solid var(--checkout-rule) !important;
+  border-radius: 12px !important;
+  background: var(--checkout-paper);
+}
+.subscription-checkout label.flex:hover { border-color: var(--checkout-accent) !important; }
+.subscription-checkout label.flex:has(input:checked) {
+  border-color: var(--checkout-accent) !important;
+  background: var(--checkout-tint) !important;
+  box-shadow: inset 0 0 0 1px var(--checkout-accent);
+}
+.subscription-checkout label.flex span { color: var(--checkout-ink) !important; }
+.subscription-checkout input[type="checkbox"] { accent-color: var(--checkout-accent); }
+.subscription-checkout .grid > div.bg-white { overflow: hidden; padding: 0; }
+.subscription-checkout .grid > div.bg-white > div:first-child {
+  padding: 18px 22px !important;
+  border-bottom: 1px solid var(--checkout-rule) !important;
+  background: var(--checkout-tint) !important;
+}
+.subscription-checkout .grid > div.bg-white h3 { margin: 0; color: var(--checkout-ink) !important; font-size: 15px; font-weight: 850; }
+.subscription-checkout .grid > div.bg-white > .p-6 { padding: 22px !important; }
+.subscription-checkout .grid > div.bg-white > .p-6 > div { gap: 16px; }
+.subscription-checkout .grid > div.bg-white :is(span,p) { color: var(--checkout-muted) !important; }
+.subscription-checkout .grid > div.bg-white :is(span.font-medium,span.font-bold,span.text-xl) { color: var(--checkout-ink) !important; }
+.subscription-checkout .grid > div.bg-white .text-emerald-600,
+.subscription-checkout .grid > div.bg-white .text-emerald-400 { color: var(--checkout-accent) !important; }
+.subscription-checkout .grid > div.bg-white .border-t,
+.subscription-checkout .grid > div.bg-white .border-b { border-color: var(--checkout-rule) !important; }
+.subscription-checkout .grid > div.bg-white > .px-6.pb-6 { padding: 0 22px 22px !important; }
+.subscription-checkout .grid > div.bg-white button,
+.subscription-checkout > .flex button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 999px !important;
+  background: var(--checkout-ink) !important;
+  color: var(--checkout-surface) !important;
+  box-shadow: none !important;
+  transition: background .18s ease, transform .18s ease;
+}
+.subscription-checkout .grid > div.bg-white button:hover,
+.subscription-checkout > .flex button:hover { background: var(--checkout-accent) !important; transform: translateY(-1px); }
+.subscription-checkout .grid > div.bg-white button:disabled { opacity: .55; }
+.subscription-checkout > .flex:not(.checkout-heading) { color: var(--checkout-ink); }
+.subscription-checkout > .flex:not(.checkout-heading) > div:first-child > div:first-child { background: var(--checkout-tint); }
+.subscription-checkout > .flex:not(.checkout-heading) > div:first-child > div:last-child { background: var(--checkout-accent); }
+.subscription-checkout .bg-white.dark\:bg-slate-800 { color: var(--checkout-ink); }
+.subscription-checkout > .grid > .bg-white { color: var(--checkout-ink); }
+.subscription-checkout .text-slate-500,
+.subscription-checkout .dark\:text-slate-400 { color: var(--checkout-muted) !important; }
+.subscription-checkout > .flex.flex-col.items-center { padding: 56px 20px !important; }
+.subscription-checkout > .flex.flex-col.items-center h3 { color: var(--checkout-ink) !important; letter-spacing: -.04em; }
+.subscription-checkout > .flex.flex-col.items-center p { color: var(--checkout-muted) !important; }
+.subscription-checkout > .flex.flex-col.items-center > button { padding: 12px 26px; }
+@media (max-width: 640px) {
+  .subscription-checkout { padding-top: 22px; }
+  .checkout-heading { align-items: flex-start; margin-bottom: 20px; }
+  .checkout-heading > button { padding: 8px !important; }
+  .subscription-checkout .grid > .space-y-6 > div,
+  .subscription-checkout .grid > div.bg-white { padding: 16px; }
+  .subscription-checkout .grid > div.bg-white > .p-6 { padding: 18px !important; }
+}

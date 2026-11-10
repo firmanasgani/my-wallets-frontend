@@ -1,7 +1,7 @@
 <template>
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="subscription-checkout">
     <!-- Header -->
-    <div class="flex items-center mb-8">
+    <div class="checkout-heading">
       <button
         @click="router.push({ name: 'settings' })"
         class="mr-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
@@ -212,6 +212,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useSubscriptionStore } from '@/stores/subscriptions'
 import { getDurationDays, addDays } from '@/utils/subscriptionDuration'
+import '@/assets/subscription-checkout.css'
 
 const route = useRoute()
 const router = useRouter()
