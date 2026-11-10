@@ -1,26 +1,20 @@
 <template>
-  <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
-    <!-- Header -->
-    <div class="flex justify-between items-start border-b border-slate-200 dark:border-slate-700 pb-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Konfigurasi Pajak</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Atur jenis PPh & aturan saran pajak otomatis untuk jurnal.</p>
-      </div>
-    </div>
-
+  <div class="tax-page">
+    <header class="tax-heading"><span class="shell-overline">PENGATURAN BISNIS</span><h1>Konfigurasi pajak</h1><p>Kelola jenis pajak dan saran otomatis untuk jurnal perusahaan.</p></header>
+    <section class="tax-overview"><div><span class="overview-label">PENGATURAN PAJAK</span><h2>Pajak dan aturan jurnal</h2><p>Atur pajak yang digunakan perusahaan serta kondisi untuk menyarankannya saat mencatat jurnal.</p></div><div class="overview-count"><strong>{{ isLoadingTax ? '-' : taxConfigs.filter(t => t.isActive).length }}</strong><span>pajak aktif</span></div><div class="overview-count"><strong>{{ isLoadingRules ? '-' : suggestionRules.filter(r => r.isActive).length }}</strong><span>aturan aktif</span></div></section>
     <!-- Error -->
     <div v-if="errorMsg" class="rounded-md bg-red-50 dark:bg-red-900/30 p-4 border border-red-200 dark:border-red-800">
       <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ errorMsg }}</p>
     </div>
 
     <!-- ═══ TAX CONFIGS ═══ -->
-    <section>
-      <div class="flex justify-between items-center mb-3">
+    <section class="tax-section">
+      <div class="tax-section-heading">
         <div>
-          <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Jenis Pajak (PPh)</h2>
+          <span class="section-label">KONFIGURASI</span><h2>Jenis pajak</h2>
           <p class="text-sm text-slate-500 dark:text-slate-400">Daftar pajak yang berlaku untuk perusahaan ini.</p>
         </div>
-        <button v-if="isAdmin" @click="openTaxForm()" class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">+ Tambah Pajak</button>
+        <button v-if="isAdmin" @click="openTaxForm()" class="section-action">+ Tambah Pajak</button>
       </div>
 
       <div v-if="isLoadingTax" class="flex justify-center py-10">
@@ -34,8 +28,8 @@
         Belum ada konfigurasi pajak. Tambahkan jenis PPh yang relevan.
       </div>
 
-      <div v-else class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-        <table class="w-full text-sm">
+      <div v-else class="tax-table">
+        <table class="w-full text-sm min-w-[640px]">
           <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-sm uppercase">
             <tr>
               <th class="px-4 py-3 text-left">Nama</th>
@@ -77,10 +71,10 @@
     <section>
       <div class="flex justify-between items-center mb-3">
         <div>
-          <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Aturan Saran Pajak Kustom</h2>
+          <span class="section-label">OTOMATISASI</span><h2>Aturan saran pajak</h2>
           <p class="text-sm text-slate-500 dark:text-slate-400">Aturan otomatis untuk menyarankan pajak saat mengisi jurnal.</p>
         </div>
-        <button v-if="isAdmin && taxConfigs.length > 0" @click="openRuleForm()" class="bg-[#2E8B57] hover:bg-[#236B43] text-white text-sm font-medium py-1.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">+ Tambah Aturan</button>
+        <button v-if="isAdmin && taxConfigs.length > 0" @click="openRuleForm()" class="section-action">+ Tambah Aturan</button>
       </div>
 
       <div v-if="isLoadingRules" class="flex justify-center py-10">
@@ -97,7 +91,7 @@
 
       <div v-else class="space-y-3">
         <div v-for="rule in suggestionRules" :key="rule.id"
-          class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+          class="rule-card">
           <div class="flex items-start justify-between gap-3">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 flex-wrap mb-1">
@@ -418,3 +412,7 @@ onMounted(async () => {
 })
 </script>
 
+
+<style scoped>
+.tax-page { --ink:var(--shell-ink,#27231d); --muted:var(--shell-muted,#6c6256); --surface:var(--shell-surface,#fffcf5); --rule:var(--shell-rule,#e2d8c7); max-width:1280px; margin:auto; padding:clamp(20px,3vw,40px) clamp(16px,3vw,32px); color:var(--ink); }.tax-heading { margin-bottom:28px; }.tax-heading h1 { font-size:clamp(34px,4vw,52px); line-height:1; letter-spacing:-.055em; font-weight:900; margin:9px 0; }.tax-heading p,.tax-section-heading p { color:var(--muted); font-size:14px; }.tax-overview { display:flex; align-items:center; gap:36px; padding:30px 32px; border-radius:24px; background:radial-gradient(circle at 100% 0%,#7756ad,transparent 55%),#3d2c60; color:white; }.tax-overview > div:first-child { flex:1; }.overview-label,.section-label { font-size:10px; letter-spacing:.13em; font-weight:800; }.overview-label { color:#d7c9ef; }.tax-overview h2 { font-size:25px; font-weight:850; letter-spacing:-.04em; margin:7px 0; }.tax-overview p { color:#e0d5ef; font-size:13px; max-width:480px; line-height:1.6; }.overview-count { display:flex; flex-direction:column; min-width:105px; border-left:1px solid #ffffff44; padding-left:24px; }.overview-count strong { font-size:32px; line-height:1; }.overview-count span { color:#e0d5ef; font-size:12px; margin-top:8px; }.tax-section { margin-top:36px; }.tax-section-heading { display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:16px; }.section-label { color:var(--muted); }.tax-section-heading h2 { font-size:26px; font-weight:850; letter-spacing:-.04em; margin:4px 0; color:var(--ink); }.section-action { background:var(--shell-grape,#5026a5); color:white; padding:10px 16px; border-radius:999px; font-size:13px; font-weight:750; white-space:nowrap; }.tax-table { background:var(--surface); border:1px solid var(--rule); border-radius:20px; overflow-x:auto; }.rule-card { background:var(--surface); border:1px solid var(--rule); border-radius:18px; padding:20px; }.tax-page :deep(button:focus-visible),.tax-page :deep(input:focus-visible),.tax-page :deep(select:focus-visible) { outline:3px solid #9a78d5; outline-offset:3px; } @media(max-width:700px) { .tax-overview { flex-wrap:wrap; padding:24px; gap:20px; }.tax-overview > div:first-child { flex-basis:100%; }.tax-section-heading { align-items:start; flex-direction:column; } }
+</style>
