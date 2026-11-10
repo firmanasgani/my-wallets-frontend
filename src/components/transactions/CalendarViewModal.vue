@@ -1,200 +1,13 @@
 <template>
-  <div
-    v-if="visible"
-    class="fixed inset-0 z-50 overflow-y-auto"
-    role="dialog"
-    aria-labelledby="modal-title"
-    aria-modal="true"
-  >
-    <!-- Background overlay -->
-    <div
-      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-      aria-hidden="true"
-      @click="$emit('close')"
-    ></div>
-
-    <!-- Modal panel -->
-    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-      <div
-        class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl flex flex-col max-h-[90vh]"
-      >
-        <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 overflow-y-auto">
-          <!-- Calendar Header -->
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">
-              Kalender Transaksi
-            </h3>
-            <div class="flex items-center space-x-2">
-              <button
-                @click="prevMonth"
-                class="p-2 rounded-full hover:bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <i class="fa-solid fa-chevron-left"></i>
-              </button>
-              <span class="text-base font-medium text-gray-900 min-w-[140px] text-center">
-                {{ currentMonthName }} {{ currentYear }}
-              </span>
-              <button
-                @click="nextMonth"
-                class="p-2 rounded-full hover:bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <i class="fa-solid fa-chevron-right"></i>
-              </button>
-            </div>
-            <button
-              @click="$emit('close')"
-              class="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-md"
-            >
-              <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-          </div>
-
-          <!-- Calendar Grid -->
-          <div class="border border-gray-200 rounded-lg overflow-hidden">
-            <!-- Weekday Headers -->
-            <div class="grid grid-cols-7 bg-gray-50 border-b border-gray-200">
-              <div
-                v-for="day in weekDays"
-                :key="day"
-                class="py-2 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide"
-              >
-                {{ day }}
-              </div>
-            </div>
-
-            <!-- Days -->
-            <div class="grid grid-cols-7 auto-rows-fr bg-gray-200 gap-px">
-              <div
-                v-for="(day, index) in calendarDays"
-                :key="index"
-                class="bg-white min-h-[100px] p-2 relative group hover:bg-gray-50 cursor-pointer transition-colors flex flex-col justify-between"
-                :class="{
-                  'bg-gray-50 text-gray-400': !day.isCurrentMonth,
-                  'ring-2 ring-inset ring-emerald-500 z-10': isSameDate(day.date, selectedDate),
-                }"
-                @click="selectDate(day.date)"
-              >
-                <div class="flex justify-between items-start">
-                  <span
-                    class="text-sm font-medium"
-                    :class="{
-                      'text-emerald-600 font-bold': isToday(day.date),
-                      'text-gray-900': day.isCurrentMonth && !isToday(day.date),
-                    }"
-                  >
-                    {{ day.date.getDate() }}
-                  </span>
-                  <span v-if="getDailyCount(day.date) > 0" class="flex h-1.5 w-1.5 translate-y-1">
-                    <span
-                      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2E8B57] opacity-75"
-                    ></span>
-                    <span
-                      class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#2E8B57]"
-                    ></span>
-                  </span>
-                </div>
-
-                <!-- Daily Summary (Income/Expense) -->
-                <div class="mt-1 space-y-1">
-                  <div
-                    v-if="getDailySummary(day.date).income > 0"
-                    class="text-[10px] leading-tight text-green-700 bg-green-50 px-1 py-0.5 rounded truncate font-medium"
-                    :title="'Pemasukan: ' + formatCurrency(getDailySummary(day.date).income)"
-                  >
-                    +{{ formatShortCurrency(getDailySummary(day.date).income) }}
-                  </div>
-                  <div
-                    v-if="getDailySummary(day.date).expense > 0"
-                    class="text-[10px] leading-tight text-red-700 bg-red-50 px-1 py-0.5 rounded truncate font-medium"
-                    :title="'Pengeluaran: ' + formatCurrency(getDailySummary(day.date).expense)"
-                  >
-                    -{{ formatShortCurrency(getDailySummary(day.date).expense) }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Selected Date Details -->
-          <div class="mt-4 border-t border-gray-200 pt-4">
-            <h4 class="text-base font-semibold text-gray-800 mb-3 flex items-center">
-              <i class="fa-regular fa-calendar-check mr-2 text-emerald-500"></i>
-              Transaksi {{ formatDateFull(selectedDate) }}
-            </h4>
-
-            <div v-if="isLoading" class="py-4 text-center text-gray-500">
-              <i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat transaksi...
-            </div>
-
-            <div
-              v-else-if="selectedDateTransactions.length > 0"
-              class="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar"
-            >
-              <div
-                v-for="tx in selectedDateTransactions"
-                :key="tx.id"
-                class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-emerald-100 transition-colors"
-              >
-                <div class="flex items-center min-w-0">
-                  <div
-                    class="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center mr-3"
-                    :class="
-                      tx.transactionType === 'INCOME'
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-red-100 text-red-600'
-                    "
-                  >
-                    <i
-                      class="fa-solid text-xs"
-                      :class="tx.transactionType === 'INCOME' ? 'fa-arrow-down' : 'fa-arrow-up'"
-                    ></i>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="text-sm font-medium text-gray-900 truncate">
-                      {{ tx.description || tx.category?.categoryName || 'Tanpa Keterangan' }}
-                    </p>
-                    <p class="text-xs text-gray-500 truncate">
-                      {{ getAccountName(tx) }} • {{ tx.category?.categoryName }}
-                    </p>
-                  </div>
-                </div>
-                <div class="flex-shrink-0 ml-4 text-right">
-                  <p
-                    class="text-sm font-semibold"
-                    :class="tx.transactionType === 'INCOME' ? 'text-green-600' : 'text-red-600'"
-                  >
-                    {{ tx.transactionType === 'INCOME' ? '+' : '-' }}
-                    {{ formatCurrency(tx.amount) }}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div
-              v-else
-              class="py-6 text-center text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300"
-            >
-              <p class="text-sm">Tidak ada transaksi pada tanggal ini.</p>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-100"
-        >
-          <button
-            type="button"
-            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors"
-            @click="$emit('close')"
-          >
-            Tutup
-          </button>
-        </div>
-      </div>
+  <div v-if="visible" class="calendar-overlay" role="dialog" aria-labelledby="calendar-title" aria-modal="true" @click.self="$emit('close')" @keydown.esc="$emit('close')">
+    <div class="calendar-modal">
+      <header class="modal-header"><div><span class="overline">RIWAYAT KEUANGAN</span><h2 id="calendar-title">Kalender transaksi</h2><p>Lihat pemasukan dan pengeluaran berdasarkan tanggal.</p></div><button type="button" class="icon-button close-button" aria-label="Tutup kalender" @click="$emit('close')">&#10005;</button></header>
+      <div class="calendar-body"><section class="calendar-main" aria-label="Kalender bulanan"><div class="month-heading"><div><span class="overline">PERIODE</span><h3>{{ currentMonthName }} {{ currentYear }}</h3></div><div class="month-controls"><button type="button" class="icon-button" aria-label="Bulan sebelumnya" @click="prevMonth">&#8592;</button><button type="button" class="today-button" @click="selectDate(new Date())">Hari ini</button><button type="button" class="icon-button" aria-label="Bulan berikutnya" @click="nextMonth">&#8594;</button></div></div>
+        <div class="weekdays"><span v-for="day in weekDays" :key="day">{{ day }}</span></div><div class="days"><button v-for="day in calendarDays" :key="toLocalDateString(day.date)" type="button" class="day" :class="{ outside: !day.isCurrentMonth, selected: isSameDate(day.date, selectedDate), today: isToday(day.date) }" :aria-label="formatDateFull(day.date) + ', ' + getDailyCount(day.date) + ' transaksi'" :aria-pressed="isSameDate(day.date, selectedDate)" @click="selectDate(day.date)"><span class="day-top"><span class="day-number">{{ day.date.getDate() }}</span><span v-if="getDailyCount(day.date)" class="day-count">{{ getDailyCount(day.date) }}</span></span><span class="day-amounts"><span v-if="getDailySummary(day.date).income > 0" class="income">+{{ formatShortCurrency(getDailySummary(day.date).income) }}</span><span v-if="getDailySummary(day.date).expense > 0" class="expense">-{{ formatShortCurrency(getDailySummary(day.date).expense) }}</span></span></button></div><div class="legend"><span><i class="income-dot"></i>Pemasukan</span><span><i class="expense-dot"></i>Pengeluaran</span><span>Angka di sudut menunjukkan jumlah transaksi</span></div>
+      </section><aside class="details"><div class="details-heading"><span class="overline">TANGGAL DIPILIH</span><h3>{{ formatDateFull(selectedDate) }}</h3><p v-if="!isLoading && !loadError">{{ selectedDateTransactions.length }} transaksi</p></div><div v-if="isLoading" class="detail-state" role="status">Memuat transaksi...</div><div v-else-if="loadError" class="detail-state" role="alert">Gagal memuat transaksi. <button type="button" class="retry" @click="fetchTransactionsForMonth">Coba lagi</button></div><div v-else-if="selectedDateTransactions.length" class="transaction-list"><div v-for="tx in selectedDateTransactions" :key="tx.id" class="transaction"><span class="transaction-icon" :class="tx.transactionType === 'INCOME' ? 'is-income' : 'is-expense'">{{ tx.transactionType === 'INCOME' ? '+' : '-' }}</span><div class="transaction-info"><strong>{{ tx.description || tx.category?.categoryName || 'Tanpa keterangan' }}</strong><span>{{ getAccountName(tx) }}<template v-if="tx.category?.categoryName"> &middot; {{ tx.category.categoryName }}</template></span></div><strong class="transaction-amount" :class="tx.transactionType === 'INCOME' ? 'income' : 'expense'">{{ tx.transactionType === 'INCOME' ? '+' : '-' }}{{ formatCurrency(tx.amount) }}</strong></div></div><div v-else class="detail-state"><strong>Belum ada transaksi</strong><p>Tidak ada pemasukan atau pengeluaran pada tanggal ini.</p></div></aside></div>
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import apiClient from '@/services/apiService'
@@ -213,6 +26,8 @@ const currentDate = ref(new Date())
 const selectedDate = ref(new Date())
 const transactions = ref<Transaction[]>([])
 const isLoading = ref(false)
+const loadError = ref(false)
+let requestId = 0
 const weekDays = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
 
 // Calendar Logic
@@ -329,7 +144,9 @@ const getAccountName = (tx: Transaction) => {
 
 // Fetch Logic
 const fetchTransactionsForMonth = async () => {
+  const request = ++requestId
   isLoading.value = true
+  loadError.value = false
 
   // Calculate the start and end of the visible grid
   const year = currentYear.value
@@ -373,6 +190,7 @@ const fetchTransactionsForMonth = async () => {
       },
     })
 
+    if (request !== requestId) return
     // API might return standard paginated structure
     if (response.data && Array.isArray(response.data.data)) {
       // Takeout Transaction Type Transfer
@@ -381,10 +199,12 @@ const fetchTransactionsForMonth = async () => {
       transactions.value = []
     }
   } catch (error) {
+    if (request !== requestId) return
     console.error('Failed to fetch calendar transactions:', error)
+    loadError.value = true
     transactions.value = []
   } finally {
-    isLoading.value = false
+    if (request === requestId) isLoading.value = false
   }
 }
 
@@ -443,19 +263,6 @@ onMounted(() => {
   }
 })
 </script>
-
 <style scoped>
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 3px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #a0aec0;
-}
+.calendar-overlay { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(24,19,35,.65); }.calendar-modal { --ink:var(--shell-ink,#27231d); --muted:var(--shell-muted,#6c6256); --surface:var(--shell-surface,#fffcf5); --rule:var(--shell-rule,#e2d8c7); width:min(1180px,100%); max-height:calc(100dvh - 40px); overflow:auto; background:var(--surface); color:var(--ink); border-radius:24px; box-shadow:0 24px 80px #0005; }.modal-header { display:flex; justify-content:space-between; align-items:start; gap:20px; padding:26px 30px; border-bottom:1px solid var(--rule); }.overline { font-size:10px; letter-spacing:.13em; font-weight:800; color:var(--muted); }.modal-header h2 { font-size:30px; line-height:1.1; font-weight:900; letter-spacing:-.045em; margin:6px 0; }.modal-header p,.details-heading p { color:var(--muted); font-size:13px; }.calendar-body { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(270px,1fr); }.calendar-main { padding:24px 30px 28px; min-width:0; }.month-heading { display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom:20px; }.month-heading h3 { font-size:22px; font-weight:850; letter-spacing:-.03em; text-transform:capitalize; }.month-controls { display:flex; align-items:center; gap:6px; }.icon-button,.today-button { display:grid; place-items:center; border:1px solid var(--rule); background:var(--surface); color:var(--ink); border-radius:999px; height:36px; min-width:36px; font-weight:700; }.today-button { padding:0 13px; font-size:12px; }.icon-button:hover,.today-button:hover { background:var(--shell-lilac,#eee4ff); }.weekdays,.days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); }.weekdays { padding-bottom:8px; color:var(--muted); text-align:center; font-size:11px; font-weight:800; }.days { gap:4px; }.day { min-width:0; min-height:78px; padding:8px; text-align:left; border:1px solid var(--rule); border-radius:10px; background:var(--surface); display:flex; flex-direction:column; justify-content:space-between; }.day:hover { border-color:#8b6abb; }.day.outside { opacity:.48; }.day.selected { background:var(--shell-lilac,#eee4ff); border-color:#6c42ae; color:#31244c; }.day-top { display:flex; align-items:center; justify-content:space-between; gap:2px; }.day-number { font-size:13px; font-weight:800; }.today .day-number { color:#fff; background:#5026a5; border-radius:50%; width:23px; height:23px; display:grid; place-items:center; }.day-count { font-size:10px; color:var(--muted); }.day-amounts { display:flex; flex-direction:column; font-size:10px; font-weight:700; overflow:hidden; }.income { color:#23804a; }.expense { color:#c14d49; }.legend { display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:16px; color:var(--muted); font-size:11px; }.legend i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }.income-dot { background:#4cab70; }.expense-dot { background:#dc7771; }.details { background:var(--shell-lilac,#f2ebfa); color:#31244c; padding:26px; min-width:0; }.details-heading h3 { font-size:20px; line-height:1.25; font-weight:850; letter-spacing:-.03em; margin:7px 0; }.details-heading p,.details .overline { color:#6c5e7b; }.transaction-list { display:flex; flex-direction:column; gap:8px; margin-top:20px; max-height:430px; overflow-y:auto; }.transaction { display:flex; align-items:center; gap:10px; padding:12px; background:var(--surface); border:1px solid var(--rule); border-radius:14px; color:var(--ink); }.transaction-icon { display:grid; place-items:center; width:32px; height:32px; flex:none; border-radius:11px; font-weight:800; }.is-income { color:#237c4a; background:#ddf3e4; }.is-expense { color:#b64640; background:#ffe4df; }.transaction-info { min-width:0; flex:1; }.transaction-info strong,.transaction-info span { display:block; overflow-wrap:anywhere; }.transaction-info strong { font-size:13px; }.transaction-info span { color:var(--muted); font-size:11px; margin-top:3px; }.transaction-amount { font-size:12px; text-align:right; overflow-wrap:anywhere; }.detail-state { margin-top:20px; padding:24px 16px; text-align:center; border:1px dashed #b9a9cc; border-radius:14px; color:#6c5e7b; font-size:13px; }.detail-state strong { color:#31244c; }.detail-state p { margin-top:6px; }.retry { text-decoration:underline; font-weight:700; }.calendar-modal button:focus-visible { outline:3px solid #9a78d5; outline-offset:2px; } @media(max-width:800px) { .calendar-body { grid-template-columns:1fr; }.details { padding:22px; }.transaction-list { max-height:250px; } } @media(max-width:520px) { .calendar-overlay { padding:8px; }.calendar-modal { max-height:calc(100dvh - 16px); border-radius:18px; }.modal-header,.calendar-main { padding:20px 16px; }.modal-header h2 { font-size:25px; }.month-heading h3 { font-size:18px; }.day { min-height:55px; padding:4px; border-radius:7px; }.day-amounts { font-size:9px; }.day-count { font-size:9px; }.legend span:last-child { flex-basis:100%; } }
 </style>
