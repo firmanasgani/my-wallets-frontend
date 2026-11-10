@@ -989,3 +989,38 @@
     padding: 0;
   }
 }
+/* Keep authenticated page content aligned to one shared outer grid.
+   Page-internal cards, dialogs, and print layouts retain their own widths. */
+@media screen {
+  .money-shell .shell-page {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+  }
+  .money-shell .shell-page > :is(
+    .workspace-home, .personal-dashboard, .money-accounts, .money-categories,
+    .money-budgets, .money-goals, .money-profile, .money-settings, .money-analysis,
+    .money-support, .tx-history, .transaction-workflow, .subscription-checkout,
+    .asset-workspace, .company-bank-accounts-page, .company-page, .accounts-page,
+    .business-transactions-page, .business-transaction-form-page,
+    .business-transaction-detail-page, .business-contacts-page,
+    .business-contact-form-page, .invoice-list-page, .invoice-form-page,
+    .invoice-detail-page, .kpi-dashboard, .team-page, .tax-page, .cash-page,
+    .max-w-2xl, .max-w-3xl, .max-w-7xl
+  ) {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    margin-inline: auto;
+  }
+  .money-shell .shell-page > :is(
+    .asset-workspace, .company-bank-accounts-page, .company-page, .accounts-page,
+    .business-transactions-page, .business-transaction-form-page,
+    .business-transaction-detail-page, .business-contacts-page,
+    .business-contact-form-page, .invoice-list-page, .invoice-form-page,
+    .invoice-detail-page, .kpi-dashboard, .team-page, .tax-page, .cash-page,
+    .max-w-7xl
+  ) {
+    padding: 0;
+  }
+}

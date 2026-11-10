@@ -81,3 +81,5 @@ Provide loading, empty, error and success feedback. Distinguish no data from a f
 - For each migration, check light/dark, desktop/mobile, keyboard/focus, loading/error/empty, permissions and long financial values. Run `npm run type-check`, `npm run build` and relevant tests when dependencies are available.
 
 For compact record actions, use the shared `action-edit` and `action-delete` classes from `src/assets/actions.css`. Keep the action label or an accessible name specific to the record; reserve destructive styling for actual removal actions.
+
+Authenticated pages share a 1280px maximum outer grid and responsive gutters from `.shell-main` / `.shell-page`. Do not add another page-level max-width or outer padding; constrain individual forms and cards inside the grid when needed. The shared rule is in `src/assets/shell.css` and leaves print layouts and dialogs independent.
