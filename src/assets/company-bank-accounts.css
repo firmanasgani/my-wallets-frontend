@@ -1,0 +1,136 @@
+.company-bank-accounts-page {
+  --bank-paper: var(--shell-paper, #fdf9ee);
+  --bank-surface: var(--shell-surface, #fffcf5);
+  --bank-ink: var(--shell-ink, #27231d);
+  --bank-muted: var(--shell-muted, #6c6256);
+  --bank-line: var(--shell-line, #423a2d);
+  --bank-rule: var(--shell-rule, #e2d8c7);
+  --bank-accent: var(--shell-grape, #5026a5);
+  --bank-tint: var(--shell-lilac, #eee4ff);
+  width: min(100%, 1080px);
+  margin: 0 auto;
+  padding: clamp(20px, 3.2vw, 40px) clamp(16px, 2.8vw, 30px);
+  color: var(--bank-ink);
+}
+.company-bank-accounts-page *, .company-bank-accounts-page *::before, .company-bank-accounts-page *::after { box-sizing: border-box; }
+.company-bank-accounts-page :is(h1,h2,h3,p) { margin-top: 0; }
+.company-bank-accounts-page :is(button,input):focus-visible { outline: 3px solid var(--bank-accent); outline-offset: 3px; }
+.bank-accounts-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--bank-rule);
+}
+.bank-accounts-title { display: grid; gap: 7px; }
+.bank-accounts-title h1 { margin: 0; color: var(--bank-ink) !important; font-size: clamp(27px,3.2vw,39px); font-weight: 900; letter-spacing: -.05em; line-height: 1.05; }
+.bank-accounts-title p { max-width: 620px; margin: 0 !important; color: var(--bank-muted) !important; font-size: 13px; line-height: 1.65; }
+.bank-accounts-heading > button {
+  min-height: 42px;
+  padding: 10px 17px !important;
+  border: 1px solid var(--bank-ink);
+  border-radius: 999px !important;
+  background: var(--bank-ink) !important;
+  color: var(--bank-surface) !important;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: transform .16s ease, background .16s ease;
+}
+.bank-accounts-heading > button:hover { transform: translateY(-1px); background: var(--bank-accent) !important; }
+.company-bank-accounts-page > .mb-4.rounded-md { padding: 13px 17px !important; border-radius: 14px !important; }
+.company-bank-accounts-page > .flex.justify-center { min-height: 180px; align-items: center; }
+.company-bank-accounts-page > .text-center.py-16,
+.company-bank-accounts-page > .space-y-3 > div {
+  border-color: var(--bank-rule) !important;
+  border-radius: 18px !important;
+  background: var(--bank-surface) !important;
+  box-shadow: 0 9px 25px color-mix(in srgb, var(--bank-ink) 4%, transparent);
+}
+.company-bank-accounts-page > .text-center.py-16 { padding: 48px 22px !important; }
+.company-bank-accounts-page > .text-center.py-16 svg { color: var(--bank-accent) !important; opacity: .48; }
+.company-bank-accounts-page > .text-center.py-16 p { color: var(--bank-muted) !important; }
+.company-bank-accounts-page > .space-y-3 { display: grid; gap: 12px; }
+.company-bank-accounts-page > .space-y-3 > div {
+  align-items: center;
+  padding: 19px 21px !important;
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+.company-bank-accounts-page > .space-y-3 > div:hover { transform: translateY(-1px); box-shadow: 0 14px 30px color-mix(in srgb, var(--bank-ink) 8%, transparent); }
+.company-bank-accounts-page > .space-y-3 > div > div:first-child > div:first-child {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--bank-rule);
+  border-radius: 15px !important;
+  background: var(--bank-tint) !important;
+}
+.company-bank-accounts-page > .space-y-3 > div > div:first-child svg { color: var(--bank-accent) !important; }
+.company-bank-accounts-page > .space-y-3 > div p { margin-bottom: 0; }
+.company-bank-accounts-page > .space-y-3 > div p.font-semibold { color: var(--bank-ink) !important; font-size: 15px; font-weight: 850; }
+.company-bank-accounts-page > .space-y-3 > div .font-mono { color: var(--bank-accent) !important; font-size: 14px; font-weight: 750; letter-spacing: .035em; }
+.company-bank-accounts-page > .space-y-3 > div .text-slate-400,
+.company-bank-accounts-page > .space-y-3 > div .dark\:text-slate-500 { color: var(--bank-muted) !important; }
+.company-bank-accounts-page > .space-y-3 > div .bg-emerald-100 { border-radius: 999px; background: var(--bank-tint) !important; color: var(--bank-accent) !important; font-weight: 800; }
+.company-bank-accounts-page > .space-y-3 > div > div:last-child { gap: 7px; }
+.company-bank-accounts-page > .space-y-3 > div > div:last-child > button {
+  min-height: 35px;
+  border: 1px solid var(--bank-rule);
+  border-radius: 999px !important;
+  background: var(--bank-surface);
+}
+.company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Jadikan default"] { padding: 7px 12px; color: var(--bank-accent) !important; font-weight: 750; }
+.company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Edit"],
+.company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Hapus"] { width: 36px; display: grid; place-items: center; }
+.company-bank-accounts-page > .space-y-3 > div > div:last-child > button:hover { border-color: var(--bank-accent); background: var(--bank-tint) !important; color: var(--bank-accent) !important; }
+.company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Hapus"]:hover { border-color: #d99487; background: #fff0eb !important; color: #a3473f !important; }
+
+/* Create and edit dialog */
+.bank-account-modal-backdrop { background: color-mix(in srgb, #17151d 58%, transparent); }
+.bank-account-modal-backdrop > .absolute { background: color-mix(in srgb, #17151d 58%, transparent) !important; }
+.bank-account-modal {
+  width: min(100%, 500px) !important;
+  border: 1px solid var(--bank-rule);
+  border-radius: 22px !important;
+  background: var(--bank-surface) !important;
+  color: var(--bank-ink);
+  box-shadow: 0 28px 90px color-mix(in srgb, #07050c 34%, transparent) !important;
+}
+.bank-account-modal-heading { padding: 19px 23px !important; border-color: var(--bank-rule) !important; }
+.bank-modal-eyebrow { display: block; margin-bottom: 4px; color: var(--bank-accent); font-size: 9px; font-weight: 900; letter-spacing: .14em; }
+.bank-account-modal-heading h2 { margin: 0; color: var(--bank-ink) !important; font-size: 21px; font-weight: 900; letter-spacing: -.035em; }
+.bank-account-modal-heading > button { width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid var(--bank-rule); border-radius: 50% !important; background: var(--bank-paper); }
+.bank-account-modal-heading > button:hover { background: var(--bank-tint); color: var(--bank-accent); }
+.bank-account-modal form { display: grid; gap: 15px; }
+.bank-account-modal form label:not([for="isDefaultCheck"]) { color: var(--bank-ink) !important; font-size: 12px; font-weight: 750; }
+.bank-account-modal form input:not([type="checkbox"]) {
+  min-height: 44px;
+  border-color: var(--bank-rule) !important;
+  border-radius: 11px !important;
+  background: var(--bank-paper) !important;
+  color: var(--bank-ink) !important;
+}
+.bank-account-modal form input::placeholder { color: var(--bank-muted) !important; opacity: .75; }
+.bank-account-modal form input:focus { border-color: var(--bank-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--bank-accent) 15%, transparent) !important; }
+.bank-account-modal form input[type="checkbox"] { accent-color: var(--bank-accent); }
+.bank-account-modal form label[for="isDefaultCheck"] { display: flex; align-items: center; gap: 9px; color: var(--bank-ink) !important; font-size: 12px; font-weight: 700; }
+.bank-account-modal form > .flex.justify-end { gap: 9px; padding-top: 3px; }
+.bank-account-modal form > .flex.justify-end button { min-height: 42px; padding: 9px 16px !important; border-radius: 999px !important; font-size: 12px; font-weight: 800; box-shadow: none !important; }
+.bank-account-modal form > .flex.justify-end button[type="button"] { border-color: var(--bank-rule) !important; background: var(--bank-surface); color: var(--bank-ink) !important; }
+.bank-account-modal form > .flex.justify-end button[type="button"]:hover { background: var(--bank-tint); color: var(--bank-accent) !important; }
+.bank-account-modal form > .flex.justify-end button[type="submit"] { border: 1px solid var(--bank-ink); background: var(--bank-ink) !important; color: var(--bank-surface); }
+.bank-account-modal form > .flex.justify-end button[type="submit"]:hover:not(:disabled) { background: var(--bank-accent) !important; }
+.bank-account-modal form > .flex.justify-end button:disabled { opacity: .55; }
+.bank-account-modal form .text-red-600 { margin: 0; color: #a3473f !important; font-size: 12px; }
+@media (max-width: 640px) {
+  .company-bank-accounts-page { padding-top: 22px; }
+  .bank-accounts-heading { align-items: flex-start; }
+  .bank-accounts-heading > button { padding: 9px 12px !important; font-size: 11px; }
+  .company-bank-accounts-page > .space-y-3 > div { align-items: flex-start; padding: 15px !important; }
+  .company-bank-accounts-page > .space-y-3 > div > div:last-child { flex-wrap: wrap; justify-content: flex-end; }
+  .company-bank-accounts-page > .space-y-3 > div > div:last-child > button[title="Jadikan default"] { width: 100%; }
+  .bank-account-modal-backdrop { align-items: end !important; padding: 8px !important; }
+  .bank-account-modal { border-radius: 22px 22px 16px 16px !important; }
+  .bank-account-modal-heading { padding: 16px 18px !important; }
+  .bank-account-modal form { padding: 17px 18px 20px !important; }
+}

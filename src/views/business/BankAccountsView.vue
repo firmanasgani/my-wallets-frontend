@@ -1,7 +1,7 @@
 <template>
-  <div class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="mb-8 flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-4">
-      <div>
+  <div class="company-bank-accounts-page">
+    <div class="bank-accounts-heading">
+      <div class="bank-accounts-title">
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Rekening Perusahaan</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Rekening bank yang ditampilkan di invoice sebagai tujuan transfer pembayaran.</p>
       </div>
@@ -104,15 +104,15 @@
     <!-- Create/Edit Modal -->
     <div
       v-if="isFormModalOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4"
+      class="bank-account-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4"
     >
       <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="closeFormModal"></div>
-      <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md">
-        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-          <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100">
+      <div class="bank-account-modal relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md" role="dialog" aria-modal="true" aria-labelledby="bank-account-modal-title">
+        <div class="bank-account-modal-heading px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <div><span class="bank-modal-eyebrow">PEMBAYARAN PERUSAHAAN</span><h2 id="bank-account-modal-title" class="text-base font-semibold text-slate-800 dark:text-slate-100">
             {{ editingAccount ? 'Edit Rekening' : 'Tambah Rekening' }}
-          </h2>
-          <button @click="closeFormModal" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+          </h2></div>
+          <button type="button" aria-label="Tutup dialog" @click="closeFormModal" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -217,6 +217,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
 import type { CompanyBankAccount } from '@/types/business'
+import '@/assets/company-bank-accounts.css'
 
 const store = useBankAccountsStore()
 const businessStore = useBusinessStore()
