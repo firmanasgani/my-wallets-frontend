@@ -1,7 +1,7 @@
 <template>
-  <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="asset-workspace asset-list-page">
     <!-- Header -->
-    <div class="mb-6 flex justify-between items-start border-b border-slate-200 dark:border-slate-700 pb-4">
+    <div class="asset-page-heading mb-6 flex justify-between items-start border-b border-slate-200 dark:border-slate-700 pb-4">
       <div>
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Manajemen Aset</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Aset tetap (PSAK 16) dan aset tak berwujud (PSAK 19).</p>
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Run Depreciation Panel -->
-    <div v-if="isAdmin" class="mb-5 bg-indigo-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-xl p-4">
+    <div v-if="isAdmin" class="asset-depreciation-panel mb-5 bg-indigo-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-xl p-4">
       <div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
         <div class="flex items-start gap-3">
           <div class="mt-0.5 w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-800/60 flex items-center justify-center shrink-0">
@@ -33,11 +33,11 @@
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <div class="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-700 rounded-lg px-2.5 py-1.5">
-            <select v-model="deprMonth" class="bg-transparent text-slate-800 dark:text-slate-100 text-sm focus:outline-none cursor-pointer">
+            <select aria-label="Bulan penyusutan" v-model="deprMonth" class="bg-transparent text-slate-800 dark:text-slate-100 text-sm focus:outline-none cursor-pointer">
               <option v-for="m in 12" :key="m" :value="m">{{ String(m).padStart(2,'0') }}</option>
             </select>
             <span class="text-slate-300 dark:text-slate-600">/</span>
-            <input v-model.number="deprYear" type="number" min="2000" max="2100"
+            <input aria-label="Tahun penyusutan" v-model.number="deprYear" type="number" min="2000" max="2100"
               class="bg-transparent text-slate-800 dark:text-slate-100 text-sm w-16 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
           </div>
           <button @click="runDepreciation" :disabled="isRunningDepr"
@@ -63,12 +63,13 @@
     </div>
 
     <!-- Filter -->
-    <div class="mb-4 flex items-center gap-2 flex-wrap">
+    <div class="asset-status-filters mb-4 flex items-center gap-2 flex-wrap">
       <button v-for="s in STATUS_FILTERS" :key="s.value"
         @click="statusFilter = s.value"
+        :aria-pressed="statusFilter === s.value"
         :class="statusFilter === s.value ? 'bg-[#2E8B57] text-white border-[#2E8B57]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-emerald-400'"
         class="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors">
-        {{ s.label }}
+        {{ s.label }} <span class="asset-filter-count">{{ s.value ? assets.filter(a => a.status === s.value).length : assets.length }}</span>
       </button>
     </div>
 
@@ -90,11 +91,11 @@
     </div>
 
     <!-- Asset Grid -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div v-else class="asset-card-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       <RouterLink
         v-for="asset in filteredAssets" :key="asset.id"
         :to="{ name: 'business-asset-detail', params: { id: asset.id } }"
-        class="block bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-[#2E8B57] hover:shadow-md transition-all p-5 group"
+        class="asset-card block bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-[#2E8B57] hover:shadow-md transition-all p-5 group"
       >
         <div class="flex items-start justify-between gap-2 mb-3">
           <div>
@@ -117,7 +118,7 @@
           </div>
           <div class="flex justify-between">
             <span class="text-slate-500 dark:text-slate-400">Nilai Buku</span>
-            <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ formatRp(asset.currentBookValue) }}</span>
+            <span class="asset-book-value font-semibold text-emerald-600 dark:text-emerald-400">{{ formatRp(asset.currentBookValue) }}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-500 dark:text-slate-400">Akumulasi</span>
@@ -131,7 +132,7 @@
             <span>{{ asset.depreciationCount }}/{{ asset.usefulLifeMonths }} periode</span>
             <span>{{ deprProgress(asset) }}%</span>
           </div>
-          <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5">
+          <div class="asset-progress w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5" role="progressbar" aria-label="Periode penyusutan" :aria-valuenow="deprProgress(asset)" :aria-valuemin="0" :aria-valuemax="100">
             <div class="bg-[#2E8B57] h-1.5 rounded-full transition-all" :style="{ width: deprProgress(asset) + '%' }"></div>
           </div>
         </div>
@@ -145,6 +146,7 @@
 </template>
 
 <script setup lang="ts">
+import '@/assets/business-assets.css'
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { BusinessService } from '@/services/business.service'

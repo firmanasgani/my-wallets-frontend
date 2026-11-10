@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="asset-workspace asset-form-page">
     <!-- Back -->
     <button @click="$router.back()" class="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors group">
       <div class="p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 group-hover:border-slate-300 dark:group-hover:border-slate-500">
@@ -10,8 +10,8 @@
       <span class="text-sm font-medium">Kembali</span>
     </button>
 
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-      <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-[#2E8B57] to-[#236B43]">
+    <div class="asset-form-card bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+      <div class="asset-form-heading px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-[#2E8B57] to-[#236B43]">
         <h1 class="text-xl font-bold text-white">{{ isEdit ? 'Edit Aset' : 'Tambah Aset Baru' }}</h1>
         <p class="text-emerald-100 text-sm mt-0.5">{{ isEdit ? 'Hanya nama dan catatan yang bisa diubah.' : 'Catat aset tetap atau aset tak berwujud perusahaan.' }}</p>
       </div>
@@ -26,13 +26,13 @@
         <div v-if="!isEdit">
           <label class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Jenis Aset <span class="text-red-500">*</span></label>
           <div class="grid grid-cols-2 gap-3">
-            <button type="button" @click="form.assetType = 'TANGIBLE'"
+            <button type="button" @click="form.assetType = 'TANGIBLE'" :aria-pressed="form.assetType === 'TANGIBLE'"
               :class="form.assetType === 'TANGIBLE' ? 'border-emerald-500 bg-indigo-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300' : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:border-emerald-300'"
               class="border-2 rounded-xl p-3 text-sm font-medium transition-colors text-left">
               <p class="font-semibold">Aset Tetap</p>
               <p class="text-xs opacity-70 mt-0.5">PSAK 16 (Tangible)</p>
             </button>
-            <button type="button" @click="form.assetType = 'INTANGIBLE'"
+            <button type="button" @click="form.assetType = 'INTANGIBLE'" :aria-pressed="form.assetType === 'INTANGIBLE'"
               :class="form.assetType === 'INTANGIBLE' ? 'border-emerald-500 bg-indigo-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300' : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:border-emerald-300'"
               class="border-2 rounded-xl p-3 text-sm font-medium transition-colors text-left">
               <p class="font-semibold">Aset Tak Berwujud</p>
@@ -143,6 +143,7 @@
 </template>
 
 <script setup lang="ts">
+import '@/assets/business-assets.css'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { BusinessService } from '@/services/business.service'

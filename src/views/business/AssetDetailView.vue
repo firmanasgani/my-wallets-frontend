@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-5">
+  <div class="asset-workspace asset-detail-page space-y-5">
     <!-- Back -->
     <button @click="$router.back()" class="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors group">
       <div class="p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 group-hover:border-slate-300 dark:group-hover:border-slate-500">
@@ -21,7 +21,7 @@
     <template v-else-if="asset">
       <!-- Header Card -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="bg-gradient-to-r from-[#2E8B57] to-[#236B43] px-6 py-5">
+        <div class="asset-detail-hero bg-gradient-to-r from-[#2E8B57] to-[#236B43] px-6 py-5">
           <div class="flex items-start justify-between gap-4">
             <div>
               <div class="flex items-center gap-2 mb-1">
@@ -140,7 +140,7 @@
         <div v-else-if="depreciations.length === 0" class="py-8 text-center text-sm text-slate-400 dark:text-slate-500">
           Belum ada riwayat penyusutan.
         </div>
-        <table v-else class="w-full text-sm">
+        <div v-else class="asset-table-scroll"><table class="w-full text-sm">
           <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs uppercase">
             <tr>
               <th class="px-4 py-3 text-left">Periode</th>
@@ -157,16 +157,16 @@
               <td class="px-4 py-3 text-right font-semibold text-emerald-600 dark:text-emerald-400">{{ formatRp(d.bookValue) }}</td>
             </tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       <!-- Schedule Modal -->
       <Teleport to="body">
         <div v-if="showSchedule" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" @click.self="showSchedule = false">
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
+          <div class="asset-workspace asset-dialog bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
             <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
               <h3 class="font-semibold text-slate-800 dark:text-slate-100">Proyeksi Jadwal Penyusutan</h3>
-              <button @click="showSchedule = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
+              <button aria-label="Tutup proyeksi" @click="showSchedule = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
             </div>
             <div class="overflow-y-auto flex-1">
               <table class="w-full text-sm">
@@ -191,10 +191,10 @@
 
         <!-- Dispose Modal -->
         <div v-if="showDisposeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" @click.self="showDisposeModal = false">
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md">
+          <div class="asset-workspace asset-dialog bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md">
             <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
               <h3 class="font-semibold text-slate-800 dark:text-slate-100">Pelepasan Aset</h3>
-              <button @click="showDisposeModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
+              <button aria-label="Tutup dialog pelepasan" @click="showDisposeModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
             </div>
             <form @submit.prevent="disposeAsset" class="p-6 space-y-4">
               <div v-if="disposeError" class="text-sm text-red-500">{{ disposeError }}</div>
@@ -227,6 +227,7 @@
 </template>
 
 <script setup lang="ts">
+import '@/assets/business-assets.css'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { BusinessService } from '@/services/business.service'
