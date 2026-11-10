@@ -55,8 +55,8 @@
               </td>
               <td v-if="isAdmin" class="px-4 py-3 text-right">
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="openTaxForm(tax)" class="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">Edit</button>
-                  <button @click="confirmDeleteTax(tax)" class="text-sm text-red-500 hover:underline">Hapus</button>
+                  <button @click="openTaxForm(tax)" class="action-edit">Edit</button>
+                  <button @click="confirmDeleteTax(tax)" class="action-delete">Hapus</button>
                 </div>
               </td>
             </tr>
@@ -108,8 +108,8 @@
               <p v-if="rule.note" class="mt-1 text-sm text-slate-400 dark:text-slate-500 italic">{{ rule.note }}</p>
             </div>
             <div v-if="isAdmin" class="flex items-center gap-2 shrink-0">
-              <button @click="openRuleForm(rule)" class="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">Edit</button>
-              <button @click="confirmDeleteRule(rule)" class="text-sm text-red-500 hover:underline">Hapus</button>
+              <button @click="openRuleForm(rule)" class="action-edit">Edit</button>
+              <button @click="confirmDeleteRule(rule)" class="action-delete">Hapus</button>
             </div>
           </div>
         </div>

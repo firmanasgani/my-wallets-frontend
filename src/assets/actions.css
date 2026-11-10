@@ -1,0 +1,23 @@
+﻿.money-shell .action-edit, .money-shell .action-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 15px;
+  border: 1px solid var(--shell-line, #423a2d);
+  border-radius: 999px;
+  background: var(--shell-surface, #fffcf5);
+  color: var(--shell-ink, #27231d);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background .16s, border-color .16s;
+}
+.money-shell .action-edit:hover { background: var(--shell-lilac, #eee4ff); }
+.money-shell .action-delete { background: #b8322c; border-color: #b8322c; color: #fff; }
+.money-shell .action-delete:hover { background: #92231f; border-color: #92231f; }
+.dark .money-shell .action-delete { background: #b8322c; border-color: #b8322c; color: #fff; }
+.dark .money-shell .action-delete:hover { background: #92231f; border-color: #92231f; }
+.money-shell .action-edit:focus-visible, .money-shell .action-delete:focus-visible { outline: 3px solid var(--shell-grape, #5026a5); outline-offset: 3px; }
+.money-shell .action-edit:disabled, .money-shell .action-delete:disabled { opacity: .5; cursor: not-allowed; }

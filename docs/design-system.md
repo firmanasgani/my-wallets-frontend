@@ -79,3 +79,5 @@ Provide loading, empty, error and success feedback. Distinguish no data from a f
 - Some custom teleported modals and calendar controls need an accessibility and dark-theme audit. Prefer migrating them to `AppDialog` rather than copying local overlay implementations.
 - Consolidate repeated page headings, overview cards, buttons and semantic status colors into shared components/tokens incrementally. Keep existing financial behavior and permissions intact.
 - For each migration, check light/dark, desktop/mobile, keyboard/focus, loading/error/empty, permissions and long financial values. Run `npm run type-check`, `npm run build` and relevant tests when dependencies are available.
+
+For compact record actions, use the shared `action-edit` and `action-delete` classes from `src/assets/actions.css`. Keep the action label or an accessible name specific to the record; reserve destructive styling for actual removal actions.

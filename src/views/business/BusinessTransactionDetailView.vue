@@ -274,7 +274,7 @@
               </div>
               <div class="flex items-center gap-2 shrink-0">
                 <a v-if="att.presignedUrl" :href="att.presignedUrl" target="_blank" class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Buka</a>
-                <button @click="deleteAttachment(att.id)" class="text-xs text-red-500 hover:underline">Hapus</button>
+                <button @click="deleteAttachment(att.id)" class="action-delete">Hapus</button>
               </div>
             </div>
           </div>
