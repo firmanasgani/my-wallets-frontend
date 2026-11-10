@@ -9,7 +9,7 @@
   >
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+      class="paid-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
       @click.self="$emit('close')"
     >
       <Transition
@@ -22,38 +22,36 @@
       >
         <div
           v-if="isOpen"
-          class="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md border border-slate-200 dark:border-slate-700"
+          class="paid-modal bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-md border border-slate-200 dark:border-slate-700"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="paid-modal-title"
         >
           <!-- Header -->
-          <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-            <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Tandai Lunas</h2>
-            <button @click="$emit('close')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+          <div class="paid-modal-header flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+            <div>
+              <span class="paid-modal-eyebrow">CATAT PEMBAYARAN</span>
+              <h2 id="paid-modal-title" class="text-lg font-semibold text-slate-800 dark:text-slate-100">Tandai Lunas</h2>
+            </div>
+            <button type="button" aria-label="Tutup dialog" @click="$emit('close')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
           </div>
 
-          <div class="px-6 py-5 space-y-4">
+          <div class="paid-modal-body px-6 py-5 space-y-4">
             <!-- Invoice Summary -->
-            <div v-if="invoice" class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 space-y-1 text-sm">
-              <div class="flex justify-between">
-                <span class="text-slate-500 dark:text-slate-400">Invoice</span>
-                <span class="font-medium text-slate-800 dark:text-slate-200">{{ invoice.invoiceNumber }}</span>
+            <div v-if="invoice" class="paid-invoice-summary bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 space-y-1 text-sm">
+              <div class="paid-invoice-identity">
+                <span class="paid-invoice-number">{{ invoice.invoiceNumber }}</span>
+                <span class="paid-client-name">{{ invoice.clientName }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500 dark:text-slate-400">Klien</span>
-                <span class="font-medium text-slate-800 dark:text-slate-200">{{ invoice.clientName }}</span>
+              <div class="paid-invoice-total">
+                <span>{{ amountPaid > 0 ? 'Sisa tagihan' : 'Total tagihan' }}</span>
+                <strong>{{ formatCurrency(String(remaining)) }}</strong>
               </div>
-              <div class="flex justify-between border-t border-slate-200 dark:border-slate-600 pt-2 mt-2">
-                <span class="font-semibold text-slate-700 dark:text-slate-300">Total</span>
-                <span class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(invoice.totalAmount) }}</span>
-              </div>
-              <div v-if="amountPaid > 0" class="flex justify-between text-amber-600 dark:text-amber-400">
-                <span>Sudah Dibayar</span>
-                <span class="font-medium">{{ formatCurrency(invoice.amountPaid) }}</span>
-              </div>
-              <div v-if="amountPaid > 0" class="flex justify-between text-emerald-700 dark:text-emerald-400 font-semibold border-t border-slate-200 dark:border-slate-600 pt-2">
-                <span>Sisa Tagihan</span>
-                <span>{{ formatCurrency(String(remaining)) }}</span>
+              <div v-if="amountPaid > 0" class="paid-invoice-paid">
+                <span>Telah dibayar</span>
+                <span>{{ formatCurrency(invoice.amountPaid) }}</span>
               </div>
             </div>
 
@@ -169,6 +167,7 @@ import { useBusinessStore } from '@/stores/business'
 import { useInvoicesStore } from '@/stores/invoices'
 import CurrencyInput from '@/components/common/CurrencyInput.vue'
 import type { Invoice, ChartOfAccount } from '@/types/business'
+import '@/assets/pay-invoice-modal.css'
 
 const props = defineProps<{
   isOpen: boolean

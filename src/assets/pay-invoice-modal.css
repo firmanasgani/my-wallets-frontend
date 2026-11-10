@@ -1,0 +1,128 @@
+.paid-modal-backdrop {
+  --paid-paper: var(--shell-paper, #fdf9ee);
+  --paid-surface: var(--shell-surface, #fffcf5);
+  --paid-ink: var(--shell-ink, #27231d);
+  --paid-muted: var(--shell-muted, #6c6256);
+  --paid-line: var(--shell-line, #423a2d);
+  --paid-rule: var(--shell-rule, #e2d8c7);
+  --paid-accent: var(--shell-grape, #5026a5);
+  --paid-tint: var(--shell-lilac, #eee4ff);
+  background: color-mix(in srgb, #17151d 58%, transparent) !important;
+}
+.paid-modal {
+  width: min(100%, 540px) !important;
+  max-height: min(92dvh, 820px);
+  overflow: auto;
+  border: 1px solid var(--paid-rule) !important;
+  border-radius: 23px !important;
+  background: var(--paid-surface) !important;
+  color: var(--paid-ink);
+  box-shadow: 0 28px 90px color-mix(in srgb, #07050c 34%, transparent) !important;
+}
+.paid-modal * { box-sizing: border-box; }
+.paid-modal :is(button,input,select):focus-visible { outline: 3px solid var(--paid-accent); outline-offset: 3px; }
+.paid-modal-header {
+  padding: 20px 24px !important;
+  border-color: var(--paid-rule) !important;
+  background: var(--paid-surface);
+}
+.paid-modal-eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--paid-accent);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+.paid-modal-header h2 { margin: 0; color: var(--paid-ink) !important; font-size: 22px; font-weight: 900; letter-spacing: -.035em; }
+.paid-modal-header > button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--paid-rule);
+  border-radius: 50%;
+  background: var(--paid-paper);
+}
+.paid-modal-header > button:hover { background: var(--paid-tint); color: var(--paid-accent) !important; }
+.paid-modal-body { padding: 20px 24px 24px !important; }
+.paid-invoice-summary {
+  display: grid;
+  gap: 12px !important;
+  padding: 16px !important;
+  border: 1px solid var(--paid-rule);
+  border-radius: 16px !important;
+  background: var(--paid-paper) !important;
+}
+.paid-invoice-identity { display: grid; gap: 3px; min-width: 0; }
+.paid-invoice-number { color: var(--paid-accent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 850; letter-spacing: .035em; }
+.paid-client-name { color: var(--paid-ink); font-size: 13px; font-weight: 750; overflow-wrap: anywhere; }
+.paid-invoice-total {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 11px;
+  border-top: 1px solid var(--paid-rule);
+}
+.paid-invoice-total > span { color: var(--paid-muted); font-size: 12px; font-weight: 700; }
+.paid-invoice-total > strong { color: var(--paid-ink); font-size: clamp(21px, 5vw, 27px); font-weight: 900; letter-spacing: -.04em; text-align: right; font-variant-numeric: tabular-nums; }
+.paid-invoice-paid { display: flex; justify-content: space-between; gap: 10px; color: #9b7021; font-size: 11px; font-weight: 700; }
+.dark .paid-invoice-paid { color: #e5bd68; }
+.paid-modal form { display: grid; gap: 15px; }
+.paid-modal form > div { min-width: 0; }
+.paid-modal form label { display: block; margin-bottom: 6px !important; color: var(--paid-ink) !important; font-size: 12px !important; font-weight: 750 !important; line-height: 1.45; }
+.paid-modal form label .text-red-500 { color: #aa5148 !important; }
+.paid-modal form label .text-slate-400 { color: var(--paid-muted) !important; }
+.paid-modal form :is(select,input:not([type="checkbox"])) {
+  min-height: 43px;
+  border: 1px solid var(--paid-rule) !important;
+  border-radius: 11px !important;
+  background-color: var(--paid-paper) !important;
+  color: var(--paid-ink) !important;
+  font-size: 13px !important;
+  box-shadow: none;
+}
+.paid-modal form :is(select,input)::placeholder { color: var(--paid-muted) !important; opacity: .75; }
+.paid-modal form :is(select,input):focus { border-color: var(--paid-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--paid-accent) 15%, transparent) !important; }
+.paid-modal form select:disabled { opacity: .55; }
+.paid-modal form > .grid { gap: 11px !important; }
+.paid-modal form > .grid > div { min-width: 0; }
+.paid-modal form > .flex.justify-end { gap: 9px !important; padding-top: 4px !important; }
+.paid-modal form > .flex.justify-end button {
+  display: inline-flex;
+  min-height: 43px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  box-shadow: none !important;
+}
+.paid-modal form > .flex.justify-end button[type="button"] {
+  border: 1px solid var(--paid-rule) !important;
+  background: var(--paid-surface) !important;
+  color: var(--paid-ink) !important;
+}
+.paid-modal form > .flex.justify-end button[type="button"]:hover { background: var(--paid-tint) !important; color: var(--paid-accent) !important; }
+.paid-modal form > .flex.justify-end button[type="submit"] {
+  border: 1px solid var(--paid-ink);
+  background: var(--paid-ink) !important;
+  color: var(--paid-surface) !important;
+}
+.paid-modal form > .flex.justify-end button[type="submit"]:hover:not(:disabled) { background: var(--paid-accent) !important; }
+.paid-modal form > .flex.justify-end button:disabled { opacity: .55; cursor: wait; }
+.paid-modal form > .rounded-md { border-radius: 12px !important; }
+.paid-modal form > .rounded-md p { margin: 0; }
+.paid-modal form :is(.text-slate-700,.text-slate-800,.text-slate-900,.dark\:text-slate-100,.dark\:text-slate-300) { color: var(--paid-ink) !important; }
+.paid-modal form :is(.border-slate-300,.dark\:border-slate-600) { border-color: var(--paid-rule) !important; }
+@media (max-width: 520px) {
+  .paid-modal-backdrop { align-items: end !important; padding: 8px !important; }
+  .paid-modal { width: 100% !important; max-height: 94dvh; border-radius: 22px 22px 16px 16px !important; }
+  .paid-modal-header { padding: 17px 18px !important; }
+  .paid-modal-body { padding: 16px 18px 20px !important; }
+  .paid-modal form > .grid { grid-template-columns: 1fr !important; }
+  .paid-modal form > .flex.justify-end { display: grid; grid-template-columns: 1fr 1.4fr; }
+  .paid-modal form > .flex.justify-end button { padding-inline: 10px !important; }
+}
