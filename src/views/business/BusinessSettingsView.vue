@@ -1,14 +1,7 @@
 <template>
-  <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="mb-8 flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Profil Perusahaan</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          {{ businessStore.currentCompany ? 'Kelola informasi dan pengaturan pajak perusahaan Anda.' : 'Lengkapi profil perusahaan Anda untuk memulai pembukuan.' }}
-        </p>
-      </div>
-    </div>
-
+  <div class="company-page">
+    <header class="profile-heading"><div><span class="shell-overline">PENGATURAN BISNIS</span><h1>Profil perusahaan</h1><p>Kelola identitas dan pengaturan pembukuan bisnis Anda.</p></div></header>
+    <section v-if="businessStore.currentCompany" class="company-hero"><div><span class="hero-label">PROFIL BISNIS</span><h2>{{ businessStore.currentCompany.name }}</h2><p>Informasi perusahaan untuk pembukuan dan dokumen bisnis.</p></div><div class="hero-status"><span>PENGATURAN PERSETUJUAN</span><strong>{{ businessStore.currentCompany.requiresApprovalWorkflow ? 'Aktif' : 'Nonaktif' }}</strong><small>Alur jurnal manual</small></div></section>
     <div v-if="successMsg" class="mb-6 rounded-md bg-green-50 dark:bg-green-900/30 p-4 border border-green-200 dark:border-green-800 transition-opacity">
       <p class="text-sm font-medium text-green-800 dark:text-green-300">{{ successMsg }}</p>
     </div>
@@ -24,10 +17,10 @@
     <!-- Two-column grid when company data exists, single column otherwise -->
     <div v-else>
       <!-- Grid layout: logo left, form right -->
-      <div v-if="businessStore.currentCompany" class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+      <div v-if="businessStore.currentCompany" class="profile-grid">
         <!-- ── Logo Column ──────────────────────────────── -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 h-full">
-          <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100 mb-1">Logo Perusahaan</h2>
+        <div class="logo-card">
+          <span class="section-label">IDENTITAS VISUAL</span><h2 class="logo-title">Logo perusahaan</h2>
           <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Logo ditampilkan pada invoice PDF. Format: JPG, PNG, WebP. Maks 2MB.</p>
 
           <!-- Preview -->
@@ -99,7 +92,7 @@
         </div>
 
         <!-- ── Profile Form Column ──────────────────────── -->
-        <div class="lg:col-span-2">
+        <div class="profile-form">
           <CompanyForm
             ref="companyFormRef"
             :initial-data="businessStore.currentCompany"
@@ -123,10 +116,10 @@
       />
 
       <!-- ── Approval Workflow Toggle (Phase 8) ─────────────────────────── -->
-      <div v-if="businessStore.currentCompany" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm mt-6 border border-slate-200 dark:border-slate-700 p-6">
+      <div v-if="businessStore.currentCompany" class="workflow-card">
         <div class="flex items-start justify-between gap-4">
           <div class="flex-1">
-            <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100 mb-1">Approval Workflow</h2>
+            <span class="section-label">KONTROL PEMBUKUAN</span><h2 class="workflow-title">Persetujuan jurnal</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400">
               Aktifkan untuk mewajibkan jurnal manual melalui alur persetujuan:
               <strong class="text-slate-700 dark:text-slate-300">DRAFT → PENDING_CHECK → PENDING_APPROVAL → APPROVED</strong>.
@@ -138,6 +131,7 @@
           <div class="shrink-0 pt-1">
             <button
               v-if="!isViewer"
+              type="button" role="switch" aria-label="Persetujuan jurnal" :aria-checked="businessStore.currentCompany.requiresApprovalWorkflow"
               @click="toggleApprovalWorkflow"
               :disabled="isTogglingWorkflow"
               :class="businessStore.currentCompany.requiresApprovalWorkflow
@@ -303,3 +297,9 @@ const toggleApprovalWorkflow = async () => {
   }
 }
 </script>
+
+<style scoped>
+.company-page { --ink:var(--shell-ink, #27231d); --muted:var(--shell-muted, #6c6256); --surface:var(--shell-surface, #fffcf5); --rule:var(--shell-rule, #e2d8c7); max-width:1280px; margin:auto; padding:clamp(20px,3vw,40px) clamp(16px,3vw,32px); color:var(--ink); }
+.profile-heading { margin-bottom:28px; }.profile-heading h1 { font-size:clamp(34px,4vw,52px); line-height:1; letter-spacing:-.055em; font-weight:900; margin:9px 0; }.profile-heading p { color:var(--muted); font-size:14px; }.company-hero { display:flex; justify-content:space-between; align-items:end; gap:24px; padding:32px; margin-bottom:24px; border-radius:24px; color:white; background:radial-gradient(circle at 100% 0%, #7756ad, transparent 55%), #3d2c60; }.hero-label,.hero-status span,.section-label { font-size:10px; font-weight:800; letter-spacing:.13em; }.hero-label,.hero-status span { color:#d7c9ef; }.company-hero h2 { font-size:clamp(26px,3vw,38px); font-weight:850; letter-spacing:-.04em; overflow-wrap:anywhere; margin:8px 0; }.company-hero p,.hero-status small { color:#e0d5ef; font-size:13px; }.hero-status { display:flex; flex-direction:column; gap:5px; min-width:180px; border-left:1px solid #ffffff44; padding-left:24px; }.hero-status strong { font-size:20px; }.profile-grid { display:grid; grid-template-columns:minmax(240px, 1fr) minmax(0, 2fr); gap:20px; align-items:start; }.logo-card,.workflow-card { background:var(--surface); border:1px solid var(--rule); border-radius:20px; padding:24px; }.section-label { color:var(--muted); }.logo-title,.workflow-title { color:var(--ink); font-size:20px; font-weight:800; letter-spacing:-.03em; margin:6px 0; }.logo-card > p { color:var(--muted); line-height:1.6; }.logo-card button { border-radius:999px; }.profile-form :deep(> div) { border-radius:20px; overflow:hidden; }.workflow-card { margin-top:20px; }.workflow-card p { line-height:1.6; }.company-page :deep(button:focus-visible),.company-page :deep(input:focus-visible),.company-page :deep(textarea:focus-visible) { outline:3px solid #9a78d5; outline-offset:3px; }
+@media(max-width:800px) { .profile-grid { grid-template-columns:1fr; }.logo-card { max-width:none; }.company-hero { align-items:start; flex-direction:column; padding:24px; }.hero-status { border-left:0; border-top:1px solid #ffffff44; padding:16px 0 0; width:100%; } }
+</style>
