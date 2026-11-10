@@ -1,28 +1,8 @@
 <template>
-  <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <div class="mb-6 flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">
-          Members
-          <span class="text-base font-normal text-slate-500 dark:text-slate-400 ml-2">({{ activeCount }}/5)</span>
-        </h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola anggota perusahaan Anda.</p>
-      </div>
-      <button
-        v-if="canInvite"
-        @click="openInviteModal"
-        :disabled="activeCount >= 5"
-        :title="activeCount >= 5 ? 'Slot member sudah penuh (5/5)' : ''"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-md transition-colors"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
-        Invite
-      </button>
-    </div>
-
+  <div class="team-page">
+    <header class="team-heading"><div><span class="shell-overline">PENGATURAN BISNIS</span><h1>Anggota tim</h1><p>Kelola siapa yang dapat mengakses perusahaan dan peran mereka.</p></div><button v-if="canInvite" type="button" class="invite-button" :disabled="activeCount >= 5" :title="activeCount >= 5 ? 'Slot anggota sudah penuh (5/5)' : ''" @click="openInviteModal"><span aria-hidden="true">+</span> Undang anggota</button></header>
+    <section class="team-overview"><div><span class="overview-label">AKSES PERUSAHAAN</span><h2>Tim Anda</h2><p>Undang rekan kerja dan atur akses sesuai tanggung jawab mereka.</p></div><div class="capacity"><span>SLOT DIGUNAKAN</span><strong>{{ activeCount }} <small>/ 5</small></strong><div class="capacity-track" role="progressbar" aria-label="Slot anggota digunakan" :aria-valuenow="activeCount" aria-valuemin="0" aria-valuemax="5"><div :style="{ width: Math.min(activeCount / 5 * 100, 100) + '%' }"></div></div><p>{{ Math.max(0, 5 - activeCount) }} slot tersedia</p></div></section>
+    <div class="team-section"><div><span class="section-label">DAFTAR ANGGOTA</span><h2>Orang dan peran</h2><p>Lihat status undangan dan kelola akses anggota.</p></div></div>
     <!-- Alert messages -->
     <div v-if="successMsg" class="mb-4 rounded-md bg-green-50 dark:bg-green-900/30 p-4 border border-green-200 dark:border-green-800">
       <p class="text-sm font-medium text-green-800 dark:text-green-300">{{ successMsg }}</p>
@@ -37,7 +17,7 @@
     </div>
 
     <!-- Member list -->
-    <div v-else class="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+    <div v-else class="member-list">
       <div v-if="sortedMembers.length === 0" class="py-12 text-center text-slate-500 dark:text-slate-400">
         Belum ada member. Mulai dengan mengundang rekan tim Anda.
       </div>
@@ -45,10 +25,10 @@
         <li
           v-for="member in sortedMembers"
           :key="member.id"
-          class="flex items-center justify-between px-6 py-4 gap-4"
+          class="member-row"
         >
           <!-- Avatar & Info -->
-          <div class="flex items-center gap-3 min-w-0">
+          <div class="member-identity">
             <img
               v-if="member.user.profilePictureUrl"
               :src="member.user.profilePictureUrl"
@@ -71,18 +51,19 @@
           </div>
 
           <!-- Role & Status badges -->
-          <div class="flex items-center gap-2 flex-shrink-0">
+          <div class="member-badges">
             <span :class="roleBadgeClass(member.role)" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium">
-              <span>{{ roleIcon(member.role) }}</span>
+              
               {{ member.role }}
             </span>
+            <span v-if="member.status === 'REVOKED'" class="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Akses dicabut</span>
             <span v-if="member.status === 'PENDING'" class="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
               Menunggu
             </span>
           </div>
 
           <!-- Actions -->
-          <div class="flex items-center gap-2 flex-shrink-0">
+          <div class="member-actions">
             <!-- Edit Role (OWNER only, not self, not another OWNER) -->
             <button
               v-if="canEditRole(member)"
@@ -296,17 +277,6 @@ function roleBadgeClass(role: CompanyMemberRole): string {
   }
 }
 
-function roleIcon(role: CompanyMemberRole): string {
-  switch (role) {
-    case 'OWNER': return '👑'
-    case 'ADMIN': return '🛡️'
-    case 'CHECKER': return '🔍'
-    case 'STAFF': return '✏️'
-    case 'VIEWER': return '👁️'
-    default: return '👤'
-  }
-}
-
 // --- Lifecycle ---
 onMounted(async () => {
   try {
@@ -419,3 +389,7 @@ async function handleRevoke() {
   }
 }
 </script>
+
+<style scoped>
+.team-page { --ink:var(--shell-ink,#27231d); --muted:var(--shell-muted,#6c6256); --surface:var(--shell-surface,#fffcf5); --rule:var(--shell-rule,#e2d8c7); max-width:1280px; margin:auto; padding:clamp(20px,3vw,40px) clamp(16px,3vw,32px); color:var(--ink); }.team-heading { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:28px; }.team-heading h1 { font-size:clamp(34px,4vw,52px); line-height:1; letter-spacing:-.055em; font-weight:900; margin:9px 0; }.team-heading p,.team-section p { color:var(--muted); font-size:14px; }.invite-button { background:var(--shell-grape,#5026a5); color:white; padding:11px 18px; border-radius:999px; font-weight:750; white-space:nowrap; }.invite-button span { font-size:20px; vertical-align:middle; margin-right:4px; }.invite-button:disabled { opacity:.5; cursor:not-allowed; }.team-overview { display:flex; justify-content:space-between; align-items:center; gap:32px; padding:30px 32px; border-radius:24px; background:radial-gradient(circle at 100% 0%,#7756ad,transparent 55%),#3d2c60; color:white; }.overview-label,.section-label,.capacity > span { font-size:10px; letter-spacing:.13em; font-weight:800; }.overview-label,.capacity > span { color:#d7c9ef; }.team-overview h2 { font-size:26px; font-weight:850; letter-spacing:-.04em; margin:7px 0; }.team-overview p { color:#e0d5ef; font-size:13px; }.capacity { min-width:210px; border-left:1px solid #ffffff44; padding-left:28px; }.capacity strong { display:block; font-size:36px; line-height:1; margin:8px 0 12px; }.capacity small { color:#d7c9ef; font-size:18px; }.capacity-track { height:6px; background:#ffffff33; border-radius:999px; overflow:hidden; }.capacity-track div { height:100%; background:#bce8cc; border-radius:inherit; }.capacity p { margin-top:8px; }.team-section { margin:32px 0 16px; }.section-label { color:var(--muted); }.team-section h2 { font-size:26px; font-weight:850; letter-spacing:-.04em; margin:4px 0; }.member-list { background:var(--surface); border:1px solid var(--rule); border-radius:20px; overflow:hidden; }.member-row { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:20px; padding:20px 24px; }.member-identity { display:flex; align-items:center; gap:12px; min-width:0; }.member-badges,.member-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }.member-actions button { border-radius:999px; padding:7px 12px; font-weight:700; }.team-page :deep(button:focus-visible) { outline:3px solid #9a78d5; outline-offset:3px; } @media(max-width:700px) { .team-heading { align-items:start; flex-direction:column; }.team-overview { align-items:start; flex-direction:column; padding:24px; }.capacity { border-left:0; border-top:1px solid #ffffff44; padding:18px 0 0; width:100%; }.member-row { grid-template-columns:1fr; gap:12px; padding:18px; }.member-actions { padding-left:48px; }.member-badges { padding-left:48px; } }
+</style>
