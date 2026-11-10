@@ -1,19 +1,20 @@
 <template>
-  <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="profit-loss-page">
     <!-- Header -->
-    <div class="mb-6 border-b border-slate-200 dark:border-slate-700 pb-4 flex justify-between items-start gap-4">
+    <div class="profit-heading">
       <div>
+        <span class="shell-overline">POSISI KEUANGAN BISNIS</span>
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Neraca Keuangan</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Balance Sheet — posisi aset, liabilitas, dan ekuitas per tanggal tertentu.</p>
       </div>
       <div v-if="data" class="flex items-center gap-1.5 shrink-0">
         <button @click="doExportExcel" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-          <span class="hidden sm:inline">Excel</span>
+          <span>Excel</span>
         </button>
         <button @click="doExportPDF" :disabled="isExporting" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors disabled:opacity-50">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-          <span class="hidden sm:inline">PDF</span>
+          <span>PDF</span>
         </button>
       </div>
     </div>
@@ -27,7 +28,7 @@
     </div>
 
     <!-- Filters -->
-    <div class="mb-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+    <div class="profit-filters">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Per Tanggal</label>
@@ -95,6 +96,12 @@
         </span>
       </div>
 
+      <div class="profit-summary">
+        <div><span>Total aset</span><strong>{{ formatRp(data.assets.total) }}</strong></div>
+        <div><span>Total liabilitas</span><strong>{{ formatRp(data.liabilities.total) }}</strong></div>
+        <div><span>Total ekuitas</span><strong>{{ formatRp(data.equity.total) }}</strong></div>
+      </div>
+      <div class="profit-detail-heading"><span class="shell-overline">RINCIAN LAPORAN</span><h2>Posisi keuangan</h2><p>Rincian akun pada tanggal yang dipilih.</p></div>
       <!-- Assets -->
       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="px-5 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-slate-200 dark:border-slate-700">
@@ -258,3 +265,24 @@ function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 </script>
+
+<style scoped>
+.profit-loss-page { --ink: var(--shell-ink, #27231d); --muted: var(--shell-muted, #6c6256); --surface: var(--shell-surface, #fffcf5); --rule: var(--shell-rule, #e2d8c7); width: min(100%, 1280px); margin: auto; padding: clamp(20px, 3.2vw, 40px) clamp(16px, 2.8vw, 30px); color: var(--ink); }
+.profit-heading { display: flex; justify-content: space-between; align-items: end; gap: 20px; padding: 28px; margin-bottom: 18px; border: 1px solid var(--rule); border-radius: 22px; background: var(--surface); }
+.profit-heading h1 { margin: 7px 0 0; color: var(--ink); font-size: clamp(27px, 3.2vw, 39px); font-weight: 900; letter-spacing: -.05em; line-height: 1.05; }
+.profit-heading p { color: var(--muted); line-height: 1.6; }
+.profit-heading button { min-height: 40px; padding: 9px 15px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); color: var(--ink); font-weight: 750; }
+.profit-heading button:hover { background: var(--shell-lilac, #eee4ff); }
+.profit-filters { margin-bottom: 24px; padding: 20px; border: 1px solid var(--rule); border-radius: 18px; background: var(--surface); }
+.profit-filters button { min-height: 38px; border-radius: 999px; }
+.profit-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 18px; background: var(--surface); overflow: hidden; }
+.profit-summary > div { display: flex; flex-direction: column; gap: 10px; padding: 22px 24px; min-width: 0; }
+.profit-summary > div + div { border-left: 1px solid var(--rule); }
+.profit-summary span { color: var(--muted); font-size: 12px; font-weight: 700; }
+.profit-summary strong { color: var(--ink); font-size: clamp(17px, 2vw, 25px); letter-spacing: -.04em; overflow-wrap: anywhere; }
+.profit-detail-heading { padding: 20px 0 2px; }
+.profit-detail-heading h2 { margin: 5px 0 3px; color: var(--ink); font-size: 24px; font-weight: 850; letter-spacing: -.04em; }
+.profit-detail-heading p { margin: 0; color: var(--muted); font-size: 13px; }
+.profit-loss-page :deep(button:focus-visible), .profit-loss-page :deep(input:focus-visible) { outline: 3px solid var(--shell-grape, #5026a5); outline-offset: 3px; }
+@media (max-width: 680px) { .profit-heading { align-items: flex-start; flex-direction: column; padding: 22px; } .profit-summary { grid-template-columns: 1fr; } .profit-summary > div { padding: 16px; } .profit-summary > div + div { border-left: 0; border-top: 1px solid var(--rule); } }
+</style>
