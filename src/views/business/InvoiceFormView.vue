@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="invoice-form-page">
 
     <!-- Page Header -->
     <div class="mb-6 flex items-center gap-3">
@@ -465,6 +465,7 @@ import { BusinessService } from '@/services/business.service'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import CurrencyInput from '@/components/common/CurrencyInput.vue'
 import type { Contact, CompanyBankAccount, TaxConfig } from '@/types/business'
+import '@/assets/invoices.css'
 
 const router = useRouter()
 const route = useRoute()

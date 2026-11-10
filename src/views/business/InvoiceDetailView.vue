@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="invoice-detail-page">
     <!-- Toast Notification -->
     <Transition name="toast">
       <div
@@ -411,6 +411,7 @@ import InvoiceStatusBadge from '@/components/business/InvoiceStatusBadge.vue'
 import PayInvoiceModal from '@/components/business/PayInvoiceModal.vue'
 import exportService from '@/services/exportService'
 import type { ContactType, BusinessTransaction } from '@/types/business'
+import '@/assets/invoices.css'
 
 const route = useRoute()
 const router = useRouter()

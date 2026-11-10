@@ -1,0 +1,215 @@
+.invoice-list-page, .invoice-form-page, .invoice-detail-page {
+  --invoice-paper: var(--shell-paper, #fdf9ee);
+  --invoice-surface: var(--shell-surface, #fffcf5);
+  --invoice-ink: var(--shell-ink, #27231d);
+  --invoice-muted: var(--shell-muted, #6c6256);
+  --invoice-line: var(--shell-line, #423a2d);
+  --invoice-rule: var(--shell-rule, #e2d8c7);
+  --invoice-accent: var(--shell-grape, #5026a5);
+  --invoice-tint: var(--shell-lilac, #eee4ff);
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding: clamp(20px, 3.2vw, 40px) clamp(16px, 2.8vw, 30px);
+  color: var(--invoice-ink);
+}
+.invoice-list-page *, .invoice-form-page *, .invoice-detail-page *,
+.invoice-list-page *::before, .invoice-form-page *::before, .invoice-detail-page *::before,
+.invoice-list-page *::after, .invoice-form-page *::after, .invoice-detail-page *::after { box-sizing: border-box; }
+.invoice-list-page :is(h1,h2,h3,p), .invoice-form-page :is(h1,h2,h3,p), .invoice-detail-page :is(h1,h2,h3,p) { margin-top: 0; }
+.invoice-list-page :is(button,a):focus-visible, .invoice-form-page :is(button,a,input,select,textarea):focus-visible, .invoice-detail-page :is(button,a):focus-visible { outline: 3px solid var(--invoice-accent); outline-offset: 3px; }
+
+/* Invoice list */
+.invoice-list-page > .mb-6 {
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding-bottom: 20px;
+  border-color: var(--invoice-rule) !important;
+}
+.invoice-list-title { display: grid; gap: 7px; }
+.invoice-list-title h1 { margin: 0; color: var(--invoice-ink) !important; font-size: clamp(27px,3.2vw,39px); font-weight: 900; letter-spacing: -.05em; line-height: 1.05; }
+.invoice-list-title p { margin: 0 !important; color: var(--invoice-muted) !important; font-size: 13px; }
+.invoice-list-page > .mb-6 > a {
+  min-height: 42px;
+  padding: 10px 17px !important;
+  border: 1px solid var(--invoice-line);
+  border-radius: 999px !important;
+  background: var(--invoice-ink) !important;
+  color: var(--invoice-surface) !important;
+  font-weight: 750;
+  box-shadow: none !important;
+  text-decoration: none;
+  transition: transform .18s ease, background .18s ease;
+}
+.invoice-list-page > .mb-6 > a:hover { transform: translateY(-1px); background: var(--invoice-accent) !important; }
+.invoice-list-page > .mb-4.flex.gap-2 { gap: 8px; margin-bottom: 16px; }
+.invoice-list-page > .mb-4.flex.gap-2 button {
+  min-height: 37px;
+  padding: 8px 14px !important;
+  border: 1px solid var(--invoice-rule) !important;
+  border-radius: 999px !important;
+  background: var(--invoice-surface) !important;
+  color: var(--invoice-muted) !important;
+  font-size: 12px;
+  font-weight: 750;
+  transition: .16s ease;
+}
+.invoice-list-page > .mb-4.flex.gap-2 button[aria-pressed="true"] { border-color: var(--invoice-ink) !important; background: var(--invoice-ink) !important; color: var(--invoice-surface) !important; }
+.invoice-list-page > .mb-4.flex.gap-2 button:hover:not([aria-pressed="true"]) { border-color: var(--invoice-accent) !important; color: var(--invoice-accent) !important; }
+.invoice-list-page > .mb-4.rounded-md,
+.invoice-form-page form > .flex.items-start.rounded-xl { border-radius: 14px !important; }
+.invoice-list-page > .flex.justify-center { min-height: 180px; align-items: center; }
+.invoice-list-page .space-y-3 { display: grid; gap: 12px; }
+.invoice-list-page .space-y-3 > div {
+  border: 1px solid var(--invoice-rule) !important;
+  border-radius: 17px !important;
+  background: var(--invoice-surface) !important;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--invoice-ink) 4%, transparent);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.invoice-list-page .space-y-3 > div:hover { transform: translateY(-2px); box-shadow: 0 13px 30px color-mix(in srgb, var(--invoice-ink) 8%, transparent); }
+.invoice-list-page .space-y-3 > div:has(.text-red-500) { border-color: #d99487 !important; }
+.invoice-list-page .space-y-3 > div > div { padding: 19px 22px !important; }
+.invoice-list-page .space-y-3 > div p { margin-bottom: 0; }
+.invoice-list-page .space-y-3 > div .font-mono { color: var(--invoice-accent) !important; font-size: 12px; font-weight: 850; letter-spacing: .02em; }
+.invoice-list-page .space-y-3 > div .text-slate-800,
+.invoice-list-page .space-y-3 > div .text-slate-700,
+.invoice-list-page .space-y-3 > div .dark\:text-slate-100,
+.invoice-list-page .space-y-3 > div .dark\:text-slate-300 { color: var(--invoice-ink) !important; }
+.invoice-list-page .space-y-3 > div .text-slate-500,
+.invoice-list-page .space-y-3 > div .dark\:text-slate-400 { color: var(--invoice-muted) !important; }
+.invoice-list-page .space-y-3 > div .text-slate-900,
+.invoice-list-page .space-y-3 > div .dark\:text-white { color: var(--invoice-ink) !important; }
+.invoice-list-page .space-y-3 > div button,
+.invoice-list-page .space-y-3 > div a {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px !important;
+  border: 1px solid var(--invoice-rule) !important;
+  border-radius: 999px !important;
+  background: var(--invoice-surface) !important;
+  color: var(--invoice-ink) !important;
+  font-size: 11px;
+  font-weight: 750;
+  text-decoration: none;
+}
+.invoice-list-page .space-y-3 > div button:first-child { border-color: var(--invoice-ink) !important; background: var(--invoice-ink) !important; color: var(--invoice-surface) !important; }
+.invoice-list-page .space-y-3 > div button:hover,
+.invoice-list-page .space-y-3 > div a:hover { border-color: var(--invoice-accent) !important; background: var(--invoice-tint) !important; color: var(--invoice-accent) !important; }
+.invoice-list-page .space-y-3 > div button[title="Hapus"] { min-width: 32px; padding: 6px !important; border-color: transparent !important; background: transparent !important; color: #a3473f !important; }
+.invoice-list-page .space-y-3 > div button[title="Hapus"]:hover { background: #fff0eb !important; }
+.invoice-list-page > .bg-white.dark\:bg-slate-800 { border: 1px solid var(--invoice-rule) !important; border-radius: 18px !important; background: var(--invoice-surface) !important; }
+
+/* Create and edit form */
+.invoice-form-page { max-width: 1080px; }
+.invoice-form-page > .mb-6 { gap: 13px; margin-bottom: 22px; }
+.invoice-form-page > .mb-6 > button { border: 1px solid var(--invoice-rule); background: var(--invoice-surface); color: var(--invoice-muted) !important; }
+.invoice-form-page > .mb-6 h1 { margin: 0; color: var(--invoice-ink) !important; font-size: clamp(24px,3vw,34px); font-weight: 900; letter-spacing: -.045em; }
+.invoice-form-page > .mb-6 p { color: var(--invoice-muted) !important; }
+.invoice-form-page form { display: grid; gap: 17px; }
+.invoice-form-page form > .grid { gap: 16px; }
+.invoice-form-page form section {
+  border: 1px solid var(--invoice-rule) !important;
+  border-radius: 18px !important;
+  background: var(--invoice-surface) !important;
+  box-shadow: 0 9px 24px color-mix(in srgb, var(--invoice-ink) 4%, transparent);
+}
+.invoice-form-page form section > :first-child:not(.px-5.pt-3) {
+  border-color: var(--invoice-rule) !important;
+}
+.invoice-form-page form section > div:first-child.flex {
+  padding: 15px 19px !important;
+}
+.invoice-form-page form section h2 { color: var(--invoice-ink) !important; font-size: 13px; font-weight: 850; }
+.invoice-form-page form label:not(.relative) { color: var(--invoice-ink) !important; font-weight: 700; }
+.invoice-form-page form label span { color: var(--invoice-muted); }
+.invoice-form-page form :is(input:not([type="checkbox"]),select,textarea) {
+  border-color: var(--invoice-rule) !important;
+  border-radius: 11px !important;
+  background-color: var(--invoice-paper) !important;
+  color: var(--invoice-ink) !important;
+}
+.invoice-form-page form :is(input,select,textarea)::placeholder { color: var(--invoice-muted) !important; opacity: .75; }
+.invoice-form-page form :is(input,select,textarea):focus { border-color: var(--invoice-accent) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--invoice-accent) 16%, transparent) !important; }
+.invoice-form-page form :is(input,select,textarea):read-only { background: color-mix(in srgb, var(--invoice-paper) 75%, var(--invoice-rule)) !important; }
+.invoice-form-page form .px-5.py-4.space-y-4,
+.invoice-form-page form .p-5 { padding: 20px !important; }
+.invoice-form-page form section > .px-5.pt-3.pb-5 { padding: 14px 18px 18px !important; }
+.invoice-form-page form section > .px-5.pt-3.pb-5 > div {
+  border-color: var(--invoice-rule) !important;
+  border-radius: 13px !important;
+  background: var(--invoice-paper) !important;
+}
+.invoice-form-page form section > .px-5.pt-3.pb-5 > div > div:last-child { border-color: var(--invoice-rule) !important; background: color-mix(in srgb, var(--invoice-surface) 75%, transparent) !important; }
+.invoice-form-page form section .bg-slate-50 { background-color: var(--invoice-paper) !important; }
+.invoice-form-page form section .bg-slate-200 { background-color: var(--invoice-rule) !important; }
+.invoice-form-page form section .text-slate-700,
+.invoice-form-page form section .text-slate-800,
+.invoice-form-page form section .dark\:text-slate-100,
+.invoice-form-page form section .dark\:text-slate-200 { color: var(--invoice-ink) !important; }
+.invoice-form-page form section .text-slate-400,
+.invoice-form-page form section .dark\:text-slate-500 { color: var(--invoice-muted) !important; }
+.invoice-form-page form section .border-slate-100,
+.invoice-form-page form section .border-slate-200,
+.invoice-form-page form section .dark\:border-slate-700 { border-color: var(--invoice-rule) !important; }
+.invoice-form-page form section .text-emerald-600,
+.invoice-form-page form section .dark\:text-emerald-400 { color: var(--invoice-accent) !important; }
+.invoice-form-page form section button:not([title="Hapus item"]) { border-radius: 999px !important; }
+.invoice-form-page form section button:not([title="Hapus item"]):hover { background: var(--invoice-tint) !important; color: var(--invoice-accent) !important; }
+.invoice-form-page form section button[title="Hapus item"] { opacity: .7; }
+.invoice-form-page form section button[title="Hapus item"]:hover { opacity: 1; }
+.invoice-form-page form section .bg-slate-50.dark\:bg-slate-800\/80 { background: var(--invoice-paper) !important; }
+.invoice-form-page form section .text-emerald-600.dark\:text-emerald-400 { color: var(--invoice-accent) !important; }
+.invoice-form-page form > .flex.justify-end { gap: 10px; padding: 0 0 20px; }
+.invoice-form-page form > .flex.justify-end button { min-height: 44px; padding: 10px 18px !important; border-radius: 999px !important; font-weight: 750; box-shadow: none !important; }
+.invoice-form-page form > .flex.justify-end button[type="submit"] { border: 1px solid var(--invoice-ink); background: var(--invoice-ink) !important; color: var(--invoice-surface); }
+.invoice-form-page form > .flex.justify-end button[type="submit"]:hover:not(:disabled) { background: var(--invoice-accent) !important; }
+.invoice-form-page form > .flex.justify-end button[type="button"] { border-color: var(--invoice-rule) !important; background: var(--invoice-surface) !important; color: var(--invoice-ink) !important; }
+
+/* Invoice detail, including the draft delete action */
+.invoice-detail-page { max-width: 1080px; }
+.invoice-detail-page > .mb-6 { gap: 12px; }
+.invoice-detail-page > .mb-6 h1 { color: var(--invoice-ink) !important; font-size: 26px; font-weight: 900; letter-spacing: -.04em; }
+.invoice-detail-page > .space-y-6 { display: grid; gap: 16px; }
+.invoice-detail-page .bg-white.dark\:bg-slate-800 {
+  border-color: var(--invoice-rule) !important;
+  border-radius: 17px !important;
+  background: var(--invoice-surface) !important;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--invoice-ink) 4%, transparent);
+}
+.invoice-detail-page .text-slate-800,
+.invoice-detail-page .text-slate-900,
+.invoice-detail-page .dark\:text-slate-100,
+.invoice-detail-page .dark\:text-slate-200,
+.invoice-detail-page .dark\:text-white { color: var(--invoice-ink) !important; }
+.invoice-detail-page .text-slate-500,
+.invoice-detail-page .text-slate-600,
+.invoice-detail-page .dark\:text-slate-400,
+.invoice-detail-page .dark\:text-slate-300 { color: var(--invoice-muted) !important; }
+.invoice-detail-page .border-slate-100,
+.invoice-detail-page .border-slate-200,
+.invoice-detail-page .dark\:border-slate-700 { border-color: var(--invoice-rule) !important; }
+.invoice-detail-page button, .invoice-detail-page a { border-radius: 999px; }
+.invoice-detail-page button:hover, .invoice-detail-page a:hover { transition: .16s ease; }
+.invoice-detail-page button.bg-red-50 { color: #a3473f !important; }
+.invoice-detail-page table thead { background: var(--invoice-paper) !important; }
+.invoice-detail-page table tbody tr:hover { background: var(--invoice-paper); }
+
+@media (max-width: 680px) {
+  .invoice-list-page, .invoice-form-page, .invoice-detail-page { padding-top: 22px; }
+  .invoice-list-page > .mb-6 { align-items: center; }
+  .invoice-list-page > .mb-6 > a { flex: 0 0 auto; padding-inline: 13px !important; }
+  .invoice-list-page .space-y-3 > div > div { padding: 16px !important; }
+  .invoice-list-page .space-y-3 > div > div.flex { align-items: flex-start; }
+  .invoice-list-page .space-y-3 > div > div.flex > div:last-child { max-width: 46%; }
+  .invoice-list-page .space-y-3 > div > div.flex > div:last-child > span { font-size: 16px; }
+  .invoice-form-page form section > .px-5.pt-3.pb-5 { padding: 10px !important; }
+  .invoice-form-page form section > .px-5.pt-3.pb-5 > div > div:first-child { gap: 8px; padding-inline: 10px; }
+  .invoice-form-page form section > .px-5.pt-3.pb-5 > div > div:last-child { padding-inline: 10px; }
+  .invoice-form-page form > .flex.justify-end { position: sticky; bottom: 0; z-index: 5; padding: 12px; margin: 0 -12px; border-top: 1px solid var(--invoice-rule); background: var(--invoice-paper); }
+  .invoice-form-page form > .flex.justify-end button { flex: 1; justify-content: center; }
+  .invoice-detail-page .flex.flex-wrap.gap-2 { gap: 7px; }
+  .invoice-detail-page .flex.flex-wrap.gap-2 > :is(button,a) { padding: 8px 11px; font-size: 12px; }
+}

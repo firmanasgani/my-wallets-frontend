@@ -1,8 +1,8 @@
 <template>
-  <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="invoice-list-page">
     <!-- Header -->
     <div class="mb-6 flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-4">
-      <div>
+      <div class="invoice-list-title">
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">Invoice</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola invoice dan pembayaran pelanggan.</p>
       </div>
@@ -33,6 +33,7 @@
             ? 'bg-[#2E8B57] text-white shadow-sm'
             : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-emerald-400',
         ]"
+        :aria-pressed="activeStatus === tab.value"
       >
         {{ tab.label }}
       </button>
@@ -175,6 +176,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import InvoiceStatusBadge from '@/components/business/InvoiceStatusBadge.vue'
 import PayInvoiceModal from '@/components/business/PayInvoiceModal.vue'
 import type { Invoice, InvoiceStatus } from '@/types/business'
+import '@/assets/invoices.css'
 
 const router = useRouter()
 const invoicesStore = useInvoicesStore()
