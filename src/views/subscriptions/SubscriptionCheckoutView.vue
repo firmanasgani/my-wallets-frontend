@@ -152,6 +152,22 @@
                   Rp {{ formatNumber(targetPlanDetails.discountPrice || targetPlanDetails.price) }}
                 </span>
               </div>
+
+              <div class="border-t border-slate-200 dark:border-slate-700 pt-3">
+                <p class="text-slate-500 dark:text-slate-400 mb-2">Metode Pembayaran</p>
+                <p v-if="subscriptionStore.paymentMethodsError" class="text-red-600 dark:text-red-400">
+                  {{ subscriptionStore.paymentMethodsError }}
+                </p>
+                <p v-else-if="!subscriptionStore.paymentMethodsAvailable" class="text-slate-500 dark:text-slate-400">
+                  Pembayaran online belum tersedia saat ini. Silakan coba lagi nanti.
+                </p>
+                <div v-else class="space-y-2">
+                  <label v-for="m in subscriptionStore.paymentMethods" :key="m.code" class="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" :checked="selectedMethodCode === m.code" @change="selectedMethodCode = m.code" />
+                    <span class="font-medium">{{ m.name }}</span>
+                  </label>
+                </div>
+              </div>
             </template>
             <template v-else>
               <p class="text-slate-600 dark:text-slate-300 pt-2">
@@ -165,8 +181,8 @@
           <div class="px-6 pb-6">
             <button
               v-if="isPaidFlow"
-              @click="goToPaymentMethod"
-              :disabled="isProcessing"
+              @click="handleConfirmPayment"
+              :disabled="isProcessing || !selectedMethodCode"
               class="w-full bg-[#2E8B57] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#236B43] transition-all flex items-center justify-center gap-2"
             >
               <i v-if="isProcessing" class="fa-solid fa-circle-notch animate-spin"></i>
@@ -183,40 +199,6 @@
             </button>
           </div>
         </template>
-      </div>
-    </div>
-
-    <!-- STEP: PAYMENT METHOD -->
-    <div v-else-if="step === 'PAYMENT_METHOD'" class="grid max-w-md mx-auto">
-      <div class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-          <h3 class="text-base font-semibold text-slate-900 dark:text-white">Pilih Metode Pembayaran</h3>
-        </div>
-        <div class="p-6 space-y-3 text-sm">
-          <p v-if="subscriptionStore.paymentMethodsError" class="text-red-600 dark:text-red-400">
-            {{ subscriptionStore.paymentMethodsError }}
-          </p>
-          <p v-else-if="!subscriptionStore.paymentMethodsAvailable" class="text-slate-500 dark:text-slate-400">
-            Pembayaran online belum tersedia saat ini. Silakan coba lagi nanti.
-          </p>
-          <div v-else class="space-y-2">
-            <label v-for="m in subscriptionStore.paymentMethods" :key="m.code" class="flex items-center gap-3 cursor-pointer">
-              <input type="radio" :checked="selectedMethodCode === m.code" @change="selectedMethodCode = m.code" />
-              <span class="font-medium">{{ m.name }}</span>
-            </label>
-          </div>
-        </div>
-        <div class="px-6 pb-6 flex items-center justify-between gap-3">
-          <button type="button" class="checkout-secondary-button" @click="step = 'REVIEW'">Kembali</button>
-          <button
-            @click="handleConfirmPayment"
-            :disabled="!selectedMethodCode || isProcessing"
-            class="flex items-center justify-center gap-2"
-          >
-            <i v-if="isProcessing" class="fa-solid fa-circle-notch animate-spin"></i>
-            {{ isProcessing ? 'Memproses...' : 'Bayar Sekarang' }}
-          </button>
-        </div>
       </div>
     </div>
 
@@ -288,7 +270,7 @@ const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
 
 type Action = 'renew' | 'upgrade'
-type Step = 'REVIEW' | 'PAYMENT_METHOD' | 'AWAITING_PAYMENT' | 'SUCCESS'
+type Step = 'REVIEW' | 'AWAITING_PAYMENT' | 'SUCCESS'
 type Family = 'PREMIUM' | 'BUSINESS' | 'FREE'
 
 const actionType = computed<Action>(() => {
@@ -411,12 +393,6 @@ const formatNumber = (num: number) => new Intl.NumberFormat('id-ID').format(num)
 const formatDate = (date: Date) =>
   date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 
-const goToPaymentMethod = () => {
-  if (!targetPlanDetails.value) return
-  selectedMethodCode.value = subscriptionStore.paymentMethods[0]?.code ?? null
-  step.value = 'PAYMENT_METHOD'
-}
-
 const handleConfirmPayment = async () => {
   if (!targetPlanDetails.value || !selectedMethodCode.value) return
   isProcessing.value = true
@@ -469,6 +445,7 @@ onMounted(async () => {
     await subscriptionStore.fetchPlans()
   }
   await subscriptionStore.fetchPaymentMethods()
+  selectedMethodCode.value = subscriptionStore.paymentMethods[0]?.code ?? null
   await authStore.fetchUserProfile()
 
   if (actionType.value === 'upgrade') {

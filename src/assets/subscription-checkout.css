@@ -101,17 +101,6 @@
 .subscription-checkout .grid > div.bg-white button:hover,
 .subscription-checkout > .flex button:hover { background: var(--checkout-accent) !important; transform: translateY(-1px); }
 .subscription-checkout .grid > div.bg-white button:disabled { opacity: .55; }
-.subscription-checkout .grid > div.bg-white button.checkout-secondary-button {
-  border: 1px solid var(--checkout-rule) !important;
-  background: var(--checkout-surface) !important;
-  color: var(--checkout-ink) !important;
-  box-shadow: none !important;
-}
-.subscription-checkout .grid > div.bg-white button.checkout-secondary-button:hover {
-  background: var(--checkout-tint) !important;
-  color: var(--checkout-ink) !important;
-  transform: none !important;
-}
 .subscription-checkout > .flex:not(.checkout-heading) { color: var(--checkout-ink); }
 .subscription-checkout > .flex:not(.checkout-heading) > div:first-child > div:first-child { background: var(--checkout-tint); }
 .subscription-checkout > .flex:not(.checkout-heading) > div:first-child > div:last-child { background: var(--checkout-accent); }
