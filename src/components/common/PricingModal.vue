@@ -297,6 +297,15 @@
       </Transition>
     </div>
   </Transition>
+
+  <AppDialog :is-open="!!errorMessage" title="Pembayaran Belum Berhasil" eyebrow="PAYFEST" @close="errorMessage = null">
+    <div class="pricing-error-dialog">
+      <p>{{ errorMessage }}</p>
+      <footer>
+        <button type="button" @click="errorMessage = null">Tutup</button>
+      </footer>
+    </div>
+  </AppDialog>
 </template>
 
 <script setup lang="ts">
@@ -305,6 +314,7 @@ import { useSubscriptionStore } from '@/stores/subscriptions'
 import type { PayfestCheckoutResult } from '@/stores/subscriptions'
 import { useAuthStore } from '@/stores/auth'
 import PayfestCheckoutInstructions from '@/components/subscriptions/PayfestCheckoutInstructions.vue'
+import AppDialog from '@/components/common/AppDialog.vue'
 
 const props = defineProps<{
   isOpen: boolean
@@ -323,6 +333,7 @@ const selectedMethodCode = ref<string | null>(null)
 const checkoutResult = ref<PayfestCheckoutResult | null>(null)
 const isProcessing = ref(false)
 const isCheckingStatus = ref(false)
+const errorMessage = ref<string | null>(null)
 
 const modalHeaderTitle = computed(() => {
   if (currentStep.value === 'SUCCESS') return 'Pembayaran Berhasil'
@@ -417,7 +428,7 @@ const handlePayment = async () => {
     )
     currentStep.value = 'AWAITING_PAYMENT'
   } catch (err: any) {
-    alert(err.message || 'Gagal memproses pembayaran')
+    errorMessage.value = err.message || 'Gagal memproses pembayaran'
   } finally {
     isProcessing.value = false
   }
@@ -430,7 +441,7 @@ const checkPaymentStatus = async () => {
     if (authStore.currentUser?.subscriptionPlan !== 'FREE') {
       currentStep.value = 'SUCCESS'
     } else {
-      alert('Pembayaran belum terdeteksi. Jika sudah membayar, mohon tunggu beberapa saat lalu coba lagi.')
+      errorMessage.value = 'Pembayaran belum terdeteksi. Jika sudah membayar, mohon tunggu beberapa saat lalu coba lagi.'
     }
   } finally {
     isCheckingStatus.value = false
@@ -460,3 +471,34 @@ watch(
   },
 )
 </script>
+<style scoped>
+.pricing-error-dialog {
+  padding: 4px 24px 24px;
+}
+.pricing-error-dialog p {
+  margin: 0 0 20px;
+  color: var(--shell-ink);
+  font-size: 14px;
+}
+.pricing-error-dialog footer {
+  display: flex;
+  justify-content: flex-end;
+}
+.pricing-error-dialog footer button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 20px;
+  border: 1px solid var(--shell-line);
+  border-radius: 999px;
+  background: var(--shell-ink);
+  color: var(--shell-surface);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s ease;
+}
+.pricing-error-dialog footer button:hover {
+  background: var(--shell-grape);
+}
+</style>
