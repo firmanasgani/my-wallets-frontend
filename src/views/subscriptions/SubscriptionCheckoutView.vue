@@ -38,8 +38,8 @@
 
     <!-- STEP: CONFIGURE / REVIEW -->
     <div v-else-if="step === 'REVIEW'" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-      <!-- LEFT: selectors (upgrade only — renew has nothing to pick) -->
-      <div v-if="actionType === 'upgrade'" class="space-y-6">
+      <!-- Selectors (upgrade only — renew has nothing to pick): full width, above the two cards -->
+      <div v-if="actionType === 'upgrade'" class="space-y-6 md:col-span-2">
         <!-- Duration -->
         <div>
           <p class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Durasi</p>
@@ -81,11 +81,8 @@
         </div>
       </div>
 
-      <!-- RIGHT: package information / calculation -->
-      <div
-        class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
-        :class="actionType === 'renew' ? 'md:col-span-2 max-w-md' : ''"
-      >
+      <!-- LEFT card: package information / calculation -->
+      <div class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
           <h3 class="text-base font-semibold text-slate-900 dark:text-white">
             {{ isPaidFlow ? 'Rincian Perpanjangan' : 'Konfirmasi Perubahan Paket' }}
@@ -175,11 +172,10 @@
         </template>
       </div>
 
-      <!-- RIGHT (below): payment method — its own card, not merged into the price card -->
+      <!-- RIGHT card: payment method — its own card, side by side with the price card -->
       <div
         v-if="isPaidFlow && targetPlanDetails"
         class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
-        :class="actionType === 'renew' ? 'md:col-span-2 max-w-md' : 'md:col-start-2'"
       >
         <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
           <h3 class="text-base font-semibold text-slate-900 dark:text-white">Metode Pembayaran</h3>
