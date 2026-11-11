@@ -165,7 +165,7 @@
           <div class="px-6 pb-6">
             <button
               v-if="isPaidFlow"
-              @click="handlePay"
+              @click="goToPaymentMethod"
               :disabled="isProcessing"
               class="w-full bg-[#2E8B57] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#236B43] transition-all flex items-center justify-center gap-2"
             >
@@ -184,6 +184,65 @@
           </div>
         </template>
       </div>
+    </div>
+
+    <!-- STEP: PAYMENT METHOD -->
+    <div
+      v-else-if="step === 'PAYMENT_METHOD'"
+      class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 p-6 max-w-md mx-auto space-y-4"
+    >
+      <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Pilih metode pembayaran</p>
+      <div v-if="!subscriptionStore.paymentMethodsAvailable" class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-sm">
+        Pembayaran online belum tersedia saat ini. Silakan coba lagi nanti.
+      </div>
+      <div v-else class="space-y-2">
+        <label
+          v-for="m in subscriptionStore.paymentMethods"
+          :key="m.code"
+          class="flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors"
+          :class="
+            selectedMethodCode === m.code
+              ? 'border-[#2E8B57] bg-emerald-50/40 dark:bg-emerald-900/10'
+              : 'border-slate-200 dark:border-slate-700 hover:border-emerald-200'
+          "
+        >
+          <input type="radio" :checked="selectedMethodCode === m.code" @change="selectedMethodCode = m.code" class="h-4 w-4 accent-[#2E8B57]" />
+          <span class="text-sm font-medium text-slate-800 dark:text-slate-100">{{ m.name }}</span>
+        </label>
+      </div>
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <button
+          type="button"
+          @click="step = 'REVIEW'"
+          class="px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700"
+        >
+          Kembali
+        </button>
+        <button
+          @click="handleConfirmPayment"
+          :disabled="!selectedMethodCode || isProcessing"
+          class="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-[#2E8B57] hover:bg-[#236B43] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          <i v-if="isProcessing" class="fa-solid fa-circle-notch animate-spin"></i>
+          {{ isProcessing ? 'Memproses...' : 'Bayar Sekarang' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP: AWAITING PAYMENT -->
+    <div
+      v-else-if="step === 'AWAITING_PAYMENT' && checkoutResult"
+      class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 p-6 max-w-md mx-auto space-y-4"
+    >
+      <PayfestCheckoutInstructions :checkout="checkoutResult.checkout" :order-id="checkoutResult.order_id" />
+      <button
+        @click="checkPaymentStatus"
+        :disabled="isCheckingStatus"
+        class="w-full bg-[#2E8B57] text-white px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#236B43] transition-all flex items-center justify-center gap-2"
+      >
+        <i v-if="isCheckingStatus" class="fa-solid fa-circle-notch animate-spin"></i>
+        {{ isCheckingStatus ? 'Memeriksa...' : 'Saya Sudah Membayar' }}
+      </button>
     </div>
 
     <!-- STEP: SUCCESS -->
@@ -211,8 +270,10 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useSubscriptionStore } from '@/stores/subscriptions'
+import type { PayfestCheckoutResult } from '@/stores/subscriptions'
 import { getDurationDays, addDays } from '@/utils/subscriptionDuration'
 import '@/assets/subscription-checkout.css'
+import PayfestCheckoutInstructions from '@/components/subscriptions/PayfestCheckoutInstructions.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -220,7 +281,7 @@ const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
 
 type Action = 'renew' | 'upgrade'
-type Step = 'REVIEW' | 'SUCCESS'
+type Step = 'REVIEW' | 'PAYMENT_METHOD' | 'AWAITING_PAYMENT' | 'SUCCESS'
 type Family = 'PREMIUM' | 'BUSINESS' | 'FREE'
 
 const actionType = computed<Action>(() => {
@@ -230,6 +291,9 @@ const actionType = computed<Action>(() => {
 
 const step = ref<Step>('REVIEW')
 const isProcessing = ref(false)
+const selectedMethodCode = ref<string | null>(null)
+const checkoutResult = ref<PayfestCheckoutResult | null>(null)
+const isCheckingStatus = ref(false)
 
 const actionTitle = computed(() => (actionType.value === 'renew' ? 'Perpanjang Langganan' : 'Upgrade Paket'))
 const actionSubtitle = computed(() =>
@@ -339,51 +403,42 @@ const formatNumber = (num: number) => new Intl.NumberFormat('id-ID').format(num)
 const formatDate = (date: Date) =>
   date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 
-const handlePay = async () => {
+const goToPaymentMethod = () => {
   if (!targetPlanDetails.value) return
-  isProcessing.value = true
-  const previousEndDate = activeSubscription.value?.endDate ?? null
+  selectedMethodCode.value = subscriptionStore.paymentMethods[0]?.code ?? null
+  step.value = 'PAYMENT_METHOD'
+}
 
+const handleConfirmPayment = async () => {
+  if (!targetPlanDetails.value || !selectedMethodCode.value) return
+  isProcessing.value = true
   try {
-    const snapToken = await subscriptionStore.initiateCheckout(targetPlanDetails.value.code)
-    // @ts-ignore
-    window.snap.pay(snapToken, {
-      onSuccess: () => {
-        pollForProfileUpdate(previousEndDate)
-      },
-      onPending: () => {
-        isProcessing.value = false
-        alert('Pembayaran tertunda. Silakan selesaikan pembayaran Anda.')
-      },
-      onError: () => {
-        isProcessing.value = false
-        alert('Terjadi kesalahan saat pembayaran.')
-      },
-      onClose: () => {
-        isProcessing.value = false
-      },
-    })
+    checkoutResult.value = await subscriptionStore.initiateCheckout(
+      targetPlanDetails.value.code,
+      selectedMethodCode.value,
+    )
+    step.value = 'AWAITING_PAYMENT'
   } catch (err: any) {
     alert(err.message || 'Gagal memproses pembayaran')
+  } finally {
     isProcessing.value = false
   }
 }
 
-const pollForProfileUpdate = (previousEndDate: string | null | undefined) => {
-  let attempts = 0
-  const maxAttempts = 5
-  const check = async () => {
+const checkPaymentStatus = async () => {
+  isCheckingStatus.value = true
+  const previousEndDate = activeSubscription.value?.endDate ?? null
+  try {
     await authStore.fetchUserProfile()
     const newEnd = authStore.currentUser?.activeSubscription?.endDate ?? null
-    if (newEnd !== previousEndDate || attempts >= maxAttempts) {
-      isProcessing.value = false
+    if (newEnd !== previousEndDate) {
       step.value = 'SUCCESS'
-      return
+    } else {
+      alert('Pembayaran belum terdeteksi. Jika sudah membayar, mohon tunggu beberapa saat lalu coba lagi.')
     }
-    attempts++
-    setTimeout(check, 2000)
+  } finally {
+    isCheckingStatus.value = false
   }
-  check()
 }
 
 const handleConfirmDowngrade = async () => {
@@ -405,6 +460,7 @@ onMounted(async () => {
   if (subscriptionStore.plans.length === 0) {
     await subscriptionStore.fetchPlans()
   }
+  await subscriptionStore.fetchPaymentMethods()
   await authStore.fetchUserProfile()
 
   if (actionType.value === 'upgrade') {
