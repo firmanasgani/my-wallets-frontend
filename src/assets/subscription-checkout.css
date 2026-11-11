@@ -69,7 +69,18 @@
   box-shadow: inset 0 0 0 1px var(--checkout-accent);
 }
 .subscription-checkout label.flex span { color: var(--checkout-ink) !important; }
-.subscription-checkout input[type="checkbox"] { accent-color: var(--checkout-accent); }
+.subscription-checkout input[type="checkbox"],
+.subscription-checkout input[type="radio"] { accent-color: var(--checkout-accent); }
+.subscription-checkout .checkout-secondary-button {
+  border: 1px solid var(--checkout-rule) !important;
+  background: var(--checkout-surface) !important;
+  color: var(--checkout-ink) !important;
+  box-shadow: none !important;
+}
+.subscription-checkout .checkout-secondary-button:hover {
+  background: var(--checkout-tint) !important;
+  transform: none !important;
+}
 .subscription-checkout .grid > div.bg-white { overflow: hidden; padding: 0; }
 .subscription-checkout .grid > div.bg-white > div:first-child {
   padding: 18px 22px !important;

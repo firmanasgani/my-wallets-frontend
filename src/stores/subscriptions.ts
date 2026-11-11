@@ -43,6 +43,7 @@ export const useSubscriptionStore = defineStore('subscriptions', {
     historyError: null as string | null,
     paymentMethods: [] as PaymentMethodOption[],
     paymentMethodsAvailable: false,
+    paymentMethodsError: null as string | null,
     isLoadingPaymentMethods: false,
   }),
   actions: {
@@ -60,6 +61,7 @@ export const useSubscriptionStore = defineStore('subscriptions', {
     },
     async fetchPaymentMethods() {
       this.isLoadingPaymentMethods = true
+      this.paymentMethodsError = null
       try {
         const response = await apiClient.get<{
           provider: 'payfest'
@@ -68,9 +70,11 @@ export const useSubscriptionStore = defineStore('subscriptions', {
         }>('/subscriptions/payment-methods')
         this.paymentMethodsAvailable = response.data.available
         this.paymentMethods = response.data.methods
-      } catch {
+      } catch (err) {
         this.paymentMethodsAvailable = false
         this.paymentMethods = []
+        const response = (err as { response?: { data?: { message?: string } } }).response
+        this.paymentMethodsError = response?.data?.message || 'Gagal memuat metode pembayaran.'
       } finally {
         this.isLoadingPaymentMethods = false
       }
