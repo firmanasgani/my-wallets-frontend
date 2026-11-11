@@ -152,22 +152,6 @@
                   Rp {{ formatNumber(targetPlanDetails.discountPrice || targetPlanDetails.price) }}
                 </span>
               </div>
-
-              <div class="border-t border-slate-200 dark:border-slate-700 pt-3">
-                <p class="text-slate-500 dark:text-slate-400 mb-2">Metode Pembayaran</p>
-                <p v-if="subscriptionStore.paymentMethodsError" class="text-red-600 dark:text-red-400">
-                  {{ subscriptionStore.paymentMethodsError }}
-                </p>
-                <p v-else-if="!subscriptionStore.paymentMethodsAvailable" class="text-slate-500 dark:text-slate-400">
-                  Pembayaran online belum tersedia saat ini. Silakan coba lagi nanti.
-                </p>
-                <div v-else class="space-y-2">
-                  <label v-for="m in subscriptionStore.paymentMethods" :key="m.code" class="flex items-center gap-3 cursor-pointer">
-                    <input type="radio" :checked="selectedMethodCode === m.code" @change="selectedMethodCode = m.code" />
-                    <span class="font-medium">{{ m.name }}</span>
-                  </label>
-                </div>
-              </div>
             </template>
             <template v-else>
               <p class="text-slate-600 dark:text-slate-300 pt-2">
@@ -178,18 +162,8 @@
             </template>
           </div>
 
-          <div class="px-6 pb-6">
+          <div v-if="!isPaidFlow" class="px-6 pb-6">
             <button
-              v-if="isPaidFlow"
-              @click="handleConfirmPayment"
-              :disabled="isProcessing || !selectedMethodCode"
-              class="w-full bg-[#2E8B57] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#236B43] transition-all flex items-center justify-center gap-2"
-            >
-              <i v-if="isProcessing" class="fa-solid fa-circle-notch animate-spin"></i>
-              {{ isProcessing ? 'Memproses...' : 'Bayar Sekarang' }}
-            </button>
-            <button
-              v-else
               @click="handleConfirmDowngrade"
               :disabled="isProcessing"
               class="w-full bg-slate-800 dark:bg-slate-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-900 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2"
@@ -199,6 +173,41 @@
             </button>
           </div>
         </template>
+      </div>
+
+      <!-- RIGHT (below): payment method — its own card, not merged into the price card -->
+      <div
+        v-if="isPaidFlow && targetPlanDetails"
+        class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+        :class="actionType === 'renew' ? 'md:col-span-2 max-w-md' : 'md:col-start-2'"
+      >
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+          <h3 class="text-base font-semibold text-slate-900 dark:text-white">Metode Pembayaran</h3>
+        </div>
+        <div class="p-6 space-y-3 text-sm">
+          <p v-if="subscriptionStore.paymentMethodsError" class="text-red-600 dark:text-red-400">
+            {{ subscriptionStore.paymentMethodsError }}
+          </p>
+          <p v-else-if="!subscriptionStore.paymentMethodsAvailable" class="text-slate-500 dark:text-slate-400">
+            Pembayaran online belum tersedia saat ini. Silakan coba lagi nanti.
+          </p>
+          <div v-else class="space-y-2">
+            <label v-for="m in subscriptionStore.paymentMethods" :key="m.code" class="flex items-center gap-3 cursor-pointer">
+              <input type="radio" :checked="selectedMethodCode === m.code" @change="selectedMethodCode = m.code" />
+              <span class="font-medium">{{ m.name }}</span>
+            </label>
+          </div>
+        </div>
+        <div class="px-6 pb-6">
+          <button
+            @click="handleConfirmPayment"
+            :disabled="isProcessing || !selectedMethodCode"
+            class="w-full bg-[#2E8B57] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#236B43] transition-all flex items-center justify-center gap-2"
+          >
+            <i v-if="isProcessing" class="fa-solid fa-circle-notch animate-spin"></i>
+            {{ isProcessing ? 'Memproses...' : 'Bayar Sekarang' }}
+          </button>
+        </div>
       </div>
     </div>
 
