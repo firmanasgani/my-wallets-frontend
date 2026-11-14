@@ -18,7 +18,7 @@
           </div>
           <p v-if="draft.type !== 'TRANSFER' && !categoryOptions.length" class="transaction-hint">Belum ada kategori {{ draft.type === 'INCOME' ? 'pemasukan' : 'pengeluaran' }}. <RouterLink :to="{ name: 'categories-list' }">Kelola kategori ↗</RouterLink></p>
           <p v-if="draft.type === 'TRANSFER' && accountStore.allAccounts.length < 2" class="transaction-hint">Transfer membutuhkan dua akun berbeda. <RouterLink :to="{ name: 'account-create' }">Tambah akun ↗</RouterLink></p>
-          <div class="transaction-fields-grid"><div class="transaction-field"><label for="new-date">Tanggal transaksi <span aria-hidden="true">*</span></label><input id="new-date" v-model="draft.date" type="date" required /></div><div class="transaction-field"><label for="new-description">Catatan <span>(opsional)</span></label><input id="new-description" v-model="draft.description" type="text" placeholder="Contoh: Belanja mingguan" /></div></div>
+          <div class="transaction-fields-grid"><div class="transaction-field"><label for="new-date">Tanggal transaksi <span aria-hidden="true">*</span></label><AppDatePicker id="new-date" v-model="draft.date" /></div><div class="transaction-field"><label for="new-description">Catatan <span>(opsional)</span></label><input id="new-description" v-model="draft.description" type="text" placeholder="Contoh: Belanja mingguan" /></div></div>
         </fieldset>
         <section class="transaction-form-section"><h2 class="transaction-section-title">02 <span>Jadwal &amp; lampiran</span></h2>
           <fieldset :disabled="saving">
@@ -44,6 +44,7 @@ import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import AppIcon from '@/components/common/AppIcon.vue'
 import AppSelect from '@/components/common/AppSelect.vue'
+import AppDatePicker from '@/components/common/AppDatePicker.vue'
 import CurrencyInput from '@/components/common/CurrencyInput.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import { useTransactionStore } from '@/stores/transactions'

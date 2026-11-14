@@ -12,7 +12,7 @@
             <h2>Perbarui catatan</h2><p class="transaction-hint">Jenis, nominal, dan akun transaksi tetap.</p>
             <div v-if="actionError" ref="errorBox" class="transaction-error" role="alert" tabindex="-1">{{ actionError }}</div>
             <fieldset :disabled="saving"><legend class="shell-sr-only">Detail yang bisa diperbarui</legend>
-              <div class="transaction-field"><label for="edit-date">Tanggal transaksi</label><input id="edit-date" v-model="editDraft.date" type="date" required /></div>
+              <div class="transaction-field"><label for="edit-date">Tanggal transaksi</label><AppDatePicker id="edit-date" v-model="editDraft.date" /></div>
               <div v-if="transaction.transactionType !== 'TRANSFER'" class="transaction-field"><AppSelect id="edit-category" v-model="editDraft.categoryId" :options="categoryOptions" label="Kategori" placeholder="Pilih kategori" searchable :disabled="saving || categoryLoading" :loading="categoryLoading" /><p v-if="categoryError" class="transaction-hint">{{ categoryError }} <button type="button" class="transaction-text-button" @click="loadCategories">Coba lagi</button></p></div>
               <div class="transaction-field"><label for="edit-description">Catatan <span>(opsional)</span></label><textarea id="edit-description" v-model="editDraft.description" rows="3" placeholder="Tambahkan catatan transaksi"></textarea></div>
             </fieldset>
@@ -39,6 +39,7 @@ import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import AppIcon from '@/components/common/AppIcon.vue'
 import AppSelect from '@/components/common/AppSelect.vue'
+import AppDatePicker from '@/components/common/AppDatePicker.vue'
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue'
 import CategoryBadge from '@/components/categories/CategoryBadge.vue'
 import { useTransactionStore } from '@/stores/transactions'
