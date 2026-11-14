@@ -1,352 +1,16 @@
 <template>
-  <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
-    <!-- Breadcrumb / Back Navigation -->
-    <nav class="flex items-center text-sm text-slate-500 dark:text-slate-200">
-      <RouterLink
-        :to="{ name: 'accounts-list' }"
-        class="hover:text-emerald-600 transition-colors flex items-center"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-4 h-4 mr-1"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-          />
-        </svg>
-        Kembali ke Daftar Akun
-      </RouterLink>
-    </nav>
-
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <LoadingSpinner :visible="true" text="Memuat detail akun..." size="lg" />
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-md shadow-sm">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg
-            class="h-5 w-5 text-red-400"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <p class="text-sm text-red-700">
-            {{ error }}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div v-else-if="account" class="space-y-6">
-      <!-- Header & Actions -->
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-200">{{ account.accountName }}</h1>
-          <p class="text-sm text-slate-500 mt-1 dark:text-slate-400">Detail informasi akun dan riwayat transaksi</p>
-        </div>
-        <div class="flex gap-3">
-          <!-- Export Dropdown -->
-          <div class="relative group">
-            <button
-              class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none transition-colors"
-            >
-              <i class="fa-solid fa-download mr-2 text-slate-400"></i>
-              Ekspor
-              <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-slate-400"></i>
-            </button>
-            <div
-              class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200"
-            >
-              <button
-                @click="exportAccountTransactions('excel')"
-                class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
-              >
-                <i class="fa-solid fa-file-excel mr-3 text-green-600"></i>
-                Format Excel (.xlsx)
-              </button>
-              <button
-                @click="exportAccountTransactions('pdf')"
-                class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center"
-              >
-                <i class="fa-solid fa-file-pdf mr-3 text-red-600"></i>
-                Format PDF (.pdf)
-              </button>
-            </div>
-          </div>
-          <RouterLink
-            :to="{ name: 'account-edit', params: { id: account.id } }"
-            class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-4 h-4 mr-2 text-slate-500"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-              />
-            </svg>
-            Edit Akun
-          </RouterLink>
-        </div>
-      </div>
-
-      <!-- Account Detail Card -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
-        <div class="p-6 md:p-8">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Balance Info -->
-            <div
-              class="md:col-span-1 p-6 bg-slate-50 rounded-xl border border-slate-100 dark:bg-slate-900/50 dark:border-slate-700"
-            >
-              <h3 class="text-sm font-medium text-slate-500 dark:text-slate-200 uppercase tracking-wider mb-2">
-                Saldo Saat Ini
-              </h3>
-              <p class="text-3xl font-bold text-slate-900 tracking-tight text-emerald-600 dark:text-slate-400">
-                {{ formatCurrency(account.currentBalance, account.currency) }}
-              </p>
-              <p class="text-xs text-slate-400 mt-2 dark:text-slate-200">
-                Saldo Awal: {{ formatCurrency(account.initialBalance, account.currency) }}
-              </p>
-            </div>
-
-            <!-- Detail Info -->
-            <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Tipe Akun</dt>
-                <dd class="mt-1 text-base font-medium text-slate-900 flex items-center dark:text-slate-400">
-                  <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                    :class="getAccountTypeBadgeClass(account.accountType)"
-                  >
-                    {{ formatAccountType(account.accountType) }}
-                  </span>
-                </dd>
-              </div>
-
-              <div v-if="account.bankId">
-                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Bank</dt>
-                <dd class="mt-1 text-base font-medium text-slate-900 dark:text-slate-400">
-                  {{ bankName }}
-                </dd>
-              </div>
-
-              <div v-if="account.accountNumber">
-                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Nomor Akun/Rekening</dt>
-                <dd class="mt-1 text-base font-medium text-slate-900 font-mono dark:text-slate-400">
-                  {{ account.accountNumber }}
-                </dd>
-              </div>
-
-              <div>
-                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Mata Uang</dt>
-                <dd class="mt-1 text-base font-medium text-slate-900 dark:text-slate-400">
-                  {{ account.currency }}
-                </dd>
-              </div>
-
-              <div>
-                <dt class="text-sm font-medium text-slate-500 dark:text-slate-200">Dibuat Pada</dt>
-                <dd class="mt-1 text-base text-slate-700 dark:text-slate-400">
-                  {{ formatDate(account.createdAt) }}
-                </dd>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Transactions List -->
-      <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
-        <header
-          class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 dark:bg-slate-700 dark:border-slate-600"
-        >
-          <h3 class="text-lg font-medium text-slate-900 dark:text-slate-200">Riwayat Transaksi</h3>
-        </header>
-
-        <!-- Loading State for Transactions -->
-        <div
-          v-if="isLoadingTransactions && transactions.length === 0"
-          class="flex justify-center py-12"
-        >
-          <LoadingSpinner
-            :visible="true"
-            text="Memuat transaksi..."
-            size="md"
-            color="text-emerald-500"
-          />
-        </div>
-
-        <!-- Transactions Table -->
-        <div v-else-if="transactions.length > 0" class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-slate-200">
-            <thead class="bg-slate-50">
-              <tr>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
-                >
-                  Tanggal
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
-                >
-                  Kategori
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
-                >
-                  Deskripsi
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
-                >
-                  Tipe
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider"
-                >
-                  Jumlah
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-slate-200">
-              <tr
-                v-for="trx in transactions"
-                :key="trx.id"
-                @click="$router.push({ name: 'transaction-detail', params: { id: trx.id } })"
-                class="hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                  {{ formatDate(trx.transactionDate) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center gap-2">
-                    <span
-                      v-if="trx.category"
-                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800"
-                    >
-                      {{ trx.category.categoryName }}
-                    </span>
-                    <span v-else class="text-slate-400 text-xs italic">-</span>
-                    <!-- Attachment Indicator -->
-                    <i
-                      v-if="trx.attachmentPath"
-                      class="fa-solid fa-paperclip text-[10px] text-slate-400"
-                    ></i>
-                  </div>
-                </td>
-                <td
-                  class="px-6 py-4 text-sm text-slate-900 max-w-xs truncate"
-                  :title="trx.description || ''"
-                >
-                  {{ trx.description || '-' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                  <span
-                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                    :class="getTransactionBadgeClass(trx)"
-                  >
-                    {{ formatTransactionType(trx) }}
-                  </span>
-                </td>
-                <td
-                  class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium"
-                  :class="getTransactionAmountClass(trx)"
-                >
-                  {{ getTransactionSign(trx) }}
-                  {{ formatCurrency(trx.amount, account?.currency) }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Pagination -->
-          <div v-if="hasPrevPage || hasMorePages" class="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
-            <button
-              @click="loadPrevTransactions"
-              :disabled="isLoadingMore || !hasPrevPage"
-              class="text-sm font-medium text-emerald-600 hover:text-emerald-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
-              Sebelumnya
-            </button>
-
-            <span class="text-xs text-slate-500">
-              Halaman {{ transactionMeta.page }} dari {{ transactionMeta.lastPage }}
-            </span>
-
-            <button
-              @click="loadMoreTransactions"
-              :disabled="isLoadingMore || !hasMorePages"
-              class="text-sm font-medium text-emerald-600 hover:text-emerald-800 flex items-center disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <LoadingSpinner
-                v-if="isLoadingMore"
-                :visible="true"
-                size="xs"
-                color="text-emerald-600"
-                class="mr-1"
-              />
-              Berikutnya
-              <svg v-if="!isLoadingMore" class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Empty State -->
-        <div v-else class="text-center py-12">
-          <svg
-            class="mx-auto h-12 w-12 text-slate-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1"
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-            />
-          </svg>
-          <h3 class="mt-2 dark:text-slate-200 text-sm font-medium text-slate-900">Belum ada transaksi</h3>
-          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Transaksi yang Anda buat akan muncul di sini.</p>
-        </div>
-      </section>
-    </div>
-  </div>
+<div class="money-accounts account-detail">
+<header class="account-detail-heading"><div><RouterLink :to="{ name: 'accounts-list' }" class="account-detail-back"><AppIcon name="arrow" />Daftar akun</RouterLink><span class="shell-overline">RINCIAN AKUN KEUANGAN</span><h1>{{ account?.accountName || 'Detail akun.' }}</h1><p>Saldo, informasi akun, dan riwayat transaksi dalam satu tempat.</p></div><RouterLink v-if="account && !isLoading && !error" :to="{ name: 'account-edit', params: { id: account.id } }" class="accounts-button is-primary"><AppIcon name="edit" />Edit akun</RouterLink></header>
+<div v-if="isLoading" class="accounts-state" role="status"><span class="accounts-spinner" aria-hidden="true"></span><h2>Memuat detail akun...</h2><p>Menyiapkan informasi akun dan transaksimu.</p></div>
+<div v-else-if="error" class="accounts-state is-error" role="alert"><AppIcon name="help" /><h2>Detail akun belum berhasil dimuat.</h2><p>{{ error }}</p><button type="button" class="accounts-button" @click="fetchAccountData">Coba lagi</button></div>
+<template v-else-if="account"><div class="account-detail-overview">
+<section class="account-detail-balance" aria-labelledby="balance-title"><div class="account-detail-balance-top"><span class="account-detail-icon"><AppIcon name="wallet" /></span><span class="account-detail-type">{{ formatAccountType(account.accountType) }}</span></div><p id="balance-title">Saldo saat ini ? {{ account.currency }}</p><strong>{{ showBalance ? formatCurrency(account.currentBalance, account.currency) : '????????' }}</strong><div class="account-detail-balance-bottom"><span>Saldo awal<br /><b>{{ showBalance ? formatCurrency(account.initialBalance, account.currency) : '????????' }}</b></span><button type="button" :aria-label="showBalance ? 'Sembunyikan saldo' : 'Tampilkan saldo'" :aria-pressed="!showBalance" @click="showBalance = !showBalance"><AppIcon :name="showBalance ? 'eyeOff' : 'eye'" /></button></div></section>
+<section class="account-detail-info" aria-labelledby="info-title"><div class="account-detail-section-heading"><div><span class="shell-overline">INFORMASI AKUN</span><h2 id="info-title">Tentang akun ini.</h2></div><AppIcon name="info" /></div><dl><div><dt>Jenis akun</dt><dd>{{ formatAccountType(account.accountType) }}</dd></div><div v-if="account.bankId"><dt>Bank</dt><dd>{{ bankName }}</dd></div><div v-if="account.accountNumber"><dt>Nomor akun / rekening</dt><dd>{{ account.accountNumber }}</dd></div><div><dt>Mata uang</dt><dd>{{ account.currency }}</dd></div><div><dt>Dibuat pada</dt><dd>{{ formatDate(account.createdAt) }}</dd></div></dl></section></div>
+<section class="account-detail-history" aria-labelledby="history-title"><header class="account-detail-history-heading"><div><span class="shell-overline">AKTIVITAS AKUN</span><h2 id="history-title">Riwayat transaksi.</h2><p>Catatan transaksi yang terhubung dengan akun ini.</p></div><div v-if="transactions.length && !transactionError" class="account-detail-export"><span>Ekspor halaman ini</span><button type="button" class="accounts-button" :disabled="isExporting" @click="exportAccountTransactions('excel')"><AppIcon name="download" />Excel</button><button type="button" class="accounts-button" :disabled="isExporting" @click="exportAccountTransactions('pdf')"><AppIcon name="file" />PDF</button></div></header>
+<div v-if="isLoadingTransactions && !transactions.length" class="accounts-state" role="status"><span class="accounts-spinner" aria-hidden="true"></span><h3>Memuat transaksi...</h3></div><div v-else-if="transactionError" class="accounts-state is-error" role="alert"><AppIcon name="help" /><h3>Transaksi belum berhasil dimuat.</h3><p>{{ transactionError }}</p><button type="button" class="accounts-button" @click="retryTransactions">Coba lagi</button></div>
+<template v-else-if="transactions.length"><div class="account-detail-table-wrap"><table class="account-detail-table"><thead><tr><th scope="col">Tanggal</th><th scope="col">Transaksi</th><th scope="col">Jenis</th><th scope="col">Jumlah</th></tr></thead><tbody><tr v-for="trx in transactions" :key="trx.id"><td>{{ formatDate(trx.transactionDate) }}</td><td><RouterLink :to="{ name: 'transaction-detail', params: { id: trx.id } }" class="account-detail-transaction"><strong>{{ trx.description || trx.category?.categoryName || 'Tanpa catatan' }}</strong><span>{{ trx.category?.categoryName || 'Tanpa kategori' }} <AppIcon v-if="trx.attachmentPath || trx.attachmentUrl" name="attachment" /></span></RouterLink></td><td><span class="account-detail-badge" :class="trx.transactionType.toLowerCase()">{{ formatTransactionType(trx) }}</span></td><td class="account-detail-amount" :class="getTransactionAmountClass(trx)">{{ getTransactionSign(trx) }}{{ formatCurrency(trx.amount, account.currency) }}</td></tr></tbody></table></div><div v-if="hasPrevPage || hasMorePages" class="account-detail-pagination"><button type="button" class="accounts-button" :disabled="isLoadingMore || !hasPrevPage" @click="loadPrevTransactions">Sebelumnya</button><span>Halaman {{ transactionMeta.page }} dari {{ transactionMeta.lastPage }}</span><button type="button" class="accounts-button" :disabled="isLoadingMore || !hasMorePages" @click="loadMoreTransactions">Berikutnya</button></div></template>
+<div v-else class="accounts-state"><AppIcon name="transfer" /><h3>Belum ada transaksi.</h3><p>Transaksi yang terhubung dengan akun ini akan muncul di sini.</p><RouterLink :to="{ name: 'transaction-create' }" class="accounts-button">Catat transaksi</RouterLink></div></section></template></div>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -354,7 +18,10 @@ import { useAccountStore } from '@/stores/accounts'
 import { useBankStore } from '@/stores/banks'
 import { useTransactionStore } from '@/stores/transactions'
 import ExportService from '@/services/exportService'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import AppIcon from '@/components/common/AppIcon.vue'
+import { useToastStore } from '@/stores/toast'
+import '@/assets/accounts.css'
+import '@/assets/account-detail.css'
 import type { Account } from '@/types/accounts'
 import { FrontendAccountType, FrontendTransactionType } from '@/types/enums'
 import type { Transaction } from '@/types/transaction'
@@ -363,6 +30,10 @@ const route = useRoute()
 const accountStore = useAccountStore()
 const bankStore = useBankStore()
 const transactionStore = useTransactionStore()
+const toastStore = useToastStore()
+const showBalance = ref((() => { try { return localStorage.getItem('show_balance') === 'true' } catch { return false } })())
+watch(showBalance, (value) => { try { localStorage.setItem('show_balance', String(value)) } catch { /* Keep session preference. */ } })
+const isExporting = ref(false)
 
 const account = ref<Account | null>(null)
 const isLoading = ref(true)
@@ -372,6 +43,7 @@ const isLoadingMore = ref(false)
 // Ambil data transaksi dari store
 const transactions = computed(() => transactionStore.transactionList)
 const isLoadingTransactions = computed(() => transactionStore.isLoadingTransactions)
+const transactionError = computed(() => transactionStore.transactionError)
 const transactionMeta = computed(() => transactionStore.transactionMeta)
 const currentAccountId = computed(() => route.params.id as string)
 
@@ -420,35 +92,13 @@ const formatAccountType = (type: string) => {
   }
 }
 
-const getAccountTypeBadgeClass = (type: string) => {
-  switch (type) {
-    case FrontendAccountType.BANK:
-      return 'bg-blue-100 text-blue-800'
-    case FrontendAccountType.E_WALLET:
-      return 'bg-purple-100 text-purple-800'
-    case FrontendAccountType.CASH:
-      return 'bg-green-100 text-green-800'
-    case FrontendAccountType.CREDIT_CARD:
-      return 'bg-orange-100 text-orange-800'
-    default:
-      return 'bg-gray-100 text-gray-800'
-  }
-}
-
 const bankName = computed(() => {
   if (!account.value?.bankId) return '-'
   const bank = bankStore.allBanks.find((b) => b.id === account.value?.bankId)
-  return bank ? bank.name : 'Loading...'
+  return bank ? bank.name : account.value?.bank?.name || 'Tidak tersedia'
 })
 
 // === Transaction Helpers ===
-const getTransactionBadgeClass = (trx: Transaction) => {
-  if (trx.transactionType === FrontendTransactionType.INCOME) return 'bg-green-100 text-green-800'
-  if (trx.transactionType === FrontendTransactionType.EXPENSE) return 'bg-red-100 text-red-800'
-  if (trx.transactionType === FrontendTransactionType.TRANSFER) return 'bg-blue-100 text-blue-800'
-  return 'bg-gray-100 text-gray-800'
-}
-
 const formatTransactionType = (trx: Transaction) => {
   if (trx.transactionType === FrontendTransactionType.INCOME) return 'Pemasukan'
   if (trx.transactionType === FrontendTransactionType.EXPENSE) return 'Pengeluaran'
@@ -461,13 +111,13 @@ const formatTransactionType = (trx: Transaction) => {
 }
 
 const getTransactionAmountClass = (trx: Transaction) => {
-  if (trx.transactionType === FrontendTransactionType.INCOME) return 'text-green-600'
-  if (trx.transactionType === FrontendTransactionType.EXPENSE) return 'text-red-600'
+  if (trx.transactionType === FrontendTransactionType.INCOME) return 'is-incoming'
+  if (trx.transactionType === FrontendTransactionType.EXPENSE) return 'is-outgoing'
   if (trx.transactionType === FrontendTransactionType.TRANSFER) {
-    if (trx.destinationAccountId === currentAccountId.value) return 'text-green-600'
-    return 'text-red-600'
+    if (trx.destinationAccountId === currentAccountId.value) return 'is-incoming'
+    return 'is-outgoing'
   }
-  return 'text-slate-900'
+  return ''
 }
 
 const getTransactionSign = (trx: Transaction) => {
@@ -548,16 +198,17 @@ const loadPrevTransactions = async () => {
   }
 }
 
+const retryTransactions = () => transactionStore.fetchTransactionsByAccount(currentAccountId.value, { page: transactionMeta.value.page || 1, limit: 10 })
+
 const exportAccountTransactions = async (format: 'excel' | 'pdf') => {
-  if (transactions.value.length === 0 || !account.value) return
-
+  if (transactions.value.length === 0 || !account.value || isExporting.value) return
   const title = `Laporan Transaksi Akun - ${account.value.accountName}`
-
-  if (format === 'excel') {
-    await ExportService.exportTransactionsToExcel(transactions.value, title)
-  } else {
-    ExportService.exportTransactionsToPDF(transactions.value, title)
-  }
+  isExporting.value = true
+  try {
+    if (format === 'excel') await ExportService.exportTransactionsToExcel(transactions.value, title)
+    else ExportService.exportTransactionsToPDF(transactions.value, title)
+  } catch { toastStore.show('Ekspor belum berhasil. Silakan coba lagi.', 'error') }
+  finally { isExporting.value = false }
 }
 
 onMounted(() => {
@@ -572,9 +223,3 @@ watch(
 )
 </script>
 
-<style scoped>
-/* Transisi halus untuk hover */
-tr {
-  transition: background-color 0.15s ease-in-out;
-}
-</style>
