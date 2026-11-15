@@ -168,6 +168,9 @@
               <div v-if="!subscriptionStore.paymentMethodsAvailable" class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-sm">
                 Pembayaran online belum tersedia saat ini. Silakan coba lagi nanti.
               </div>
+              <div v-else-if="isMidtrans" class="bg-slate-50 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm">
+                Anda akan diarahkan ke jendela pembayaran Midtrans untuk memilih metode pembayaran.
+              </div>
               <div v-else class="space-y-2">
                 <label
                   v-for="m in subscriptionStore.paymentMethods"
@@ -286,7 +289,7 @@
             </button>
             <button
               @click="handlePayment"
-              :disabled="!selectedMethodCode || isProcessing"
+              :disabled="!canPay || isProcessing"
               class="bg-[#2E8B57] text-white px-10 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#236B43] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
             >
               <i v-if="isProcessing" class="fa-solid fa-circle-notch animate-spin"></i>
@@ -298,7 +301,7 @@
     </div>
   </Transition>
 
-  <AppDialog :is-open="!!errorMessage" title="Pembayaran Belum Berhasil" eyebrow="PAYFEST" @close="errorMessage = null">
+  <AppDialog :is-open="!!errorMessage" title="Pembayaran Belum Berhasil" :eyebrow="isMidtrans ? 'MIDTRANS' : 'PAYFEST'" @close="errorMessage = null">
     <div class="pricing-error-dialog">
       <p>{{ errorMessage }}</p>
       <footer>
@@ -313,6 +316,7 @@ import { ref, watch, computed, onMounted } from 'vue'
 import { useSubscriptionStore } from '@/stores/subscriptions'
 import type { PayfestCheckoutResult } from '@/stores/subscriptions'
 import { useAuthStore } from '@/stores/auth'
+import { payWithSnap } from '@/utils/midtransSnap'
 import PayfestCheckoutInstructions from '@/components/subscriptions/PayfestCheckoutInstructions.vue'
 import AppDialog from '@/components/common/AppDialog.vue'
 
@@ -334,6 +338,13 @@ const checkoutResult = ref<PayfestCheckoutResult | null>(null)
 const isProcessing = ref(false)
 const isCheckingStatus = ref(false)
 const errorMessage = ref<string | null>(null)
+
+// Payfest switched off in Settings > Integrations → old Midtrans Snap flow.
+const isMidtrans = computed(() => subscriptionStore.paymentProvider === 'midtrans')
+const canPay = computed(() => {
+  if (subscriptionStore.isLoadingPaymentMethods || !subscriptionStore.paymentMethodsAvailable) return false
+  return isMidtrans.value || !!selectedMethodCode.value
+})
 
 const modalHeaderTitle = computed(() => {
   if (currentStep.value === 'SUCCESS') return 'Pembayaran Berhasil'
@@ -418,15 +429,27 @@ const goToPaymentMethod = () => {
 }
 
 const handlePayment = async () => {
-  if (!selectedPlanDetails.value || !selectedMethodCode.value) return
+  if (!selectedPlanDetails.value || !canPay.value) return
 
   isProcessing.value = true
   try {
-    checkoutResult.value = await subscriptionStore.initiateCheckout(
+    const result = await subscriptionStore.initiateCheckout(
       selectedPlanDetails.value.code,
-      selectedMethodCode.value,
+      isMidtrans.value ? null : selectedMethodCode.value,
     )
-    currentStep.value = 'AWAITING_PAYMENT'
+    if (result.provider === 'payfest') {
+      checkoutResult.value = result
+      currentStep.value = 'AWAITING_PAYMENT'
+      return
+    }
+    const outcome = await payWithSnap(result.snap_token)
+    if (outcome === 'success') {
+      await pollForProfileUpdate()
+    } else if (outcome === 'pending') {
+      errorMessage.value = 'Pembayaran tertunda. Silakan selesaikan pembayaran Anda, lalu lanjutkan dari Riwayat Pembayaran.'
+    } else if (outcome === 'error') {
+      errorMessage.value = 'Terjadi kesalahan saat pembayaran. Silakan coba lagi.'
+    }
   } catch (err: any) {
     errorMessage.value = err.message || 'Gagal memproses pembayaran'
   } finally {
@@ -446,6 +469,16 @@ const checkPaymentStatus = async () => {
   } finally {
     isCheckingStatus.value = false
   }
+}
+
+// The Midtrans webhook lands asynchronously after Snap's onSuccess.
+const pollForProfileUpdate = async () => {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    await authStore.fetchUserProfile().catch(() => undefined)
+    if (authStore.currentUser?.subscriptionPlan !== 'FREE') break
+    await new Promise(resolve => setTimeout(resolve, 2000))
+  }
+  currentStep.value = 'SUCCESS'
 }
 
 const finishProcess = () => {

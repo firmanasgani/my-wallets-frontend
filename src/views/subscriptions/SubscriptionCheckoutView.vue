@@ -190,6 +190,9 @@
           <p v-else-if="!subscriptionStore.paymentMethodsAvailable" class="text-slate-500 dark:text-slate-400">
             Pembayaran online belum tersedia saat ini. Silakan coba lagi nanti.
           </p>
+          <p v-else-if="isMidtrans" class="text-slate-500 dark:text-slate-400">
+            {{ midtransNote }}
+          </p>
           <div v-else class="space-y-2">
             <label v-for="m in subscriptionStore.paymentMethods" :key="m.code" class="flex items-center gap-3 cursor-pointer">
               <input type="radio" :checked="selectedMethodCode === m.code" @change="selectedMethodCode = m.code" />
@@ -200,7 +203,7 @@
         <div class="px-6 pb-6">
           <button
             @click="handleConfirmPayment"
-            :disabled="isProcessing || !selectedMethodCode"
+            :disabled="isProcessing || !canPay"
             class="w-full bg-[#2E8B57] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#236B43] transition-all flex items-center justify-center gap-2"
           >
             <i v-if="isProcessing" class="fa-solid fa-circle-notch animate-spin"></i>
@@ -263,6 +266,7 @@
           <strong>Rp {{ formatNumber(targetPlanDetails.discountPrice || targetPlanDetails.price) }}</strong>
         </p>
         <p v-if="subscriptionStore.isLoadingPaymentMethods" role="status">Memuat metode pembayaran...</p>
+        <p v-else-if="isMidtrans && subscriptionStore.paymentMethodsAvailable && !subscriptionStore.paymentMethodsError" role="status">{{ midtransNote }}</p>
         <div v-else-if="subscriptionStore.paymentMethodsError || !subscriptionStore.paymentMethodsAvailable || !subscriptionStore.paymentMethods.length" role="status">
           <p>{{ subscriptionStore.paymentMethodsError || 'Pembayaran online belum tersedia saat ini. Silakan coba lagi nanti.' }}</p>
           <button type="button" class="checkout-payment-retry" @click="loadPaymentMethods">Coba lagi</button>
@@ -277,14 +281,14 @@
         <footer>
           <button
             type="button"
-            :disabled="isProcessing || subscriptionStore.isLoadingPaymentMethods || !subscriptionStore.paymentMethodsAvailable || !subscriptionStore.paymentMethods.some(method => method.code === selectedMethodCode)"
+            :disabled="isProcessing || !canPay"
             @click="handleConfirmPayment"
           >{{ isProcessing ? 'Memproses...' : 'Bayar Sekarang' }}</button>
         </footer>
       </div>
     </AppDialog>
 
-    <AppDialog :is-open="!!errorMessage" title="Pembayaran Belum Berhasil" eyebrow="PAYFEST" @close="errorMessage = null">
+    <AppDialog :is-open="!!errorMessage" title="Pembayaran Belum Berhasil" :eyebrow="isMidtrans ? 'MIDTRANS' : 'PAYFEST'" @close="errorMessage = null">
       <div class="checkout-error-dialog">
         <p>{{ errorMessage }}</p>
         <footer>
@@ -300,8 +304,9 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useSubscriptionStore } from '@/stores/subscriptions'
-import type { PayfestCheckoutResult } from '@/stores/subscriptions'
+import type { PayfestCheckoutResult, SubscriptionPlan } from '@/stores/subscriptions'
 import { getDurationDays, addDays } from '@/utils/subscriptionDuration'
+import { payWithSnap } from '@/utils/midtransSnap'
 import '@/assets/subscription-checkout.css'
 import PayfestCheckoutInstructions from '@/components/subscriptions/PayfestCheckoutInstructions.vue'
 import AppDialog from '@/components/common/AppDialog.vue'
@@ -327,6 +332,16 @@ const selectedMethodCode = ref<string | null>(null)
 const checkoutResult = ref<PayfestCheckoutResult | null>(null)
 const isCheckingStatus = ref(false)
 const errorMessage = ref<string | null>(null)
+
+// Payfest switched off in Settings > Integrations → old Midtrans Snap flow:
+// no channel picker here, the Snap popup lets the user choose instead.
+const isMidtrans = computed(() => subscriptionStore.paymentProvider === 'midtrans')
+const midtransNote = 'Anda akan diarahkan ke jendela pembayaran Midtrans untuk memilih metode pembayaran.'
+const canPay = computed(() => {
+  if (subscriptionStore.isLoadingPaymentMethods || !subscriptionStore.paymentMethodsAvailable) return false
+  if (isMidtrans.value) return true
+  return subscriptionStore.paymentMethods.some(method => method.code === selectedMethodCode.value)
+})
 
 const actionTitle = computed(() => (actionType.value === 'renew' ? 'Perpanjang Langganan' : 'Upgrade Paket'))
 const actionSubtitle = computed(() =>
@@ -419,13 +434,22 @@ const guardMessage = computed(() => {
   return null
 })
 
+// Snapshot of the plan being paid for, taken at checkout. Once payment lands
+// and the profile refreshes, the "current plan" changes and the upgrade
+// picker recomputes, so the success screen must not read the live selection.
+const purchasedPlan = ref<SubscriptionPlan | null>(null)
+const purchasedEndDate = computed(() => {
+  const end = authStore.currentUser?.activeSubscription?.endDate
+  return end ? new Date(end) : newEndDate.value
+})
+
 const successTitle = computed(() => {
-  if (!isPaidFlow.value) return 'Perubahan Terjadwal'
+  if (!purchasedPlan.value && !isPaidFlow.value) return 'Perubahan Terjadwal'
   return actionType.value === 'renew' ? 'Perpanjangan Berhasil!' : 'Upgrade Berhasil!'
 })
 const successMessage = computed(() =>
-  isPaidFlow.value
-    ? `Paket ${targetPlanDetails.value ? familyLabel(familyOf(targetPlanDetails.value.code)) : ''} Anda kini aktif hingga ${newEndDate.value ? formatDate(newEndDate.value) : '-'}.`
+  purchasedPlan.value
+    ? `Paket ${familyLabel(familyOf(purchasedPlan.value.code))} Anda kini aktif hingga ${purchasedEndDate.value ? formatDate(purchasedEndDate.value) : '-'}.`
     : `Paket Anda akan berubah menjadi ${targetPlanDetails.value ? familyLabel(familyOf(targetPlanDetails.value.code)) : 'Free'} setelah ${currentEndDate.value ? formatDate(currentEndDate.value) : 'masa berlaku saat ini habis'}.`,
 )
 
@@ -434,22 +458,49 @@ const formatDate = (date: Date) =>
   date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 
 const handleConfirmPayment = async () => {
-  if (isProcessing.value || !isPaidFlow.value || !targetPlanDetails.value || !selectedMethodCode.value ||
-    subscriptionStore.isLoadingPaymentMethods || !subscriptionStore.paymentMethodsAvailable ||
-    !subscriptionStore.paymentMethods.some(method => method.code === selectedMethodCode.value)) return
+  if (isProcessing.value || !isPaidFlow.value || !targetPlanDetails.value || !canPay.value) return
   isProcessing.value = true
+  const previousEndDate = activeSubscription.value?.endDate ?? null
+  purchasedPlan.value = targetPlanDetails.value
   try {
-    checkoutResult.value = await subscriptionStore.initiateCheckout(
+    const result = await subscriptionStore.initiateCheckout(
       targetPlanDetails.value.code,
-      selectedMethodCode.value,
+      isMidtrans.value ? null : selectedMethodCode.value,
     )
     isPaymentMethodOpen.value = false
-    step.value = 'AWAITING_PAYMENT'
+    if (result.provider === 'payfest') {
+      checkoutResult.value = result
+      step.value = 'AWAITING_PAYMENT'
+      return
+    }
+    const outcome = await payWithSnap(result.snap_token)
+    if (outcome === 'success') {
+      await pollForProfileUpdate(previousEndDate)
+      return
+    }
+    purchasedPlan.value = null
+    if (outcome === 'pending') {
+      errorMessage.value = 'Pembayaran tertunda. Silakan selesaikan pembayaran Anda, lalu lanjutkan dari Riwayat Pembayaran.'
+    } else if (outcome === 'error') {
+      errorMessage.value = 'Terjadi kesalahan saat pembayaran. Silakan coba lagi.'
+    }
   } catch (err: unknown) {
+    purchasedPlan.value = null
     errorMessage.value = err instanceof Error ? err.message : 'Gagal memproses pembayaran'
   } finally {
     isProcessing.value = false
   }
+}
+
+// The Midtrans webhook lands asynchronously after Snap's onSuccess, so give
+// it a few seconds to extend the subscription before declaring success.
+const pollForProfileUpdate = async (previousEndDate: string | null) => {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    await authStore.fetchUserProfile().catch(() => undefined)
+    if ((authStore.currentUser?.activeSubscription?.endDate ?? null) !== previousEndDate) break
+    await new Promise(resolve => setTimeout(resolve, 2000))
+  }
+  step.value = 'SUCCESS'
 }
 
 const checkPaymentStatus = async () => {
@@ -473,6 +524,7 @@ const checkPaymentStatus = async () => {
 const handleConfirmDowngrade = async () => {
   const targetCode = derivedPlanCode.value
   if (!targetCode) return
+  purchasedPlan.value = null
   isProcessing.value = true
   try {
     await subscriptionStore.scheduleDowngrade(targetCode)

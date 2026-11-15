@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   route: { query: { action: 'upgrade' } as Record<string, string> },
   profile: vi.fn(),
   push: vi.fn(),
+  snap: vi.fn(),
 }))
 const auth = reactive({
   currentUser: { activeSubscription: { planCode: 'BUSINESS_12', endDate: '2027-01-01T00:00:00Z' } },
@@ -17,6 +18,7 @@ const auth = reactive({
 vi.mock('vue-router', () => ({ useRoute: () => mocks.route, useRouter: () => ({ push: mocks.push }) }))
 vi.mock('@/stores/auth', () => ({ useAuthStore: () => auth }))
 vi.mock('@/services/apiService', () => ({ default: {} }))
+vi.mock('@/utils/midtransSnap', () => ({ payWithSnap: mocks.snap }))
 
 const DialogStub = defineComponent({
   props: ['isOpen', 'title', 'busy'],
@@ -131,6 +133,32 @@ describe('subscription checkout', () => {
     await flushPromises()
     expect(store.initiateCheckout).toHaveBeenCalledWith('BUSINESS_12', 'bca_va')
     expect(wrapper.text()).toContain('Instruksi Pembayaran')
+    wrapper.unmount()
+  })
+
+  it('falls back to Midtrans Snap without a method picker when Payfest is off', async () => {
+    vi.mocked(store.fetchPaymentMethods).mockImplementation(async () => {
+      store.paymentMethodsError = null
+      store.paymentProvider = 'midtrans'
+      store.paymentMethodsAvailable = true
+      store.paymentMethods = []
+    })
+    vi.mocked(store.initiateCheckout).mockResolvedValueOnce({ provider: 'midtrans', order_id: 'SUB-1', snap_token: 'tok-1' })
+    mocks.snap.mockResolvedValueOnce('success')
+    const wrapper = await renderCheckout()
+    await wrapper.get('input[name="plan-family"]').setValue()
+    await wrapper.get('.checkout-review button').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('input[name="upgrade-payment-method"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Midtrans')
+    mocks.profile.mockImplementation(async () => {
+      auth.currentUser.activeSubscription = { planCode: 'PREMIUM_1', endDate: '2027-02-01T00:00:00Z' }
+    })
+    await wrapper.get('.checkout-payment-dialog footer button').trigger('click')
+    await flushPromises()
+    expect(store.initiateCheckout).toHaveBeenCalledWith('PREMIUM_1', null)
+    expect(mocks.snap).toHaveBeenCalledWith('tok-1')
+    expect(wrapper.text()).toContain('Upgrade Berhasil!')
     wrapper.unmount()
   })
 })

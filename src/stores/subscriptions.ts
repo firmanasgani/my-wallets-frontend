@@ -33,6 +33,19 @@ export interface PayfestCheckoutResult {
   checkout: PayfestCheckout
 }
 
+// What POST /subscriptions/checkout returns while Payfest is switched off
+// (Settings > Integrations) — the old direct Midtrans Snap flow: open the
+// Snap popup with snap_token, which lets the user pick the channel itself.
+export interface MidtransCheckoutResult {
+  provider: 'midtrans'
+  order_id: string
+  snap_token: string
+  redirect_url?: string
+}
+
+export type CheckoutResult = PayfestCheckoutResult | MidtransCheckoutResult
+export type PaymentProvider = 'payfest' | 'midtrans'
+
 export const useSubscriptionStore = defineStore('subscriptions', {
   state: () => ({
     plans: [] as SubscriptionPlan[],
@@ -42,6 +55,8 @@ export const useSubscriptionStore = defineStore('subscriptions', {
     isLoadingHistory: false,
     historyError: null as string | null,
     paymentMethods: [] as PaymentMethodOption[],
+    // "midtrans" = Payfest is off: no method picker, checkout opens Snap.
+    paymentProvider: 'payfest' as PaymentProvider,
     paymentMethodsAvailable: false,
     paymentMethodsError: null as string | null,
     isLoadingPaymentMethods: false,
@@ -64,10 +79,11 @@ export const useSubscriptionStore = defineStore('subscriptions', {
       this.paymentMethodsError = null
       try {
         const response = await apiClient.get<{
-          provider: 'payfest'
+          provider: PaymentProvider
           available: boolean
           methods: PaymentMethodOption[]
         }>('/subscriptions/payment-methods')
+        this.paymentProvider = response.data.provider === 'midtrans' ? 'midtrans' : 'payfest'
         this.paymentMethodsAvailable = response.data.available
         this.paymentMethods = response.data.methods
       } catch (err) {
@@ -79,11 +95,12 @@ export const useSubscriptionStore = defineStore('subscriptions', {
         this.isLoadingPaymentMethods = false
       }
     },
-    async initiateCheckout(planCode: string, paymentMethodCode: string): Promise<PayfestCheckoutResult> {
+    // paymentMethodCode is only needed (and only sent) for Payfest.
+    async initiateCheckout(planCode: string, paymentMethodCode?: string | null): Promise<CheckoutResult> {
       try {
-        const response = await apiClient.post<PayfestCheckoutResult>('/subscriptions/checkout', {
+        const response = await apiClient.post<CheckoutResult>('/subscriptions/checkout', {
           planCode,
-          paymentMethodCode,
+          ...(paymentMethodCode ? { paymentMethodCode } : {}),
         })
         return response.data
       } catch (err: any) {
@@ -104,9 +121,9 @@ export const useSubscriptionStore = defineStore('subscriptions', {
         this.isLoadingHistory = false
       }
     },
-    // A pending payment predating the Payfest cutover still resumes as a
-    // Midtrans Snap token; anything created since resumes as Payfest
-    // checkout instructions — callers branch on "snap_token" in result.
+    // A pending Midtrans payment (pre-cutover, or created while Payfest is
+    // switched off) resumes as a Snap token; a Payfest payment resumes as
+    // its saved checkout instructions — callers branch on "snap_token".
     async resumePayment(orderId: string): Promise<PayfestCheckoutResult | { snap_token: string; order_id: string }> {
       try {
         const response = await apiClient.post<PayfestCheckoutResult | { snap_token: string; order_id: string }>(

@@ -65,9 +65,9 @@ const resumePayment = async (item: PaymentHistory) => {
     const result = await store.resumePayment(item.orderId)
     if (!active) return
     if (!('snap_token' in result)) {
-      // Payments created since the Payfest cutover resume as checkout
-      // instructions shown in the dialog above — only payments pending
-      // from before the cutover reach the Snap branch below.
+      // Payfest payments resume as checkout instructions shown in the
+      // dialog above — Midtrans payments (pre-cutover, or created while
+      // Payfest is switched off) reach the Snap branch below.
       resumeCheckout.value = result
       resumingOrderId.value = null
       return
