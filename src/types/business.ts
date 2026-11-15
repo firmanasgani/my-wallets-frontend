@@ -97,7 +97,7 @@ export interface ContactsResponse {
 
 // ─── Invoices ─────────────────────────────────────────────────────────────────
 
-export type InvoiceStatus = 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE'
+export type InvoiceStatus = 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED'
 
 export interface InvoiceItem {
   id: string
@@ -147,6 +147,8 @@ export interface Invoice {
   amountPaid: string
   sentAt: string | null
   paidAt: string | null
+  cancelledAt: string | null
+  cancelReason: string | null
   paymentDate: string | null
   paymentCoaId: string | null
   paymentMethod: string | null
@@ -212,6 +214,53 @@ export interface PayInvoicePayload {
   amount?: number
   paymentMethod?: string
   paymentReference?: string
+}
+
+export interface SendInvoiceResponse extends Invoice {
+  emailSent?: boolean
+  emailError?: string | null
+  demoEmailSkipped?: boolean
+  demoNote?: string
+}
+
+export interface CancelInvoicePayload {
+  reason?: string
+}
+
+// ─── Invoice Template ─────────────────────────────────────────────────────────
+
+export type InvoiceTemplateLayout = 'CLASSIC' | 'MODERN' | 'MINIMAL'
+export type InvoiceFontFamily = 'SANS' | 'SERIF' | 'MONO'
+export type InvoiceLogoPosition = 'LEFT' | 'CENTER' | 'RIGHT'
+export type InvoiceLogoSize = 'SMALL' | 'MEDIUM' | 'LARGE'
+
+/** Editable template settings — exactly the fields the API accepts on PUT. */
+export interface InvoiceTemplateSettings {
+  layout: InvoiceTemplateLayout
+  primaryColor: string
+  accentColor: string
+  backgroundColor: string
+  textColor: string
+  fontFamily: InvoiceFontFamily
+  showLogo: boolean
+  logoPosition: InvoiceLogoPosition
+  logoSize: InvoiceLogoSize
+  title: string
+  showCompanyAddress: boolean
+  showCompanyContact: boolean
+  showNpwp: boolean
+  showStatusBadge: boolean
+  showItemDiscount: boolean
+  showItemTax: boolean
+  showBankAccount: boolean
+  showNotes: boolean
+  termsText: string | null
+  footerText: string | null
+}
+
+export interface InvoiceTemplate extends InvoiceTemplateSettings {
+  isCustomized: boolean
+  updatedAt: string | null
 }
 
 export interface PayInvoiceResponse {

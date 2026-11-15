@@ -20,6 +20,10 @@ import type {
   UpdateInvoicePayload,
   PayInvoicePayload,
   PayInvoiceResponse,
+  SendInvoiceResponse,
+  CancelInvoicePayload,
+  InvoiceTemplate,
+  InvoiceTemplateSettings,
   CompanyBankAccount,
   BankAccountPayload,
   BusinessTransaction,
@@ -172,8 +176,8 @@ export const BusinessService = {
     return response.data
   },
 
-  async sendInvoice(id: string): Promise<Invoice> {
-    const response = await apiClient.post<Invoice>(`/business/invoices/${id}/send`)
+  async sendInvoice(id: string): Promise<SendInvoiceResponse> {
+    const response = await apiClient.post<SendInvoiceResponse>(`/business/invoices/${id}/send`)
     return response.data
   },
 
@@ -189,6 +193,39 @@ export const BusinessService = {
 
   async duplicateInvoice(id: string): Promise<Invoice> {
     const response = await apiClient.post<Invoice>(`/business/invoices/${id}/duplicate`)
+    return response.data
+  },
+
+  async cancelInvoice(id: string, payload: CancelInvoicePayload): Promise<Invoice> {
+    const response = await apiClient.post<Invoice>(`/business/invoices/${id}/cancel`, payload)
+    return response.data
+  },
+
+  // ─── Invoice Template ──────────────────────────────────────────────────────
+  async getInvoiceTemplate(): Promise<InvoiceTemplate> {
+    const response = await apiClient.get<InvoiceTemplate>('/business/invoice-template')
+    return response.data
+  },
+
+  async updateInvoiceTemplate(payload: InvoiceTemplateSettings): Promise<InvoiceTemplate> {
+    const response = await apiClient.put<InvoiceTemplate>('/business/invoice-template', payload)
+    return response.data
+  },
+
+  async resetInvoiceTemplate(): Promise<InvoiceTemplate> {
+    const response = await apiClient.delete<InvoiceTemplate>('/business/invoice-template')
+    return response.data
+  },
+
+  /** Server-rendered email HTML for unsaved settings (optionally for a real invoice). */
+  async previewInvoiceTemplateEmail(payload: InvoiceTemplateSettings & { invoiceId?: string }): Promise<string> {
+    const response = await apiClient.post<{ html: string }>('/business/invoice-template/preview', payload)
+    return response.data.html
+  },
+
+  /** Raw company logo bytes, streamed through the API (no CORS / expiry issues). */
+  async getCompanyLogoBlob(): Promise<Blob> {
+    const response = await apiClient.get<Blob>('/business/company/logo', { responseType: 'blob' })
     return response.data
   },
 

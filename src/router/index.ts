@@ -237,6 +237,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { title: 'Invoice', requiresBusiness: true },
       },
       {
+        path: 'business/invoices/template',
+        name: 'invoice-template',
+        component: () => import('@/views/business/InvoiceTemplateView.vue'),
+        meta: { title: 'Template Invoice', requiresBusiness: true },
+      },
+      {
         path: 'business/invoices/new',
         name: 'invoice-create',
         component: () => import('@/views/business/InvoiceFormView.vue'),

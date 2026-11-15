@@ -62,46 +62,29 @@
           </div>
 
           <!-- Action Buttons -->
-          <div class="flex flex-wrap gap-2">
-            <!-- Export / Print page -->
-            <RouterLink
-              :to="{ name: 'invoice-export', params: { id: invoice.id } }"
-              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-              title="Ekspor / cetak invoice"
-            >
-              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Ekspor
-            </RouterLink>
-
-            <!-- Print PDF — always visible -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Primary action for the current status -->
             <button
-              @click="handlePrintPDF"
-              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-              title="Unduh PDF"
+              v-if="invoice.status === 'DRAFT' && canCreate"
+              @click="isSendModalOpen = true"
+              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B43] transition-colors shadow-sm"
             >
-              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              PDF
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+              Kirim invoice
             </button>
-
-            <!-- Duplikat — always visible for canCreate -->
             <button
-              v-if="canCreate"
-              @click="handleDuplicate"
-              :disabled="isDuplicating"
-              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+              v-if="(invoice.status === 'SENT' || invoice.status === 'OVERDUE') && canPay"
+              @click="isPayModalOpen = true"
+              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
             >
-              <svg v-if="isDuplicating" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-              </svg>
-              <svg v-else class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-              Duplikat
+              Catat pembayaran
+            </button>
+            <button
+              v-if="(invoice.status === 'SENT' || invoice.status === 'OVERDUE') && canCreate"
+              @click="isSendEmailModalOpen = true"
+              class="px-4 py-2 text-sm font-medium border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+            >
+              Kirim ulang email
             </button>
 
             <RouterLink
@@ -111,34 +94,87 @@
             >
               Edit
             </RouterLink>
+
             <button
-              v-if="invoice.status === 'DRAFT' && canCreate"
-              @click="isSendModalOpen = true"
-              class="px-4 py-2 text-sm font-medium bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B43] transition-colors"
+              @click="handlePrintPDF"
+              :disabled="isExportingPdf"
+              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-60 transition-colors"
+              title="Unduh PDF sesuai template invoice"
             >
-              Kirim invoice
+              <svg v-if="isExportingPdf" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+              <svg v-else class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              PDF
             </button>
-            <button
-              v-if="(invoice.status === 'SENT' || invoice.status === 'OVERDUE') && canCreate"
-              @click="isSendEmailModalOpen = true"
-              class="px-4 py-2 text-sm font-medium bg-[#2E8B57] text-white rounded-lg hover:bg-[#236B43] transition-colors"
-            >
-              Kirim Email
-            </button>
-            <button
-              v-if="(invoice.status === 'SENT' || invoice.status === 'OVERDUE') && canPay"
-              @click="isPayModalOpen = true"
-              class="px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-            >
-              Bayar
-            </button>
-            <button
-              v-if="invoice.status === 'DRAFT' && canCreate"
-              @click="isDeleteModalOpen = true"
-              class="px-4 py-2 text-sm font-medium bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-100 transition-colors"
-            >
-              Hapus
-            </button>
+
+            <!-- Overflow menu -->
+            <div class="relative" ref="moreMenuRef">
+              <button
+                @click="isMoreOpen = !isMoreOpen"
+                :aria-expanded="isMoreOpen"
+                aria-haspopup="menu"
+                aria-label="Aksi lainnya"
+                class="p-2 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zm6 0a2 2 0 11-4 0 2 2 0 014 0zm6 0a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+              </button>
+              <Transition name="menu">
+                <div
+                  v-if="isMoreOpen"
+                  role="menu"
+                  class="absolute right-0 z-30 mt-2 w-64 origin-top-right rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg py-1.5 text-sm"
+                >
+                  <button v-if="canCreate" role="menuitem" class="menu-item" :disabled="isDuplicating" @click="closeMenu(); handleDuplicate()">
+                    Duplikat invoice
+                  </button>
+                  <RouterLink role="menuitem" class="menu-item" :to="{ name: 'invoice-export', params: { id: invoice.id } }">
+                    Ekspor jurnal pembayaran
+                  </RouterLink>
+                  <RouterLink role="menuitem" class="menu-item" :to="{ name: 'invoice-template' }">
+                    Atur template invoice
+                  </RouterLink>
+
+                  <template v-if="canCreate && invoice.status !== 'PAID'">
+                    <div class="my-1.5 border-t border-slate-100 dark:border-slate-700"></div>
+                    <button
+                      v-if="invoice.status !== 'CANCELLED'"
+                      role="menuitem"
+                      class="menu-item text-amber-700 dark:text-amber-400"
+                      :disabled="hasPayments"
+                      @click="closeMenu(); openCancelModal()"
+                    >
+                      Batalkan invoice
+                      <span v-if="hasPayments" class="menu-hint">Sudah ada pembayaran sebagian</span>
+                    </button>
+                    <button
+                      role="menuitem"
+                      class="menu-item text-red-600 dark:text-red-400"
+                      :disabled="hasPayments"
+                      @click="closeMenu(); isDeleteModalOpen = true"
+                    >
+                      Hapus invoice
+                      <span v-if="hasPayments" class="menu-hint">Sudah ada pembayaran sebagian</span>
+                    </button>
+                  </template>
+                </div>
+              </Transition>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cancelled banner -->
+        <div
+          v-if="invoice.status === 'CANCELLED'"
+          class="mt-5 flex gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 p-4"
+        >
+          <svg class="w-5 h-5 text-zinc-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+          <div class="text-sm">
+            <p class="font-semibold text-zinc-700 dark:text-zinc-200">
+              Invoice dibatalkan<span v-if="invoice.cancelledAt"> pada {{ formatDate(invoice.cancelledAt) }}</span>
+            </p>
+            <p v-if="invoice.cancelReason" class="text-zinc-600 dark:text-zinc-400 mt-0.5">Alasan: {{ invoice.cancelReason }}</p>
+            <p class="text-zinc-500 dark:text-zinc-400 mt-1">
+              Invoice tetap disimpan untuk riwayat. Gunakan <strong>Duplikat invoice</strong> untuk menerbitkan ulang, atau hapus jika tidak diperlukan.
+            </p>
           </div>
         </div>
       </div>
@@ -377,12 +413,40 @@
       @confirm="handleSendEmail"
     />
 
+    <!-- Cancel (void) Confirmation -->
+    <ConfirmationModal
+      :is-open="isCancelModalOpen"
+      title="Batalkan invoice"
+      confirm-button-text="Ya, batalkan"
+      confirm-button-class="bg-amber-600 hover:bg-amber-700 focus:ring-amber-500"
+      :is-confirming="invoicesStore.isSubmitting"
+      @update:is-open="isCancelModalOpen = $event"
+      @confirm="handleCancel"
+    >
+      <template #message>
+        <p>
+          Invoice <strong>{{ invoice?.invoiceNumber }}</strong> akan ditandai <strong>Dibatalkan</strong> dan tidak bisa dibayar lagi.
+          Nomor invoice dan riwayatnya tetap tersimpan untuk audit.
+        </p>
+        <label class="block mt-3 text-left">
+          <span class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Alasan pembatalan (opsional)</span>
+          <textarea
+            v-model="cancelReason"
+            rows="2"
+            maxlength="500"
+            placeholder="mis. Salah input harga, pesanan dibatalkan pelanggan"
+            class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+          ></textarea>
+        </label>
+      </template>
+    </ConfirmationModal>
+
     <!-- Delete Confirmation -->
     <ConfirmationModal
       :is-open="isDeleteModalOpen"
       title="Hapus invoice"
-      :message="`Hapus ${invoice?.invoiceNumber}? Tindakan ini tidak dapat dibatalkan.`"
-      confirm-button-text="Ya, hapus"
+      :message="deleteMessage"
+      confirm-button-text="Ya, hapus permanen"
       confirm-button-class="bg-red-600 hover:bg-red-700 focus:ring-red-500"
       :is-confirming="invoicesStore.isSubmitting"
       @update:is-open="isDeleteModalOpen = $event"
@@ -400,7 +464,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useInvoicesStore } from '@/stores/invoices'
 import { useBusinessStore } from '@/stores/business'
@@ -425,6 +489,27 @@ const isSendEmailModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
 const isPayModalOpen = ref(false)
 const isDuplicating = ref(false)
+const isCancelModalOpen = ref(false)
+const cancelReason = ref('')
+const isExportingPdf = ref(false)
+const isMoreOpen = ref(false)
+const moreMenuRef = ref<HTMLElement | null>(null)
+
+const closeMenu = () => (isMoreOpen.value = false)
+const onDocClick = (e: MouseEvent) => {
+  if (isMoreOpen.value && moreMenuRef.value && !moreMenuRef.value.contains(e.target as Node)) closeMenu()
+}
+const onKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') closeMenu()
+}
+onMounted(() => {
+  document.addEventListener('click', onDocClick)
+  document.addEventListener('keydown', onKeydown)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocClick)
+  document.removeEventListener('keydown', onKeydown)
+})
 const invoiceJournals = ref<BusinessTransaction[]>([])
 const journalsLoading = ref(false)
 
@@ -441,6 +526,18 @@ const canPay = computed(() => {
 })
 
 const isOverdue = computed(() => invoice.value?.status === 'OVERDUE')
+
+/** Partially-paid invoices already have payment journals → cannot be voided/deleted. */
+const hasPayments = computed(() => parseFloat(invoice.value?.amountPaid ?? '0') > 0)
+
+const deleteMessage = computed(() => {
+  const inv = invoice.value
+  if (!inv) return ''
+  if (inv.status === 'SENT' || inv.status === 'OVERDUE') {
+    return `${inv.invoiceNumber} sudah dikirim ke pelanggan. Menghapusnya akan menghilangkan nomor invoice dari riwayat — pertimbangkan "Batalkan invoice" agar jejak audit tetap ada. Hapus permanen?`
+  }
+  return `Hapus ${inv.invoiceNumber} secara permanen? Tindakan ini tidak dapat dibatalkan.`
+})
 
 async function loadJournals() {
   const invoiceId = route.params.id as string
@@ -471,9 +568,14 @@ onMounted(async () => {
 
 const handleSend = async () => {
   if (!invoice.value) return
+  const hasEmail = !!invoice.value.clientEmail
   try {
-    await invoicesStore.sendInvoice(invoice.value.id)
+    const result = await invoicesStore.sendInvoice(invoice.value.id)
     isSendModalOpen.value = false
+    if (result.emailError) showToast('error', result.emailError)
+    else if (result.demoEmailSkipped) showToast('success', result.demoNote ?? 'Invoice ditandai terkirim.')
+    else if (!hasEmail) showToast('success', 'Invoice ditandai terkirim. Pelanggan belum memiliki email, jadi tidak ada email yang dikirim.')
+    else showToast('success', `Invoice terkirim ke ${invoice.value?.clientEmail}.`)
   } catch (err: any) {
     errorMsg.value = err.response?.data?.message || 'Belum berhasil mengirim invoice.'
     isSendModalOpen.value = false
@@ -499,19 +601,38 @@ const handleSendEmail = async () => {
   }
 }
 
+const openCancelModal = () => {
+  cancelReason.value = ''
+  isCancelModalOpen.value = true
+}
+
+const handleCancel = async () => {
+  if (!invoice.value) return
+  try {
+    await invoicesStore.cancelInvoice(invoice.value.id, { reason: cancelReason.value.trim() || undefined })
+    isCancelModalOpen.value = false
+    showToast('success', 'Invoice dibatalkan.')
+  } catch (err: unknown) {
+    isCancelModalOpen.value = false
+    const msg = (err as { response?: { data?: { message?: string } } }).response?.data?.message
+    showToast('error', msg || 'Belum berhasil membatalkan invoice.')
+  }
+}
+
 const handleDelete = async () => {
   if (!invoice.value) return
   try {
     await invoicesStore.deleteInvoice(invoice.value.id)
     router.push({ name: 'business-invoices' })
   } catch (err: any) {
-    errorMsg.value = err.response?.data?.message || 'Belum berhasil menghapus invoice.'
     isDeleteModalOpen.value = false
+    showToast('error', err.response?.data?.message || 'Belum berhasil menghapus invoice.')
   }
 }
 
 const handlePrintPDF = async () => {
-  if (!invoice.value) return
+  if (!invoice.value || isExportingPdf.value) return
+  isExportingPdf.value = true
   try {
     // Mutation responses can omit relations such as items. Fetch the complete
     // detail payload before export so the generated invoice is not incomplete.
@@ -521,6 +642,8 @@ const handlePrintPDF = async () => {
     await exportService.exportInvoiceToPDF(invoiceToExport, businessStore.currentCompany)
   } catch (err: any) {
     showToast('error', err.response?.data?.message || 'Belum berhasil mengunduh PDF invoice.')
+  } finally {
+    isExportingPdf.value = false
   }
 }
 
@@ -570,6 +693,12 @@ const contactTypeClass = (type: ContactType) => {
 </script>
 
 <style scoped>
+@reference '../../assets/main.css';
+
+.menu-item { @apply flex w-full flex-col items-start px-4 py-2 text-left text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent; }
+.menu-hint { @apply text-[11px] font-normal text-slate-400; }
+.menu-enter-active, .menu-leave-active { transition: opacity .12s ease, transform .12s ease; }
+.menu-enter-from, .menu-leave-to { opacity: 0; transform: translateY(-4px) scale(.98); }
 .toast-enter-active, .toast-leave-active { transition: all 0.3s ease; }
 .toast-enter-from, .toast-leave-to { opacity: 0; transform: translateX(1rem); }
 </style>

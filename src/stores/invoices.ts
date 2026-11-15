@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { BusinessService } from '@/services/business.service'
-import type { Invoice, InvoiceStatus, CreateInvoicePayload, UpdateInvoicePayload, PayInvoicePayload } from '@/types/business'
+import type { Invoice, InvoiceStatus, CreateInvoicePayload, UpdateInvoicePayload, PayInvoicePayload, CancelInvoicePayload, SendInvoiceResponse } from '@/types/business'
 
 export const useInvoicesStore = defineStore('invoices', () => {
   const invoices = ref<Invoice[]>([])
@@ -68,13 +68,37 @@ export const useInvoicesStore = defineStore('invoices', () => {
     }
   }
 
+  /**
+   * Mutation endpoints return the bare invoice row (no items/relations), so
+   * merge into the existing object instead of replacing it.
+   */
+  const mergeInvoice = (id: string, patch: Partial<Invoice>) => {
+    const idx = invoices.value.findIndex((i) => i.id === id)
+    if (idx !== -1) invoices.value[idx] = { ...invoices.value[idx], ...patch } as Invoice
+    if (currentInvoice.value?.id === id) currentInvoice.value = { ...currentInvoice.value, ...patch } as Invoice
+  }
+
   const sendInvoice = async (id: string) => {
     isSubmitting.value = true
     try {
-      const invoice = await BusinessService.sendInvoice(id)
-      const idx = invoices.value.findIndex((i) => i.id === id)
-      if (idx !== -1) invoices.value[idx] = invoice
-      if (currentInvoice.value?.id === id) currentInvoice.value = invoice
+      const result = await BusinessService.sendInvoice(id)
+      const invoice: Partial<SendInvoiceResponse> = { ...result }
+      delete invoice.emailSent
+      delete invoice.emailError
+      delete invoice.demoEmailSkipped
+      delete invoice.demoNote
+      mergeInvoice(id, invoice)
+      return result
+    } finally {
+      isSubmitting.value = false
+    }
+  }
+
+  const cancelInvoice = async (id: string, payload: CancelInvoicePayload) => {
+    isSubmitting.value = true
+    try {
+      const invoice = await BusinessService.cancelInvoice(id, payload)
+      mergeInvoice(id, invoice)
       return invoice
     } finally {
       isSubmitting.value = false
@@ -133,6 +157,7 @@ export const useInvoicesStore = defineStore('invoices', () => {
     updateInvoice,
     deleteInvoice,
     sendInvoice,
+    cancelInvoice,
     sendInvoiceEmail,
     payInvoice,
     duplicateInvoice,

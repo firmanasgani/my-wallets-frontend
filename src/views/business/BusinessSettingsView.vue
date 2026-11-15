@@ -89,6 +89,12 @@
             </div>
             <p v-if="logoErrorMsg" class="text-xs text-red-600 dark:text-red-400">{{ logoErrorMsg }}</p>
           </div>
+          <RouterLink
+            :to="{ name: 'invoice-template' }"
+            class="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#2E8B57] hover:underline"
+          >
+            Logo dipakai di invoice — atur template invoice →
+          </RouterLink>
         </div>
 
         <!-- ── Profile Form Column ──────────────────────── -->
