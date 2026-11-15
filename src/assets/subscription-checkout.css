@@ -40,6 +40,25 @@
 }
 .checkout-heading p { margin: 0; color: var(--checkout-muted) !important; font-size: 13px; }
 .subscription-checkout .grid { gap: 20px; }
+.checkout-options {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--checkout-rule);
+  border-radius: 18px;
+  background: var(--checkout-surface);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--checkout-ink) 5%, transparent);
+}
+.checkout-options-title { margin: 0; font-size: 16px; font-weight: 850; }
+.checkout-options fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.checkout-options legend { margin-bottom: 12px; padding: 0; font-size: 14px; font-weight: 800; }
+.checkout-duration-note { margin: 0; color: var(--checkout-muted); font-size: 14px; }
+.checkout-review > div { min-width: 0; }
+.checkout-review .flex.justify-between { flex-wrap: wrap; row-gap: 8px; }
+@media (min-width: 768px) {
+  .subscription-checkout .checkout-review { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
 .subscription-checkout .grid > .space-y-6 { display: grid; align-content: start; gap: 16px; }
 .subscription-checkout .grid > .space-y-6 > div,
 .subscription-checkout .grid > div.bg-white {

@@ -3,6 +3,7 @@
     <!-- Header -->
     <div class="checkout-heading">
       <button
+        aria-label="Kembali ke Pengaturan"
         @click="router.push({ name: 'settings' })"
         class="mr-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
       >
@@ -37,12 +38,14 @@
     </div>
 
     <!-- STEP: CONFIGURE / REVIEW -->
-    <div v-else-if="step === 'REVIEW'" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-      <!-- Selectors (upgrade only — renew has nothing to pick): full width, above the two cards -->
-      <div v-if="actionType === 'upgrade'" class="space-y-6 md:col-span-2">
+    <div v-else-if="step === 'REVIEW'" class="checkout-review grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      <!-- Upgrade configuration stays together to the left of the summary. -->
+      <div v-if="actionType === 'upgrade'" class="checkout-options">
+        <h2 class="checkout-options-title">Pilihan Paket</h2>
         <!-- Duration -->
-        <div>
-          <p class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Durasi</p>
+        <fieldset>
+          <legend>Durasi</legend>
+          <p v-if="selectedFamily === 'FREE'" class="checkout-duration-note">Selamanya · tanpa biaya langganan</p>
           <div class="space-y-2">
             <label
               v-for="d in availableDurations"
@@ -54,15 +57,15 @@
                   : 'border-slate-200 dark:border-slate-700 hover:border-emerald-200'
               "
             >
-              <input type="checkbox" :checked="selectedDuration === d" @change="selectedDuration = d" class="h-4 w-4 rounded accent-[#2E8B57]" />
+              <input type="radio" name="plan-duration" :checked="selectedDuration === d" @change="selectedDuration = d" class="h-4 w-4 accent-[#2E8B57]" />
               <span class="text-sm font-medium text-slate-800 dark:text-slate-100">{{ planDurationLabel(d) }}</span>
             </label>
           </div>
-        </div>
+        </fieldset>
 
         <!-- Package name -->
-        <div>
-          <p class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Jenis Paket</p>
+        <fieldset>
+          <legend>Jenis Paket</legend>
           <div class="space-y-2">
             <label
               v-for="fam in availableFamilies"
@@ -74,18 +77,18 @@
                   : 'border-slate-200 dark:border-slate-700 hover:border-emerald-200'
               "
             >
-              <input type="checkbox" :checked="selectedFamily === fam" @change="selectedFamily = fam" class="h-4 w-4 rounded accent-[#2E8B57]" />
+              <input type="radio" name="plan-family" :checked="selectedFamily === fam" @change="selectedFamily = fam" class="h-4 w-4 accent-[#2E8B57]" />
               <span class="text-sm font-medium text-slate-800 dark:text-slate-100">{{ familyLabel(fam) }}</span>
             </label>
           </div>
-        </div>
+        </fieldset>
       </div>
 
-      <!-- LEFT card: package information / calculation -->
+      <!-- Upgrade summary and confirmation; renewal keeps its existing two cards. -->
       <div class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
           <h3 class="text-base font-semibold text-slate-900 dark:text-white">
-            {{ isPaidFlow ? 'Rincian Perpanjangan' : 'Konfirmasi Perubahan Paket' }}
+            {{ actionType === 'renew' ? 'Rincian Perpanjangan' : 'Rincian Paket' }}
           </h3>
         </div>
 
@@ -159,9 +162,9 @@
             </template>
           </div>
 
-          <div v-if="!isPaidFlow" class="px-6 pb-6">
+          <div v-if="actionType === 'upgrade'" class="px-6 pb-6">
             <button
-              @click="handleConfirmDowngrade"
+              @click="handleConfirmPlan"
               :disabled="isProcessing"
               class="w-full bg-slate-800 dark:bg-slate-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-900 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2"
             >
@@ -174,7 +177,7 @@
 
       <!-- RIGHT card: payment method — its own card, side by side with the price card -->
       <div
-        v-if="isPaidFlow && targetPlanDetails"
+        v-if="actionType === 'renew' && isPaidFlow && targetPlanDetails"
         class="bg-white dark:bg-slate-800 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
       >
         <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
@@ -247,6 +250,40 @@
       </button>
     </div>
 
+    <AppDialog
+      :is-open="isPaymentMethodOpen"
+      title="Pilih Metode Pembayaran"
+      eyebrow="PEMBAYARAN PAKET"
+      :busy="isProcessing"
+      @close="isPaymentMethodOpen = false"
+    >
+      <div class="checkout-payment-dialog">
+        <p v-if="targetPlanDetails" class="checkout-payment-summary">
+          {{ familyLabel(familyOf(targetPlanDetails.code)) }} · {{ planDurationLabel(targetPlanDetails.durationMonths) }}
+          <strong>Rp {{ formatNumber(targetPlanDetails.discountPrice || targetPlanDetails.price) }}</strong>
+        </p>
+        <p v-if="subscriptionStore.isLoadingPaymentMethods" role="status">Memuat metode pembayaran...</p>
+        <div v-else-if="subscriptionStore.paymentMethodsError || !subscriptionStore.paymentMethodsAvailable || !subscriptionStore.paymentMethods.length" role="status">
+          <p>{{ subscriptionStore.paymentMethodsError || 'Pembayaran online belum tersedia saat ini. Silakan coba lagi nanti.' }}</p>
+          <button type="button" class="checkout-payment-retry" @click="loadPaymentMethods">Coba lagi</button>
+        </div>
+        <fieldset v-else :disabled="isProcessing" class="checkout-payment-methods">
+          <legend class="shell-sr-only">Metode pembayaran</legend>
+          <label v-for="method in subscriptionStore.paymentMethods" :key="method.code">
+            <input v-model="selectedMethodCode" type="radio" name="upgrade-payment-method" :value="method.code" />
+            <span>{{ method.name }}</span>
+          </label>
+        </fieldset>
+        <footer>
+          <button
+            type="button"
+            :disabled="isProcessing || subscriptionStore.isLoadingPaymentMethods || !subscriptionStore.paymentMethodsAvailable || !subscriptionStore.paymentMethods.some(method => method.code === selectedMethodCode)"
+            @click="handleConfirmPayment"
+          >{{ isProcessing ? 'Memproses...' : 'Bayar Sekarang' }}</button>
+        </footer>
+      </div>
+    </AppDialog>
+
     <AppDialog :is-open="!!errorMessage" title="Pembayaran Belum Berhasil" eyebrow="PAYFEST" @close="errorMessage = null">
       <div class="checkout-error-dialog">
         <p>{{ errorMessage }}</p>
@@ -285,6 +322,7 @@ const actionType = computed<Action>(() => {
 
 const step = ref<Step>('REVIEW')
 const isProcessing = ref(false)
+const isPaymentMethodOpen = ref(false)
 const selectedMethodCode = ref<string | null>(null)
 const checkoutResult = ref<PayfestCheckoutResult | null>(null)
 const isCheckingStatus = ref(false)
@@ -300,7 +338,6 @@ const actionSubtitle = computed(() =>
 const activeSubscription = computed(() => authStore.currentUser?.activeSubscription ?? null)
 const currentPlanCode = computed(() => activeSubscription.value?.planCode ?? 'FREE')
 const currentPlanDetails = computed(() => subscriptionStore.plans.find((p) => p.code === currentPlanCode.value))
-const currentPrice = computed(() => Number(currentPlanDetails.value?.price ?? 0))
 const currentEndDate = computed(() => (activeSubscription.value?.endDate ? new Date(activeSubscription.value.endDate) : null))
 
 const familyOf = (code?: string): Family => {
@@ -313,9 +350,7 @@ const familyLabel = (fam: Family) => ({ PREMIUM: 'Premium', BUSINESS: 'Business'
 const planDurationLabel = (durationMonths: number | null) =>
   durationMonths == null ? 'Selamanya' : `${durationMonths} Bulan`
 
-// Every plan except the one already active — the target's price relative
-// to the current plan decides whether it's a paid extension (>=) or a
-// scheduled downgrade (<), not the action name itself.
+// Paid tiers use checkout even when their price is lower than the current plan.
 const pickablePlans = computed(() =>
   actionType.value === 'upgrade' ? subscriptionStore.plans.filter((p) => p.code !== currentPlanCode.value) : [],
 )
@@ -356,7 +391,7 @@ const derivedPlanCode = computed(() => {
 })
 
 const targetPlanDetails = computed(() => subscriptionStore.plans.find((p) => p.code === derivedPlanCode.value))
-const isPaidFlow = computed(() => !!targetPlanDetails.value && Number(targetPlanDetails.value.price) >= currentPrice.value)
+const isPaidFlow = computed(() => !!targetPlanDetails.value && familyOf(targetPlanDetails.value.code) !== 'FREE')
 const savingPercent = computed(() => {
   const plan = targetPlanDetails.value
   if (!plan?.discountPrice) return 0
@@ -399,16 +434,19 @@ const formatDate = (date: Date) =>
   date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 
 const handleConfirmPayment = async () => {
-  if (!targetPlanDetails.value || !selectedMethodCode.value) return
+  if (isProcessing.value || !isPaidFlow.value || !targetPlanDetails.value || !selectedMethodCode.value ||
+    subscriptionStore.isLoadingPaymentMethods || !subscriptionStore.paymentMethodsAvailable ||
+    !subscriptionStore.paymentMethods.some(method => method.code === selectedMethodCode.value)) return
   isProcessing.value = true
   try {
     checkoutResult.value = await subscriptionStore.initiateCheckout(
       targetPlanDetails.value.code,
       selectedMethodCode.value,
     )
+    isPaymentMethodOpen.value = false
     step.value = 'AWAITING_PAYMENT'
-  } catch (err: any) {
-    errorMessage.value = err.message || 'Gagal memproses pembayaran'
+  } catch (err: unknown) {
+    errorMessage.value = err instanceof Error ? err.message : 'Gagal memproses pembayaran'
   } finally {
     isProcessing.value = false
   }
@@ -425,6 +463,8 @@ const checkPaymentStatus = async () => {
     } else {
       errorMessage.value = 'Pembayaran belum terdeteksi. Jika sudah membayar, mohon tunggu beberapa saat lalu coba lagi.'
     }
+  } catch (err: unknown) {
+    errorMessage.value = err instanceof Error ? err.message : 'Gagal memeriksa status pembayaran. Silakan coba lagi.'
   } finally {
     isCheckingStatus.value = false
   }
@@ -438,10 +478,28 @@ const handleConfirmDowngrade = async () => {
     await subscriptionStore.scheduleDowngrade(targetCode)
     await authStore.fetchUserProfile()
     step.value = 'SUCCESS'
-  } catch (err: any) {
-    errorMessage.value = err.message || 'Gagal memproses perubahan paket.'
+  } catch (err: unknown) {
+    errorMessage.value = err instanceof Error ? err.message : 'Gagal memproses perubahan paket.'
   } finally {
     isProcessing.value = false
+  }
+}
+
+const loadPaymentMethods = async () => {
+  await subscriptionStore.fetchPaymentMethods()
+  if (!subscriptionStore.paymentMethods.some(method => method.code === selectedMethodCode.value)) {
+    selectedMethodCode.value = null
+  }
+}
+
+const handleConfirmPlan = () => {
+  if (isProcessing.value || !targetPlanDetails.value) return
+  if (isPaidFlow.value) {
+    selectedMethodCode.value = null
+    isPaymentMethodOpen.value = true
+    void loadPaymentMethods()
+  } else {
+    void handleConfirmDowngrade()
   }
 }
 
@@ -449,8 +507,10 @@ onMounted(async () => {
   if (subscriptionStore.plans.length === 0) {
     await subscriptionStore.fetchPlans()
   }
-  await subscriptionStore.fetchPaymentMethods()
-  selectedMethodCode.value = subscriptionStore.paymentMethods[0]?.code ?? null
+  if (actionType.value === 'renew') {
+    await subscriptionStore.fetchPaymentMethods()
+    selectedMethodCode.value = subscriptionStore.paymentMethods[0]?.code ?? null
+  }
   await authStore.fetchUserProfile()
 
   if (actionType.value === 'upgrade') {
@@ -474,6 +534,61 @@ onMounted(async () => {
 })
 </script>
 <style scoped>
+.checkout-payment-dialog {
+  padding: 24px;
+  color: var(--shell-ink);
+}
+.checkout-payment-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.checkout-payment-methods {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.checkout-payment-methods label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 1px solid var(--shell-rule);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.checkout-payment-methods label:has(input:checked) {
+  border-color: var(--shell-grape);
+  background: var(--shell-lilac);
+}
+.checkout-payment-methods input { accent-color: var(--shell-grape); }
+.checkout-payment-dialog footer { margin-top: 24px; }
+.checkout-payment-dialog footer button {
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--shell-ink);
+  color: var(--shell-surface);
+  font-weight: 700;
+  cursor: pointer;
+}
+.checkout-payment-dialog footer button:hover:not(:disabled) { background: var(--shell-grape); }
+.checkout-payment-dialog footer button:disabled { opacity: .55; cursor: not-allowed; }
+.checkout-payment-retry {
+  margin-top: 12px;
+  padding: 8px 16px;
+  border: 1px solid var(--shell-rule);
+  border-radius: 999px;
+  background: var(--shell-surface);
+  color: var(--shell-ink);
+  cursor: pointer;
+}
 .checkout-error-dialog {
   padding: 4px 24px 24px;
 }
