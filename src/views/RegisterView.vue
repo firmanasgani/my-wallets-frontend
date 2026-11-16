@@ -43,6 +43,7 @@
 
         <ul class="auth-features" aria-label="Keuntungan akun Moneytory">
           <li><span aria-hidden="true">✓</span> Mulai gratis</li>
+          <li><span aria-hidden="true">✓</span> Bonus Premium gratis 3 bulan pertama</li>
           <li><span aria-hidden="true">✓</span> Personal &amp; bisnis</li>
           <li><span aria-hidden="true">✓</span> Satu tempat</li>
         </ul>

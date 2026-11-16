@@ -8,10 +8,11 @@
           <SettingsSection id="subscription" title="Langganan & paket" icon="credit" eyebrow="PILIH RUANG UNTUK BERTUMBUH" tone="lilac">
             <template #action><span class="settings-chip">{{ currentPlanName }}</span></template>
             <div class="settings-plan-details"><div><span class="settings-small-label">Paket saat ini</span><h3>{{ currentPlanName }}</h3><p>{{ currentPlanDescription }}</p></div><dl><div><dt>Mulai langganan</dt><dd>{{ transactionDateLabel(authStore.currentUser?.activeSubscription?.startDate) }}</dd></div><div><dt>{{ isFree ? 'Masa berlaku' : 'Berakhir pada' }}</dt><dd>{{ isFree ? 'Tanpa biaya langganan' : transactionDateLabel(authStore.currentUser?.activeSubscription?.endDate) }}</dd></div></dl></div>
+            <div v-if="isPromo" class="settings-notice" role="status"><AppIcon name="calendar" /><div><strong>{{ PROMO_HEADLINE }} 🎉</strong><p>Semua fitur Premium aktif tanpa biaya hingga {{ transactionDateLabel(authStore.currentUser?.activeSubscription?.endDate) }}. Setelah itu akun kembali ke paket Dasar secara otomatis — tidak ada tagihan.</p></div><RouterLink :to="{ name: 'subscription-checkout', query: { action: 'upgrade' } }" class="settings-button">Lanjutkan Premium</RouterLink></div>
             <div v-if="scheduledPlanCode" class="settings-notice"><AppIcon name="calendar" /><div><strong>Perubahan paket terjadwal</strong><p>Paket akan berubah menjadi {{ scheduledPlanName }} pada {{ transactionDateLabel(authStore.currentUser?.activeSubscription?.endDate) }}.</p></div><button type="button" class="settings-button" :disabled="isUndoing" @click="handleUndoDowngrade"><span v-if="isUndoing" class="settings-spinner" aria-hidden="true"></span>{{ isUndoing ? 'Memproses...' : 'Batalkan perubahan' }}</button></div>
             <p v-if="planActionError" class="settings-inline-error" role="alert">{{ planActionError }}</p>
             <p v-if="subscriptionStore.error" class="settings-hint" role="status">Pilihan paket belum berhasil dimuat. <button type="button" class="settings-text-button" :disabled="subscriptionStore.isLoading" @click="subscriptionStore.fetchPlans()">Coba lagi</button></p>
-            <footer class="settings-section-actions"><RouterLink v-if="!isFree" :to="{ name: 'subscription-checkout', query: { action: 'renew' } }" class="settings-button is-primary"><AppIcon name="refresh" />Perpanjang paket</RouterLink><RouterLink :to="{ name: 'subscription-checkout', query: { action: 'upgrade' } }" class="settings-button" :class="{ 'is-primary': isFree }">{{ isFree ? 'Lihat pilihan paket' : 'Ganti paket' }}<AppIcon name="arrow" /></RouterLink></footer>
+            <footer class="settings-section-actions"><RouterLink v-if="!isFree && !isPromo" :to="{ name: 'subscription-checkout', query: { action: 'renew' } }" class="settings-button is-primary"><AppIcon name="refresh" />Perpanjang paket</RouterLink><RouterLink :to="{ name: 'subscription-checkout', query: { action: 'upgrade' } }" class="settings-button" :class="{ 'is-primary': isFree }">{{ isFree ? 'Lihat pilihan paket' : 'Ganti paket' }}<AppIcon name="arrow" /></RouterLink></footer>
           </SettingsSection>
           <SettingsSection v-if="isBusiness" id="company" title="Ruang perusahaan" icon="building" description="Informasi perusahaan yang terhubung dengan akunmu.">
             <div v-if="companyLoading" class="settings-inline-state" role="status"><span class="settings-spinner" aria-hidden="true"></span>Memuat perusahaan...</div><div v-else-if="companyError" class="settings-inline-state" role="alert"><p>{{ companyError }}</p><button type="button" class="settings-button" @click="loadCompany">Coba lagi</button></div><div v-else-if="businessStore.currentCompany" class="settings-company"><div><h3>{{ businessStore.currentCompany.name }}</h3><p>{{ businessStore.currentCompany.email || businessStore.currentCompany.phone || 'Informasi kontak belum ditambahkan.' }}</p></div><span v-if="businessStore.myRole" class="settings-chip">{{ roleLabels[businessStore.myRole] || businessStore.myRole }}</span><RouterLink :to="{ name: 'business-settings' }" class="settings-text-link">Kelola perusahaan<AppIcon name="arrow" /></RouterLink></div><div v-else class="settings-company"><p>Belum ada perusahaan yang terhubung.</p><RouterLink :to="{ name: 'business-settings' }" class="settings-text-link">Pengaturan perusahaan<AppIcon name="arrow" /></RouterLink></div>
@@ -30,6 +31,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { isPromoPlan, PROMO_HEADLINE } from '@/utils/subscriptionPromo'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -54,6 +56,7 @@ const sections = [{ value: 'main', label: 'Umum & langganan', icon: 'settings' }
 const goMain = () => router.push({ name: 'settings' })
 const currentPlanCode = computed(() => authStore.currentUser?.activeSubscription?.planCode || authStore.currentUser?.subscriptionPlan || 'FREE')
 const isFree = computed(() => currentPlanCode.value === 'FREE')
+const isPromo = computed(() => isPromoPlan(currentPlanCode.value))
 const isBusiness = computed(() => authStore.currentUser?.subscriptionPlan?.startsWith('BUSINESS') || currentPlanCode.value.startsWith('BUSINESS'))
 const currentPlanName = computed(() => settingsPlanName(currentPlanCode.value, subscriptionStore.plans, authStore.currentUser?.activeSubscription?.planName))
 const currentPlanDescription = computed(() => subscriptionStore.plans.find((plan) => plan.code === currentPlanCode.value)?.description || (isFree.value ? 'Ruang awal untuk mencatat dan mengenali keuanganmu.' : 'Lihat pilihan paket untuk rincian layanan dan masa berlangganan.'))

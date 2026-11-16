@@ -82,6 +82,16 @@
       </header>
       <AdBanner />
       <main id="main-content" ref="mainRef" class="shell-main" tabindex="-1">
+        <div
+          v-if="isDemoAccount"
+          class="mx-auto mt-3 w-[min(100%,1180px)] px-4 sm:px-6"
+          role="status"
+        >
+          <p class="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
+            <AppIcon name="info" />
+            <span><strong>Akun demo.</strong> Transaksi pribadi, transaksi bisnis, dan invoice yang dibuat di akun ini dihapus otomatis setelah 3 hari.</span>
+          </p>
+        </div>
         <div class="shell-page"><RouterView /></div>
       </main>
     </div>
@@ -98,6 +108,7 @@ import { useThemeStore } from '@/stores/theme'
 import { useNotificationsStore } from '@/stores/notifications'
 import { isNavigationActive, personalNavigation } from '@/constants/navigation'
 import AppIcon from '@/components/common/AppIcon.vue'
+import { isDemoProfile } from '@/utils/profile'
 import AdBanner from '@/components/common/AdBanner.vue'
 import WorkspaceSwitcher from '@/components/workspace/WorkspaceSwitcher.vue'
 import PersonalNav from '@/components/workspace/PersonalNav.vue'
@@ -127,6 +138,7 @@ const readSidebarPreference = () => {
 const sidebarCollapsed = ref(readSidebarPreference())
 const isCompact = computed(() => sidebarCollapsed.value && !isMobile.value)
 const isBusinessPlan = computed(() => authStore.currentUser?.subscriptionPlan?.startsWith('BUSINESS') ?? false)
+const isDemoAccount = computed(() => isDemoProfile(authStore.currentUser?.email))
 const userName = computed(() => authStore.currentUser?.fullName || authStore.currentUser?.username || 'Pengguna')
 const userProfilePicture = computed(() => authStore.currentUser?.profilePictureUrl || null)
 const planLabel = computed(() => {

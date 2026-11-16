@@ -161,4 +161,19 @@ describe('subscription checkout', () => {
     expect(wrapper.text()).toContain('Upgrade Berhasil!')
     wrapper.unmount()
   })
+
+  it('lets promo users pick a paid plan but not "downgrade" to Free or renew the promo', async () => {
+    auth.currentUser.activeSubscription = { planCode: 'PREMIUM_PROMO_3M', endDate: '2027-02-01T00:00:00Z' }
+    const upgrade = await renderCheckout()
+    const families = upgrade
+      .findAll('input[name="plan-family"]')
+      .map((i) => i.element.closest('label')?.textContent?.trim())
+    expect(families).toEqual(['Premium', 'Business'])
+    upgrade.unmount()
+
+    mocks.route.query = { action: 'renew' }
+    const renew = await renderCheckout()
+    expect(renew.text()).toContain('Promo Premium gratis tidak dapat diperpanjang')
+    renew.unmount()
+  })
 })

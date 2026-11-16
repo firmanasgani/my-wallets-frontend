@@ -300,6 +300,7 @@
 </template>
 
 <script setup lang="ts">
+import { isPromoPlan } from '@/utils/subscriptionPromo'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -372,6 +373,8 @@ const pickablePlans = computed(() =>
 
 const availableFamilies = computed<Family[]>(() => {
   const set = new Set(pickablePlans.value.map((p) => familyOf(p.code)))
+  // The free promo ends on its own — there is nothing to downgrade to.
+  if (isPromoPlan(currentPlanCode.value)) set.delete('FREE')
   return (['PREMIUM', 'BUSINESS', 'FREE'] as Family[]).filter((f) => set.has(f))
 })
 
@@ -427,6 +430,9 @@ const newEndDate = computed(() =>
 const guardMessage = computed(() => {
   if (actionType.value === 'renew' && currentPlanCode.value === 'FREE') {
     return 'Anda belum memiliki paket aktif untuk diperpanjang.'
+  }
+  if (actionType.value === 'renew' && isPromoPlan(currentPlanCode.value)) {
+    return 'Promo Premium gratis tidak dapat diperpanjang. Pilih paket Premium untuk melanjutkan setelah promo berakhir.'
   }
   if (actionType.value === 'upgrade' && pickablePlans.value.length === 0) {
     return 'Tidak ada paket lain yang tersedia saat ini.'

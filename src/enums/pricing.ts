@@ -34,6 +34,7 @@ export const PRICING_PLANS: PricingPlanDetails[] = [
       'Pencatatan Transaksi Manual',
       'Dashboard Ringkas',
       'Riwayat Transaksi 12 Bulan',
+      'Bonus: Premium gratis 3 bulan pertama',
     ],
     cta: { text: 'Mulai Gratis', link: { name: 'register' } },
     recommended: false,
